@@ -1,0 +1,36 @@
+{
+  "general": {
+    "accessibility": {
+      "skip_to_content": "Skip to content",
+      "close": "Close",
+      "menu": "Menu"
+    },
+    "search": {
+      "title": "Search",
+      "placeholder": "Search products…",
+      "submit": "Search"
+    },
+    "cart": {
+      "title": "Cart",
+      "empty": "Your cart is empty",
+      "checkout": "Checkout"
+    },
+    "newsletter": {
+      "heading": "Stay in the loop",
+      "submit": "Subscribe"
+    },
+    "404": {
+      "title": "Page not found",
+      "subtext": "The page you were looking for no longer exists.",
+      "link": "Back to home"
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to cart",
+      "sold_out": "Sold out",
+      "unavailable": "Unavailable",
+      "price": "Price"
+    }
+  }
+}

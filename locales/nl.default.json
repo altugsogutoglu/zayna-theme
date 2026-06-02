@@ -1,0 +1,36 @@
+{
+  "general": {
+    "accessibility": {
+      "skip_to_content": "Ga naar inhoud",
+      "close": "Sluiten",
+      "menu": "Menu"
+    },
+    "search": {
+      "title": "Zoeken",
+      "placeholder": "Zoek producten…",
+      "submit": "Zoeken"
+    },
+    "cart": {
+      "title": "Winkelwagen",
+      "empty": "Je winkelwagen is leeg",
+      "checkout": "Afrekenen"
+    },
+    "newsletter": {
+      "heading": "Blijf op de hoogte",
+      "submit": "Inschrijven"
+    },
+    "404": {
+      "title": "Pagina niet gevonden",
+      "subtext": "De pagina die je zocht bestaat niet meer.",
+      "link": "Terug naar home"
+    }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "In winkelwagen",
+      "sold_out": "Uitverkocht",
+      "unavailable": "Niet beschikbaar",
+      "price": "Prijs"
+    }
+  }
+}
