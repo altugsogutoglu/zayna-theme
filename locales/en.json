@@ -3,11 +3,16 @@
     "accessibility": {
       "skip_to_content": "Skip to content",
       "close": "Close",
-      "menu": "Menu"
+      "menu": "Menu",
+      "open_menu": "Open menu",
+      "search": "Search",
+      "cart": "Cart",
+      "account": "Account",
+      "instagram": "Instagram"
     },
     "search": {
       "title": "Search",
-      "placeholder": "Search products…",
+      "placeholder": "Search the collection",
       "submit": "Search"
     },
     "cart": {
@@ -23,6 +28,21 @@
       "title": "Page not found",
       "subtext": "The page you were looking for no longer exists.",
       "link": "Back to home"
+    }
+  },
+  "layout": {
+    "header": {
+      "login": "Log in",
+      "account": "Account",
+      "all_collections": "All collections"
+    },
+    "footer": {
+      "service": "Customer service",
+      "legal": "Legal",
+      "contact": "Contact",
+      "track_order": "Track your order",
+      "language": "Language",
+      "currency": "Currency"
     }
   },
   "products": {

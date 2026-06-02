@@ -3,15 +3,20 @@
     "accessibility": {
       "skip_to_content": "Ga naar inhoud",
       "close": "Sluiten",
-      "menu": "Menu"
+      "menu": "Menu",
+      "open_menu": "Menu openen",
+      "search": "Zoeken",
+      "cart": "Winkelmand",
+      "account": "Account",
+      "instagram": "Instagram"
     },
     "search": {
       "title": "Zoeken",
-      "placeholder": "Zoek producten…",
-      "submit": "Zoeken"
+      "placeholder": "Zoek in de collectie",
+      "submit": "Zoek"
     },
     "cart": {
-      "title": "Winkelwagen",
+      "title": "Winkelmand",
       "empty": "Je winkelwagen is leeg",
       "checkout": "Afrekenen"
     },
@@ -23,6 +28,21 @@
       "title": "Pagina niet gevonden",
       "subtext": "De pagina die je zocht bestaat niet meer.",
       "link": "Terug naar home"
+    }
+  },
+  "layout": {
+    "header": {
+      "login": "Inloggen",
+      "account": "Account",
+      "all_collections": "Alle collecties"
+    },
+    "footer": {
+      "service": "Klantenservice",
+      "legal": "Juridisch",
+      "contact": "Contact",
+      "track_order": "Track jouw order",
+      "language": "Taal",
+      "currency": "Valuta"
     }
   },
   "products": {
