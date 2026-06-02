@@ -1,0 +1,239 @@
+@import 'tailwindcss';
+
+/* Tell Tailwind v4 where class names live in this theme. */
+@source '../sections/**/*.liquid';
+@source '../snippets/**/*.liquid';
+@source '../blocks/**/*.liquid';
+@source '../templates/**/*.{liquid,json}';
+@source '../layout/**/*.liquid';
+
+/* ---- Brand fonts (served from assets/, relative URLs resolve on CDN) ---- */
+@font-face {
+  font-family: 'Fraunces Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('fraunces-wght-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Fraunces Variable';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('fraunces-wght-italic.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('inter-wght-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('inter-wght-italic.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('caveat-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url('caveat-500.woff2') format('woff2');
+}
+
+@theme {
+  /* Colors */
+  --color-bg: #FAF5F2;
+  --color-surface: #FFFFFF;
+  --color-ink: #2A2520;
+  --color-ink-soft: #564E47;
+  --color-stone: #78716C;
+  --color-stone-soft: #A8A29E;
+  --color-clay: #B5651D;
+  --color-sage: #8A9A7B;
+  --color-cream: #F0EBE6;
+  --color-border-soft: #E8E1DA;
+  --color-sold: #9B8B7D;
+  --color-danger: #B23A48;
+
+  /* Product tile tints — warm rotating palette (Bellezza-inspired) */
+  --color-tile-peach: #F4DCC9;
+  --color-tile-blush: #ECD2C9;
+  --color-tile-sage:  #DDE2D2;
+  --color-tile-sand:  #E9DFD0;
+
+  /* Fonts */
+  --font-display: 'Fraunces Variable', Georgia, serif;
+  --font-sans: 'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-signature: 'Caveat', cursive;
+
+  /* Type scale */
+  --text-hero: 3.5rem;
+  --text-hero--line-height: 1.05;
+  --text-hero--letter-spacing: -0.02em;
+  --text-h1: 2.5rem;
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.015em;
+  --text-h2: 2rem;
+  --text-h2--line-height: 1.15;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h3: 1.5rem;
+  --text-h3--line-height: 1.25;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1;
+  --text-label--letter-spacing: 0.12em;
+  --text-price: 1.125rem;
+  --text-price--line-height: 1.2;
+}
+
+:root {
+  --aside-width: 480px;
+  --header-height: 72px;
+  --header-height-mobile: 56px;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    scrollbar-gutter: stable;
+  }
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    line-height: 1.65;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--color-ink);
+  }
+  .font-signature { font-family: var(--font-signature); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  .text-hero { font-size: var(--text-hero); line-height: var(--text-hero--line-height); letter-spacing: var(--text-hero--letter-spacing); }
+  .text-label { font-size: var(--text-label); line-height: var(--text-label--line-height); letter-spacing: var(--text-label--letter-spacing); text-transform: uppercase; }
+  .text-price { font-size: var(--text-price); line-height: var(--text-price--line-height); font-variant-numeric: tabular-nums; }
+  .transition-soft { transition: all 240ms cubic-bezier(0.2, 0.6, 0.2, 1); }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; border-width: 0;
+  }
+}
+
+@layer components {
+  .rich-text { color: var(--color-ink-soft); font-size: 1rem; line-height: 1.8; }
+  .rich-text > * + * { margin-top: 1.25rem; }
+  .rich-text h1, .rich-text h2, .rich-text h3,
+  .rich-text h4, .rich-text h5, .rich-text h6 {
+    font-family: var(--font-display); font-weight: 400; color: var(--color-ink);
+    line-height: 1.2; letter-spacing: -0.01em;
+  }
+  .rich-text h2 { font-size: 1.5rem; margin-top: 2.75rem; }
+  .rich-text h3 { font-size: 1.25rem; margin-top: 2.25rem; }
+  .rich-text h4 { font-size: 1.0625rem; margin-top: 1.75rem; }
+  .rich-text :is(h2, h3, h4, h5, h6) + * { margin-top: 0.75rem; }
+  .rich-text a {
+    color: var(--color-clay); text-decoration: underline;
+    text-decoration-thickness: 1px; text-underline-offset: 3px;
+    transition: color 200ms ease;
+  }
+  .rich-text a:hover { color: var(--color-ink); }
+  .rich-text strong, .rich-text b { color: var(--color-ink); font-weight: 600; }
+  .rich-text em, .rich-text i { font-style: italic; }
+  .rich-text ul, .rich-text ol { padding-left: 1.5rem; }
+  .rich-text ul { list-style: disc; }
+  .rich-text ol { list-style: decimal; }
+  .rich-text li { margin-top: 0.5rem; padding-left: 0.25rem; }
+  .rich-text li::marker { color: var(--color-clay); }
+  .rich-text blockquote {
+    border-left: 2px solid var(--color-clay); padding-left: 1.25rem;
+    font-family: var(--font-display); font-style: italic; font-size: 1.125rem;
+    color: var(--color-stone);
+  }
+  .rich-text hr { border: 0; border-top: 1px solid var(--color-border-soft); margin: 2.75rem 0; }
+  .rich-text table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+  .rich-text :is(th, td) { border: 1px solid var(--color-border-soft); padding: 0.625rem 0.875rem; text-align: left; }
+  .rich-text th { color: var(--color-ink); font-weight: 600; background: var(--color-cream); }
+}
+
+/* ---- Aside / drawer (used by cart-drawer in Milestone 6) ---- */
+html:has(.overlay.expanded) { overflow: hidden; }
+.overlay aside {
+  background: var(--color-surface);
+  box-shadow: -24px 0 64px -16px rgba(42, 37, 32, 0.22);
+  height: 100vh; height: 100dvh;
+  width: min(92vw, 440px);
+  position: fixed; right: 0; top: 0;
+  transform: translateX(100%);
+  transition: transform 320ms cubic-bezier(0.22, 0.61, 0.24, 1);
+  z-index: 50; overscroll-behavior: contain;
+}
+@media (min-width: 768px) { .overlay aside { width: var(--aside-width); } }
+.overlay {
+  background: rgba(42, 37, 32, 0.38);
+  inset: 0; opacity: 0; pointer-events: none; position: fixed;
+  transition: opacity 280ms ease-out, visibility 0s linear 280ms;
+  visibility: hidden; z-index: 40;
+  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+}
+.overlay .close-outside {
+  background: transparent; border: none; cursor: pointer;
+  height: 100%; inset: 0; position: absolute; width: 100%;
+}
+.overlay.expanded {
+  opacity: 1; pointer-events: auto; visibility: visible;
+  transition: opacity 280ms ease-out, visibility 0s linear 0s;
+}
+.overlay.expanded aside { transform: translateX(0); }
+.cart-drawer-footer { padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0)); }
+
+/* ---- Announcement marquee (used by announcement-bar in Milestone 2) ---- */
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+}
+.marquee__track {
+  display: flex; width: max-content; flex-wrap: nowrap;
+  animation: marquee 42s linear infinite; will-change: transform;
+}
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee:hover .marquee__track { animation-play-state: paused; }
+@media (max-width: 640px) { .marquee__track { animation-duration: 26s; } }
+@media (prefers-reduced-motion: reduce) {
+  .marquee { -webkit-mask-image: none; mask-image: none; }
+  .marquee__track { animation: none; }
+}
+
+@keyframes mega-reveal {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes mobile-menu-item-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
