@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#FAF5F2">
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <link rel="icon" type="image/svg+xml" href="{{ 'favicon.svg' | asset_url }}">
+
+    <title>
+      {{ page_title }}{% if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+    </title>
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+
+    {{ content_for_header }}
+
+    <link rel="stylesheet" href="{{ 'tailwind.css' | asset_url }}">
+    <script src="{{ 'theme.js' | asset_url }}" defer></script>
+  </head>
+  <body class="min-h-dvh font-sans text-ink antialiased">
+    <a class="sr-only" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
+    {% sections 'header-group' %}
+
+    <main id="MainContent" role="main">
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+
+    {%- comment -%} Cart drawer mounts here in Milestone 6. {%- endcomment -%}
+    <div id="CartDrawer" data-cart-drawer hidden></div>
+  </body>
+</html>

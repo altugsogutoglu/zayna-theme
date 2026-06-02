@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "placeholder": {
+      "type": "placeholder",
+      "settings": {
+        "heading": "Foundation ready",
+        "body": "Background #FAF5F2, Inter body, Fraunces headings."
+      }
+    }
+  },
+  "order": ["placeholder"]
+}

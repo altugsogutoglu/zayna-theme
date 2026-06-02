@@ -1,0 +1,8 @@
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "placeholder": { "type": "placeholder" }
+  },
+  "order": ["placeholder"]
+}
