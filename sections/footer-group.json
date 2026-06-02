@@ -1,6 +1,15 @@
 {
   "type": "footer",
   "name": "Footer group",
-  "sections": {},
-  "order": []
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "brand_name": "Zayna Home",
+        "blurb": "Stijlvolle keuken- en woonproducten, zorgvuldig geselecteerd en verzonden vanuit Nederland.",
+        "service_menu": "footer"
+      }
+    }
+  },
+  "order": ["footer"]
 }
