@@ -1,0 +1,76 @@
+<footer class="mt-24 border-t border-border-soft bg-cream">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-16 grid gap-12 md:grid-cols-4">
+    <div class="md:col-span-1">
+      <p class="font-signature text-3xl text-ink">{{ section.settings.brand_name | default: shop.name }}</p>
+      <p class="mt-3 max-w-sm text-sm text-ink-soft">{{ section.settings.blurb }}</p>
+    </div>
+
+    <nav aria-label="{{ 'layout.footer.service' | t }}">
+      {% render 'footer-heading', text: 'layout.footer.service' | t %}
+      <ul class="space-y-2.5">
+        {%- for link in linklists[section.settings.service_menu].links -%}
+          <li>{% render 'footer-link', url: link.url, label: link.title %}</li>
+        {%- endfor -%}
+        <li>{% render 'footer-link', url: '/pages/track-order', label: 'layout.footer.track_order' | t %}</li>
+      </ul>
+    </nav>
+
+    <nav aria-label="{{ 'layout.footer.legal' | t }}">
+      {% render 'footer-heading', text: 'layout.footer.legal' | t %}
+      <ul class="space-y-2.5">
+        <li>{% render 'footer-link', url: '/policies/terms-of-service', label: 'Algemene voorwaarden' %}</li>
+        <li>{% render 'footer-link', url: '/policies/privacy-policy', label: 'Privacybeleid' %}</li>
+        <li>{% render 'footer-link', url: '/policies/refund-policy', label: 'Retourbeleid' %}</li>
+        <li>{% render 'footer-link', url: '/policies/shipping-policy', label: 'Verzending' %}</li>
+      </ul>
+    </nav>
+
+    <div>
+      {% render 'footer-heading', text: 'layout.footer.contact' | t %}
+      <ul class="space-y-2.5">
+        <li>{% render 'footer-link', url: section.settings.contact_email_url, label: section.settings.contact_email_label %}</li>
+        <li>{% render 'footer-link', url: section.settings.instagram_url, label: 'Instagram', icon: 'instagram' %}</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-border-soft">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-6 flex flex-col items-center gap-5 text-xs text-ink-soft sm:flex-row sm:justify-between sm:gap-4">
+      {% render 'payment-icons' %}
+      <dl class="flex items-center gap-4 sm:gap-5">
+        <div class="flex items-baseline gap-1.5">
+          <dt class="text-[10px] uppercase tracking-[0.18em] text-stone-soft">KvK</dt>
+          <dd class="tabular-nums">{{ section.settings.kvk }}</dd>
+        </div>
+        <span aria-hidden="true" class="h-3 w-px bg-border-soft"></span>
+        <div class="flex items-baseline gap-1.5">
+          <dt class="text-[10px] uppercase tracking-[0.18em] text-stone-soft">BTW</dt>
+          <dd class="tabular-nums">{{ section.settings.btw }}</dd>
+        </div>
+      </dl>
+      <div class="order-last flex items-center gap-4 sm:order-none">
+        <span>© {{ 'now' | date: '%Y' }} {{ section.settings.brand_name | default: shop.name }}</span>
+        {% render 'localization-form' %}
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "brand_name", "label": "Brand name", "default": "Zayna Home" },
+    { "type": "textarea", "id": "blurb", "label": "Brand blurb", "default": "Stijlvolle keuken- en woonproducten, zorgvuldig geselecteerd en verzonden vanuit Nederland." },
+    { "type": "link_list", "id": "service_menu", "label": "Service menu", "default": "footer" },
+    { "type": "text", "id": "contact_email_label", "label": "Contact email label", "default": "info@zaynahome.nl" },
+    { "type": "url", "id": "contact_email_url", "label": "Contact email link", "default": "mailto:info@zaynahome.nl" },
+    { "type": "url", "id": "instagram_url", "label": "Instagram URL", "default": "https://www.instagram.com/zaynahome.nl" },
+    { "type": "header", "content": "Business identifiers" },
+    { "type": "text", "id": "kvk", "label": "KvK", "default": "97745200" },
+    { "type": "text", "id": "btw", "label": "BTW", "default": "NL005285507B86" }
+  ],
+  "presets": [{ "name": "Footer" }]
+}
+{% endschema %}

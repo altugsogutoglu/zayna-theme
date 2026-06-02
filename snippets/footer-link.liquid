@@ -1,0 +1,12 @@
+{%- liquid
+  assign cls = 'group relative inline-flex items-center gap-2 font-display text-[15px] leading-snug text-ink-soft transition-colors duration-300 hover:text-ink'
+  assign is_external = false
+  if url contains 'http' or url contains 'mailto:'
+    assign is_external = true
+  endif
+-%}
+<a href="{{ url }}" class="{{ cls }}"{% if url contains 'http' %} target="_blank" rel="noopener noreferrer"{% endif %}>
+  {%- if icon != blank -%}{% render 'icon', name: icon, size: 16 %}{%- endif -%}
+  {{ label }}
+  <span aria-hidden="true" class="pointer-events-none absolute -bottom-1 left-0 block h-px w-full origin-left scale-x-0 bg-clay transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+</a>
