@@ -1,0 +1,46 @@
+{%- if section.blocks.size > 0 -%}
+  <div class="bg-ink text-surface">
+    <div class="marquee py-2.5">
+      <div class="marquee__track text-[11px] uppercase tracking-[0.18em]" aria-hidden="true">
+        {%- for i in (1..2) -%}
+          {%- for block in section.blocks -%}
+            <span class="flex items-center whitespace-nowrap" {{ block.shopify_attributes }}>
+              {{ block.settings.text }}
+              <span aria-hidden="true" class="mx-6 inline-block h-[5px] w-[5px] shrink-0 rotate-45 bg-clay/80 align-middle"></span>
+            </span>
+          {%- endfor -%}
+        {%- endfor -%}
+      </div>
+      <p class="sr-only">
+        {%- for block in section.blocks -%}{{ block.settings.text }}. {% endfor -%}
+      </p>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "tag": "section",
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Gratis verzending vanaf €100" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Announcement bar",
+      "blocks": [
+        { "type": "message", "settings": { "text": "Gratis verzending vanaf €100" } },
+        { "type": "message", "settings": { "text": "Voor 23:00 besteld, morgen verzonden" } },
+        { "type": "message", "settings": { "text": "Met zorg ingepakt vanuit Nederland" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
