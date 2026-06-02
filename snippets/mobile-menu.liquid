@@ -1,0 +1,49 @@
+{%- liquid
+  assign menu = section_menu | default: 'main-menu'
+-%}
+<div class="flex h-full flex-col bg-bg">
+  <nav aria-label="Hoofdnavigatie" class="relative px-6 pt-8 pb-2 sm:px-8">
+    <p class="mb-5 text-[10px] uppercase tracking-[0.22em] text-stone-soft">{{ 'general.accessibility.menu' | t }}</p>
+    <ul class="space-y-1">
+      <li>
+        <a href="{{ routes.root_url }}" data-aside-close class="group block border-b border-border-soft/70 py-4 font-display text-[clamp(2rem,7vw,2.75rem)] leading-[1.05] tracking-[-0.015em] transition-colors {% if request.page_type == 'index' %}text-clay{% else %}text-ink hover:text-clay{% endif %}">
+          <span class="flex items-center justify-between gap-4"><span>Home</span><span aria-hidden="true" class="text-base text-stone-soft transition-all duration-300 group-hover:translate-x-1 group-hover:text-clay">→</span></span>
+        </a>
+      </li>
+      {%- for link in linklists[menu].links -%}
+        {%- assign t = link.title | downcase -%}
+        {%- unless t == 'home' -%}
+          <li>
+            <a href="{{ link.url }}" data-aside-close class="group block border-b border-border-soft/70 py-4 font-display text-[clamp(2rem,7vw,2.75rem)] leading-[1.05] tracking-[-0.015em] transition-colors {% if link.active %}text-clay{% else %}text-ink hover:text-clay{% endif %}">
+              <span class="flex items-center justify-between gap-4"><span>{{ link.title }}</span><span aria-hidden="true" class="text-base text-stone-soft transition-all duration-300 group-hover:translate-x-1 group-hover:text-clay">→</span></span>
+            </a>
+          </li>
+        {%- endunless -%}
+      {%- endfor -%}
+    </ul>
+  </nav>
+
+  <section aria-label="Account" class="relative px-6 pb-8 sm:px-8 mt-4">
+    <ul class="divide-y divide-border-soft border-y border-border-soft">
+      <li>
+        <button type="button" data-aside-open="search" class="flex w-full items-center justify-between py-4 text-[14px] uppercase tracking-[0.18em] text-ink transition-colors hover:text-clay">
+          <span class="inline-flex items-center gap-3">{% render 'icon', name: 'search', size: 16 %}{{ 'general.accessibility.search' | t }}</span>
+          <span aria-hidden="true" class="text-stone-soft">→</span>
+        </button>
+      </li>
+      <li>
+        <a href="{{ routes.account_url }}" data-aside-close class="flex w-full items-center justify-between py-4 text-[14px] uppercase tracking-[0.18em] text-ink transition-colors hover:text-clay">
+          <span class="inline-flex items-center gap-3">{% render 'icon', name: 'user', size: 16 %}{{ 'layout.header.login' | t }}</span>
+          <span aria-hidden="true" class="text-stone-soft">→</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <div class="relative mt-auto px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-8 sm:px-8">
+    <div class="border-t border-border-soft pt-6">
+      <p class="font-display italic text-stone">Stijlvol wonen, vanuit Nederland.</p>
+      <p class="mt-2 max-w-[28ch] text-[13px] leading-relaxed text-ink-soft">Zorgvuldig geselecteerde producten voor je keuken en huis. Verzonden binnen 1–3 werkdagen.</p>
+    </div>
+  </div>
+</div>

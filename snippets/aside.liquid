@@ -1,0 +1,14 @@
+<div class="overlay" data-aside="{{ type }}" role="dialog" aria-modal="true" aria-label="{{ heading }}">
+  <button type="button" class="close-outside" aria-label="{{ 'general.accessibility.close' | t }}" data-aside-close></button>
+  <aside class="flex h-full flex-col">
+    <header class="flex items-center justify-between border-b border-border-soft px-5 md:px-6 h-[var(--header-height)] shrink-0">
+      <span class="text-label text-ink">{{ heading }}</span>
+      <button type="button" class="p-2 -m-2 text-ink hover:text-clay transition-colors" aria-label="{{ 'general.accessibility.close' | t }}" data-aside-close>
+        {% render 'icon', name: 'x', size: 20 %}
+      </button>
+    </header>
+    <div class="flex-1 overflow-y-auto overscroll-contain">
+      {{ aside_body }}
+    </div>
+  </aside>
+</div>

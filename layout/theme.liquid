@@ -30,7 +30,13 @@
 
     {% sections 'footer-group' %}
 
-    {%- comment -%} Cart drawer mounts here in Milestone 6. {%- endcomment -%}
-    <div id="CartDrawer" data-cart-drawer hidden></div>
+    {%- capture mobile_body -%}{% render 'mobile-menu' %}{%- endcapture -%}
+    {% render 'aside', type: 'mobile', heading: shop.name, aside_body: mobile_body %}
+
+    {%- capture search_body -%}<div class="px-5 md:px-6 py-6 text-sm text-ink-soft">{{ 'general.search.placeholder' | t }}</div>{%- endcapture -%}
+    {% render 'aside', type: 'search', heading: 'general.search.title' | t, aside_body: search_body %}
+
+    {%- capture cart_body -%}<div class="px-5 md:px-6 py-6 text-sm text-ink-soft" data-cart-drawer-body>{{ 'general.cart.empty' | t }}</div>{%- endcapture -%}
+    {% render 'aside', type: 'cart', heading: 'general.cart.title' | t, aside_body: cart_body %}
   </body>
 </html>
