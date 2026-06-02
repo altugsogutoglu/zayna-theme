@@ -1,0 +1,16 @@
+{
+  "name": "zayna-theme",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Zayna Home Shopify Online Store 2.0 theme",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/tailwind.css -o ./assets/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./src/tailwind.css -o ./assets/tailwind.css --watch",
+    "check": "shopify theme check",
+    "dev": "shopify theme dev"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.6",
+    "tailwindcss": "^4.1.6"
+  }
+}
