@@ -18,7 +18,7 @@
         "shop": {
           "type": "mega_panel",
           "settings": {
-            "nav_title": "Shop",
+            "nav_title": "Assortiment",
             "eyebrow": "De collectie",
             "blurb": "Stijlvol, praktisch en zorgvuldig geselecteerd. Verzonden vanuit Nederland.",
             "cta_text": "Alle collecties bekijken",

@@ -14,7 +14,7 @@
       {%- for link in linklists[menu].links -%}
         {%- assign panel_key = link.title | downcase | strip -%}
         {%- if link.links.size > 0 -%}
-          <div class="group/mega relative" data-mega-item>
+          <div class="group/mega" data-mega-item>
             <a href="{{ link.url }}" class="group relative inline-flex items-center py-2" aria-haspopup="true">
               <span class="text-[11px] uppercase tracking-[0.2em] transition-colors text-ink-soft group-hover:text-ink">{{ link.title }}</span>
               <span aria-hidden="true" class="absolute inset-x-0 -bottom-0.5 block h-px origin-left bg-clay transition-transform duration-300 ease-out scale-x-0 group-hover:scale-x-100"></span>
@@ -51,6 +51,10 @@
                             {%- for l in linklists[panel_block.settings.aside_menu].links -%}
                               <li><a href="{{ l.url }}" class="text-[13px] text-ink-soft hover:text-clay transition-colors">{{ l.title }}</a></li>
                             {%- endfor -%}
+                          {%- else -%}
+                            <li><a href="/policies/shipping-policy" class="text-[13px] text-ink-soft hover:text-clay transition-colors">Verzending</a></li>
+                            <li><a href="/policies/refund-policy" class="text-[13px] text-ink-soft hover:text-clay transition-colors">Retourneren</a></li>
+                            <li><a href="/pages/contact" class="text-[13px] text-ink-soft hover:text-clay transition-colors">Contact</a></li>
                           {%- endif -%}
                         </ul>
                       </div>
@@ -60,11 +64,27 @@
                   <div class="col-span-5">
                     <p class="mb-6 text-[10px] uppercase tracking-[0.22em] text-stone-soft">Bekijken</p>
                     <ul class="-mx-3">
+                      {%- if panel_block.settings.show_all_products -%}
+                        <li>
+                          <a href="{{ routes.all_products_collection_url }}" class="group flex items-center justify-between gap-4 rounded-sm px-3 py-3 transition-colors hover:bg-cream/60">
+                            <span class="min-w-0">
+                              <span class="block font-display text-[clamp(1.05rem,1.1vw,1.2rem)] leading-snug text-ink transition-colors group-hover:text-clay">Alle producten</span>
+                              <span class="mt-1 block truncate font-display italic text-[13px] leading-snug text-stone">Bekijk de hele shop</span>
+                            </span>
+                            <span aria-hidden="true" class="shrink-0 text-stone-soft transition-all duration-300 group-hover:translate-x-1 group-hover:text-clay">→</span>
+                          </a>
+                        </li>
+                      {%- endif -%}
+                      {%- assign cat_count = 0 -%}
                       {%- for child in link.links -%}
+                        {%- if child.type == 'collection_link' -%}{%- assign cat_count = cat_count | plus: 1 -%}{%- endif -%}
+                        {%- assign hint = '' -%}
+                        {%- if child.object.description != blank -%}{%- assign hint = child.object.description | strip_html | truncate: 42 -%}{%- endif -%}
                         <li>
                           <a href="{{ child.url }}" class="group flex items-center justify-between gap-4 rounded-sm px-3 py-3 transition-colors hover:bg-cream/60">
                             <span class="min-w-0">
                               <span class="block font-display text-[clamp(1.05rem,1.1vw,1.2rem)] leading-snug text-ink transition-colors group-hover:text-clay">{{ child.title }}</span>
+                              {%- if hint != blank -%}<span class="mt-1 block truncate font-display italic text-[13px] leading-snug text-stone">{{ hint }}</span>{%- endif -%}
                             </span>
                             <span aria-hidden="true" class="shrink-0 text-stone-soft transition-all duration-300 group-hover:translate-x-1 group-hover:text-clay">→</span>
                           </a>
@@ -74,6 +94,7 @@
                     {%- if panel_block.settings.cta_text != blank -%}
                       <a href="{{ panel_block.settings.cta_url | default: routes.collections_url }}" class="group mt-5 inline-flex items-center gap-3 border-t border-border-soft pt-5 text-[11px] uppercase tracking-[0.22em] text-ink transition-colors hover:text-clay">
                         <span>{{ panel_block.settings.cta_text }}</span>
+                        {%- if cat_count > 0 -%}<span class="text-stone-soft normal-case tracking-normal font-display italic text-sm">{{ cat_count | prepend: '0' | slice: -2, 2 }} categorieën</span>{%- endif -%}
                         <span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
                       </a>
                     {%- endif -%}
@@ -144,7 +165,8 @@
       "type": "mega_panel",
       "name": "Mega panel",
       "settings": [
-        { "type": "text", "id": "nav_title", "label": "Matches nav item titled", "info": "Case-insensitive match against a top-level menu item that has sub-links.", "default": "Shop" },
+        { "type": "text", "id": "nav_title", "label": "Matches nav item titled", "info": "Case-insensitive match against a top-level menu item that has sub-links.", "default": "Assortiment" },
+        { "type": "checkbox", "id": "show_all_products", "label": "Show \"Alle producten\" link first", "default": true },
         { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "De collectie" },
         { "type": "textarea", "id": "blurb", "label": "Blurb", "default": "Stijlvol, praktisch en zorgvuldig geselecteerd. Verzonden vanuit Nederland." },
         { "type": "text", "id": "cta_text", "label": "CTA text", "default": "Alle collecties bekijken" },
@@ -164,7 +186,7 @@
     {
       "name": "Header",
       "blocks": [
-        { "type": "mega_panel", "settings": { "nav_title": "Shop", "eyebrow": "De collectie", "cta_text": "Alle collecties bekijken", "featured_title": "Nieuw deze week", "aside_heading": "Klantenservice" } }
+        { "type": "mega_panel", "settings": { "nav_title": "Assortiment", "eyebrow": "De collectie", "cta_text": "Alle collecties bekijken", "featured_title": "Nieuw deze week", "aside_heading": "Klantenservice" } }
       ]
     }
   ]
