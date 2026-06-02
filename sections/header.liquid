@@ -1,0 +1,172 @@
+{%- liquid
+  assign menu = section.settings.menu
+-%}
+<header
+  class="sticky top-0 z-30 border-b border-border-soft bg-bg/90 backdrop-blur supports-[backdrop-filter]:bg-bg/75"
+  data-header
+>
+  <div class="mx-auto flex h-[var(--header-height)] max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-10">
+    <a href="{{ routes.root_url }}" class="shrink-0">
+      <span class="font-display text-2xl tracking-tight text-ink">{{ shop.name }}</span>
+    </a>
+
+    <nav aria-label="Hoofdnavigatie" class="hidden md:flex items-center gap-7" data-nav>
+      {%- for link in linklists[menu].links -%}
+        {%- assign panel_key = link.title | downcase | strip -%}
+        {%- if link.links.size > 0 -%}
+          <div class="group/mega relative" data-mega-item>
+            <a href="{{ link.url }}" class="group relative inline-flex items-center py-2" aria-haspopup="true">
+              <span class="text-[11px] uppercase tracking-[0.2em] transition-colors text-ink-soft group-hover:text-ink">{{ link.title }}</span>
+              <span aria-hidden="true" class="absolute inset-x-0 -bottom-0.5 block h-px origin-left bg-clay transition-transform duration-300 ease-out scale-x-0 group-hover:scale-x-100"></span>
+            </a>
+            {%- comment -%} Mega panel — revealed on hover/focus of the parent item {%- endcomment -%}
+            {%- assign panel_block = null -%}
+            {%- for block in section.blocks -%}
+              {%- assign bk = block.settings.nav_title | downcase | strip -%}
+              {%- if block.type == 'mega_panel' and bk == panel_key -%}
+                {%- assign panel_block = block -%}
+              {%- endif -%}
+            {%- endfor -%}
+            <div
+              role="region"
+              aria-label="{{ link.title }}"
+              class="invisible absolute inset-x-0 top-full z-40 opacity-0 transition-[opacity,visibility] duration-200 group-hover/mega:visible group-hover/mega:opacity-100 group-focus-within/mega:visible group-focus-within/mega:opacity-100"
+              data-mega-panel
+            >
+              <div class="border-y border-border-soft bg-bg/98 shadow-[0_24px_60px_-30px_rgba(42,37,32,0.35)] backdrop-blur supports-[backdrop-filter]:bg-bg/95">
+                <div class="mx-auto grid max-w-7xl grid-cols-12 gap-x-10 px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
+                  <div class="col-span-3">
+                    <p class="mb-5 flex items-center gap-3 text-[10px] uppercase tracking-[0.22em] text-clay">
+                      <span aria-hidden="true" class="block h-px w-8 bg-clay/60"></span>
+                      {{ panel_block.settings.eyebrow | default: link.title }}
+                    </p>
+                    {%- if panel_block.settings.blurb != blank -%}
+                      <p class="font-display italic text-lg leading-relaxed text-stone max-w-[28ch]">{{ panel_block.settings.blurb }}</p>
+                    {%- endif -%}
+                    {%- if panel_block.settings.aside_heading != blank -%}
+                      <div class="mt-10">
+                        <p class="mb-3 text-[10px] uppercase tracking-[0.22em] text-stone-soft">{{ panel_block.settings.aside_heading }}</p>
+                        <ul class="space-y-2">
+                          {%- if panel_block.settings.aside_menu != blank -%}
+                            {%- for l in linklists[panel_block.settings.aside_menu].links -%}
+                              <li><a href="{{ l.url }}" class="text-[13px] text-ink-soft hover:text-clay transition-colors">{{ l.title }}</a></li>
+                            {%- endfor -%}
+                          {%- endif -%}
+                        </ul>
+                      </div>
+                    {%- endif -%}
+                  </div>
+
+                  <div class="col-span-5">
+                    <p class="mb-6 text-[10px] uppercase tracking-[0.22em] text-stone-soft">Bekijken</p>
+                    <ul class="-mx-3">
+                      {%- for child in link.links -%}
+                        <li>
+                          <a href="{{ child.url }}" class="group flex items-center justify-between gap-4 rounded-sm px-3 py-3 transition-colors hover:bg-cream/60">
+                            <span class="min-w-0">
+                              <span class="block font-display text-[clamp(1.05rem,1.1vw,1.2rem)] leading-snug text-ink transition-colors group-hover:text-clay">{{ child.title }}</span>
+                            </span>
+                            <span aria-hidden="true" class="shrink-0 text-stone-soft transition-all duration-300 group-hover:translate-x-1 group-hover:text-clay">→</span>
+                          </a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                    {%- if panel_block.settings.cta_text != blank -%}
+                      <a href="{{ panel_block.settings.cta_url | default: routes.collections_url }}" class="group mt-5 inline-flex items-center gap-3 border-t border-border-soft pt-5 text-[11px] uppercase tracking-[0.22em] text-ink transition-colors hover:text-clay">
+                        <span>{{ panel_block.settings.cta_text }}</span>
+                        <span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                      </a>
+                    {%- endif -%}
+                  </div>
+
+                  <div class="col-span-4">
+                    {%- assign fc = panel_block.settings.featured_collection -%}
+                    {%- if panel_block.settings.featured_title != blank -%}
+                      <a href="{% if fc != blank %}{{ fc.url }}{% else %}{{ panel_block.settings.cta_url | default: routes.collections_url }}{% endif %}" class="group relative block overflow-hidden bg-cream">
+                        <div class="relative aspect-[4/5] w-full overflow-hidden">
+                          {%- if fc != blank and fc.featured_image -%}
+                            {{ fc.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', class: 'absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]', alt: fc.title }}
+                          {%- else -%}
+                            <span aria-hidden="true" class="absolute inset-0" style="background:radial-gradient(70% 90% at 30% 20%, rgba(181,101,29,0.12), transparent 65%), radial-gradient(60% 70% at 80% 80%, rgba(138,154,123,0.16), transparent 60%), linear-gradient(180deg, #F4ECE5, #E8E1DA);"></span>
+                          {%- endif -%}
+                          <span aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/60 via-ink/15 to-transparent"></span>
+                          <div class="absolute inset-x-6 bottom-6 text-surface">
+                            <p class="mb-2 text-[10px] uppercase tracking-[0.22em] opacity-90">Uitgelicht</p>
+                            <p class="font-display text-2xl leading-tight">{{ panel_block.settings.featured_title }}</p>
+                            {%- if panel_block.settings.featured_body != blank -%}
+                              <p class="mt-2 max-w-[28ch] text-[13px] leading-relaxed opacity-90">{{ panel_block.settings.featured_body }}</p>
+                            {%- endif -%}
+                          </div>
+                        </div>
+                      </a>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {%- else -%}
+          <a href="{{ link.url }}" class="group relative py-2">
+            <span class="text-[11px] uppercase tracking-[0.2em] transition-colors {% if link.active %}text-ink{% else %}text-ink-soft group-hover:text-ink{% endif %}">{{ link.title }}</span>
+            <span aria-hidden="true" class="absolute inset-x-0 -bottom-0.5 block h-px origin-left bg-clay transition-transform duration-300 ease-out {% if link.active %}scale-x-100{% else %}scale-x-0 group-hover:scale-x-100{% endif %}"></span>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </nav>
+
+    <nav class="ml-auto flex items-center gap-3 sm:gap-4" aria-label="{{ 'general.accessibility.menu' | t }}">
+      <button type="button" class="md:hidden p-2 -m-2 text-ink" aria-label="{{ 'general.accessibility.open_menu' | t }}" data-aside-open="mobile">
+        {% render 'icon', name: 'menu', size: 22 %}
+      </button>
+      <a href="{{ routes.account_url }}" aria-label="{{ 'layout.header.login' | t }}" class="hidden md:inline-flex p-2 -m-2 text-ink hover:text-clay transition-colors rounded">
+        {% render 'icon', name: 'user', size: 20 %}
+      </a>
+      <button type="button" class="p-2 -m-2 text-ink hover:text-clay transition-colors rounded" aria-label="{{ 'general.accessibility.search' | t }}" data-aside-open="search">
+        {% render 'icon', name: 'search', size: 20 %}
+      </button>
+      <a href="{{ routes.cart_url }}" class="relative p-2 -m-2 text-ink hover:text-clay transition-colors rounded" aria-label="{{ 'general.accessibility.cart' | t }}" data-aside-open="cart">
+        {% render 'icon', name: 'shopping-bag', size: 20 %}
+        <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-clay text-[10px] font-medium text-surface flex items-center justify-center tabular-nums {% if cart == empty or cart.item_count == 0 %}hidden{% endif %}" data-cart-count>{{ cart.item_count }}</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "tag": "section",
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" }
+  ],
+  "blocks": [
+    {
+      "type": "mega_panel",
+      "name": "Mega panel",
+      "settings": [
+        { "type": "text", "id": "nav_title", "label": "Matches nav item titled", "info": "Case-insensitive match against a top-level menu item that has sub-links.", "default": "Shop" },
+        { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "De collectie" },
+        { "type": "textarea", "id": "blurb", "label": "Blurb", "default": "Stijlvol, praktisch en zorgvuldig geselecteerd. Verzonden vanuit Nederland." },
+        { "type": "text", "id": "cta_text", "label": "CTA text", "default": "Alle collecties bekijken" },
+        { "type": "url", "id": "cta_url", "label": "CTA link" },
+        { "type": "header", "content": "Featured tile" },
+        { "type": "text", "id": "featured_title", "label": "Featured title", "default": "Nieuw deze week" },
+        { "type": "textarea", "id": "featured_body", "label": "Featured body", "default": "Net binnen — onze nieuwste producten voor je keuken en huis." },
+        { "type": "collection", "id": "featured_collection", "label": "Featured collection (image)" },
+        { "type": "header", "content": "Aside" },
+        { "type": "text", "id": "aside_heading", "label": "Aside heading", "default": "Klantenservice" },
+        { "type": "link_list", "id": "aside_menu", "label": "Aside menu" }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Header",
+      "blocks": [
+        { "type": "mega_panel", "settings": { "nav_title": "Shop", "eyebrow": "De collectie", "cta_text": "Alle collecties bekijken", "featured_title": "Nieuw deze week", "aside_heading": "Klantenservice" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
