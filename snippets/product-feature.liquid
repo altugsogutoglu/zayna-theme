@@ -1,0 +1,79 @@
+{%- comment -%}
+  Renders one product feature badge (icon + Dutch label) for a feature key.
+  Ported 1:1 from app/components/product/ProductFeatures.tsx. Unknown keys render nothing.
+  Usage: {% render 'product-feature', key: key %}
+{%- endcomment -%}
+{%- liquid
+  assign f_label = ''
+  case key
+    when 'induction'        assign f_label = 'Inductiegeschikt'
+    when 'oven_safe'        assign f_label = 'Ovenbestendig'
+    when 'dishwasher_safe'  assign f_label = 'Vaatwasserbestendig'
+    when 'freezer_safe'     assign f_label = 'Vriezerbestendig'
+    when 'microwave_safe'   assign f_label = 'Magnetronbestendig'
+    when 'heat_resistant'   assign f_label = 'Hittebestendig'
+    when 'non_stick'        assign f_label = 'Antiaanbaklaag'
+    when 'zero_toxins'      assign f_label = 'Zonder schadelijke stoffen'
+    when 'utensil_safe'     assign f_label = 'Bestekbestendig'
+    when 'stay_cool'        assign f_label = 'Handvat blijft koel'
+    when 'food_safe'        assign f_label = 'Voedselveilig'
+    when 'bpa_free'         assign f_label = 'BPA-vrij'
+    when 'airtight'         assign f_label = 'Luchtdicht'
+    when 'reusable'         assign f_label = 'Herbruikbaar'
+    when 'leak_proof'       assign f_label = 'Lekvrij'
+    when 'scratch_resistant' assign f_label = 'Krasvast'
+    when 'stackable'        assign f_label = 'Stapelbaar'
+    when 'borosilicate'     assign f_label = 'Borosilicaatglas'
+    when 'eco_friendly'     assign f_label = 'Duurzaam'
+  endcase
+-%}
+{%- if f_label != blank -%}
+  <li class="flex flex-col items-center gap-2.5 text-center">
+    <span class="grid h-14 w-14 place-items-center rounded-xl border border-border-soft text-ink">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+        {%- comment -%} Glyph case below MUST stay in sync with the label case above. {%- endcomment -%}
+        {%- case key -%}
+          {%- when 'induction' -%}
+            <rect x="3" y="3.5" width="18" height="17" rx="2.5"/><path d="M6 9.5c1.8-2 3.4-2 5 0s3.2 2 5 0"/><path d="M6 14c1.8-2 3.4-2 5 0s3.2 2 5 0"/>
+          {%- when 'oven_safe' -%}
+            <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="8.5" x2="21" y2="8.5"/><line x1="6.5" y1="5.7" x2="11.5" y2="5.7"/><rect x="6.5" y="11.5" width="11" height="6.5" rx="1"/>
+          {%- when 'dishwasher_safe' -%}
+            <rect x="4" y="3" width="16" height="18" rx="2"/><line x1="4" y1="7" x2="20" y2="7"/><path d="M12 10.5c1.6 2 2.6 3.2 2.6 4.6a2.6 2.6 0 1 1-5.2 0c0-1.4 1-2.6 2.6-4.6z"/>
+          {%- when 'freezer_safe' -%}
+            <line x1="12" y1="3" x2="12" y2="21"/><line x1="3.4" y1="7.5" x2="20.6" y2="16.5"/><line x1="20.6" y1="7.5" x2="3.4" y2="16.5"/><path d="M12 3l-1.6 1.6M12 3l1.6 1.6M12 21l-1.6-1.6M12 21l1.6-1.6"/>
+          {%- when 'microwave_safe' -%}
+            <rect x="3" y="5" width="18" height="14" rx="2"/><line x1="15" y1="5" x2="15" y2="19"/><path d="M6 9h6M6 12h6M6 15h6"/><circle cx="17.8" cy="9" r="0.5" fill="currentColor" stroke="none"/>
+          {%- when 'heat_resistant' -%}
+            <path d="M12 3c3 3 5 5.5 5 9a5 5 0 0 1-10 0c0-1.8.8-3.2 2-4.5.4 1.2 1.2 2 2.3 2.2C12 8.8 11 6 12 3z"/>
+          {%- when 'non_stick' -%}
+            <line x1="4" y1="19" x2="20" y2="19"/><path d="M12 5c2 2.6 3.2 4.2 3.2 6a3.2 3.2 0 0 1-6.4 0c0-1.8 1.2-3.4 3.2-6z"/>
+          {%- when 'zero_toxins' -%}
+            <path d="M12 3l7 2.5v5.2c0 4.2-3 7.1-7 8.3-4-1.2-7-4.1-7-8.3V5.5z"/><path d="M9 11.8l2 2 4-4.2"/>
+          {%- when 'utensil_safe' -%}
+            <path d="M7 3v4a2 2 0 0 0 4 0V3"/><line x1="9" y1="7" x2="9" y2="21"/><ellipse cx="16" cy="6.5" rx="2" ry="3.5"/><line x1="16" y1="10" x2="16" y2="21"/>
+          {%- when 'stay_cool' -%}
+            <path d="M14 14.5V5a2 2 0 0 0-4 0v9.5a4 4 0 1 0 4 0z"/><line x1="12" y1="9" x2="12" y2="14"/>
+          {%- when 'food_safe' -%}
+            <circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>
+          {%- when 'bpa_free' -%}
+            <circle cx="12" cy="12" r="9"/><line x1="5.6" y1="5.6" x2="18.4" y2="18.4"/><path d="M9 9.5h2.2a1.6 1.6 0 0 1 0 3.2H9V9.5z"/>
+          {%- when 'airtight' -%}
+            <path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/><rect x="6" y="8" width="12" height="12" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/>
+          {%- when 'reusable' -%}
+            <path d="M5 12a7 7 0 0 1 11.9-5"/><path d="M19 12a7 7 0 0 1-11.9 5"/><path d="M17 4v3.2h-3.2"/><path d="M7 20v-3.2h3.2"/>
+          {%- when 'leak_proof' -%}
+            <path d="M12 4c3 4 5 6.2 5 9a5 5 0 0 1-10 0c0-2.8 2-5 5-9z"/><line x1="5.5" y1="18.5" x2="18.5" y2="5.5"/>
+          {%- when 'scratch_resistant' -%}
+            <path d="M12 4l5 5-5 11-5-11z"/><line x1="7" y1="9" x2="17" y2="9"/>
+          {%- when 'stackable' -%}
+            <rect x="5" y="13.5" width="14" height="5.5" rx="1"/><rect x="7" y="8.5" width="10" height="4" rx="1"/><rect x="9" y="4" width="6" height="3" rx="1"/>
+          {%- when 'borosilicate' -%}
+            <path d="M8 3h8"/><path d="M9.5 3v5.5l-3 8.5a1.8 1.8 0 0 0 1.7 2.5h7.6a1.8 1.8 0 0 0 1.7-2.5l-3-8.5V3"/><line x1="7.6" y1="14" x2="16.4" y2="14"/>
+          {%- when 'eco_friendly' -%}
+            <path d="M5 19c0-8 6-13 14-14 0 8-5 14-13 14H5z"/><path d="M9 15c2-3 4-4.6 7-6"/>
+        {%- endcase -%}
+      </svg>
+    </span>
+    <span class="text-[11px] leading-tight text-ink-soft">{{ f_label }}</span>
+  </li>
+{%- endif -%}
