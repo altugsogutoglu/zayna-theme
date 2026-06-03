@@ -1,12 +1,21 @@
 {
   "sections": {
-    "placeholder": {
-      "type": "placeholder",
-      "settings": {
-        "heading": "Foundation ready",
-        "body": "Background #FAF5F2, Inter body, Fraunces headings."
-      }
-    }
+    "hero": { "type": "hero", "settings": {} },
+    "value-props": {
+      "type": "value-props",
+      "blocks": {
+        "p1": { "type": "prop", "settings": { "icon": "sparkles", "label": "Zorgvuldig geselecteerd", "body": "Elk product is gekozen op design, kwaliteit en functie. Geen rommel, alleen mooie stukken." } },
+        "p2": { "type": "prop", "settings": { "icon": "shield-check", "label": "Veilig verpakt", "body": "Glaswerk wordt zorgvuldig ingepakt met beschermingsmateriaal, zodat alles heel aankomt." } },
+        "p3": { "type": "prop", "settings": { "icon": "truck", "label": "Verzonden vanuit NL", "body": "Bestellingen worden binnen 1–3 werkdagen verzonden vanuit Nederland." } },
+        "p4": { "type": "prop", "settings": { "icon": "file-text", "label": "Eerlijke productinfo", "body": "Materiaal, afmetingen en inhoud staan altijd duidelijk vermeld. Geen verrassingen." } }
+      },
+      "block_order": ["p1", "p2", "p3", "p4"]
+    },
+    "freshly-listed": { "type": "freshly-listed", "settings": {} },
+    "curated-edit": { "type": "curated-edit", "settings": {} },
+    "founder-note": { "type": "founder-note", "settings": {} },
+    "journal-teaser": { "type": "journal-teaser", "settings": { "blog": "journal" } },
+    "newsletter": { "type": "newsletter", "settings": {} }
   },
-  "order": ["placeholder"]
+  "order": ["hero", "value-props", "freshly-listed", "curated-edit", "founder-note", "journal-teaser", "newsletter"]
 }
