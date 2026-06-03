@@ -1,6 +1,7 @@
 {%- liquid
   assign loading = loading | default: 'lazy'
   assign primary = product.featured_image
+  assign primary_alt = primary.alt | default: product.title
   assign secondary = null
   for img in product.images
     unless img.id == primary.id
@@ -58,7 +59,7 @@
           loading: loading,
           sizes: '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw',
           widths: '300, 400, 600, 800',
-          alt: primary.alt | default: product.title,
+          alt: primary_alt,
           class: 'absolute inset-0 h-full w-full object-contain' }}
         {%- if secondary -%}
           {{ secondary | image_url: width: 600 | image_tag:
