@@ -1,0 +1,22 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "gallery": { "type": "gallery", "settings": {} },
+        "info": { "type": "info", "settings": {} },
+        "features": { "type": "features", "settings": {} },
+        "specs": { "type": "specs", "settings": {} },
+        "buy_buttons": { "type": "buy_buttons", "settings": {} },
+        "description": { "type": "description", "settings": {} },
+        "zayna_note": { "type": "zayna_note", "settings": {} },
+        "care_shipping": { "type": "care_shipping", "settings": {} }
+      },
+      "block_order": ["gallery", "info", "features", "specs", "buy_buttons", "description", "zayna_note", "care_shipping"],
+      "settings": {}
+    },
+    "product-faq": { "type": "product-faq", "settings": {} },
+    "related": { "type": "related-products", "settings": {} }
+  },
+  "order": ["main", "product-faq", "related"]
+}
