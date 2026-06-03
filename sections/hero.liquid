@@ -1,0 +1,83 @@
+{%- liquid
+  assign s = section.settings
+-%}
+{%- if s.image != blank -%}
+  <section class="relative -mt-[var(--header-height)] h-[88dvh] min-h-[560px] sm:h-[92dvh] sm:min-h-[640px] w-full overflow-hidden bg-cream isolate">
+    {{ s.image | image_url: width: 2400 | image_tag:
+      loading: 'eager',
+      fetchpriority: 'high',
+      sizes: '100vw',
+      widths: '750, 1100, 1500, 2000, 2400',
+      alt: s.image.alt | default: s.headline,
+      class: 'absolute inset-0 h-full w-full object-cover' }}
+    <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-ink/85 from-0% via-ink/55 via-45% to-ink/25 to-100% sm:from-ink/80 sm:via-ink/40 sm:via-50% sm:to-ink/20"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0" style="background:radial-gradient(75% 55% at 50% 95%, rgba(31,28,26,0.45), transparent 70%);"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 h-[var(--header-height)] bg-gradient-to-b from-ink/40 to-transparent"></div>
+    <div class="relative z-10 flex h-full flex-col">
+      <div class="flex-1"></div>
+      <div class="px-5 sm:px-10 pb-12 sm:pb-20">
+        <div class="mx-auto max-w-7xl text-cream" style="text-shadow:0 1px 18px rgba(31,28,26,0.45);">
+          {%- if s.eyebrow != blank -%}
+            <p class="text-label text-cream/90 mb-4 flex items-center gap-3"><span aria-hidden="true" class="inline-block h-px w-8 bg-cream/60"></span>{{ s.eyebrow }}</p>
+          {%- endif -%}
+          <h1 class="font-display text-[clamp(2.5rem,6vw,4.25rem)] leading-[1.02] tracking-[-0.02em] max-w-3xl text-surface">{{ s.headline }}</h1>
+          {%- if s.subhead != blank -%}
+            <p class="mt-5 max-w-md text-base sm:text-lg leading-relaxed text-cream/95">{{ s.subhead }}</p>
+          {%- endif -%}
+          {%- if s.cta_label != blank -%}
+            <a href="{{ s.cta_url | default: routes.all_products_collection_url }}" class="mt-9 inline-flex items-center gap-3 bg-surface text-ink px-7 py-3.5 text-sm uppercase tracking-[0.14em] hover:bg-cream transition-colors" style="text-shadow:none;">{{ s.cta_label }}<span aria-hidden="true" class="text-base leading-none">→</span></a>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </section>
+{%- else -%}
+  <section class="relative -mt-[var(--header-height)] w-full overflow-hidden bg-bg isolate">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0" style="background:radial-gradient(60% 70% at 78% 18%, rgba(181,101,29,0.10), transparent 60%), radial-gradient(50% 60% at 12% 90%, rgba(138,154,123,0.12), transparent 65%), linear-gradient(180deg, #F4ECE5 0%, #FAF5F2 55%, #F0EBE6 100%);"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute inset-y-0 left-[8%] hidden w-px bg-border-soft md:block"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute inset-y-0 right-[8%] hidden w-px bg-border-soft md:block"></div>
+    <div class="relative z-10 mx-auto flex min-h-[78dvh] max-w-7xl flex-col px-5 pt-[calc(var(--header-height)+3rem)] pb-16 sm:px-10 sm:pt-[calc(var(--header-height)+5rem)] sm:pb-24 md:min-h-[86dvh]">
+      <div class="mb-12 flex flex-wrap items-center justify-between gap-y-3 text-[10px] uppercase tracking-[0.22em] text-stone">
+        <span class="flex items-center gap-3"><span aria-hidden="true" class="block h-px w-10 bg-stone-soft"></span>{{ s.meta_left | default: 'Zayna Home · Keuken & Wonen' }}</span>
+        <span class="hidden font-display italic normal-case tracking-normal text-stone md:inline">{{ s.meta_center | default: 'Stijlvol, praktisch, betaalbaar.' }}</span>
+        <span>{{ s.meta_right | default: 'Geselecteerd · Verzonden vanuit NL' }}</span>
+      </div>
+      <div class="grid flex-1 grid-cols-12 items-end gap-y-12 gap-x-8 md:gap-x-12">
+        <div class="col-span-12 md:col-span-8">
+          {%- if s.eyebrow != blank -%}
+            <p class="text-label text-clay mb-6 flex items-center gap-3"><span aria-hidden="true" class="block h-px w-12 bg-clay/60"></span>{{ s.eyebrow }}</p>
+          {%- endif -%}
+          <h1 class="font-display text-[clamp(3rem,8.5vw,6.75rem)] leading-[0.98] tracking-[-0.035em] text-ink">{{ s.headline }}</h1>
+        </div>
+        <div class="col-span-12 md:col-span-4 md:pb-4">
+          {%- if s.subhead != blank -%}
+            <p class="max-w-[34ch] text-[15px] leading-[1.75] text-ink-soft">{{ s.subhead }}</p>
+          {%- endif -%}
+          {%- if s.cta_label != blank -%}
+            <a href="{{ s.cta_url | default: routes.all_products_collection_url }}" class="group mt-7 inline-flex items-center gap-3 border-b border-ink pb-2 text-[11px] uppercase tracking-[0.22em] text-ink hover:border-clay hover:text-clay transition-colors">{{ s.cta_label }}<span aria-hidden="true" class="text-base leading-none transition-transform group-hover:translate-x-1">→</span></a>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "section",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Background image", "info": "When empty, a typographic hero is shown." },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Zayna Home" },
+    { "type": "text", "id": "headline", "label": "Headline", "default": "Mooi wonen begint in de keuken." },
+    { "type": "textarea", "id": "subhead", "label": "Subhead", "default": "Stijlvolle keuken- en woonproducten die je zichtbaar durft neer te zetten. Praktisch, betaalbaar en zorgvuldig geselecteerd." },
+    { "type": "text", "id": "cta_label", "label": "CTA label", "default": "Bekijk de collectie" },
+    { "type": "text", "id": "cta_url", "label": "CTA link", "default": "/collections/all" },
+    { "type": "header", "content": "Typographic hero meta (shown when no image)" },
+    { "type": "text", "id": "meta_left", "label": "Meta left", "default": "Zayna Home · Keuken & Wonen" },
+    { "type": "text", "id": "meta_center", "label": "Meta center", "default": "Stijlvol, praktisch, betaalbaar." },
+    { "type": "text", "id": "meta_right", "label": "Meta right", "default": "Geselecteerd · Verzonden vanuit NL" }
+  ],
+  "presets": [{ "name": "Hero" }]
+}
+{% endschema %}
