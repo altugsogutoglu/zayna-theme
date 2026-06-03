@@ -38,6 +38,7 @@
     const baseUrl = root.getAttribute('data-collection-url');
     if (!sectionId || !baseUrl) return;
     let busy = false;
+    let infiniteObserver = null;
 
     const fetchSection = async (search) => {
       const url = baseUrl + '?' + search + (search ? '&' : '') + 'section_id=' + encodeURIComponent(sectionId);
@@ -80,6 +81,7 @@
 
     // Infinite scroll: append next page, swap sentinel
     const bindInfinite = () => {
+      if (infiniteObserver) { infiniteObserver.disconnect(); infiniteObserver = null; }
       const sentinel = root.querySelector('[data-load-more]');
       if (!sentinel) return;
       const link = sentinel.querySelector('[data-load-more-link]');
@@ -96,6 +98,7 @@
           const href = link.getAttribute('href') || '';
           const qs = (href.split('?')[1] || '') + '&section_id=' + encodeURIComponent(sectionId);
           const res = await fetch(baseUrl + '?' + qs, { headers: { 'X-Requested-With': 'fetch' } });
+          if (!res.ok) throw new Error('load more failed: ' + res.status);
           const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
           const freshGrid = doc.querySelector('[data-product-grid]');
           const grid = root.querySelector('[data-product-grid]');
@@ -120,10 +123,10 @@
 
       link.addEventListener('click', (e) => { e.preventDefault(); loadNext(); });
       if ('IntersectionObserver' in window && !reduce) {
-        const io = new IntersectionObserver((entries) => {
+        infiniteObserver = new IntersectionObserver((entries) => {
           if (entries[0].isIntersecting) loadNext();
         }, { rootMargin: '600px 0px 600px 0px' });
-        io.observe(sentinel);
+        infiniteObserver.observe(sentinel);
       }
     };
 
