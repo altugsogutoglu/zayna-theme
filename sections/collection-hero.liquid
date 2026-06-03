@@ -22,7 +22,7 @@
     assign hero_title = section.settings.all_title
   endif
 
-  assign intro = collection.description
+  assign intro = collection.description | strip_html | strip
   if intro == blank
     assign intro = section.settings.intro_fallback
   endif
