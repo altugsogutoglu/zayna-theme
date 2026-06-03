@@ -81,3 +81,34 @@
     }
   });
 })();
+
+// ---- Curated carousel: prev/next + continuous drift -----------------------
+(() => {
+  'use strict';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('[data-carousel]').forEach((root) => {
+    const track = root.querySelector('[data-carousel-track]');
+    if (!track) return;
+    const step = () => Math.min(track.clientWidth * 0.8, 380);
+    const prev = root.querySelector('[data-carousel-prev]');
+    const next = root.querySelector('[data-carousel-next]');
+    if (prev) prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+    if (next) next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+
+    if (reduce || track.dataset.autoscroll !== 'true') return;
+    let paused = false;
+    root.addEventListener('pointerenter', () => { paused = true; });
+    root.addEventListener('pointerleave', () => { paused = false; });
+    root.addEventListener('focusin', () => { paused = true; });
+    root.addEventListener('focusout', () => { paused = false; });
+    const half = () => track.scrollWidth / 2;
+    const tick = () => {
+      if (!paused) {
+        track.scrollLeft += 0.5;
+        if (track.scrollLeft >= half()) track.scrollLeft -= half();
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+})();

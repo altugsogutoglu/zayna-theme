@@ -1,0 +1,71 @@
+{%- liquid
+  assign edits = section.settings.collection_list
+-%}
+{%- if edits != blank and edits.size > 0 -%}
+  <section class="py-20" data-carousel>
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+      <div class="mb-12 flex flex-wrap items-end justify-between gap-y-4">
+        <div>
+          <p class="text-label text-clay mb-3 flex items-center gap-3"><span aria-hidden="true" class="block h-px w-10 bg-clay/60"></span>{{ section.settings.eyebrow }}</p>
+          <h2 class="font-display text-[clamp(2rem,4.4vw,3.25rem)] leading-[1.05] tracking-[-0.02em]">{{ section.settings.heading }}</h2>
+        </div>
+        <div class="flex items-center gap-5">
+          <div class="hidden items-center gap-2 md:flex">
+            <button type="button" data-carousel-prev aria-label="Vorige collecties" class="grid h-10 w-10 place-items-center rounded-full border border-border-soft text-ink transition-colors duration-300 hover:border-ink hover:text-clay"><span aria-hidden="true" class="text-sm leading-none">←</span></button>
+            <button type="button" data-carousel-next aria-label="Volgende collecties" class="grid h-10 w-10 place-items-center rounded-full border border-border-soft text-ink transition-colors duration-300 hover:border-ink hover:text-clay"><span aria-hidden="true" class="text-sm leading-none">→</span></button>
+          </div>
+          <a href="{{ section.settings.link_url | default: routes.collections_url }}" class="text-[11px] uppercase tracking-[0.22em] text-ink-soft hover:text-clay transition-colors border-b border-border-soft hover:border-clay pb-1">{{ section.settings.link_label }} →</a>
+        </div>
+      </div>
+    </div>
+    <div class="relative">
+      <ul class="no-scrollbar flex gap-x-6 md:gap-x-8 overflow-x-auto snap-x snap-mandatory scroll-smooth px-4 sm:px-6 lg:px-10" data-carousel-track data-autoscroll="true">
+        {%- for pass in (1..2) -%}
+          {%- for c in edits -%}
+            <li class="min-w-0 shrink-0 grow-0 basis-[80%] sm:basis-[46%] lg:basis-[31.5%] snap-start" {% if pass == 2 %}aria-hidden="true"{% endif %}>
+              <a href="{{ c.url }}" class="group block focus-visible:outline-none" {% if pass == 2 %}tabindex="-1"{% endif %}>
+                <div class="relative aspect-[4/5] overflow-hidden bg-cream">
+                  {%- if c.featured_image -%}
+                    {{ c.featured_image | image_url: width: 700 | image_tag: loading: 'lazy', sizes: '(min-width:1024px) 32vw, (min-width:640px) 46vw, 80vw', alt: c.title, class: 'absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]' }}
+                  {%- else -%}
+                    <div aria-hidden="true" class="absolute inset-0 grid place-items-center text-center px-8" style="background:radial-gradient(70% 80% at 30% 20%, rgba(181,101,29,0.10), transparent 65%), linear-gradient(180deg, #F4ECE5, #EDE4DC);">
+                      <div>
+                        <span class="block text-[10px] uppercase tracking-[0.22em] text-stone mb-3">{{ forloop.index | prepend: '0' | slice: -2, 2 }} · Collectie</span>
+                        <span class="font-display italic text-2xl leading-snug text-ink/70">{{ c.title }}</span>
+                        <span aria-hidden="true" class="mx-auto mt-4 block h-px w-10 bg-stone-soft"></span>
+                      </div>
+                    </div>
+                  {%- endif -%}
+                  <span aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink/55 via-ink/15 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+                  <span class="pointer-events-none absolute bottom-4 left-4 right-4 flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-surface opacity-0 transition-all duration-500 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0"><span class="block h-px w-6 bg-surface/70"></span>Bekijken</span>
+                </div>
+                <div class="mt-4 flex items-baseline justify-between gap-4">
+                  <div>
+                    <h3 class="font-display text-h3 leading-tight text-ink transition-colors group-hover:text-clay">{{ c.title }}</h3>
+                    <p class="mt-1 text-sm text-ink-soft">{{ c.description | strip_html | truncate: 60 | default: 'Bekijk de collectie.' }}</p>
+                  </div>
+                  <span aria-hidden="true" class="mt-3 block h-px w-6 bg-border-soft transition-all duration-500 group-hover:w-14 group-hover:bg-clay/70 shrink-0"></span>
+                </div>
+              </a>
+            </li>
+          {%- endfor -%}
+        {%- endfor -%}
+      </ul>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Curated edit",
+  "tag": "section",
+  "settings": [
+    { "type": "collection_list", "id": "collection_list", "label": "Collections", "limit": 12 },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Collecties" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Voor elke hoek van je huis." },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "Alle collecties" },
+    { "type": "text", "id": "link_url", "label": "Link URL", "default": "/collections" }
+  ],
+  "presets": [{ "name": "Curated edit" }]
+}
+{% endschema %}
