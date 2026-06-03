@@ -1,0 +1,119 @@
+{%- comment -%}
+  Product image gallery. Ported 1:1 from app/components/product/ProductGallery.tsx.
+  Behavior wired by assets/product.js via the data-* hooks. Pass: product, is_sold.
+{%- endcomment -%}
+{%- liquid
+  assign imgs = product.images
+-%}
+<div data-gallery
+  data-images='[
+    {%- for image in imgs -%}
+      {%- assign alt = image.alt | default: product.title -%}
+      {"src": {{ image | image_url: width: 1600 | json }}, "alt": {{ alt | json }}, "w": {{ image.width | default: 0 }}, "h": {{ image.height | default: 0 }} }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]'>
+  {%- if imgs.size == 0 -%}
+    <div>
+      <div class="relative aspect-[4/5] overflow-hidden bg-cream grid place-items-center text-center px-8">
+        <div>
+          <span aria-hidden="true" class="mx-auto mb-5 block h-px w-12 bg-stone-soft"></span>
+          <p class="font-display italic text-2xl text-stone leading-snug">Photographing this piece soon.</p>
+          <p class="mt-3 text-sm text-ink-soft max-w-xs mx-auto">In the meantime, the details and care notes below describe it.</p>
+        </div>
+        {%- if is_sold -%}
+          <div class="absolute inset-0 bg-white/60 grid place-items-center pointer-events-none" aria-hidden="true"><span class="font-display italic text-sold -rotate-12 text-5xl">Uitverkocht</span></div>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- else -%}
+    {%- assign first = imgs | first -%}
+    {%- assign first_alt = first.alt | default: product.title -%}
+
+    {%- comment -%} Mobile / tablet swipe carousel {%- endcomment -%}
+    <div class="md:hidden">
+      <div class="relative">
+        <div data-gallery-track class="no-scrollbar flex overflow-x-auto snap-x snap-mandatory scroll-smooth">
+          {%- for image in imgs -%}
+            {%- assign img_alt = image.alt | default: '' -%}
+            {%- assign mob_loading = 'lazy' -%}{%- if forloop.first -%}{%- assign mob_loading = 'eager' -%}{%- endif -%}
+            {%- assign mob_fetch = 'auto' -%}{%- if forloop.first -%}{%- assign mob_fetch = 'high' -%}{%- endif -%}
+            <button type="button" data-gallery-open="{{ forloop.index0 }}" aria-label="Vergroot afbeelding {{ forloop.index }} van {{ imgs.size }}" class="relative shrink-0 grow-0 basis-full snap-start aspect-[4/5] bg-cream overflow-hidden cursor-zoom-in focus-visible:outline-none">
+              {{ image | image_url: width: 1000 | image_tag: loading: mob_loading, fetchpriority: mob_fetch, sizes: '100vw', widths: '400, 600, 800, 1000', alt: img_alt, class: 'h-full w-full object-cover pointer-events-none select-none' }}
+            </button>
+          {%- endfor -%}
+        </div>
+        {%- if is_sold -%}
+          <div class="absolute inset-0 bg-white/60 grid place-items-center pointer-events-none" aria-hidden="true"><span class="font-display italic text-sold -rotate-12 text-5xl">Uitverkocht</span></div>
+        {%- endif -%}
+        {%- if imgs.size > 1 -%}
+          <span data-gallery-counter class="pointer-events-none absolute top-3 left-3 inline-flex items-center bg-surface/95 backdrop-blur px-2.5 py-1 text-[10px] uppercase tracking-[0.22em] text-ink tabular-nums">1 / {{ imgs.size }}</span>
+        {%- endif -%}
+        <span class="pointer-events-none absolute bottom-3 right-3 h-9 w-9 grid place-items-center bg-surface/95 backdrop-blur text-ink shadow-sm">{% render 'icon', name: 'zoom-in', size: 15 %}</span>
+      </div>
+      {%- if imgs.size > 1 -%}
+        <div data-gallery-dots class="mt-4 flex justify-center gap-2">
+          {%- for image in imgs -%}
+            <button type="button" data-gallery-dot="{{ forloop.index0 }}" aria-label="Naar afbeelding {{ forloop.index }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" class="h-1.5 transition-all duration-300 {% if forloop.first %}w-7 bg-ink{% else %}w-1.5 bg-stone-soft hover:bg-stone{% endif %}"></button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Desktop main + thumbnails {%- endcomment -%}
+    <div class="hidden md:block">
+      <button type="button" data-gallery-main-btn aria-label="Vergroot afbeelding" class="block w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2">
+        <div class="relative aspect-[4/5] overflow-hidden bg-cream cursor-zoom-in group">
+          {{ first | image_url: width: 1200 | image_tag: loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 1024px) 50vw, 100vw', widths: '600, 900, 1200', alt: first_alt, class: 'h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]' }}
+          {%- if is_sold -%}
+            <div class="absolute inset-0 bg-white/60 grid place-items-center pointer-events-none" aria-hidden="true"><span class="font-display italic text-sold -rotate-12 text-5xl">Uitverkocht</span></div>
+          {%- endif -%}
+          <span class="absolute bottom-3 right-3 h-10 w-10 grid place-items-center bg-surface/95 backdrop-blur text-ink shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">{% render 'icon', name: 'zoom-in', size: 16 %}</span>
+        </div>
+      </button>
+      {%- if imgs.size > 1 -%}
+        <div class="mt-4 grid grid-cols-5 gap-3">
+          {%- for image in imgs -%}
+            <button type="button" data-gallery-thumb="{{ forloop.index0 }}" aria-label="Toon afbeelding {{ forloop.index }}" class="relative aspect-square overflow-hidden bg-cream transition-all duration-300 focus-visible:outline-none {% if forloop.first %}ring-2 ring-stone{% else %}opacity-80 hover:opacity-100{% endif %}">
+              {{ image | image_url: width: 240 | image_tag: loading: 'lazy', sizes: '120px', alt: '', class: 'h-full w-full object-cover' }}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Lightbox {%- endcomment -%}
+    <div data-gallery-lightbox class="hidden fixed inset-0 z-[100] bg-ink/95 backdrop-blur-sm flex-col" role="dialog" aria-modal="true" aria-label="Productfoto">
+      <div class="flex items-center justify-between px-4 sm:px-6 h-14 text-surface/85">
+        <span data-lightbox-counter class="text-[10px] uppercase tracking-[0.24em] tabular-nums">1 / {{ imgs.size }}</span>
+        <button type="button" data-lightbox-close aria-label="Sluiten" class="h-10 w-10 grid place-items-center hover:text-surface transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-surface/60">{% render 'icon', name: 'x', size: 20 %}</button>
+      </div>
+      <div class="relative flex-1 min-h-0">
+        <div data-lightbox-track class="no-scrollbar h-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory flex">
+          {%- for image in imgs -%}
+            {%- assign lb_alt = image.alt | default: product.title -%}
+            <div class="shrink-0 grow-0 basis-full snap-center h-full px-2 sm:px-8" data-zoom-meta='{"w": {{ image.width | default: 0 }}, "h": {{ image.height | default: 0 }}}'>
+              <div class="h-full w-full grid place-items-center overflow-hidden">
+                <div data-zoom-wrapper class="relative h-full w-full select-none touch-none cursor-zoom-in">
+                  <div data-zoom-target class="absolute inset-0" style="transition-property:transform;transition-timing-function:cubic-bezier(0.22,0.61,0.24,1);will-change:transform;transform:translate3d(0,0,0) scale(1);">
+                    {{ image | image_url: width: 2000 | image_tag: loading: 'lazy', sizes: '100vw', widths: '800, 1200, 1600, 2000', alt: lb_alt, class: 'h-full w-full object-contain pointer-events-none select-none' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+        {%- if imgs.size > 1 -%}
+          <button type="button" data-lightbox-prev aria-label="Vorige afbeelding" class="hidden md:grid absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 place-items-center bg-surface/10 hover:bg-surface/25 text-surface transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-surface/60">{% render 'icon', name: 'chevron-left', size: 22 %}</button>
+          <button type="button" data-lightbox-next aria-label="Volgende afbeelding" class="hidden md:grid absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 place-items-center bg-surface/10 hover:bg-surface/25 text-surface transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-surface/60">{% render 'icon', name: 'chevron-right', size: 22 %}</button>
+        {%- endif -%}
+      </div>
+      {%- if imgs.size > 1 -%}
+        <div data-lightbox-dots class="px-4 sm:px-6 pb-5 pt-3 flex justify-center gap-2">
+          {%- for image in imgs -%}
+            <button type="button" data-lightbox-dot="{{ forloop.index0 }}" aria-label="Naar afbeelding {{ forloop.index }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" class="h-1.5 transition-all duration-300 {% if forloop.first %}w-7 bg-surface{% else %}w-1.5 bg-surface/30 hover:bg-surface/60{% endif %}"></button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</div>

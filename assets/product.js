@@ -61,7 +61,7 @@
       desktopIndex = i;
       if (main) {
         main.src = slideUrls[i].src;
-        if (slideUrls[i].srcset) main.srcset = slideUrls[i].srcset;
+        main.removeAttribute('srcset'); // swap to full-res src; initial render keeps its responsive srcset
         main.alt = slideUrls[i].alt || '';
       }
       root.querySelectorAll('[data-gallery-thumb]').forEach((t, ti) => {
