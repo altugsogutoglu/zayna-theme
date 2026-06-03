@@ -1,0 +1,26 @@
+{%- liquid
+  assign rec_url = routes.product_recommendations_url | append: '?section_id=' | append: section.id | append: '&product_id=' | append: product.id | append: '&limit=4&intent=related'
+-%}
+<div data-related-products{% unless recommendations.performed %} data-url="{{ rec_url }}"{% endunless %}>
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <section aria-label="{{ section.settings.heading | default: 'Aanbevolen producten' }}" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pb-24">
+      <h2 class="font-display text-2xl text-ink mb-8">{{ section.settings.heading }}</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-12 md:gap-x-7">
+        {%- for product in recommendations.products -%}
+          {% render 'product-card', product: product, loading: 'lazy' %}
+        {%- endfor -%}
+      </div>
+    </section>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Related products",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Misschien vind je dit ook mooi" }
+  ],
+  "presets": [{ "name": "Related products" }]
+}
+{% endschema %}

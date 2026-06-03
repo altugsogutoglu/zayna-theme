@@ -1,0 +1,43 @@
+{%- liquid
+  assign faqs = product.metafields.custom.faqs.value
+-%}
+{%- if faqs != blank and faqs.size > 0 -%}
+  <section aria-label="{{ section.settings.heading | default: 'Veelgestelde vragen' }}" class="border-t border-border-soft bg-cream">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-10 py-16 sm:py-24">
+      <p class="text-[11px] uppercase tracking-[0.28em] text-clay text-center mb-3">{{ section.settings.eyebrow }}</p>
+      <h2 class="font-display text-2xl sm:text-3xl text-ink text-center mb-10 sm:mb-12">{{ section.settings.heading }}</h2>
+      <div class="divide-y divide-border-soft border-y border-border-soft">
+        {%- for faq in faqs -%}
+          <details class="group/acc">
+            <summary class="w-full flex items-center justify-between py-5 text-left cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+              <span class="flex items-center gap-4">
+                <span class="text-[10px] uppercase tracking-[0.22em] text-stone tabular-nums"><span class="group-open/acc:hidden">+</span><span class="hidden group-open/acc:inline">—</span></span>
+                <span class="font-display text-lg text-ink group-hover/acc:text-clay transition-colors">{{ faq.question }}</span>
+              </span>
+              {% render 'icon', name: 'plus', size: 14, class: 'transition-transform duration-300 text-ink-soft group-open/acc:rotate-45' %}
+            </summary>
+            <div class="grid grid-rows-[0fr] opacity-0 transition-all duration-300 ease-out group-open/acc:grid-rows-[1fr] group-open/acc:opacity-100">
+              <div class="overflow-hidden">
+                <div class="pb-6 pr-2 pl-9 text-[14px] text-ink-soft leading-[1.75]">
+                  <p class="whitespace-pre-line">{{ faq.answer }}</p>
+                </div>
+              </div>
+            </div>
+          </details>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product FAQ",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Goed om te weten" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Veelgestelde vragen" }
+  ],
+  "presets": [{ "name": "Product FAQ" }]
+}
+{% endschema %}
