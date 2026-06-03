@@ -1,0 +1,107 @@
+{%- comment -%}
+  Collection hero. Ported 1:1 from app/components/collection/CollectionHero.tsx.
+  Trailing period in the title renders italic clay (Hydrogen punctuation treatment).
+  When collection.handle == 'all', uses the all-products copy.
+{%- endcomment -%}
+{%- liquid
+  assign is_all = false
+  if collection.handle == 'all'
+    assign is_all = true
+  endif
+
+  assign eyebrow = section.settings.eyebrow
+  if eyebrow == blank
+    assign eyebrow = 'Collectie'
+  endif
+  if is_all and section.settings.all_eyebrow != blank
+    assign eyebrow = section.settings.all_eyebrow
+  endif
+
+  assign hero_title = collection.title
+  if is_all and section.settings.all_title != blank
+    assign hero_title = section.settings.all_title
+  endif
+
+  assign intro = collection.description
+  if intro == blank
+    assign intro = section.settings.intro_fallback
+  endif
+  if is_all and section.settings.all_intro != blank
+    assign intro = section.settings.all_intro
+  endif
+
+  assign last_char = hero_title | slice: -1
+  assign title_main = hero_title
+  assign trailing = ''
+  if last_char == '.'
+    assign cut = hero_title.size | minus: 1
+    assign title_main = hero_title | slice: 0, cut
+    assign trailing = '.'
+  endif
+-%}
+<header class="relative isolate mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pt-6 pb-10 sm:pt-10 sm:pb-14 md:pt-16 md:pb-20">
+  <div class="mb-10 hidden items-center justify-between text-[10px] uppercase tracking-[0.22em] text-stone md:flex">
+    <span class="flex items-center gap-3">
+      {{ shop.name }}
+      <span class="block h-px w-10 bg-stone-soft"></span>
+      <span class="font-display italic normal-case tracking-normal text-stone">{{ section.settings.breadcrumb_label | default: 'Collectie' }}</span>
+    </span>
+    <span>{{ section.settings.breadcrumb_right | default: 'Vanuit Nederland' }}</span>
+  </div>
+
+  <p class="text-label text-clay mb-4 flex items-center gap-3 sm:mb-5">
+    {{ eyebrow }}
+    <span class="block h-px w-10 bg-clay/60 sm:w-12"></span>
+  </p>
+
+  <h1 class="font-display text-[clamp(2.25rem,7.5vw,4.75rem)] leading-[1.02] tracking-[-0.025em] text-ink">{{ title_main }}{%- if trailing != '' -%}<span class="italic text-clay/80">{{ trailing }}</span>{%- endif -%}</h1>
+
+  {%- if intro != blank -%}
+    <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-ink-soft sm:mt-7 md:text-base">{{ intro }}</p>
+  {%- endif -%}
+
+  {%- if section.settings.show_meta -%}
+    <dl class="mt-8 grid grid-cols-3 gap-x-4 border-t border-border-soft pt-6 sm:mt-10 sm:gap-x-10 sm:pt-7 md:gap-x-14">
+      <div class="flex flex-col gap-1.5">
+        <dt class="text-[10px] uppercase tracking-[0.22em] text-stone-soft">{{ section.settings.meta_label_1 }}</dt>
+        <dd class="font-display text-[15px] normal-case tracking-normal text-ink sm:text-base">{{ section.settings.meta_value_1 }}</dd>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <dt class="text-[10px] uppercase tracking-[0.22em] text-stone-soft">{{ section.settings.meta_label_2 }}</dt>
+        <dd class="font-display text-[15px] normal-case tracking-normal text-ink sm:text-base">{{ section.settings.meta_value_2 }}</dd>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <dt class="text-[10px] uppercase tracking-[0.22em] text-stone-soft">{{ section.settings.meta_label_3 }}</dt>
+        <dd class="font-display text-[15px] normal-case tracking-normal text-ink sm:text-base">{{ section.settings.meta_value_3 }}</dd>
+      </div>
+    </dl>
+  {%- endif -%}
+</header>
+
+{% schema %}
+{
+  "name": "Collection hero",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Breadcrumb (desktop)" },
+    { "type": "text", "id": "breadcrumb_label", "label": "Breadcrumb label", "default": "Collectie" },
+    { "type": "text", "id": "breadcrumb_right", "label": "Breadcrumb right", "default": "Vanuit Nederland" },
+    { "type": "header", "content": "Copy" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow (named collections)", "default": "Collectie" },
+    { "type": "textarea", "id": "intro_fallback", "label": "Intro fallback", "info": "Used when a collection has no description.", "default": "Geselecteerd op design, kwaliteit en functie." },
+    { "type": "header", "content": "All-products page (/collections/all)" },
+    { "type": "text", "id": "all_eyebrow", "label": "Eyebrow", "default": "De collectie" },
+    { "type": "text", "id": "all_title", "label": "Title", "default": "Alle producten." },
+    { "type": "textarea", "id": "all_intro", "label": "Intro", "default": "Bekijk de complete collectie van Zayna Home — stijlvolle keuken- en woonproducten, geselecteerd op design, kwaliteit en functie." },
+    { "type": "header", "content": "Meta grid" },
+    { "type": "checkbox", "id": "show_meta", "label": "Show meta grid", "default": true },
+    { "type": "text", "id": "meta_label_1", "label": "Meta 1 label", "default": "Voorraad" },
+    { "type": "text", "id": "meta_value_1", "label": "Meta 1 value", "default": "Op voorraad" },
+    { "type": "text", "id": "meta_label_2", "label": "Meta 2 label", "default": "Verzending" },
+    { "type": "text", "id": "meta_value_2", "label": "Meta 2 value", "default": "Vanuit NL · 1–3 dagen" },
+    { "type": "text", "id": "meta_label_3", "label": "Meta 3 label", "default": "Retour" },
+    { "type": "text", "id": "meta_value_3", "label": "Meta 3 value", "default": "14 dagen retourrecht" }
+  ],
+  "presets": [{ "name": "Collection hero" }]
+}
+{% endschema %}
