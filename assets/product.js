@@ -285,6 +285,7 @@
     const compareEl = root.querySelector('[data-compare-price]');
     const availEl = root.querySelector('[data-availability]');
     const availDot = root.querySelector('[data-availability-dot]');
+    const availText = root.querySelector('[data-availability-text]');
     const stickyPrice = root.querySelector('[data-sticky-price]');
     const labels = pdata.labels || {};
 
@@ -311,7 +312,7 @@
       }
       if (stickyPrice) stickyPrice.textContent = v.price === 0 ? (labels.price_on_request || 'Prijs op aanvraag') : v.price_formatted;
       const avail = !!v.available;
-      if (availEl) availEl.textContent = avail ? (labels.in_stock || '') : (labels.sold || 'Uitverkocht');
+      if (availText) availText.textContent = avail ? (labels.in_stock || '') : (labels.sold_status || labels.sold || 'Uitverkocht');
       if (availEl) availEl.className = 'inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] ' + (avail ? 'text-stone' : 'text-sold');
       if (availDot) availDot.className = 'block h-1.5 w-1.5 rounded-full ' + (avail ? 'bg-sage' : 'bg-sold');
       root.querySelectorAll('[data-add-button]').forEach((b) => {
@@ -361,6 +362,7 @@
     root.querySelectorAll('[data-wishlist]').forEach((b) => b.addEventListener('click', () => {
       const on = b.getAttribute('aria-pressed') === 'true';
       b.setAttribute('aria-pressed', on ? 'false' : 'true');
+      b.setAttribute('aria-label', on ? 'Bewaar voor later' : 'Verwijder uit favorieten');
       b.className = wishClass(!on);
       const heart = b.querySelector('svg');
       if (heart) heart.classList.toggle('fill-clay', !on);
@@ -394,6 +396,21 @@
         } finally {
           addBtns.forEach((b, i) => { b.disabled = false; b.textContent = originals[i]; });
         }
+      });
+    }
+
+    const stickyForm = root.querySelector('[data-sticky-form]');
+    const stickyId = root.querySelector('[data-sticky-form] [data-variant-id]');
+    if (stickyForm) {
+      stickyForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (stickyId && idInput) stickyId.value = idInput.value;
+        try {
+          const res = await fetch('/cart/add.js', { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(stickyForm) });
+          if (!res.ok) throw new Error('add failed');
+          await refreshCart(pdata.title);
+          openCartDrawer();
+        } catch (err) { console.error(err); }
       });
     }
 

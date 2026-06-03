@@ -1,0 +1,352 @@
+{%- liquid
+  assign cv = product.selected_or_first_available_variant
+  assign is_sold = false
+  unless cv.available
+    assign is_sold = true
+  endunless
+
+  assign cond_raw = product.metafields.custom.condition.value | downcase | strip
+  assign cond_label = ''
+  assign cond_style = ''
+  case cond_raw
+    when 'new', 'new without tags', 'nieuw zonder prijskaartje'
+      assign cond_label = 'new without tags'
+      assign cond_style = 'bg-sage/15 text-sage'
+    when 'very good', 'heel goed'
+      assign cond_label = 'very good'
+      assign cond_style = 'bg-stone/15 text-stone'
+    when 'good', 'goed'
+      assign cond_label = 'good'
+      assign cond_style = 'bg-stone-soft/20 text-stone'
+  endcase
+  assign lbl_add = 'In winkelmand'
+  assign lbl_sold = 'Uitverkocht'
+  assign lbl_in_stock = 'Op voorraad — verzending binnen 1–3 werkdagen'
+  assign lbl_sold_status = 'Uitverkocht'
+  for b in section.blocks
+    if b.type == 'buy_buttons'
+      assign lbl_add = b.settings.add_label
+      assign lbl_sold = b.settings.sold_label
+    endif
+    if b.type == 'info'
+      assign lbl_in_stock = b.settings.in_stock_text
+      assign lbl_sold_status = b.settings.sold_text
+    endif
+  endfor
+-%}
+<section data-product-root class="relative">
+  <article class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-12 grid gap-12 md:grid-cols-2">
+    {%- comment -%} Left column: gallery block(s) {%- endcomment -%}
+    <div class="md:sticky md:top-24 md:self-start">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'gallery' -%}
+          <div {{ block.shopify_attributes }}>
+            {% render 'product-gallery', product: product, is_sold: is_sold %}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} Right column: every non-gallery block, in editor order {%- endcomment -%}
+    <div class="space-y-8">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+
+          {%- when 'info' -%}
+            <div {{ block.shopify_attributes }} class="space-y-8">
+              <header>
+                {%- if block.settings.show_vendor -%}
+                  <p class="text-label text-clay mb-5 flex items-center gap-3"><span aria-hidden="true" class="block h-px w-10 bg-clay/60"></span>{{ product.vendor | default: 'Zayna Home' }}</p>
+                {%- endif -%}
+                <h1 class="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05] tracking-[-0.015em] text-ink">{{ product.title }}</h1>
+                <div class="mt-5 flex items-baseline gap-3">
+                  <span data-price>
+                    {%- if cv.price and cv.price > 0 -%}
+                      <span class="font-display text-2xl tabular-nums text-ink">{{ cv.price | money }}</span>
+                    {%- else -%}
+                      <span class="font-display italic text-xl text-stone">{{ block.settings.price_on_request }}</span>
+                    {%- endif -%}
+                  </span>
+                  <span data-compare-price class="text-ink-soft line-through text-sm {% if cv.compare_at_price == blank or cv.compare_at_price <= cv.price %}hidden{% endif %}">{%- if cv.compare_at_price and cv.compare_at_price > cv.price -%}{{ cv.compare_at_price | money }}{%- endif -%}</span>
+                </div>
+              </header>
+
+              <div class="flex flex-wrap items-center gap-3">
+                {%- if cond_label != blank -%}
+                  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium tracking-wide {{ cond_style }}">{{ cond_label }}</span>
+                {%- endif -%}
+                <span data-availability class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] {% if is_sold %}text-sold{% else %}text-stone{% endif %}">
+                  <span aria-hidden="true" data-availability-dot class="block h-1.5 w-1.5 rounded-full {% if is_sold %}bg-sold{% else %}bg-sage{% endif %}"></span>
+                  <span data-availability-text>{% if is_sold %}{{ block.settings.sold_text }}{% else %}{{ block.settings.in_stock_text }}{% endif %}</span>
+                </span>
+              </div>
+
+              {%- assign intro = product.metafields.custom.intro.value -%}
+              {%- if intro != blank -%}
+                <p class="max-w-prose text-[15px] leading-[1.7] text-ink-soft sm:text-base">{{ intro }}</p>
+              {%- endif -%}
+            </div>
+
+          {%- when 'features' -%}
+            {%- assign feats = product.metafields.custom.features.value -%}
+            {%- if feats != blank and feats.size > 0 -%}
+              <div {{ block.shopify_attributes }} class="border-t border-border-soft pt-6">
+                <ul class="grid grid-cols-3 gap-x-3 gap-y-6">
+                  {%- for key in feats -%}
+                    {% render 'product-feature', key: key %}
+                  {%- endfor -%}
+                </ul>
+              </div>
+            {%- endif -%}
+
+          {%- when 'specs' -%}
+            {%- liquid
+              assign size_note = product.metafields.custom.size_note.value
+              assign materials = product.metafields.custom.materials.value
+              assign dimensions = product.metafields.custom.dimensions.value
+              assign sku = cv.sku
+              assign has_specs = false
+              if size_note != blank or materials != blank or dimensions != blank or product.type != blank or sku != blank
+                assign has_specs = true
+              endif
+            -%}
+            {%- if has_specs -%}
+              <dl {{ block.shopify_attributes }} class="grid grid-cols-[6.5rem,1fr] sm:grid-cols-[7rem,1fr] gap-y-3 gap-x-5 text-sm border-t border-border-soft pt-6">
+                {%- if product.type != blank -%}
+                  <dt class="text-label text-stone pt-0.5">{{ block.settings.label_category }}</dt><dd class="text-ink leading-snug">{{ product.type }}</dd>
+                {%- endif -%}
+                {%- if size_note != blank -%}
+                  <dt class="text-label text-stone pt-0.5">{{ block.settings.label_size }}</dt><dd class="text-ink leading-snug">{{ size_note }}</dd>
+                {%- endif -%}
+                {%- if materials != blank -%}
+                  <dt class="text-label text-stone pt-0.5">{{ block.settings.label_material }}</dt><dd class="text-ink leading-snug">{{ materials }}</dd>
+                {%- endif -%}
+                {%- if dimensions != blank -%}
+                  <dt class="text-label text-stone pt-0.5">{{ block.settings.label_dimensions }}</dt><dd class="text-ink leading-snug">{{ dimensions }}</dd>
+                {%- endif -%}
+                {%- if sku != blank -%}
+                  <dt class="text-label text-stone pt-0.5">{{ block.settings.label_sku }}</dt><dd class="text-ink leading-snug tabular-nums" data-sku>{{ sku }}</dd>
+                {%- endif -%}
+              </dl>
+            {%- endif -%}
+
+          {%- when 'buy_buttons' -%}
+            <div {{ block.shopify_attributes }} class="space-y-4 pt-2">
+              <div data-product-form>
+                {%- form 'product', product, class: 'space-y-6' -%}
+                  <input type="hidden" name="id" value="{{ cv.id }}" data-variant-id>
+                  {%- unless product.has_only_default_variant -%}
+                    {%- for option in product.options_with_values -%}
+                      {%- if option.values.size > 1 -%}
+                        <div>
+                          <h5 class="text-label text-stone mb-3">{{ option.name }}</h5>
+                          <div class="flex flex-wrap gap-2">
+                            {%- assign opt_idx = option.position | minus: 1 -%}
+                            {%- for value in option.values -%}
+                              {%- assign is_sel = false -%}
+                              {%- if option.selected_value == value -%}{%- assign is_sel = true -%}{%- endif -%}
+                              {%- assign val_available = false -%}
+                              {%- for pv in product.variants -%}
+                                {%- if pv.available and pv.options[opt_idx] == value -%}{%- assign val_available = true -%}{%- break -%}{%- endif -%}
+                              {%- endfor -%}
+                              <button type="button" data-option-button data-option-position="{{ option.position }}" data-value="{{ value | escape }}" data-selected="{% if is_sel %}true{% else %}false{% endif %}" data-available="{{ val_available }}" class="inline-flex items-center gap-2 px-4 h-10 text-sm transition-colors border {% if is_sel %}border-ink text-ink bg-cream{% else %}border-border-soft text-ink-soft hover:border-stone hover:text-ink{% endif %}{% unless val_available %} opacity-40 line-through{% endunless %}">
+                                {%- if value.swatch.color or value.swatch.image -%}
+                                  <span aria-hidden="true" class="block h-4 w-4 rounded-full border border-border-soft" style="background-color: {{ value.swatch.color | default: 'transparent' }};">
+                                    {%- if value.swatch.image -%}{{ value.swatch.image | image_url: width: 32 | image_tag: alt: '', class: 'h-full w-full rounded-full object-cover' }}{%- endif -%}
+                                  </span>
+                                {%- endif -%}
+                                <span>{{ value }}</span>
+                              </button>
+                            {%- endfor -%}
+                          </div>
+                        </div>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  {%- endunless -%}
+
+                  <div class="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+                    <div class="inline-flex items-center justify-between h-14 border border-border-soft bg-surface select-none w-full sm:w-[9rem] shrink-0" role="group" aria-label="Aantal">
+                      <button type="button" data-qty-dec aria-label="Aantal verlagen" class="h-full w-12 grid place-items-center text-ink-soft hover:text-clay transition-colors focus-visible:outline-none focus-visible:text-clay">{% render 'icon', name: 'minus', size: 15 %}</button>
+                      <span aria-live="polite" data-qty-value class="font-display text-[15px] tabular-nums text-ink">1</span>
+                      <input type="hidden" name="quantity" value="1" data-qty-input>
+                      <button type="button" data-qty-inc aria-label="Aantal verhogen" class="h-full w-12 grid place-items-center text-ink-soft hover:text-clay transition-colors focus-visible:outline-none focus-visible:text-clay">{% render 'icon', name: 'plus', size: 15 %}</button>
+                    </div>
+                    <div class="flex flex-1 gap-3 min-w-0">
+                      <div id="product-add-to-cart" class="flex-1 min-w-0">
+                        <button type="submit" data-add-button {% if is_sold %}disabled{% endif %} class="group/btn relative w-full h-14 bg-ink text-white hover:bg-clay transition-colors font-medium tracking-[0.18em] text-[12px] uppercase disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 inline-flex items-center justify-center gap-3">{% if is_sold %}{{ block.settings.sold_label }}{% else %}{{ block.settings.add_label }}{% endif %}</button>
+                      </div>
+                      {%- if block.settings.show_wishlist -%}
+                        <button type="button" data-wishlist aria-pressed="false" aria-label="Bewaar voor later" class="h-14 w-14 shrink-0 grid place-items-center border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 border-border-soft text-ink-soft hover:text-clay hover:border-clay/40">{% render 'icon', name: 'heart', size: 18 %}</button>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                {%- endform -%}
+              </div>
+
+              {%- comment -%} Trust badges (folded into buy_buttons, as in Hydrogen) {%- endcomment -%}
+              {%- if block.settings.show_trust -%}
+                <div class="pt-1">
+                  <ul class="grid grid-cols-3 gap-2.5">
+                    <li class="flex flex-col items-center gap-2 rounded-xl border border-border-soft bg-surface px-2 py-4 text-center">{% render 'icon', name: 'lock', size: 20, class: 'text-clay' %}<span class="text-[11px] font-medium leading-tight text-ink-soft">{{ block.settings.trust_1 }}</span></li>
+                    <li class="flex flex-col items-center gap-2 rounded-xl border border-border-soft bg-surface px-2 py-4 text-center">{% render 'icon', name: 'truck', size: 20, class: 'text-clay' %}<span class="text-[11px] font-medium leading-tight text-ink-soft">{{ block.settings.trust_2 }}</span></li>
+                    <li class="flex flex-col items-center gap-2 rounded-xl border border-border-soft bg-surface px-2 py-4 text-center">{% render 'icon', name: 'package-check', size: 20, class: 'text-clay' %}<span class="text-[11px] font-medium leading-tight text-ink-soft">{{ block.settings.trust_3 }}</span></li>
+                  </ul>
+                  <div class="mt-3.5 flex items-center justify-center">{% render 'payment-icons', compact: true %}</div>
+                </div>
+              {%- endif -%}
+            </div>
+
+          {%- when 'description' -%}
+            {%- if product.description != blank -%}
+              <p {{ block.shopify_attributes }} class="max-w-prose text-[15px] leading-[1.75] text-ink-soft border-t border-border-soft pt-6">{{ product.description | strip_html }}</p>
+            {%- endif -%}
+
+          {%- when 'zayna_note' -%}
+            {%- assign note = product.metafields.custom.zayna_note.value -%}
+            {%- if note != blank -%}
+              <figure {{ block.shopify_attributes }} class="max-w-2xl">
+                <blockquote class="font-display italic text-2xl leading-snug text-ink-soft border-l-2 border-clay pl-6">&ldquo;{{ note }}&rdquo;</blockquote>
+                <figcaption class="mt-4 pl-6 font-signature text-2xl text-ink">— {{ block.settings.signature }}</figcaption>
+              </figure>
+            {%- endif -%}
+
+          {%- when 'care_shipping' -%}
+            <div {{ block.shopify_attributes }} class="divide-y divide-border-soft border-y border-border-soft">
+              {%- for i in (1..3) -%}
+                {%- assign t_key = 'row' | append: i | append: '_title' -%}
+                {%- assign b_key = 'row' | append: i | append: '_body' -%}
+                {%- assign row_title = block.settings[t_key] -%}
+                {%- assign row_body = block.settings[b_key] -%}
+                {%- if row_title != blank -%}
+                  {%- assign is_open = false -%}
+                  {%- if block.settings.default_open == i -%}{%- assign is_open = true -%}{%- endif -%}
+                  <details class="group/acc"{% if is_open %} open{% endif %}>
+                    <summary class="w-full flex items-center justify-between py-5 text-left cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                      <span class="flex items-center gap-4">
+                        <span class="text-[10px] uppercase tracking-[0.22em] text-stone tabular-nums"><span class="group-open/acc:hidden">+</span><span class="hidden group-open/acc:inline">—</span></span>
+                        <span class="font-display text-lg text-ink group-hover/acc:text-clay transition-colors">{{ row_title }}</span>
+                      </span>
+                      {% render 'icon', name: 'plus', size: 14, class: 'transition-transform duration-300 text-ink-soft group-open/acc:rotate-45' %}
+                    </summary>
+                    <div class="grid grid-rows-[0fr] opacity-0 transition-all duration-300 ease-out group-open/acc:grid-rows-[1fr] group-open/acc:opacity-100">
+                      <div class="overflow-hidden">
+                        <div class="pb-6 pr-2 pl-9 text-[14px] text-ink-soft leading-[1.75] rich-text">{{ row_body }}</div>
+                      </div>
+                    </div>
+                  </details>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </article>
+
+  {%- comment -%} Mobile sticky add-to-cart bar {%- endcomment -%}
+  {%- if cv -%}
+    <div data-sticky-atc data-observe="product-add-to-cart" inert class="fixed inset-x-0 bottom-0 z-30 border-t border-border-soft bg-surface/95 backdrop-blur px-4 py-3 transition-transform duration-300 md:hidden translate-y-full">
+      <div class="flex items-center gap-3">
+        <div class="min-w-0 flex-1">
+          <p class="truncate font-display text-sm text-ink">{{ product.title }}</p>
+          <p class="text-price text-ink" data-sticky-price>{% if cv.price and cv.price > 0 %}{{ cv.price | money }}{% else %}{{ section.settings.price_on_request | default: 'Prijs op aanvraag' }}{% endif %}</p>
+        </div>
+        <form method="post" action="{{ routes.cart_add_url }}" data-sticky-form class="w-1/2 shrink-0">
+          <input type="hidden" name="id" value="{{ cv.id }}" data-variant-id>
+          <button type="submit" data-add-button {% if is_sold %}disabled{% endif %} class="w-full h-14 bg-ink text-white hover:bg-clay transition-colors font-medium tracking-[0.18em] text-[12px] uppercase disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center">{% if is_sold %}{{ lbl_sold }}{% else %}{{ lbl_add }}{% endif %}</button>
+        </form>
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Variant data + labels for product.js {%- endcomment -%}
+  <script type="application/json" data-product-json>
+    {
+      "title": {{ product.title | json }},
+      "labels": {
+        "add": {{ lbl_add | json }}, "sold": {{ lbl_sold | json }}, "adding": "Toevoegen…",
+        "added": "Toegevoegd aan winkelmand", "checkout": "Afrekenen",
+        "cart_count": "Aantal artikelen", "in_stock": {{ lbl_in_stock | json }},
+        "sold_status": {{ lbl_sold_status | json }},
+        "price_on_request": "Prijs op aanvraag"
+      },
+      "variants": [
+        {%- for v in product.variants -%}
+          {
+            "id": {{ v.id }},
+            "available": {{ v.available }},
+            "price": {{ v.price }},
+            "price_formatted": {{ v.price | money | json }},
+            "compare_at_price": {{ v.compare_at_price | default: 0 }},
+            "compare_at_formatted": {% if v.compare_at_price and v.compare_at_price > 0 %}{{ v.compare_at_price | money | json }}{% else %}null{% endif %},
+            "options": {{ v.options | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+  <script src="{{ 'product.js' | asset_url }}" defer></script>
+</section>
+
+{% schema %}
+{
+  "name": "Product",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "price_on_request", "label": "Sticky bar price-on-request text", "default": "Prijs op aanvraag" }
+  ],
+  "blocks": [
+    { "type": "gallery", "name": "Gallery", "limit": 1, "settings": [] },
+    {
+      "type": "info", "name": "Title, price & intro", "limit": 1,
+      "settings": [
+        { "type": "checkbox", "id": "show_vendor", "label": "Show vendor", "default": true },
+        { "type": "text", "id": "in_stock_text", "label": "In-stock text", "default": "Op voorraad — verzending binnen 1–3 werkdagen" },
+        { "type": "text", "id": "sold_text", "label": "Sold text", "default": "Uitverkocht" },
+        { "type": "text", "id": "price_on_request", "label": "Price-on-request text", "default": "Prijs op aanvraag" }
+      ]
+    },
+    { "type": "features", "name": "Feature badges", "limit": 1, "settings": [] },
+    {
+      "type": "specs", "name": "Specifications", "limit": 1,
+      "settings": [
+        { "type": "text", "id": "label_category", "label": "Category label", "default": "Categorie" },
+        { "type": "text", "id": "label_size", "label": "Size label", "default": "Maat" },
+        { "type": "text", "id": "label_material", "label": "Material label", "default": "Materiaal" },
+        { "type": "text", "id": "label_dimensions", "label": "Dimensions label", "default": "Afmetingen" },
+        { "type": "text", "id": "label_sku", "label": "SKU label", "default": "Artikelnr." }
+      ]
+    },
+    {
+      "type": "buy_buttons", "name": "Buy buttons & trust", "limit": 1,
+      "settings": [
+        { "type": "text", "id": "add_label", "label": "Add to cart label", "default": "In winkelmand" },
+        { "type": "text", "id": "sold_label", "label": "Sold label", "default": "Uitverkocht" },
+        { "type": "checkbox", "id": "show_wishlist", "label": "Show wishlist button", "default": true },
+        { "type": "header", "content": "Trust badges" },
+        { "type": "checkbox", "id": "show_trust", "label": "Show trust badges", "default": true },
+        { "type": "text", "id": "trust_1", "label": "Badge 1", "default": "Veilig betalen" },
+        { "type": "text", "id": "trust_2", "label": "Badge 2", "default": "Verzending 1–3 werkdagen" },
+        { "type": "text", "id": "trust_3", "label": "Badge 3", "default": "Zorgvuldig verpakt vanuit NL" }
+      ]
+    },
+    { "type": "description", "name": "Description", "limit": 1, "settings": [] },
+    {
+      "type": "zayna_note", "name": "Zayna note", "limit": 1,
+      "settings": [ { "type": "text", "id": "signature", "label": "Signature", "default": "Zayna" } ]
+    },
+    {
+      "type": "care_shipping", "name": "Care & shipping", "limit": 1,
+      "settings": [
+        { "type": "range", "id": "default_open", "label": "Open row by default", "min": 0, "max": 3, "step": 1, "default": 1 },
+        { "type": "text", "id": "row1_title", "label": "Row 1 title", "default": "Onderhoud" },
+        { "type": "richtext", "id": "row1_body", "label": "Row 1 body", "default": "<p>Glaswerk en keukentools zijn vaatwasserbestendig tenzij anders vermeld. Was textiel volgens het waslabel. Handwas wordt aanbevolen voor het beste resultaat op de lange termijn.</p>" },
+        { "type": "text", "id": "row2_title", "label": "Row 2 title", "default": "Verzending" },
+        { "type": "richtext", "id": "row2_body", "label": "Row 2 body", "default": "<p>Wij verzenden binnen 1–3 werkdagen vanuit Nederland. Levering in NL 1–2 werkdagen, België 2–3 werkdagen, EU 3–5 werkdagen. Glaswerk wordt zorgvuldig verpakt met beschermingsmateriaal.</p>" },
+        { "type": "text", "id": "row3_title", "label": "Row 3 title", "default": "Retourneren" },
+        { "type": "richtext", "id": "row3_body", "label": "Row 3 body", "default": "<p>Niet tevreden? Je kunt je bestelling binnen 14 dagen na ontvangst retourneren, mits het product ongebruikt en in originele verpakking is. Beschadigd ontvangen? Stuur binnen 48 uur een foto naar info@zaynahome.nl.</p>" }
+      ]
+    }
+  ]
+}
+{% endschema %}
