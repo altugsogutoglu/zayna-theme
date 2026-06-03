@@ -1,0 +1,190 @@
+{%- comment -%}
+  Faceted collection grid. Sort (port of FilterBar.tsx) + native Shopify storefront
+  filters (collection.filters) + infinite scroll (port of InfiniteResourceSection.tsx).
+  Behavior wired by assets/collection.js via the data-* hooks. Used for named
+  collections and /collections/all. Filters only render when enabled in
+  Search & Discovery; otherwise the page is sort-only.
+{%- endcomment -%}
+<script src="{{ 'collection.js' | asset_url }}" defer="defer"></script>
+{%- liquid
+  assign per_page = section.settings.products_per_page | default: 12
+  assign sort_now = collection.sort_by | default: collection.default_sort_by
+
+  assign has_filters = false
+  for f in collection.filters
+    assign has_filters = true
+    break
+  endfor
+
+  assign active_count = 0
+  assign any_active = false
+  for f in collection.filters
+    assign active_count = active_count | plus: f.active_values.size
+    if f.active_values.size > 0
+      assign any_active = true
+    endif
+    if f.type == 'price_range'
+      if f.min_value.value != blank or f.max_value.value != blank
+        assign active_count = active_count | plus: 1
+        assign any_active = true
+      endif
+    endif
+  endfor
+
+  assign clear_url = collection.url
+  if sort_now != blank
+    assign clear_url = collection.url | append: '?sort_by=' | append: sort_now
+  endif
+-%}
+<div data-collection data-section-id="{{ section.id }}" data-collection-url="{{ collection.url }}" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pb-24">
+  {%- paginate collection.products by per_page -%}
+
+  {%- comment -%} FilterBar (sticky) {%- endcomment -%}
+  <div class="sticky top-[var(--header-height)] z-20 -mx-4 sm:-mx-6 lg:-mx-10 mb-8 border-y border-border-soft bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+      <div class="flex flex-wrap items-center justify-between gap-4 py-4">
+        <div class="flex items-baseline gap-4">
+          <p class="text-[11px] uppercase tracking-[0.22em] text-stone"><span class="tabular-nums text-ink">{{ collection.products_count }}</span> {% if collection.products_count == 1 %}product{% else %}producten{% endif %}</p>
+          {%- if has_filters -%}
+            <button type="button" data-aside-open="filters" class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-stone hover:text-ink transition-colors">
+              {% render 'icon', name: 'sliders', size: 14 %} Filteren
+              {%- if active_count > 0 -%}<span class="inline-grid h-4 min-w-4 place-items-center rounded-full bg-ink px-1 text-[10px] text-surface tabular-nums">{{ active_count }}</span>{%- endif -%}
+            </button>
+          {%- endif -%}
+        </div>
+        <label class="relative flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-stone">
+          <span class="hidden sm:inline-block">Sorteer op</span>
+          <span class="relative inline-flex items-center">
+            <select data-sort-select form="CollectionFilterForm-{{ section.id }}" name="sort_by" aria-label="Producten sorteren" class="appearance-none bg-transparent border-0 border-b border-border-soft text-ink font-display normal-case tracking-normal text-[15px] pr-8 pl-1 py-1 focus:outline-none focus:border-clay cursor-pointer">
+              <option value="created-descending"{% if sort_now == 'created-descending' %} selected{% endif %}>Nieuwste eerst</option>
+              <option value="price-ascending"{% if sort_now == 'price-ascending' %} selected{% endif %}>Prijs · laag naar hoog</option>
+              <option value="price-descending"{% if sort_now == 'price-descending' %} selected{% endif %}>Prijs · hoog naar laag</option>
+            </select>
+            <span class="pointer-events-none absolute right-1 text-ink-soft">{% render 'icon', name: 'chevron-down', size: 14 %}</span>
+          </span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Active filter pills {%- endcomment -%}
+  {%- if any_active -%}
+    <div class="mb-8 flex flex-wrap items-center gap-2">
+      {%- for f in collection.filters -%}
+        {%- for v in f.active_values -%}
+          <a href="{{ v.url_to_remove }}" data-filter-remove class="inline-flex items-center gap-1.5 rounded-full border border-border-soft px-3 py-1.5 text-[11px] text-ink-soft hover:border-ink hover:text-ink transition-colors">{{ v.label }} {% render 'icon', name: 'x', size: 12 %}</a>
+        {%- endfor -%}
+        {%- if f.type == 'price_range' and f.min_value.value != blank or f.type == 'price_range' and f.max_value.value != blank -%}
+          <a href="{{ f.url_to_remove }}" data-filter-remove class="inline-flex items-center gap-1.5 rounded-full border border-border-soft px-3 py-1.5 text-[11px] text-ink-soft hover:border-ink hover:text-ink transition-colors">{{ f.label }} {% render 'icon', name: 'x', size: 12 %}</a>
+        {%- endif -%}
+      {%- endfor -%}
+      <a href="{{ clear_url }}" data-filter-clear class="ml-1 text-[11px] uppercase tracking-[0.18em] text-stone hover:text-ink transition-colors">Wis alles</a>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Grid / empty states {%- endcomment -%}
+  {%- if collection.products_count == 0 -%}
+    {%- if any_active -%}
+      <div class="border-t border-border-soft py-24 text-center">
+        <p class="font-display italic text-2xl text-stone">Geen producten gevonden met deze filters.</p>
+        <p class="mt-3 text-sm text-ink-soft">Pas de filters aan of <a href="{{ clear_url }}" data-filter-clear class="underline hover:text-ink">wis alles</a>.</p>
+      </div>
+    {%- else -%}
+      <div class="border-t border-border-soft py-24 text-center">
+        <p class="font-display italic text-2xl text-stone">{{ section.settings.empty_title | default: 'Deze collectie wordt aangevuld.' }}</p>
+        <p class="mt-3 text-sm text-ink-soft">{{ section.settings.empty_body | default: 'Bekijk de complete collectie of kom snel terug.' }}</p>
+      </div>
+    {%- endif -%}
+  {%- else -%}
+    <div data-product-grid role="region" aria-label="{{ collection.title | escape }}" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-12 md:gap-x-7 md:gap-y-14 lg:gap-x-8 lg:gap-y-16">
+      {%- for product in collection.products -%}
+        {%- assign p_loading = 'lazy' -%}
+        {%- if forloop.index <= 8 -%}{%- assign p_loading = 'eager' -%}{%- endif -%}
+        {% render 'product-card', product: product, loading: p_loading %}
+      {%- endfor -%}
+    </div>
+
+    {%- if paginate.next -%}
+      <div data-load-more class="mt-16 flex flex-col items-center gap-4" aria-live="polite">
+        <span aria-hidden="true" class="block h-px w-12 bg-stone-soft"></span>
+        <a href="{{ paginate.next.url }}" data-load-more-link data-loading-label="{{ section.settings.loading_label | default: 'Meer laden…' }}" data-retry-label="Opnieuw proberen" class="inline-flex items-center gap-3 px-6 py-3 text-xs uppercase tracking-[0.16em] text-ink-soft hover:text-ink transition-colors focus-visible:outline-none focus-visible:text-ink">
+          <span data-load-more-text>{{ section.settings.load_more_label | default: 'Meer producten' }}</span>
+          <span aria-hidden="true" class="text-base leading-none">↓</span>
+        </a>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- comment -%} SEO band {%- endcomment -%}
+  {%- assign seo_text = collection.metafields.custom.seo_text.value -%}
+  {%- if seo_text != blank -%}
+    <section aria-label="Over deze collectie" class="mt-20 border-t border-border-soft pt-12">
+      <div class="max-w-2xl text-sm leading-relaxed text-ink-soft whitespace-pre-line">{{ seo_text }}</div>
+    </section>
+  {%- endif -%}
+
+  {%- comment -%} Filter drawer (reuses snippets/aside.liquid; section-local overlay) {%- endcomment -%}
+  {%- if has_filters -%}
+    {%- capture filter_body -%}
+      <form id="CollectionFilterForm-{{ section.id }}" data-filter-form action="{{ collection.url }}" method="get" class="flex h-full flex-col">
+        <div class="flex-1 space-y-8 px-5 md:px-6 py-6">
+          {%- for f in collection.filters -%}
+            <fieldset class="m-0 border-0 p-0">
+              <legend class="text-label text-ink mb-4">{{ f.label }}</legend>
+              {%- case f.type -%}
+                {%- when 'price_range' -%}
+                  <div class="flex items-center gap-3">
+                    <label class="flex-1">
+                      <span class="sr-only">Van</span>
+                      <input type="number" name="{{ f.min_value.param_name }}" value="{{ f.min_value.value }}" placeholder="Van" min="0" inputmode="numeric" class="w-full border border-border-soft bg-surface px-3 py-2 text-sm text-ink focus:border-clay focus:outline-none">
+                    </label>
+                    <span class="text-stone-soft">–</span>
+                    <label class="flex-1">
+                      <span class="sr-only">Tot</span>
+                      <input type="number" name="{{ f.max_value.param_name }}" value="{{ f.max_value.value }}" placeholder="Tot" min="0" inputmode="numeric" class="w-full border border-border-soft bg-surface px-3 py-2 text-sm text-ink focus:border-clay focus:outline-none">
+                    </label>
+                  </div>
+                {%- else -%}
+                  <ul class="space-y-2.5">
+                    {%- for v in f.values -%}
+                      <li>
+                        <label class="flex cursor-pointer items-center gap-3 text-sm {% if v.count == 0 and v.active == false %}opacity-40{% endif %}">
+                          <input type="checkbox" name="{{ v.param_name }}" value="{{ v.value }}"{% if v.active %} checked{% endif %} class="peer sr-only">
+                          <span class="grid h-4 w-4 place-items-center border border-border-soft text-transparent transition-colors peer-checked:border-ink peer-checked:bg-ink peer-checked:text-surface">{% render 'icon', name: 'check', size: 11 %}</span>
+                          <span class="text-ink-soft">{{ v.label }}</span>
+                          <span class="ml-auto text-[11px] tabular-nums text-stone-soft">{{ v.count }}</span>
+                        </label>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+              {%- endcase -%}
+            </fieldset>
+          {%- endfor -%}
+        </div>
+        <div class="flex shrink-0 items-center gap-3 border-t border-border-soft p-5 md:px-6">
+          <a href="{{ clear_url }}" data-filter-clear class="text-[11px] uppercase tracking-[0.18em] text-stone hover:text-ink transition-colors">Wis alles</a>
+          <button type="submit" class="ml-auto inline-flex h-12 items-center justify-center bg-ink px-8 text-[12px] uppercase tracking-[0.18em] text-surface hover:bg-clay transition-colors">Toepassen</button>
+        </div>
+      </form>
+    {%- endcapture -%}
+    {% render 'aside', type: 'filters', heading: 'Filteren', aside_body: filter_body %}
+  {%- endif -%}
+
+  {%- endpaginate -%}
+</div>
+
+{% schema %}
+{
+  "name": "Collection grid",
+  "tag": "section",
+  "settings": [
+    { "type": "range", "id": "products_per_page", "min": 8, "max": 48, "step": 4, "label": "Products per page", "default": 12 },
+    { "type": "text", "id": "load_more_label", "label": "Load-more label", "default": "Meer producten" },
+    { "type": "text", "id": "loading_label", "label": "Loading label", "default": "Meer laden…" },
+    { "type": "header", "content": "Empty state (no filters)" },
+    { "type": "text", "id": "empty_title", "label": "Empty title", "default": "Deze collectie wordt aangevuld." },
+    { "type": "textarea", "id": "empty_body", "label": "Empty body", "default": "Bekijk de complete collectie of kom snel terug." }
+  ],
+  "presets": [{ "name": "Collection grid" }]
+}
+{% endschema %}
