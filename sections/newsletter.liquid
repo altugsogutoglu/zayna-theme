@@ -1,0 +1,43 @@
+{%- liquid
+  assign s = section.settings
+-%}
+<section aria-labelledby="newsletter-heading" class="relative isolate overflow-hidden bg-ink text-surface">
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 opacity-[0.08]" style="background:radial-gradient(50% 60% at 80% 20%, rgba(181,101,29,0.65), transparent 60%), radial-gradient(60% 70% at 10% 90%, rgba(138,154,123,0.5), transparent 65%);"></div>
+  <div class="relative mx-auto grid max-w-7xl gap-12 px-4 py-24 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:px-10 lg:py-28">
+    <div>
+      <p class="text-label mb-4 flex items-center gap-3 text-clay"><span aria-hidden="true" class="block h-px w-10 bg-clay/70"></span>{{ s.eyebrow }}</p>
+      <h2 id="newsletter-heading" class="font-display text-[clamp(2rem,4.4vw,3.25rem)] leading-[1.05] tracking-[-0.02em]">{{ s.heading }}</h2>
+      <p class="mt-5 max-w-[44ch] text-base leading-relaxed text-surface/80">{{ s.body }}</p>
+    </div>
+    {%- form 'customer', class: 'flex flex-col justify-end' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <label for="newsletter-email" class="mb-3 text-[10px] uppercase tracking-[0.22em] text-surface/70">{{ s.field_label }}</label>
+      {%- if form.posted_successfully? -%}
+        <p class="text-sm text-surface">{{ s.success | default: 'Bedankt voor je inschrijving!' }}</p>
+      {%- else -%}
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <input id="newsletter-email" type="email" name="contact[email]" required autocomplete="email" placeholder="{{ s.placeholder }}" class="flex-1 border-b border-surface/40 bg-transparent px-1 py-3 text-base text-surface placeholder:text-surface/40 focus:border-clay focus:outline-none">
+          <button type="submit" class="group inline-flex items-center justify-center gap-3 bg-surface px-7 py-3 text-[11px] uppercase tracking-[0.22em] text-ink transition-colors hover:bg-cream">{{ s.submit_label }}<span aria-hidden="true" class="text-base leading-none transition-transform group-hover:translate-x-1">→</span></button>
+        </div>
+        <p class="mt-4 text-[11px] leading-relaxed text-surface/55">{{ s.disclaimer }}</p>
+      {%- endif -%}
+    {%- endform -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Nieuwsbrief" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Ontvang nieuwe producten als eerste." },
+    { "type": "textarea", "id": "body", "label": "Body", "default": "Schrijf je in en ontvang updates over nieuwe collecties, styling-tips en aanbiedingen. Geen spam, altijd uit te schrijven." },
+    { "type": "text", "id": "field_label", "label": "Field label", "default": "E-mailadres" },
+    { "type": "text", "id": "placeholder", "label": "Placeholder", "default": "jij@voorbeeld.nl" },
+    { "type": "text", "id": "submit_label", "label": "Submit label", "default": "Inschrijven" },
+    { "type": "textarea", "id": "disclaimer", "label": "Disclaimer", "default": "Door je in te schrijven ga je akkoord met het ontvangen van e-mails van Zayna Home. Je gegevens worden niet gedeeld." }
+  ],
+  "presets": [{ "name": "Newsletter" }]
+}
+{% endschema %}
