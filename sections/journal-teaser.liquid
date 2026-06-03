@@ -1,0 +1,45 @@
+{%- liquid
+  assign blog_obj = blogs[section.settings.blog]
+-%}
+{%- if blog_obj.articles.size > 0 -%}
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-20">
+    <div class="flex items-end justify-between mb-10">
+      <div>
+        <p class="text-label text-ink-soft mb-3">{{ section.settings.eyebrow }}</p>
+        <h2 class="text-3xl md:text-4xl font-display">{{ section.settings.heading }}</h2>
+      </div>
+      <a href="{{ blog_obj.url }}" class="text-sm text-ink-soft hover:text-ink">{{ section.settings.link_label }} →</a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {%- for article in blog_obj.articles limit: 2 -%}
+        <a href="{{ article.url }}" class="group block transition-soft active:scale-[0.98] focus-visible:outline-none">
+          <div class="relative aspect-[3/2] overflow-hidden bg-cream">
+            {%- if article.image -%}
+              {{ article.image | image_url: width: 900 | image_tag: loading: 'lazy', sizes: '(min-width:768px) 46vw, 100vw', alt: article.image.alt | default: article.title, class: 'h-full w-full object-cover transition-soft group-hover:scale-[1.02]' }}
+            {%- endif -%}
+          </div>
+          <div class="mt-4">
+            <h3 class="font-display text-h3">{{ article.title }}</h3>
+            {%- if article.excerpt != blank -%}
+              <p class="mt-2 text-sm text-ink-soft line-clamp-2">{{ article.excerpt | strip_html }}</p>
+            {%- endif -%}
+          </div>
+        </a>
+      {%- endfor -%}
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Journal teaser",
+  "tag": "section",
+  "settings": [
+    { "type": "blog", "id": "blog", "label": "Blog" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Journal" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Nieuwste artikelen" },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "Alle artikelen" }
+  ],
+  "presets": [{ "name": "Journal teaser" }]
+}
+{% endschema %}
