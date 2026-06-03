@@ -113,7 +113,7 @@
       if (n < 1 || !items[n]) return track.scrollWidth / 2;
       return items[n].offsetLeft - items[0].offsetLeft;
     };
-    const SPEED = 0.5; // px per frame (~30px/s)
+    const SPEED = 0.8; // px per frame (~48px/s), continuous infinite drift
     const tick = () => {
       if (!paused) {
         // Accumulate in a float: assigning scrollLeft += 0.5 directly never
