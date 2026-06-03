@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "header",
   "name": "Header group",
@@ -5,15 +14,34 @@
     "announcement-bar": {
       "type": "announcement-bar",
       "blocks": {
-        "m1": { "type": "message", "settings": { "text": "Gratis verzending vanaf €100" } },
-        "m2": { "type": "message", "settings": { "text": "Voor 23:00 besteld, morgen verzonden" } },
-        "m3": { "type": "message", "settings": { "text": "Met zorg ingepakt vanuit Nederland" } }
+        "m1": {
+          "type": "message",
+          "settings": {
+            "text": "Gratis verzending vanaf €100"
+          }
+        },
+        "m2": {
+          "type": "message",
+          "settings": {
+            "text": "Voor 23:00 besteld, morgen verzonden"
+          }
+        },
+        "m3": {
+          "type": "message",
+          "settings": {
+            "text": "Met zorg ingepakt vanuit Nederland"
+          }
+        }
       },
-      "block_order": ["m1", "m2", "m3"]
+      "block_order": [
+        "m1",
+        "m2",
+        "m3"
+      ],
+      "settings": {}
     },
     "header": {
       "type": "header",
-      "settings": { "menu": "main-menu" },
       "blocks": {
         "shop": {
           "type": "mega_panel",
@@ -28,8 +56,16 @@
           }
         }
       },
-      "block_order": ["shop"]
+      "block_order": [
+        "shop"
+      ],
+      "settings": {
+        "menu": "main-menu"
+      }
     }
   },
-  "order": ["announcement-bar", "header"]
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
 }

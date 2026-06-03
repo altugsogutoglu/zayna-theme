@@ -1,21 +1,130 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
-    "hero": { "type": "hero", "settings": {} },
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "eyebrow": "Zayna Home",
+        "headline": "Mooi wonen begint in de keuken.",
+        "subhead": "Stijlvolle keuken- en woonproducten die je zichtbaar durft neer te zetten. Praktisch, betaalbaar en zorgvuldig geselecteerd.",
+        "cta_label": "Bekijk de collectie",
+        "cta_url": "/collections/all",
+        "meta_left": "Zayna Home · Keuken & Wonen",
+        "meta_center": "Stijlvol, praktisch, betaalbaar.",
+        "meta_right": "Geselecteerd · Verzonden vanuit NL"
+      }
+    },
     "value-props": {
       "type": "value-props",
       "blocks": {
-        "p1": { "type": "prop", "settings": { "icon": "sparkles", "label": "Zorgvuldig geselecteerd", "body": "Elk product is gekozen op design, kwaliteit en functie. Geen rommel, alleen mooie stukken." } },
-        "p2": { "type": "prop", "settings": { "icon": "shield-check", "label": "Veilig verpakt", "body": "Glaswerk wordt zorgvuldig ingepakt met beschermingsmateriaal, zodat alles heel aankomt." } },
-        "p3": { "type": "prop", "settings": { "icon": "truck", "label": "Verzonden vanuit NL", "body": "Bestellingen worden binnen 1–3 werkdagen verzonden vanuit Nederland." } },
-        "p4": { "type": "prop", "settings": { "icon": "file-text", "label": "Eerlijke productinfo", "body": "Materiaal, afmetingen en inhoud staan altijd duidelijk vermeld. Geen verrassingen." } }
+        "p1": {
+          "type": "prop",
+          "settings": {
+            "icon": "sparkles",
+            "label": "Zorgvuldig geselecteerd",
+            "body": "Elk product is gekozen op design, kwaliteit en functie. Geen rommel, alleen mooie stukken."
+          }
+        },
+        "p2": {
+          "type": "prop",
+          "settings": {
+            "icon": "shield-check",
+            "label": "Veilig verpakt",
+            "body": "Glaswerk wordt zorgvuldig ingepakt met beschermingsmateriaal, zodat alles heel aankomt."
+          }
+        },
+        "p3": {
+          "type": "prop",
+          "settings": {
+            "icon": "truck",
+            "label": "Verzonden vanuit NL",
+            "body": "Bestellingen worden binnen 1–3 werkdagen verzonden vanuit Nederland."
+          }
+        },
+        "p4": {
+          "type": "prop",
+          "settings": {
+            "icon": "file-text",
+            "label": "Eerlijke productinfo",
+            "body": "Materiaal, afmetingen en inhoud staan altijd duidelijk vermeld. Geen verrassingen."
+          }
+        }
       },
-      "block_order": ["p1", "p2", "p3", "p4"]
+      "block_order": [
+        "p1",
+        "p2",
+        "p3",
+        "p4"
+      ],
+      "settings": {}
     },
-    "freshly-listed": { "type": "freshly-listed", "settings": {} },
-    "curated-edit": { "type": "curated-edit", "settings": {} },
-    "founder-note": { "type": "founder-note", "settings": {} },
-    "journal-teaser": { "type": "journal-teaser", "settings": { "blog": "journal" } },
-    "newsletter": { "type": "newsletter", "settings": {} }
+    "freshly-listed": {
+      "type": "freshly-listed",
+      "settings": {
+        "collection": "",
+        "eyebrow": "Net binnen",
+        "heading": "Nieuw in de shop",
+        "link_label": "Alles bekijken",
+        "link_url": "/collections/all"
+      }
+    },
+    "curated-edit": {
+      "type": "curated-edit",
+      "settings": {
+        "collection_list": [],
+        "eyebrow": "Collecties",
+        "heading": "Voor elke hoek van je huis.",
+        "link_label": "Alle collecties",
+        "link_url": "/collections"
+      }
+    },
+    "founder-note": {
+      "type": "founder-note",
+      "settings": {
+        "image": "shopify://shop_images/Homepagina.png",
+        "eyebrow": "Welkom",
+        "heading": "Mooi dat je er bent.",
+        "body": "<p>Zayna Home is een Nederlandse webshop voor stijlvolle keuken- en woonproducten — gekozen op design, kwaliteit en functie.</p><p>Van glaswerk en voorraadpotten tot kruidenpotten met labels en slimme keukentools. Producten die mooi staan én dagelijks meegaan, zorgvuldig verpakt en verzonden vanuit Nederland.</p><p>Veel plezier met rondkijken.</p>",
+        "signature": "Zayna"
+      }
+    },
+    "journal-teaser": {
+      "type": "journal-teaser",
+      "settings": {
+        "blog": "journal",
+        "eyebrow": "Journal",
+        "heading": "Nieuwste artikelen",
+        "link_label": "Alle artikelen"
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "eyebrow": "Nieuwsbrief",
+        "heading": "Ontvang nieuwe producten als eerste.",
+        "body": "Schrijf je in en ontvang updates over nieuwe collecties, styling-tips en aanbiedingen. Geen spam, altijd uit te schrijven.",
+        "field_label": "E-mailadres",
+        "placeholder": "jij@voorbeeld.nl",
+        "submit_label": "Inschrijven",
+        "disclaimer": "Door je in te schrijven ga je akkoord met het ontvangen van e-mails van Zayna Home. Je gegevens worden niet gedeeld."
+      }
+    }
   },
-  "order": ["hero", "value-props", "freshly-listed", "curated-edit", "founder-note", "journal-teaser", "newsletter"]
+  "order": [
+    "hero",
+    "value-props",
+    "freshly-listed",
+    "curated-edit",
+    "founder-note",
+    "journal-teaser",
+    "newsletter"
+  ]
 }
