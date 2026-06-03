@@ -3,7 +3,7 @@
 -%}
 <div data-related-products{% unless recommendations.performed %} data-url="{{ rec_url }}"{% endunless %}>
   {%- if recommendations.performed and recommendations.products_count > 0 -%}
-    <section aria-label="{{ section.settings.heading | default: 'Aanbevolen producten' }}" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pb-24">
+    <section aria-label="{{ section.settings.heading | default: 'Aanbevolen producten' }}" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pt-16 pb-24 sm:pt-24">
       <h2 class="font-display text-2xl text-ink mb-8">{{ section.settings.heading }}</h2>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-12 md:gap-x-7">
         {%- for product in recommendations.products -%}

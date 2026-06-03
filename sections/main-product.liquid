@@ -88,12 +88,22 @@
             </div>
 
           {%- when 'features' -%}
-            {%- assign feats = product.metafields.custom.features.value -%}
-            {%- if feats != blank and feats.size > 0 -%}
+            {%- liquid
+              # custom.features may be a Liquid array (list metafield) or a scalar
+              # string holding a JSON array / CSV. Normalize both to a clean array,
+              # mirroring parseFeatures() in the Hydrogen source.
+              assign feats = product.metafields.custom.features.value
+              if feats.first == blank
+                assign feats_str = product.metafields.custom.features.value | remove: '[' | remove: ']' | remove: '"'
+                assign feats = feats_str | split: ','
+              endif
+            -%}
+            {%- if feats.size > 0 -%}
               <div {{ block.shopify_attributes }} class="border-t border-border-soft pt-6">
                 <ul class="grid grid-cols-3 gap-x-3 gap-y-6">
                   {%- for key in feats -%}
-                    {% render 'product-feature', key: key %}
+                    {%- assign fkey = key | strip | downcase -%}
+                    {% render 'product-feature', key: fkey %}
                   {%- endfor -%}
                 </ul>
               </div>
