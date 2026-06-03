@@ -35,5 +35,12 @@
     "settings": [
       { "type": "range", "id": "page_width", "label": "Page width", "min": 1200, "max": 1600, "step": 20, "unit": "px", "default": 1400 }
     ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      { "type": "range", "id": "free_shipping_threshold", "label": "Free shipping threshold (€)", "min": 0, "max": 500, "step": 5, "unit": "€", "default": 100, "info": "Drives the cart free-shipping progress bar. Set to 0 to hide the bar." },
+      { "type": "collection", "id": "cart_empty_collection", "label": "Empty-cart suggestions collection", "info": "Products shown under \"Populaire keuzes\" when the cart is empty. Leave unset to hide. Tip: point this at a Bestsellers or featured collection." }
+    ]
   }
 ]
