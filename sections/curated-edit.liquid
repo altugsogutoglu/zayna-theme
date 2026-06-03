@@ -1,7 +1,10 @@
 {%- liquid
   assign edits = section.settings.collection_list
+  if edits == blank or edits.size == 0
+    assign edits = collections
+  endif
 -%}
-{%- if edits != blank and edits.size > 0 -%}
+{%- if edits.size > 0 -%}
   <section class="py-20" data-carousel>
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
       <div class="mb-12 flex flex-wrap items-end justify-between gap-y-4">
@@ -22,6 +25,7 @@
       <ul class="no-scrollbar flex gap-x-6 md:gap-x-8 overflow-x-auto snap-x snap-mandatory scroll-smooth px-4 sm:px-6 lg:px-10" data-carousel-track data-autoscroll="true">
         {%- for pass in (1..2) -%}
           {%- for c in edits -%}
+            {%- if c.handle == 'all' or c.handle == 'frontpage' -%}{%- continue -%}{%- endif -%}
             <li class="min-w-0 shrink-0 grow-0 basis-[80%] sm:basis-[46%] lg:basis-[31.5%] snap-start" {% if pass == 2 %}aria-hidden="true"{% endif %}>
               <a href="{{ c.url }}" class="group block focus-visible:outline-none" {% if pass == 2 %}tabindex="-1"{% endif %}>
                 <div class="relative aspect-[4/5] overflow-hidden bg-cream">
