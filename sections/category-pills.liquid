@@ -1,0 +1,56 @@
+{%- comment -%}
+  Category pills. Ported 1:1 from app/components/collection/CategoryPills.tsx.
+  "Alle" pill + links from the chosen menu (collections). Mobile edge-fades wired by assets/collection.js.
+  Hidden when only the "Alle" pill exists (Hydrogen renders null for <=1 pill).
+{%- endcomment -%}
+{%- liquid
+  assign menu = section.settings.menu
+  assign pill_count = 1
+  if menu != blank
+    assign pill_count = menu.links.size | plus: 1
+  endif
+
+  assign all_active = false
+  if collection.handle == 'all' or request.path == routes.all_products_collection_url
+    assign all_active = true
+  endif
+-%}
+{%- if pill_count > 1 -%}
+  <nav aria-label="Bladeren per categorie" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 mb-8">
+    {%- comment -%} Desktop: wrapped {%- endcomment -%}
+    <ul class="hidden flex-wrap items-center gap-2 sm:gap-3 md:flex">
+      <li>{% render 'category-pill', label: 'Alle', url: routes.all_products_collection_url, active: all_active %}</li>
+      {%- for link in menu.links -%}
+        {%- assign is_active = false -%}
+        {%- if link.url == collection.url -%}{%- assign is_active = true -%}{%- endif -%}
+        <li>{% render 'category-pill', label: link.title, url: link.url, active: is_active %}</li>
+      {%- endfor -%}
+    </ul>
+    {%- comment -%} Mobile: horizontal scroller with edge fades {%- endcomment -%}
+    <div data-pills-scroller class="relative -mx-4 sm:-mx-6 md:hidden">
+      <span data-pills-fade="left" class="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-bg to-transparent transition-opacity duration-300 opacity-0 sm:w-12"></span>
+      <span data-pills-fade="right" class="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-bg to-transparent transition-opacity duration-300 sm:w-12"></span>
+      <div data-pills-track class="no-scrollbar overflow-x-auto px-4 sm:px-6">
+        <ul class="flex items-center gap-2 py-1 sm:gap-3">
+          <li class="shrink-0">{% render 'category-pill', label: 'Alle', url: routes.all_products_collection_url, active: all_active %}</li>
+          {%- for link in menu.links -%}
+            {%- assign is_active = false -%}
+            {%- if link.url == collection.url -%}{%- assign is_active = true -%}{%- endif -%}
+            <li class="shrink-0">{% render 'category-pill', label: link.title, url: link.url, active: is_active %}</li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    </div>
+  </nav>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Category pills",
+  "tag": "section",
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Categories menu", "info": "A menu of collection links. The 'Alle' pill is added automatically. The row hides if the menu is empty." }
+  ],
+  "presets": [{ "name": "Category pills" }]
+}
+{% endschema %}
