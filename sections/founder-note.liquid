@@ -1,0 +1,35 @@
+{%- liquid
+  assign s = section.settings
+-%}
+<section class="bg-cream">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 py-24 grid gap-12 md:grid-cols-[1fr_2fr] items-center">
+    <div class="aspect-[4/5] max-w-sm bg-stone-soft/20 overflow-hidden">
+      {%- if s.image != blank -%}
+        {{ s.image | image_url: width: 800 | image_tag: loading: 'lazy', sizes: '(min-width:768px) 33vw, 100vw', alt: s.image.alt | default: 'Zayna Home', class: 'h-full w-full object-cover' }}
+      {%- else -%}
+        <div class="h-full w-full grid place-items-center text-ink-soft text-sm">Portrait</div>
+      {%- endif -%}
+    </div>
+    <div>
+      <p class="text-label text-clay mb-4">{{ s.eyebrow }}</p>
+      <h2 class="text-3xl md:text-4xl font-display mb-6">{{ s.heading }}</h2>
+      <div class="text-ink-soft leading-relaxed [&_p]:mb-4 [&_p:last-child]:mb-0 rich-text">{{ s.body }}</div>
+      <p class="mt-8 font-signature text-3xl text-ink">— {{ s.signature }}</p>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Founder note",
+  "tag": "section",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Portrait image" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Welkom" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Mooi dat je er bent." },
+    { "type": "richtext", "id": "body", "label": "Body", "default": "<p>Zayna Home is een Nederlandse webshop voor stijlvolle keuken- en woonproducten — gekozen op design, kwaliteit en functie.</p><p>Van glaswerk en voorraadpotten tot kruidenpotten met labels en slimme keukentools. Producten die mooi staan én dagelijks meegaan, zorgvuldig verpakt en verzonden vanuit Nederland.</p><p>Veel plezier met rondkijken.</p>" },
+    { "type": "text", "id": "signature", "label": "Signature", "default": "Zayna" }
+  ],
+  "presets": [{ "name": "Founder note" }]
+}
+{% endschema %}
