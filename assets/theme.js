@@ -101,11 +101,19 @@
     root.addEventListener('pointerleave', () => { paused = false; });
     root.addEventListener('focusin', () => { paused = true; });
     root.addEventListener('focusout', () => { paused = false; });
-    const half = () => track.scrollWidth / 2;
+    // Loop distance = offset between pass-1 item 0 and pass-2 item 0 (the
+    // duplicated set), so the wrap is seamless regardless of padding/gap.
+    const loopDistance = () => {
+      const items = track.children;
+      const n = items.length / 2;
+      if (n < 1 || !items[n]) return track.scrollWidth / 2;
+      return items[n].offsetLeft - items[0].offsetLeft;
+    };
     const tick = () => {
       if (!paused) {
         track.scrollLeft += 0.5;
-        if (track.scrollLeft >= half()) track.scrollLeft -= half();
+        const loop = loopDistance();
+        if (track.scrollLeft >= loop) track.scrollLeft -= loop;
       }
       requestAnimationFrame(tick);
     };
