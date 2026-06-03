@@ -1,0 +1,46 @@
+<section aria-label="{{ section.settings.aria | default: 'Waarom Zayna Home' }}" class="border-y border-border-soft bg-bg/60">
+  <ul class="mx-auto grid max-w-7xl grid-cols-2 gap-y-10 gap-x-6 px-4 py-14 sm:px-6 lg:grid-cols-4 lg:gap-x-10 lg:px-10 lg:py-16">
+    {%- for block in section.blocks -%}
+      <li class="flex flex-col" {{ block.shopify_attributes }}>
+        {% render 'icon', name: block.settings.icon, size: 22, class: 'mb-3 text-clay' %}
+        <h3 class="font-display text-xl leading-snug tracking-[-0.01em] text-ink">{{ block.settings.label }}</h3>
+        <p class="mt-2 max-w-[28ch] text-sm leading-relaxed text-ink-soft">{{ block.settings.body }}</p>
+      </li>
+    {%- endfor -%}
+  </ul>
+</section>
+
+{% schema %}
+{
+  "name": "Value props",
+  "tag": "section",
+  "blocks": [
+    {
+      "type": "prop",
+      "name": "Value prop",
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "default": "sparkles", "options": [
+          { "value": "sparkles", "label": "Sparkles" },
+          { "value": "shield-check", "label": "Shield" },
+          { "value": "truck", "label": "Truck" },
+          { "value": "file-text", "label": "Document" }
+        ] },
+        { "type": "text", "id": "label", "label": "Label", "default": "Zorgvuldig geselecteerd" },
+        { "type": "textarea", "id": "body", "label": "Body", "default": "Elk product is gekozen op design, kwaliteit en functie." }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Value props",
+      "blocks": [
+        { "type": "prop", "settings": { "icon": "sparkles", "label": "Zorgvuldig geselecteerd", "body": "Elk product is gekozen op design, kwaliteit en functie. Geen rommel, alleen mooie stukken." } },
+        { "type": "prop", "settings": { "icon": "shield-check", "label": "Veilig verpakt", "body": "Glaswerk wordt zorgvuldig ingepakt met beschermingsmateriaal, zodat alles heel aankomt." } },
+        { "type": "prop", "settings": { "icon": "truck", "label": "Verzonden vanuit NL", "body": "Bestellingen worden binnen 1–3 werkdagen verzonden vanuit Nederland." } },
+        { "type": "prop", "settings": { "icon": "file-text", "label": "Eerlijke productinfo", "body": "Materiaal, afmetingen en inhoud staan altijd duidelijk vermeld. Geen verrassingen." } }
+      ]
+    }
+  ]
+}
+{% endschema %}
