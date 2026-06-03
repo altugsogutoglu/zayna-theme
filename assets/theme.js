@@ -98,9 +98,13 @@
     if (reduce || track.dataset.autoscroll !== 'true') return;
     let paused = false;
     root.addEventListener('pointerenter', () => { paused = true; });
-    root.addEventListener('pointerleave', () => { paused = false; });
+    root.addEventListener('pointerleave', () => { paused = false; resync(); });
     root.addEventListener('focusin', () => { paused = true; });
-    root.addEventListener('focusout', () => { paused = false; });
+    root.addEventListener('focusout', () => { paused = false; resync(); });
+    // Resync the float accumulator to the real scroll position after manual
+    // interaction so we don't snap back.
+    let pos = 0;
+    const resync = () => { pos = track.scrollLeft; };
     // Loop distance = offset between pass-1 item 0 and pass-2 item 0 (the
     // duplicated set), so the wrap is seamless regardless of padding/gap.
     const loopDistance = () => {
@@ -109,11 +113,15 @@
       if (n < 1 || !items[n]) return track.scrollWidth / 2;
       return items[n].offsetLeft - items[0].offsetLeft;
     };
+    const SPEED = 0.5; // px per frame (~30px/s)
     const tick = () => {
       if (!paused) {
-        track.scrollLeft += 0.5;
+        // Accumulate in a float: assigning scrollLeft += 0.5 directly never
+        // advances because the browser rounds scrollLeft back to an integer.
         const loop = loopDistance();
-        if (track.scrollLeft >= loop) track.scrollLeft -= loop;
+        pos += SPEED;
+        if (loop > 0 && pos >= loop) pos -= loop;
+        track.scrollLeft = pos;
       }
       requestAnimationFrame(tick);
     };

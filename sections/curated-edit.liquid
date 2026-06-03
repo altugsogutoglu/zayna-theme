@@ -22,11 +22,11 @@
       </div>
     </div>
     <div class="relative">
-      <ul class="no-scrollbar flex gap-x-6 md:gap-x-8 overflow-x-auto snap-x snap-mandatory scroll-smooth px-4 sm:px-6 lg:px-10" data-carousel-track data-autoscroll="true">
+      <ul class="no-scrollbar flex gap-x-6 md:gap-x-8 overflow-x-auto px-4 sm:px-6 lg:px-10" data-carousel-track data-autoscroll="true">
         {%- for pass in (1..2) -%}
           {%- for c in edits -%}
             {%- if c.handle == 'all' or c.handle == 'frontpage' -%}{%- continue -%}{%- endif -%}
-            <li class="min-w-0 shrink-0 grow-0 basis-[80%] sm:basis-[46%] lg:basis-[31.5%] snap-start" {% if pass == 2 %}aria-hidden="true"{% endif %}>
+            <li class="min-w-0 shrink-0 grow-0 basis-[80%] sm:basis-[46%] lg:basis-[31.5%]" {% if pass == 2 %}aria-hidden="true"{% endif %}>
               <a href="{{ c.url }}" class="group block focus-visible:outline-none" {% if pass == 2 %}tabindex="-1"{% endif %}>
                 <div class="relative aspect-[4/5] overflow-hidden bg-cream">
                   {%- if c.featured_image -%}
