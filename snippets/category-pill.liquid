@@ -5,5 +5,5 @@
 {%- if active -%}
   <a href="{{ url }}" aria-current="true" class="inline-flex items-center whitespace-nowrap rounded-full px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] transition-colors duration-300 bg-ink text-surface">{{ label }}</a>
 {%- else -%}
-  <a href="{{ url }}" aria-current="false" class="inline-flex items-center whitespace-nowrap rounded-full px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] transition-colors duration-300 border border-border-soft text-ink-soft hover:border-ink hover:text-ink">{{ label }}</a>
+  <a href="{{ url }}" class="inline-flex items-center whitespace-nowrap rounded-full px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] transition-colors duration-300 border border-border-soft text-ink-soft hover:border-ink hover:text-ink">{{ label }}</a>
 {%- endif -%}
