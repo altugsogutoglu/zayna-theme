@@ -74,8 +74,10 @@
         {%- for v in f.active_values -%}
           <a href="{{ v.url_to_remove }}" data-filter-remove class="inline-flex items-center gap-1.5 rounded-full border border-border-soft px-3 py-1.5 text-[11px] text-ink-soft hover:border-ink hover:text-ink transition-colors">{{ v.label }} {% render 'icon', name: 'x', size: 12 %}</a>
         {%- endfor -%}
-        {%- if f.type == 'price_range' and f.min_value.value != blank or f.type == 'price_range' and f.max_value.value != blank -%}
-          <a href="{{ f.url_to_remove }}" data-filter-remove class="inline-flex items-center gap-1.5 rounded-full border border-border-soft px-3 py-1.5 text-[11px] text-ink-soft hover:border-ink hover:text-ink transition-colors">{{ f.label }} {% render 'icon', name: 'x', size: 12 %}</a>
+        {%- if f.type == 'price_range' -%}
+          {%- if f.min_value.value != blank or f.max_value.value != blank -%}
+            <a href="{{ f.url_to_remove }}" data-filter-remove class="inline-flex items-center gap-1.5 rounded-full border border-border-soft px-3 py-1.5 text-[11px] text-ink-soft hover:border-ink hover:text-ink transition-colors">{{ f.label }} {% render 'icon', name: 'x', size: 12 %}</a>
+          {%- endif -%}
         {%- endif -%}
       {%- endfor -%}
       <a href="{{ clear_url }}" data-filter-clear class="ml-1 text-[11px] uppercase tracking-[0.18em] text-stone hover:text-ink transition-colors">Wis alles</a>
