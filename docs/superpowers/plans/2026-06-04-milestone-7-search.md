@@ -81,8 +81,10 @@ Replace the existing `"search": { "title": …, "placeholder": …, "submit": �
       "collections": "Collecties",
       "pages": "Pagina's",
       "articles": "Artikelen",
-      "result_one": "{{ count }} resultaat gevonden",
-      "result_other": "{{ count }} resultaten gevonden"
+      "result": {
+        "one": "{{ count }} resultaat gevonden",
+        "other": "{{ count }} resultaten gevonden"
+      }
     },
 ```
 
@@ -100,8 +102,10 @@ Replace the existing `"search": { "title": …, "placeholder": …, "submit": �
       "collections": "Collections",
       "pages": "Pages",
       "articles": "Articles",
-      "result_one": "{{ count }} result found",
-      "result_other": "{{ count }} results found"
+      "result": {
+        "one": "{{ count }} result found",
+        "other": "{{ count }} results found"
+      }
     },
 ```
 
