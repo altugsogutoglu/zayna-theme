@@ -1,0 +1,150 @@
+{% doc %}
+  Cart body used by both the drawer and the /cart page. Renders line items + upsell
+  placeholder + summary footer when the cart has items, otherwise the empty state
+  with optional "Populaire keuzes" suggestions. Behavior wired by assets/cart.js.
+  @param {string} layout - 'drawer' or 'page'.
+  @example
+  {% render 'cart-contents', layout: 'drawer' %}
+{% enddoc %}
+{%- liquid
+  assign is_page = false
+  if layout == 'page'
+    assign is_page = true
+  endif
+
+  assign threshold = settings.free_shipping_threshold | default: 0
+  assign threshold_cents = threshold | times: 100
+  assign subtotal_cents = cart.items_subtotal_price
+  assign remaining_cents = threshold_cents | minus: subtotal_cents
+  if remaining_cents < 0
+    assign remaining_cents = 0
+  endif
+  assign reached = false
+  if threshold_cents > 0 and remaining_cents == 0
+    assign reached = true
+  endif
+  assign pct = 0
+  if threshold_cents > 0
+    assign pct = subtotal_cents | times: 100 | divided_by: threshold_cents
+    if pct > 100
+      assign pct = 100
+    endif
+  endif
+
+  assign first_item = cart.items | first
+  assign upsell_pid = first_item.product.id
+  capture upsell_url
+    echo routes.product_recommendations_url
+    echo '?section_id=cart-upsell&intent=complementary&limit=3&product_id='
+    echo upsell_pid
+  endcapture
+
+  assign applied_discounts = cart.cart_level_discount_applications
+-%}
+<span data-cart-total-count data-count="{{ cart.item_count }}" hidden></span>
+<section class="flex {% unless is_page %}h-full{% endunless %} flex-col bg-surface" aria-label="{% if is_page %}Winkelmand pagina{% else %}Winkelmand lade{% endif %}">
+  {%- if cart.item_count > 0 -%}
+    <div class="flex flex-1 flex-col {% unless is_page %}overflow-hidden{% endunless %}">
+      <p class="sr-only">Producten in winkelmand</p>
+      <div class="{% unless is_page %}flex-1 overflow-y-auto overscroll-contain{% endunless %} px-5 md:px-6 py-2 md:py-4">
+        <ul>
+          {%- for item in cart.items -%}
+            {% render 'cart-line-item', line_item: item, layout: layout %}
+          {%- endfor -%}
+        </ul>
+      </div>
+
+      {%- if upsell_pid != blank -%}
+        <div data-cart-upsell data-url="{{ upsell_url }}"></div>
+      {%- endif -%}
+
+      <div class="cart-drawer-footer border-t border-border-soft bg-surface px-5 md:px-6 pt-4 md:pt-5 space-y-4">
+        {%- if threshold_cents > 0 -%}
+          <div class="space-y-2">
+            <p class="text-xs text-ink-soft">
+              {%- if reached -%}
+                Je komt in aanmerking voor gratis verzending <span aria-hidden="true">🎉</span>
+              {%- else -%}
+                Nog <span class="text-ink font-medium tabular-nums">{{ remaining_cents | money }}</span> tot gratis verzending
+              {%- endif -%}
+            </p>
+            <div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ pct }}" aria-label="Voortgang gratis verzending" class="h-1.5 w-full overflow-hidden rounded-full bg-border-soft">
+              <div class="h-full rounded-full bg-clay transition-[width] duration-500" style="width: {{ pct }}%"></div>
+            </div>
+          </div>
+        {%- endif -%}
+
+        <div class="border-t border-border-soft/70 pt-1">
+          <button type="button" data-promo-toggle aria-expanded="{% if applied_discounts.size > 0 %}true{% else %}false{% endif %}" aria-controls="cart-promo-{{ layout }}" class="flex w-full items-center justify-between py-2 text-left text-[13px] text-ink-soft hover:text-ink transition-colors focus-visible:outline-none focus-visible:text-ink">
+            <span>Kortingscode{% if applied_discounts.size > 0 %}<span class="ml-2 text-[11px] uppercase tracking-[0.14em] text-clay">Toegepast</span>{% endif %}</span>
+            {% render 'icon', name: 'chevron-down', size: 16 %}
+          </button>
+          <div id="cart-promo-{{ layout }}" data-promo-panel class="space-y-3 pt-2 pb-1 {% if applied_discounts.size == 0 %}hidden{% endif %}">
+            {%- if applied_discounts.size > 0 -%}
+              <ul class="space-y-1">
+                {%- for d in applied_discounts -%}
+                  <li class="flex items-center justify-between text-xs">
+                    <span class="text-ink">{{ d.title }}</span>
+                    <span class="text-clay tabular-nums">-{{ d.total_allocated_amount | money }}</span>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+            <form data-discount-form class="flex gap-2">
+              <label for="discount-{{ layout }}" class="sr-only">Kortingscode</label>
+              <input id="discount-{{ layout }}" data-discount-input type="text" name="discount" placeholder="Kortingscode" class="flex-1 border border-border-soft bg-surface px-3 h-10 text-sm text-ink focus:outline-none focus:border-stone">
+              <button type="submit" aria-label="Kortingscode toepassen" class="h-10 px-4 bg-cream text-ink text-xs uppercase tracking-wide hover:bg-border-soft">Toepassen</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="flex items-baseline justify-between">
+          <span class="text-label text-ink-soft">Subtotaal</span>
+          <span class="text-price text-ink">{{ cart.items_subtotal_price | money }}</span>
+        </div>
+
+        <div class="space-y-3">
+          {% form 'cart' %}
+            <button type="submit" name="checkout" class="flex w-full h-12 items-center justify-center bg-stone text-white text-sm uppercase tracking-wide hover:bg-clay transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone focus-visible:ring-offset-2">Doorgaan naar afrekenen</button>
+          {% endform %}
+          <p class="text-xs text-center text-ink-soft">BTW en verzendkosten worden berekend bij het afrekenen.</p>
+        </div>
+      </div>
+    </div>
+  {%- else -%}
+    {%- liquid
+      assign empty_col = settings.cart_empty_collection
+      assign has_suggestions = false
+      if empty_col != blank and empty_col.products_count > 0
+        assign has_suggestions = true
+      endif
+    -%}
+    <div class="relative flex flex-1 flex-col {% unless is_page %}overflow-y-auto overscroll-contain{% endunless %} px-6 py-8 sm:px-8 sm:py-12">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0 opacity-80" style="background: radial-gradient(70% 70% at 80% 10%, rgba(181,101,29,0.08), transparent 60%), radial-gradient(60% 60% at 10% 90%, rgba(138,154,123,0.10), transparent 60%);"></div>
+      <div class="relative m-auto flex w-full max-w-md flex-col items-center py-4">
+        <div class="max-w-xs text-center">
+          <p class="mb-5 flex items-center justify-center gap-3 text-[10px] uppercase tracking-[0.22em] text-clay">
+            <span aria-hidden="true" class="block h-px w-8 bg-clay/60"></span>Winkelmand<span aria-hidden="true" class="block h-px w-8 bg-clay/60"></span>
+          </p>
+          <p class="font-display text-[clamp(1.5rem,4vw,2rem)] leading-[1.1] tracking-[-0.01em] text-ink">Je winkelmand is nog leeg.</p>
+          <p class="mt-4 text-[14px] leading-relaxed text-ink-soft">Bekijk onze collectie en ontdek stijlvolle producten voor je keuken en huis.</p>
+          <a href="{{ routes.all_products_collection_url }}" class="group mt-7 inline-flex items-center justify-center gap-3 bg-ink px-7 py-3.5 text-[11px] uppercase tracking-[0.22em] text-surface transition-colors hover:bg-clay focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2">
+            Bekijk collectie <span aria-hidden="true" class="text-base leading-none transition-transform group-hover:translate-x-1">→</span>
+          </a>
+        </div>
+        {%- if has_suggestions -%}
+          <div class="mt-10 w-full sm:mt-12">
+            <section aria-label="Populaire keuzes" class="w-full">
+              <p class="text-label text-ink-soft mb-4">Populaire keuzes</p>
+              <div class="grid grid-cols-2 gap-x-4 gap-y-8">
+                {%- for product in empty_col.products limit: 4 -%}
+                  {% render 'product-card', product: product, loading: 'lazy' %}
+                {%- endfor -%}
+              </div>
+            </section>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+</section>
