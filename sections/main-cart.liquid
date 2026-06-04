@@ -1,0 +1,19 @@
+{%- comment -%}
+  Standalone /cart page. Mutations are AJAX (assets/cart.js swaps [data-cart-page]
+  via the Cart Ajax API `sections` param: main-cart,cart-drawer). cart.js loads
+  globally from the cart-drawer section.
+{%- endcomment -%}
+<article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-10 py-16" data-cart-page>
+  <header class="mb-10">
+    <p class="text-label text-clay mb-3">{{ 'general.cart.title' | t }}</p>
+    <h1 class="font-display text-h1">Je winkelmand.</h1>
+  </header>
+  {% render 'cart-contents', layout: 'page' %}
+</article>
+
+{% schema %}
+{
+  "name": "Cart",
+  "tag": "section"
+}
+{% endschema %}
