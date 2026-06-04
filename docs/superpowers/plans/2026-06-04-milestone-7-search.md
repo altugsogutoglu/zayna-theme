@@ -159,7 +159,8 @@ Port of `SearchResultsPredictive.tsx` groups. Small 56×56 thumb rows. Products 
                 <a href="{{ product.url }}" data-predictive-link class="group flex items-center gap-4 rounded-sm px-2 py-2.5 transition-colors hover:bg-cream/70 focus-visible:bg-cream/70 focus-visible:outline-none">
                   <span class="h-14 w-14 shrink-0 overflow-hidden bg-cream">
                     {%- if product.featured_image -%}
-                      {{ product.featured_image | image_url: width: 112 | image_tag: loading: 'lazy', width: 56, height: 56, alt: product.featured_image.alt | default: product.title, class: 'h-full w-full object-cover' }}
+                      {%- assign p_alt = product.featured_image.alt | default: product.title -%}
+                      {{ product.featured_image | image_url: width: 112 | image_tag: loading: 'lazy', width: 56, height: 56, alt: p_alt, class: 'h-full w-full object-cover' }}
                     {%- endif -%}
                   </span>
                   <span class="min-w-0 flex-1">
@@ -188,7 +189,8 @@ Port of `SearchResultsPredictive.tsx` groups. Small 56×56 thumb rows. Products 
                 <a href="{{ collection.url }}" data-predictive-link class="group flex items-center gap-4 rounded-sm px-2 py-2.5 transition-colors hover:bg-cream/70 focus-visible:bg-cream/70 focus-visible:outline-none">
                   <span class="h-14 w-14 shrink-0 overflow-hidden bg-cream">
                     {%- if collection.featured_image -%}
-                      {{ collection.featured_image | image_url: width: 112 | image_tag: loading: 'lazy', width: 56, height: 56, alt: collection.featured_image.alt | default: collection.title, class: 'h-full w-full object-cover' }}
+                      {%- assign c_alt = collection.featured_image.alt | default: collection.title -%}
+                      {{ collection.featured_image | image_url: width: 112 | image_tag: loading: 'lazy', width: 56, height: 56, alt: c_alt, class: 'h-full w-full object-cover' }}
                     {%- endif -%}
                   </span>
                   <span class="min-w-0 flex-1 truncate font-display text-[15px] leading-snug text-ink transition-colors group-hover:text-clay">{{ collection.title }}</span>
@@ -231,7 +233,8 @@ Port of `SearchResultsPredictive.tsx` groups. Small 56×56 thumb rows. Products 
                 <a href="{{ article.url }}" data-predictive-link class="group flex items-center gap-4 rounded-sm px-2 py-2.5 transition-colors hover:bg-cream/70 focus-visible:bg-cream/70 focus-visible:outline-none">
                   <span class="h-14 w-14 shrink-0 overflow-hidden bg-cream">
                     {%- if article.image -%}
-                      {{ article.image | image_url: width: 112 | image_tag: loading: 'lazy', width: 56, height: 56, alt: article.image.alt | default: article.title, class: 'h-full w-full object-cover' }}
+                      {%- assign a_alt = article.image.alt | default: article.title -%}
+                      {{ article.image | image_url: width: 112 | image_tag: loading: 'lazy', width: 56, height: 56, alt: a_alt, class: 'h-full w-full object-cover' }}
                     {%- endif -%}
                   </span>
                   <span class="min-w-0 flex-1 truncate font-display text-[15px] leading-snug text-ink transition-colors group-hover:text-clay">{{ article.title }}</span>
