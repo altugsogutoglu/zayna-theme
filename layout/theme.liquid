@@ -36,7 +36,6 @@
     {%- capture search_body -%}<div class="px-5 md:px-6 py-6 text-sm text-ink-soft">{{ 'general.search.placeholder' | t }}</div>{%- endcapture -%}
     {% render 'aside', type: 'search', heading: 'general.search.title' | t, aside_body: search_body %}
 
-    {%- capture cart_body -%}<div class="px-5 md:px-6 py-6 text-sm text-ink-soft" data-cart-drawer-body>{{ 'general.cart.empty' | t }}</div>{%- endcapture -%}
-    {% render 'aside', type: 'cart', heading: 'general.cart.title' | t, aside_body: cart_body %}
+    {% section 'cart-drawer' %}
   </body>
 </html>
