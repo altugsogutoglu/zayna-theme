@@ -182,6 +182,16 @@
   .rich-text th { color: var(--color-ink); font-weight: 600; background: var(--color-cream); }
 }
 
+/* ---- Sticky header fix ----
+ * Shopify wraps section-group sections in <div class="shopify-section-group-…">
+ * > <section class="shopify-section">. Those wrappers box the sticky <header>,
+ * so position:sticky has no scroll room and the header scrolls away. Flatten the
+ * wrappers so the header's containing block becomes <body> (full page height). */
+.shopify-section-group-header-group,
+.shopify-section-group-header-group > .shopify-section {
+  display: contents;
+}
+
 /* ---- Aside / drawer (used by cart-drawer in Milestone 6) ---- */
 html:has(.overlay.expanded) { overflow: hidden; }
 .overlay aside {
