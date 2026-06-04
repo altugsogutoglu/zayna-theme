@@ -84,7 +84,8 @@
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw data;
       applySections(data.sections);
-      open();
+      // On the /cart page the cart is already visible; don't slide the drawer over it.
+      if (!document.querySelector('[data-cart-page]')) open();
     } catch (e) {
       console.error(e);
     } finally {
