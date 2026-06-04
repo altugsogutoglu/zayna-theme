@@ -21,8 +21,17 @@
     },
     "search": {
       "title": "Search",
-      "placeholder": "Search the collection",
-      "submit": "Search"
+      "placeholder": "Search for products…",
+      "submit": "Search",
+      "start_typing": "Start typing to search.",
+      "loading": "Loading…",
+      "no_results": "No results found.",
+      "products": "Products",
+      "collections": "Collections",
+      "pages": "Pages",
+      "articles": "Articles",
+      "result_one": "{{ count }} result found",
+      "result_other": "{{ count }} results found"
     },
     "cart": {
       "title": "Cart",

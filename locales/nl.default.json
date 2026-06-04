@@ -21,8 +21,17 @@
     },
     "search": {
       "title": "Zoeken",
-      "placeholder": "Zoek in de collectie",
-      "submit": "Zoek"
+      "placeholder": "Zoek naar producten…",
+      "submit": "Zoeken",
+      "start_typing": "Begin met typen om te zoeken.",
+      "loading": "Laden…",
+      "no_results": "Geen resultaten gevonden.",
+      "products": "Producten",
+      "collections": "Collecties",
+      "pages": "Pagina's",
+      "articles": "Artikelen",
+      "result_one": "{{ count }} resultaat gevonden",
+      "result_other": "{{ count }} resultaten gevonden"
     },
     "cart": {
       "title": "Winkelmand",
