@@ -33,8 +33,22 @@
     {%- capture mobile_body -%}{% render 'mobile-menu' %}{%- endcapture -%}
     {% render 'aside', type: 'mobile', heading: shop.name, aside_body: mobile_body %}
 
-    {%- capture search_body -%}<div class="px-5 md:px-6 py-6 text-sm text-ink-soft">{{ 'general.search.placeholder' | t }}</div>{%- endcapture -%}
-    {% render 'aside', type: 'search', heading: 'general.search.title' | t, aside_body: search_body %}
+    {%- capture search_heading -%}{{ 'general.search.title' | t }}{%- endcapture -%}
+    {%- capture search_body -%}
+      <div class="px-5 md:px-6 py-6">
+        <form action="{{ routes.search_url }}" method="get" role="search" class="group flex items-center gap-3 border-b-2 border-ink/15 pb-3 transition-colors focus-within:border-clay" data-predictive-form>
+          <span aria-hidden="true" class="shrink-0 text-stone-soft transition-colors group-focus-within:text-clay">{% render 'icon', name: 'search', size: 20 %}</span>
+          <input type="search" name="q" data-predictive-input placeholder="{{ 'general.search.placeholder' | t }}" autocomplete="off" autocorrect="off" spellcheck="false" class="min-w-0 flex-1 bg-transparent text-lg text-ink placeholder:text-stone-soft focus:outline-none" aria-label="{{ 'general.search.title' | t }}" />
+          <input type="hidden" name="type" value="product,page,article" />
+          <button type="submit" class="shrink-0 bg-ink px-5 py-2.5 text-[11px] uppercase tracking-[0.22em] text-surface transition-colors hover:bg-clay focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2">{{ 'general.search.submit' | t }}</button>
+        </form>
+        <div class="mt-6" data-predictive-results aria-live="polite">
+          <p class="text-sm text-ink-soft">{{ 'general.search.start_typing' | t }}</p>
+        </div>
+      </div>
+    {%- endcapture -%}
+    {% render 'aside', type: 'search', heading: search_heading, aside_body: search_body %}
+    <script src="{{ 'search.js' | asset_url }}" defer></script>
 
     {% section 'cart-drawer' %}
   </body>
