@@ -3,12 +3,7 @@
   assign terms = search.terms
   assign all_pages = search.results | where: 'object_type', 'page'
   assign all_articles = search.results | where: 'object_type', 'article'
-  assign product_total = 0
-  for item in search.results
-    if item.object_type == 'product'
-      assign product_total = product_total | plus: 1
-    endif
-  endfor
+  assign products_only = search.results | where: 'object_type', 'product'
 -%}
 <section
   class="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-10"
@@ -60,7 +55,7 @@
     </div>
   {%- else -%}
     <div class="space-y-16 sm:space-y-20">
-      {%- if product_total > 0 -%}
+      {%- if products_only.size > 0 -%}
         <section>
           <div class="mb-8 flex items-baseline justify-between border-b border-border-soft pb-4">
             <h2 class="font-display text-h3 normal-case tracking-normal text-ink">{{ 'general.search.products' | t }}</h2>

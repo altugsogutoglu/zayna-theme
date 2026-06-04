@@ -6,6 +6,7 @@
 @source '../blocks/**/*.liquid';
 @source '../templates/**/*.{liquid,json}';
 @source '../layout/**/*.liquid';
+@source '../assets/**/*.js';
 
 /* ---- Brand fonts (served from assets/, relative URLs resolve on CDN) ---- */
 @font-face {
