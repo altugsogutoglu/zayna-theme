@@ -30,8 +30,10 @@
       "collections": "Collecties",
       "pages": "Pagina's",
       "articles": "Artikelen",
-      "result_one": "{{ count }} resultaat gevonden",
-      "result_other": "{{ count }} resultaten gevonden"
+      "result": {
+        "one": "{{ count }} resultaat gevonden",
+        "other": "{{ count }} resultaten gevonden"
+      }
     },
     "cart": {
       "title": "Winkelmand",

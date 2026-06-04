@@ -30,8 +30,10 @@
       "collections": "Collections",
       "pages": "Pages",
       "articles": "Articles",
-      "result_one": "{{ count }} result found",
-      "result_other": "{{ count }} results found"
+      "result": {
+        "one": "{{ count }} result found",
+        "other": "{{ count }} results found"
+      }
     },
     "cart": {
       "title": "Cart",
