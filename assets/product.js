@@ -5,7 +5,6 @@
   window.__zhProductInit = true;
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   /* ---------------------------------------------------------------- */
   /* 1. Gallery: mobile carousel + desktop main/thumbs + lightbox     */
@@ -373,69 +372,41 @@
     }
 
     /* -------------------------------------------------------------- */
-    /* 3. AJAX add-to-cart + drawer stub                              */
+    /* 3. AJAX add-to-cart (delegates to window.ZaynaCart from cart.js) */
     /* -------------------------------------------------------------- */
+    const addViaCart = async (sourceForm, btns) => {
+      const originals = btns.map((b) => b.textContent);
+      btns.forEach((b) => { b.disabled = true; b.textContent = labels.adding || 'Toevoegen…'; });
+      try {
+        if (window.ZaynaCart && typeof window.ZaynaCart.add === 'function') {
+          await window.ZaynaCart.add(new FormData(sourceForm));
+        } else {
+          await fetch('/cart/add.js', { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(sourceForm) });
+          window.location.href = '/cart';
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        btns.forEach((b, i) => { b.disabled = false; b.textContent = originals[i]; });
+      }
+    };
+
     if (form) {
-      form.addEventListener('submit', async (e) => {
+      form.addEventListener('submit', (e) => {
         e.preventDefault();
         if (addBtn && addBtn.disabled) return;
-        const addBtns = Array.from(root.querySelectorAll('[data-add-button]'));
-        const originals = addBtns.map((b) => b.textContent);
-        addBtns.forEach((b) => { b.disabled = true; b.textContent = labels.adding || 'Toevoegen…'; });
-        try {
-          const res = await fetch('/cart/add.js', {
-            method: 'POST',
-            headers: { Accept: 'application/json' },
-            body: new FormData(form),
-          });
-          if (!res.ok) throw new Error('add failed');
-          await refreshCart(pdata.title);
-          openCartDrawer();
-        } catch (err) {
-          console.error(err);
-        } finally {
-          addBtns.forEach((b, i) => { b.disabled = false; b.textContent = originals[i]; });
-        }
+        addViaCart(form, Array.from(root.querySelectorAll('[data-add-button]')));
       });
     }
 
     const stickyForm = root.querySelector('[data-sticky-form]');
     const stickyId = root.querySelector('[data-sticky-form] [data-variant-id]');
     if (stickyForm) {
-      stickyForm.addEventListener('submit', async (e) => {
+      stickyForm.addEventListener('submit', (e) => {
         e.preventDefault();
         if (stickyId && idInput) stickyId.value = idInput.value;
-        try {
-          const res = await fetch('/cart/add.js', { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(stickyForm) });
-          if (!res.ok) throw new Error('add failed');
-          await refreshCart(pdata.title);
-          openCartDrawer();
-        } catch (err) { console.error(err); }
+        addViaCart(stickyForm, Array.from(stickyForm.querySelectorAll('[data-add-button]')));
       });
-    }
-
-    async function refreshCart(title) {
-      try {
-        const cart = await (await fetch('/cart.js', { headers: { Accept: 'application/json' } })).json();
-        document.querySelectorAll('[data-cart-count]').forEach((el) => {
-          el.textContent = cart.item_count;
-          el.classList.toggle('hidden', cart.item_count === 0);
-        });
-        const body = document.querySelector('[data-cart-drawer-body]');
-        if (body) {
-          body.innerHTML =
-            '<div class="px-5 md:px-6 py-8 space-y-5">' +
-            '<p class="text-sm text-ink">' + (labels.added || 'Toegevoegd aan winkelmand') + '</p>' +
-            '<p class="font-display text-lg text-ink">' + esc(title) + '</p>' +
-            '<p class="text-sm text-ink-soft">' + (labels.cart_count || 'Aantal artikelen') + ': <span class="tabular-nums">' + cart.item_count + '</span></p>' +
-            '<a href="/checkout" class="block w-full h-14 bg-ink text-white hover:bg-clay transition-colors font-medium tracking-[0.18em] text-[12px] uppercase grid place-items-center">' + (labels.checkout || 'Afrekenen') + '</a>' +
-            '</div>';
-        }
-      } catch (err) { console.error(err); }
-    }
-    function openCartDrawer() {
-      const trigger = document.querySelector('[data-aside-open="cart"]');
-      if (trigger) trigger.click();
     }
   });
 
