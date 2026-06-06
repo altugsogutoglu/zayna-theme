@@ -98,8 +98,9 @@
     "related": {
       "type": "related-products",
       "custom_css": [
-        ".related-products__heading,.related-products h2,.related-products .section-header,.related-products .section-title {margin-bottom: 12px !important;}",
-        ".related-products .product-grid,.related-products ul,.related-products .grid {margin-top: 0 !important; padding-top: 0 !important;}"
+        ".related-products h2 {margin-bottom: 12px !important;}",
+        ".related-products ul {margin-top: 0 !important; padding-top: 0 !important;}",
+        ".related-products {padding-top: 40px !important;}"
       ],
       "settings": {
         "heading": "Misschien vind je dit ook mooi"
