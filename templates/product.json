@@ -1,22 +1,114 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
       "type": "main-product",
       "blocks": {
-        "gallery": { "type": "gallery", "settings": {} },
-        "info": { "type": "info", "settings": {} },
-        "features": { "type": "features", "settings": {} },
-        "specs": { "type": "specs", "settings": {} },
-        "buy_buttons": { "type": "buy_buttons", "settings": {} },
-        "description": { "type": "description", "settings": {} },
-        "zayna_note": { "type": "zayna_note", "settings": {} },
-        "care_shipping": { "type": "care_shipping", "settings": {} }
+        "gallery": {
+          "type": "gallery",
+          "settings": {}
+        },
+        "info": {
+          "type": "info",
+          "settings": {
+            "show_vendor": true,
+            "in_stock_text": "Op voorraad — verzending binnen 1–3 werkdagen",
+            "sold_text": "Uitverkocht",
+            "price_on_request": "Prijs op aanvraag"
+          }
+        },
+        "features": {
+          "type": "features",
+          "settings": {}
+        },
+        "specs": {
+          "type": "specs",
+          "settings": {
+            "label_category": "Categorie",
+            "label_size": "Maat",
+            "label_material": "Materiaal",
+            "label_dimensions": "Afmetingen",
+            "label_sku": "Artikelnr."
+          }
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "add_label": "In winkelmand",
+            "sold_label": "Uitverkocht",
+            "show_wishlist": true,
+            "show_trust": true,
+            "trust_1": "Veilig betalen",
+            "trust_2": "Verzending 1–3 werkdagen",
+            "trust_3": "Zorgvuldig verpakt vanuit NL"
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
+        "zayna_note": {
+          "type": "zayna_note",
+          "settings": {
+            "signature": "Zayna"
+          }
+        },
+        "care_shipping": {
+          "type": "care_shipping",
+          "settings": {
+            "default_open": 1,
+            "row1_title": "Onderhoud",
+            "row1_body": "<p>Glaswerk en keukentools zijn vaatwasserbestendig tenzij anders vermeld. Was textiel volgens het waslabel. Handwas wordt aanbevolen voor het beste resultaat op de lange termijn.</p>",
+            "row2_title": "Verzending",
+            "row2_body": "<p>Wij verzenden binnen 1–3 werkdagen vanuit Nederland. Levering in NL 1–2 werkdagen, België 2–3 werkdagen, EU 3–5 werkdagen. Glaswerk wordt zorgvuldig verpakt met beschermingsmateriaal.</p>",
+            "row3_title": "Retourneren",
+            "row3_body": "<p>Niet tevreden? Je kunt je bestelling binnen 14 dagen na ontvangst retourneren, mits het product ongebruikt en in originele verpakking is. Beschadigd ontvangen? Stuur binnen 48 uur een foto naar info@zaynahome.nl.</p>"
+          }
+        }
       },
-      "block_order": ["gallery", "info", "features", "specs", "buy_buttons", "description", "zayna_note", "care_shipping"],
-      "settings": {}
+      "block_order": [
+        "gallery",
+        "info",
+        "features",
+        "specs",
+        "buy_buttons",
+        "description",
+        "zayna_note",
+        "care_shipping"
+      ],
+      "settings": {
+        "price_on_request": "Prijs op aanvraag"
+      }
     },
-    "product-faq": { "type": "product-faq", "settings": {} },
-    "related": { "type": "related-products", "settings": {} }
+    "product-faq": {
+      "type": "product-faq",
+      "settings": {
+        "eyebrow": "Goed om te weten",
+        "heading": "Veelgestelde vragen"
+      }
+    },
+    "related": {
+      "type": "related-products",
+      "custom_css": [
+        ".related-products__heading,.related-products h2,.related-products .section-header,.related-products .section-title {margin-bottom: 12px !important;}",
+        ".related-products .product-grid,.related-products ul,.related-products .grid {margin-top: 0 !important; padding-top: 0 !important;}"
+      ],
+      "settings": {
+        "heading": "Misschien vind je dit ook mooi"
+      }
+    }
   },
-  "order": ["main", "product-faq", "related"]
+  "order": [
+    "main",
+    "product-faq",
+    "related"
+  ]
 }
