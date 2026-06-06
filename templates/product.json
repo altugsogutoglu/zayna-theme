@@ -97,11 +97,7 @@
     },
     "related": {
       "type": "related-products",
-      "custom_css": [
-        ".related-products h2 {margin-bottom: 12px !important;}",
-        ".related-products ul {margin-top: 0 !important; padding-top: 0 !important;}",
-        ".related-products {padding-top: 40px !important;}"
-      ],
+      "custom_css": [],
       "settings": {
         "heading": "Misschien vind je dit ook mooi"
       }
