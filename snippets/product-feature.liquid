@@ -41,9 +41,15 @@
     when 'stackable'
       assign f_label = 'Stapelbaar'
     when 'borosilicate'
-      assign f_label = 'Borosilicaatglas'
+    assign f_label = 'Borosilicaatglas'
+    when 'handwash_recommended'
+   assign f_label = 'Handwas aanbevolen'
+    when 'stainless_steel'
+    assign f_label = 'Roestvrij staal'
+    when 'stainless_steel_304'
+    assign f_label = '304 roestvrij staal'
     when 'eco_friendly'
-      assign f_label = 'Duurzaam'
+    assign f_label = 'Duurzaam'
   endcase
 -%}
 {%- if f_label != blank -%}
