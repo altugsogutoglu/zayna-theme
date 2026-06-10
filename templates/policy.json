@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-policy",
+      "settings": {
+        "contact_url": "/pages/contact"
+      }
+    }
+  },
+  "order": ["main"]
+}

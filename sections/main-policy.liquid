@@ -1,0 +1,42 @@
+{%- liquid
+  assign s = section.settings
+-%}
+<article class="mx-auto max-w-3xl px-4 pb-24 pt-10 sm:px-6 sm:pt-14 lg:px-10">
+  <header class="mt-8 mb-10 border-b border-border-soft pb-8 sm:mb-12">
+    <p class="text-label text-clay mb-4 flex items-center gap-3 sm:mb-5">
+      <span aria-hidden="true" class="block h-px w-10 bg-clay/60 sm:w-12"></span>
+      {{ s.eyebrow }}
+    </p>
+    <h1 class="font-display text-[clamp(2rem,6vw,3.5rem)] leading-[1.05] tracking-[-0.02em] text-ink">{{ page.title }}</h1>
+  </header>
+
+  <div class="rich-text">{{ page.content }}</div>
+
+  <aside class="mt-14 rounded-lg border border-border-soft bg-cream/60 p-6 sm:p-8">
+    <p class="text-label text-clay mb-3">{{ s.aside_heading }}</p>
+    <p class="max-w-prose text-[15px] leading-[1.7] text-ink-soft">{{ s.aside_text }}</p>
+    <div class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+      {%- if s.contact_url != blank -%}
+        <a href="{{ s.contact_url }}" class="text-ink underline decoration-border-soft underline-offset-4 transition-colors hover:text-clay hover:decoration-clay">{{ s.contact_label }}</a>
+      {%- endif -%}
+      {%- if s.email != blank -%}
+        <a href="mailto:{{ s.email }}" class="text-ink underline decoration-border-soft underline-offset-4 transition-colors hover:text-clay hover:decoration-clay">{{ s.email }}</a>
+      {%- endif -%}
+    </div>
+  </aside>
+</article>
+
+{% schema %}
+{
+  "name": "Policy",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Juridisch" },
+    { "type": "text", "id": "aside_heading", "label": "Aside heading", "default": "Nog vragen?" },
+    { "type": "textarea", "id": "aside_text", "label": "Aside text", "default": "Kom je er niet uit of wil je iets nakijken? We helpen je graag verder." },
+    { "type": "text", "id": "contact_label", "label": "Contact link label", "default": "Naar de contactpagina" },
+    { "type": "url", "id": "contact_url", "label": "Contact link URL" },
+    { "type": "text", "id": "email", "label": "Email", "default": "info@zaynahome.nl" }
+  ]
+}
+{% endschema %}

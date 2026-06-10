@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "main": {
+      "type": "track-order",
+      "settings": {
+        "card1_link_url": "/account/orders",
+        "footer_link_url": "/pages/contact"
+      }
+    }
+  },
+  "order": ["main"]
+}

@@ -1,0 +1,70 @@
+{%- liquid
+  assign s = section.settings
+-%}
+<article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-10 py-16">
+  <header class="mb-10">
+    <p class="text-label text-clay mb-3">{{ s.eyebrow }}</p>
+    <h1 class="font-display text-h1">{{ s.heading }}</h1>
+    {%- if s.intro != blank -%}
+      <p class="mt-4 text-ink-soft">{{ s.intro }}</p>
+    {%- endif -%}
+  </header>
+
+  <div class="space-y-6">
+    <section class="border border-border-soft bg-surface p-6 sm:p-8">
+      <div class="flex items-start gap-4">
+        <span class="mt-0.5 shrink-0 text-clay">{% render 'icon', name: 'user', size: 22 %}</span>
+        <div>
+          <h2 class="font-display text-h3">{{ s.card1_heading }}</h2>
+          <p class="mt-2 text-sm text-ink-soft">{{ s.card1_text }}</p>
+          <a href="{{ s.card1_link_url }}" class="mt-5 inline-flex h-12 items-center px-7 bg-stone text-white text-sm uppercase tracking-wide hover:bg-clay transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone focus-visible:ring-offset-2">
+            {{ s.card1_link_label }}
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="border border-border-soft bg-surface p-6 sm:p-8">
+      <div class="flex items-start gap-4">
+        <span class="mt-0.5 shrink-0 text-clay">{% render 'icon', name: 'mail', size: 22 %}</span>
+        <div>
+          <h2 class="font-display text-h3">{{ s.card2_heading }}</h2>
+          <p class="mt-2 text-sm text-ink-soft">{{ s.card2_text }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="flex items-start gap-4 px-6 sm:px-8">
+      <span class="mt-0.5 shrink-0 text-ink-soft">{% render 'icon', name: 'package-check', size: 22 %}</span>
+      <p class="text-sm text-ink-soft">
+        {{ s.footer_text }}
+        <a href="{{ s.footer_link_url }}" class="text-ink underline decoration-border-soft underline-offset-4 hover:text-clay transition-colors">{{ s.footer_link_label }}</a>{{ s.footer_text_after }}
+      </p>
+    </section>
+  </div>
+</article>
+
+{% schema %}
+{
+  "name": "Track order",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Klantenservice" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Track jouw order." },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Zodra je bestelling is verzonden, kun je de status en live trackinginformatie op twee manieren bekijken." },
+    { "type": "header", "content": "Card 1 — account" },
+    { "type": "text", "id": "card1_heading", "label": "Heading", "default": "Via je account" },
+    { "type": "textarea", "id": "card1_text", "label": "Text", "default": "Log in om al je bestellingen te zien. Open een bestelling om de verzendstatus en de track & trace van de vervoerder te bekijken." },
+    { "type": "text", "id": "card1_link_label", "label": "Button label", "default": "Bekijk mijn bestellingen" },
+    { "type": "url", "id": "card1_link_url", "label": "Button URL" },
+    { "type": "header", "content": "Card 2 — shipping email" },
+    { "type": "text", "id": "card2_heading", "label": "Heading", "default": "Via je verzendbevestiging" },
+    { "type": "textarea", "id": "card2_text", "label": "Text", "default": "Geen account? In de verzendbevestiging-email die je van ons ontvangt vind je een directe link naar de orderstatuspagina. Daar zie je live waar je pakket is — zonder in te loggen." },
+    { "type": "header", "content": "Footer note" },
+    { "type": "text", "id": "footer_text", "label": "Text before link", "default": "Je bestelling niet kunnen vinden, of vragen over de levering? Stuur ons een bericht via de " },
+    { "type": "text", "id": "footer_link_label", "label": "Link label", "default": "contactpagina" },
+    { "type": "url", "id": "footer_link_url", "label": "Link URL" },
+    { "type": "text", "id": "footer_text_after", "label": "Text after link", "default": " en we helpen je verder." }
+  ]
+}
+{% endschema %}

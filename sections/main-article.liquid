@@ -1,0 +1,51 @@
+{%- liquid
+  assign art = section.settings.article | default: article
+  assign img_alt = art.title
+  if art.image.alt != blank
+    assign img_alt = art.image.alt
+  endif
+-%}
+<article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-10 py-16">
+  <header class="mb-10">
+    <p class="text-label text-clay mb-3">{{ art.published_at | date: '%-d %B %Y' }}</p>
+    <h1 class="font-display text-h1">{{ art.title }}</h1>
+    {%- if art.author != blank -%}
+      <p class="mt-4 text-ink-soft text-sm">{{ section.settings.author_prefix }} {{ art.author }}</p>
+    {%- endif -%}
+  </header>
+
+  {%- if art.image -%}
+    <div class="aspect-[3/2] overflow-hidden bg-cream mb-12">
+      {{ art.image | image_url: width: 1536 | image_tag: sizes: '(min-width:768px) 768px, 100vw', alt: img_alt, class: 'h-full w-full object-cover' }}
+    </div>
+  {%- endif -%}
+
+  <div class="rich-text">{{ art.content }}</div>
+
+  {%- if section.settings.show_comments and art.comments_enabled? -%}
+    <div class="mt-16 border-t border-border-soft pt-10">
+      {%- if art.comments.size > 0 -%}
+        <h2 class="font-display text-h3 mb-8">{{ art.comments_count }} {{ section.settings.comments_label }}</h2>
+        {%- for comment in art.comments -%}
+          <div class="mb-8">
+            <div class="rich-text">{{ comment.content }}</div>
+            <p class="mt-2 text-label text-ink-soft">{{ comment.author }}</p>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</article>
+
+{% schema %}
+{
+  "name": "Article",
+  "tag": "section",
+  "settings": [
+    { "type": "article", "id": "article", "label": "Article (leave empty on article template)" },
+    { "type": "text", "id": "author_prefix", "label": "Author prefix", "default": "Door" },
+    { "type": "checkbox", "id": "show_comments", "label": "Show comments", "default": false },
+    { "type": "text", "id": "comments_label", "label": "Comments label", "default": "reacties" }
+  ]
+}
+{% endschema %}

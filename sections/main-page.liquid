@@ -1,0 +1,35 @@
+{%- liquid
+  assign is_about = false
+  if page.handle == 'about'
+    assign is_about = true
+  endif
+  assign eyebrow = section.settings.eyebrow
+  if is_about and section.settings.about_eyebrow != blank
+    assign eyebrow = section.settings.about_eyebrow
+  endif
+-%}
+<article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-10 py-16">
+  <header class="mb-12">
+    <p class="text-label text-clay mb-3">{{ eyebrow }}</p>
+    <h1 class="font-display text-h1">{{ page.title }}</h1>
+  </header>
+
+  {%- if is_about -%}
+    <div class="text-ink-soft leading-relaxed [&_p]:mb-4 [&_p:last-child]:mb-0">{{ page.content }}</div>
+    <p class="mt-8 font-signature text-3xl text-ink">— {{ section.settings.signature }}</p>
+  {%- else -%}
+    <div class="rich-text">{{ page.content }}</div>
+  {%- endif -%}
+</article>
+
+{% schema %}
+{
+  "name": "Page",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Pagina" },
+    { "type": "text", "id": "about_eyebrow", "label": "About-page eyebrow", "default": "Een briefje" },
+    { "type": "text", "id": "signature", "label": "About-page signature", "default": "Zayna" }
+  ]
+}
+{% endschema %}

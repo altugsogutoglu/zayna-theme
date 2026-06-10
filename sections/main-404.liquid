@@ -1,0 +1,33 @@
+{%- liquid
+  assign s = section.settings
+-%}
+<section class="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center px-4 sm:px-6 lg:px-10 py-20 text-center">
+  <p class="font-display text-[clamp(4rem,16vw,8rem)] leading-none text-clay">404</p>
+  <h1 class="mt-4 font-display text-h2">{{ s.heading }}</h1>
+  {%- if s.text != blank -%}
+    <p class="mt-4 max-w-md text-ink-soft">{{ s.text }}</p>
+  {%- endif -%}
+  <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+    <a href="{{ s.primary_url | default: routes.root_url }}" class="h-12 inline-flex items-center px-7 bg-stone text-white text-sm uppercase tracking-wide hover:bg-clay transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone focus-visible:ring-offset-2">
+      {{ s.primary_label }}
+    </a>
+    <a href="{{ s.secondary_url | default: routes.all_products_collection_url }}" class="h-12 inline-flex items-center px-7 border border-border-soft text-ink text-sm uppercase tracking-wide hover:border-stone transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone focus-visible:ring-offset-2">
+      {{ s.secondary_label }}
+    </a>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "404 page",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Deze pagina bestaat niet (meer)." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Misschien is de link verouderd of is de pagina verplaatst. Ga terug naar de homepage of bekijk onze collectie." },
+    { "type": "text", "id": "primary_label", "label": "Primary button label", "default": "Naar de homepage" },
+    { "type": "url", "id": "primary_url", "label": "Primary button URL" },
+    { "type": "text", "id": "secondary_label", "label": "Secondary button label", "default": "Bekijk alle producten" },
+    { "type": "url", "id": "secondary_url", "label": "Secondary button URL" }
+  ]
+}
+{% endschema %}
