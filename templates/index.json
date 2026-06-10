@@ -109,12 +109,12 @@
       "type": "newsletter",
       "settings": {
         "eyebrow": "Nieuwsbrief",
-        "heading": "Ontvang nieuwe producten als eerste.",
-        "body": "Schrijf je in en ontvang updates over nieuwe collecties, styling-tips en aanbiedingen. Geen spam, altijd uit te schrijven.",
+        "heading": "Ontvang rustige inspiratie voor thuis.",
+        "body": "Schrijf je in voor updates over nieuwe collecties, en zorgvuldig gekozen item voor een warm en verzorgd interieur.",
         "field_label": "E-mailadres",
-        "placeholder": "jij@voorbeeld.nl",
+        "placeholder": "E-mailadres",
         "submit_label": "Inschrijven",
-        "disclaimer": "Door je in te schrijven ga je akkoord met het ontvangen van e-mails van Zayna Home. Je gegevens worden niet gedeeld."
+        "disclaimer": "Door je in te schrijven ontvang je e-mails van Zayna Home. Je kunt je op elk moment uitschrijven."
       }
     }
   },
