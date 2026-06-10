@@ -208,7 +208,9 @@
 
           {%- when 'description' -%}
             {%- if product.description != blank -%}
-              <p {{ block.shopify_attributes }} class="max-w-prose text-[15px] leading-[1.75] text-ink-soft border-t border-border-soft pt-6">{{ product.description | strip_html }}</p>
+              <div {{ block.shopify_attributes }} class="max-w-prose text-[15px] leading-[1.75] text-ink-soft border-t border-border-soft pt-6 rte rich-text">
+               {{ product.description }}
+              </div>
             {%- endif -%}
 
           {%- when 'zayna_note' -%}
