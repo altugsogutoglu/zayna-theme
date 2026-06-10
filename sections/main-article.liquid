@@ -21,20 +21,6 @@
   {%- endif -%}
 
   <div class="rich-text">{{ art.content }}</div>
-
-  {%- if section.settings.show_comments and art.comments_enabled? -%}
-    <div class="mt-16 border-t border-border-soft pt-10">
-      {%- if art.comments.size > 0 -%}
-        <h2 class="font-display text-h3 mb-8">{{ art.comments_count }} {{ section.settings.comments_label }}</h2>
-        {%- for comment in art.comments -%}
-          <div class="mb-8">
-            <div class="rich-text">{{ comment.content }}</div>
-            <p class="mt-2 text-label text-ink-soft">{{ comment.author }}</p>
-          </div>
-        {%- endfor -%}
-      {%- endif -%}
-    </div>
-  {%- endif -%}
 </article>
 
 {% schema %}
@@ -43,9 +29,7 @@
   "tag": "section",
   "settings": [
     { "type": "article", "id": "article", "label": "Article (leave empty on article template)" },
-    { "type": "text", "id": "author_prefix", "label": "Author prefix", "default": "Door" },
-    { "type": "checkbox", "id": "show_comments", "label": "Show comments", "default": false },
-    { "type": "text", "id": "comments_label", "label": "Comments label", "default": "reacties" }
+    { "type": "text", "id": "author_prefix", "label": "Author prefix", "default": "Door" }
   ]
 }
 {% endschema %}
