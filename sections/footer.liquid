@@ -1,22 +1,27 @@
-<footer class="mt-24 border-t border-border-soft bg-cream">
+<footer class="border-t border-border-soft bg-cream">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-16 grid gap-12 md:grid-cols-4">
     <div class="md:col-span-1">
       <p class="font-signature text-3xl text-ink">{{ section.settings.brand_name | default: shop.name }}</p>
       <p class="mt-3 max-w-sm text-sm text-ink-soft">{{ section.settings.blurb }}</p>
     </div>
 
-    <nav aria-label="{{ 'layout.footer.service' | t }}">
-      {% render 'footer-heading', text: 'layout.footer.service' | t %}
+    {%- assign service_label = 'layout.footer.service' | t -%}
+    {%- assign legal_label = 'layout.footer.legal' | t -%}
+    {%- assign contact_label = 'layout.footer.contact' | t -%}
+    {%- assign track_order_label = 'layout.footer.track_order' | t -%}
+
+    <nav aria-label="{{ service_label }}">
+      {% render 'footer-heading', text: service_label %}
       <ul class="space-y-2.5">
         {%- for link in linklists[section.settings.service_menu].links -%}
           <li>{% render 'footer-link', url: link.url, label: link.title %}</li>
         {%- endfor -%}
-        <li>{% render 'footer-link', url: '/pages/track-order', label: 'layout.footer.track_order' | t %}</li>
+        <li>{% render 'footer-link', url: '/pages/track-order', label: track_order_label %}</li>
       </ul>
     </nav>
 
-    <nav aria-label="{{ 'layout.footer.legal' | t }}">
-      {% render 'footer-heading', text: 'layout.footer.legal' | t %}
+    <nav aria-label="{{ legal_label }}">
+      {% render 'footer-heading', text: legal_label %}
       <ul class="space-y-2.5">
         <li>{% render 'footer-link', url: '/policies/terms-of-service', label: 'Algemene voorwaarden' %}</li>
         <li>{% render 'footer-link', url: '/policies/privacy-policy', label: 'Privacybeleid' %}</li>
@@ -26,7 +31,7 @@
     </nav>
 
     <div>
-      {% render 'footer-heading', text: 'layout.footer.contact' | t %}
+      {% render 'footer-heading', text: contact_label %}
       <ul class="space-y-2.5">
         <li>{% render 'footer-link', url: section.settings.contact_email_url, label: section.settings.contact_email_label %}</li>
         <li>{% render 'footer-link', url: section.settings.instagram_url, label: 'Instagram', icon: 'instagram' %}</li>
