@@ -128,3 +128,30 @@ origin main` before pushing (client theme-editor auto-commits land on main).
 1. Track-order → **info cards** (match live Hydrogen). No lookup form.
 2. Policy → **drop auto-TOC and summary cards**. Clean header + rich-text body + contact aside.
 3. Password page → **build it now** (store currently locked, live-visible).
+
+## Gotchas discovered during build (DO NOT relearn)
+- **`policy` template type is liquid-only** — Shopify rejects `templates/policy.json`
+  ("Het template-type 'policy' ondersteunt geen JSON-templates"). Like `gift_card`.
+- **Shopify IGNORES `templates/policy.liquid` entirely for `/policies/*`.** Verified by
+  putting a unique marker in the template — it never renders. Policy pages are rendered
+  server-side with a FIXED `.shopify-policy__container > .shopify-policy__body > .rte`
+  structure. A custom `{% section %}` can never apply. **Fix = brand-style that markup in
+  CSS** (`src/tailwind.css`: `.shopify-policy__*` + `.rte` mirror `.rich-text`). The custom
+  policy template + section were deleted as dead code.
+
+## QA results (Playwright @ 127.0.0.1:9292, measured)
+- Home 200; Blog `/blogs/nieuws` → main-blog renders (Journal eyebrow, "Nieuws" h1, empty
+  state — store has no published articles).
+- Contact: action `/contact` POST, fields contact[name/email/Onderwerp/body], exact subject
+  options, labels Naam/E-mailadres/Onderwerp/Bericht, `md:grid-cols-[2fr_1fr]` = 2:1 (426/213px),
+  stone submit, aside mail+IG+KvK/BTW. PASS.
+- Policy `/policies/refund-policy`: container max-w 768px centered, h1 Fraunces 56px ink, body
+  Inter 16px/1.8 ink-soft, bold ink. PASS (after CSS fix).
+- 404 `/anything`: big "404" Fraunces, heading, CTAs → `/` + `/collections/all`. PASS.
+- Password `/password`: NOT testable via theme dev (session is authed → bypassed to storefront).
+  Structurally valid; theme check 0 errors; correct `{% form 'storefront_password' %}` + standalone
+  `layout/password.liquid`. Live-verify as an unauthenticated visitor.
+- Article / About page / Track-order page: NOT testable — no store content exists yet (client
+  must create the about page, a page assigned the `page.track-order` template, and publish blog
+  articles). Sections theme-check clean.
+- 1 console error on pages = pre-existing Shop Pay CSP violation (noted in M7), unrelated to M8.
