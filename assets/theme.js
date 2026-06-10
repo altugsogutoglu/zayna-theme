@@ -55,7 +55,9 @@
       return;
     }
     if (e.target.closest('[data-aside-close]') || e.target.classList.contains('close-outside')) {
-      e.preventDefault();
+      // Real links (e.g. drawer nav items) must still navigate; only cancel the
+      // default for non-link closers like the X button or the backdrop.
+      if (!e.target.closest('a[href]')) e.preventDefault();
       closeAll();
     }
   });
