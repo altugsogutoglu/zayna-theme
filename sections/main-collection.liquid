@@ -7,7 +7,7 @@
 {%- endcomment -%}
 <script src="{{ 'collection.js' | asset_url }}" defer="defer"></script>
 {%- liquid
-  assign per_page = section.settings.products_per_page | default: 12
+  assign per_page = 250
   assign sort_now = collection.sort_by | default: collection.default_sort_by
 
   assign has_filters = false
@@ -106,15 +106,6 @@
       {%- endfor -%}
     </div>
 
-    {%- if paginate.next -%}
-      <div data-load-more class="mt-16 flex flex-col items-center gap-4" aria-live="polite">
-        <span aria-hidden="true" class="block h-px w-12 bg-stone-soft"></span>
-        <a href="{{ paginate.next.url }}" data-load-more-link data-loading-label="{{ section.settings.loading_label | default: 'Meer laden…' }}" data-retry-label="Opnieuw proberen" class="inline-flex items-center gap-3 px-6 py-3 text-xs uppercase tracking-[0.16em] text-ink-soft hover:text-ink transition-colors focus-visible:outline-none focus-visible:text-ink">
-          <span data-load-more-text>{{ section.settings.load_more_label | default: 'Meer producten' }}</span>
-          <span aria-hidden="true" class="text-base leading-none">↓</span>
-        </a>
-      </div>
-    {%- endif -%}
   {%- endif -%}
 
   {%- comment -%} SEO band {%- endcomment -%}
@@ -180,9 +171,6 @@
   "name": "Collection grid",
   "tag": "section",
   "settings": [
-    { "type": "range", "id": "products_per_page", "min": 8, "max": 48, "step": 4, "label": "Products per page", "default": 12 },
-    { "type": "text", "id": "load_more_label", "label": "Load-more label", "default": "Meer producten" },
-    { "type": "text", "id": "loading_label", "label": "Loading label", "default": "Meer laden…" },
     { "type": "header", "content": "Empty state (no filters)" },
     { "type": "text", "id": "empty_title", "label": "Empty title", "default": "Deze collectie wordt aangevuld." },
     { "type": "textarea", "id": "empty_body", "label": "Empty body", "default": "Bekijk de complete collectie of kom snel terug." }

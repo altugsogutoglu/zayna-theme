@@ -4,3 +4,4 @@ node_modules/
 .shopify/
 .playwright-mcp/
 .claude/
+qa-*.jpeg

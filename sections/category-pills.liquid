@@ -1,47 +1,91 @@
 {%- comment -%}
-  Category pills. Ported 1:1 from app/components/collection/CategoryPills.tsx.
-  "Alle" pill + links from the chosen menu (collections). Mobile edge-fades wired by assets/collection.js.
-  Hidden when only the "Alle" pill exists (Hydrogen renders null for <=1 pill).
+  Category pills. Single-line draggable rail powered by Embla Carousel (the same
+  library used in the Hydrogen source, app/components/collection/CategoryPills.tsx).
+  Uses a configured menu if set; otherwise falls back to the store's collections
+  (excluding the implicit all/frontpage handles). Hidden when no categories exist.
 {%- endcomment -%}
 {%- liquid
   assign menu = section.settings.menu
-  assign pill_count = 1
-  if menu != blank
-    assign pill_count = menu.links.size | plus: 1
+  assign use_menu = false
+  if menu != blank and menu.links.size > 0
+    assign use_menu = true
   endif
 
   assign all_active = false
   if collection.handle == 'all' or request.path == routes.all_products_collection_url
     assign all_active = true
   endif
+
+  assign has_pills = use_menu
+  unless use_menu
+    for c in collections
+      unless c.handle == 'all' or c.handle == 'frontpage'
+        assign has_pills = true
+        break
+      endunless
+    endfor
+  endunless
+
+  # Index of the active pill (0 = "Alle") so we can scroll it into view.
+  assign active_index = 0
+  assign idx = 0
+  if use_menu
+    for link in menu.links
+      assign idx = idx | plus: 1
+      if link.url == collection.url
+        assign active_index = idx
+      endif
+    endfor
+  else
+    for c in collections
+      if c.handle == 'all' or c.handle == 'frontpage'
+        continue
+      endif
+      assign idx = idx | plus: 1
+      if c.handle == collection.handle
+        assign active_index = idx
+      endif
+    endfor
+  endif
 -%}
-{%- if pill_count > 1 -%}
+{%- if has_pills -%}
   <nav aria-label="Bladeren per categorie" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 mb-8">
-    {%- comment -%} Desktop: wrapped {%- endcomment -%}
-    <ul class="hidden flex-wrap items-center gap-2 sm:gap-3 md:flex">
-      <li>{% render 'category-pill', label: 'Alle', url: routes.all_products_collection_url, active: all_active %}</li>
-      {%- for link in menu.links -%}
-        {%- assign is_active = false -%}
-        {%- if link.url == collection.url -%}{%- assign is_active = true -%}{%- endif -%}
-        <li>{% render 'category-pill', label: link.title, url: link.url, active: is_active %}</li>
-      {%- endfor -%}
-    </ul>
-    {%- comment -%} Mobile: horizontal scroller with edge fades {%- endcomment -%}
-    <div data-pills-scroller class="relative -mx-4 sm:-mx-6 md:hidden">
-      <span data-pills-fade="left" class="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-bg to-transparent transition-opacity duration-300 opacity-0 sm:w-12"></span>
-      <span data-pills-fade="right" class="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-bg to-transparent transition-opacity duration-300 sm:w-12"></span>
-      <div data-pills-track class="no-scrollbar overflow-x-auto px-4 sm:px-6">
-        <ul class="flex items-center gap-2 py-1 sm:gap-3">
-          <li class="shrink-0">{% render 'category-pill', label: 'Alle', url: routes.all_products_collection_url, active: all_active %}</li>
+    <div data-pills-embla data-start="{{ active_index }}" class="overflow-hidden cursor-grab active:cursor-grabbing">
+      <ul class="flex items-center gap-2 py-1 sm:gap-3">
+        <li class="min-w-0 shrink-0">{% render 'category-pill', label: 'Alle', url: routes.all_products_collection_url, active: all_active %}</li>
+        {%- if use_menu -%}
           {%- for link in menu.links -%}
             {%- assign is_active = false -%}
             {%- if link.url == collection.url -%}{%- assign is_active = true -%}{%- endif -%}
-            <li class="shrink-0">{% render 'category-pill', label: link.title, url: link.url, active: is_active %}</li>
+            <li class="min-w-0 shrink-0">{% render 'category-pill', label: link.title, url: link.url, active: is_active %}</li>
           {%- endfor -%}
-        </ul>
-      </div>
+        {%- else -%}
+          {%- for c in collections -%}
+            {%- if c.handle == 'all' or c.handle == 'frontpage' -%}{%- continue -%}{%- endif -%}
+            {%- assign is_active = false -%}
+            {%- if c.handle == collection.handle -%}{%- assign is_active = true -%}{%- endif -%}
+            <li class="min-w-0 shrink-0">{% render 'category-pill', label: c.title, url: c.url, active: is_active %}</li>
+          {%- endfor -%}
+        {%- endif -%}
+      </ul>
     </div>
   </nav>
+
+  <script src="{{ 'embla-carousel.umd.js' | asset_url }}" defer="defer"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var root = document.querySelector('[data-pills-embla]');
+      if (!root || !window.EmblaCarousel) return;
+      var embla = window.EmblaCarousel(root, {
+        align: 'start',
+        dragFree: true,
+        containScroll: 'trimSnaps',
+        skipSnaps: true
+      });
+      var start = parseInt(root.getAttribute('data-start') || '0', 10);
+      if (start > 0) embla.scrollTo(start, true);
+    });
+  </script>
 {%- endif -%}
 
 {% schema %}
@@ -49,7 +93,7 @@
   "name": "Category pills",
   "tag": "section",
   "settings": [
-    { "type": "link_list", "id": "menu", "label": "Categories menu", "info": "A menu of collection links. The 'Alle' pill is added automatically. The row hides if the menu is empty." }
+    { "type": "link_list", "id": "menu", "label": "Categories menu", "info": "Optional. A menu of collection links. If left empty, the store's collections are shown automatically. The 'Alle' pill is added in front." }
   ],
   "presets": [{ "name": "Category pills" }]
 }

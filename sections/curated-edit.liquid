@@ -22,16 +22,16 @@
       </div>
     </div>
 
-    <div class="splide" id="curated-{{ section.id }}" aria-label="{{ section.settings.heading | escape }}">
-      <div class="splide__track">
-        <ul class="splide__list">
+    <div class="relative">
+      <div data-curated-embla class="cursor-grab overflow-hidden px-4 sm:px-6 lg:px-10 active:cursor-grabbing">
+        <ul class="flex gap-x-6 md:gap-x-8">
           {%- for c in edits -%}
             {%- if c.handle == 'all' or c.handle == 'frontpage' -%}{%- continue -%}{%- endif -%}
-            <li class="splide__slide">
+            <li class="min-w-0 shrink-0 grow-0 basis-[78%] sm:basis-[46%] lg:basis-[23.5%]">
               <a href="{{ c.url }}" class="group block focus-visible:outline-none">
                 <div class="relative aspect-[4/5] overflow-hidden bg-cream">
                   {%- if c.featured_image -%}
-                    {{ c.featured_image | image_url: width: 700 | image_tag: loading: 'lazy', sizes: '(min-width:1280px) 23vw, (min-width:1024px) 31vw, (min-width:768px) 46vw, 72vw', alt: c.title, class: 'absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]' }}
+                    {{ c.featured_image | image_url: width: 700 | image_tag: loading: 'lazy', sizes: '(min-width:1024px) 23vw, (min-width:768px) 46vw, 78vw', alt: c.title, class: 'absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]' }}
                   {%- else -%}
                     <div aria-hidden="true" class="absolute inset-0 grid place-items-center text-center px-8" style="background:radial-gradient(70% 80% at 30% 20%, rgba(181,101,29,0.10), transparent 65%), linear-gradient(180deg, #F4ECE5, #EDE4DC);">
                       <div>
@@ -59,37 +59,23 @@
     </div>
   </section>
 
-  <script src="{{ 'splide.min.js' | asset_url }}" defer></script>
-  <script src="{{ 'splide-auto-scroll.min.js' | asset_url }}" defer></script>
+  <script src="{{ 'embla-carousel.umd.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'embla-carousel-auto-scroll.umd.js' | asset_url }}" defer="defer"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      var el = document.getElementById('curated-{{ section.id }}');
-      if (!el || !window.Splide) return;
+      var root = document.querySelector('[data-carousel]');
+      var viewport = root && root.querySelector('[data-curated-embla]');
+      if (!viewport || !window.EmblaCarousel) return;
       var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var splide = new Splide(el, {
-        type: 'loop',
-        drag: 'free',
-        snap: true,
-        perPage: 4,
-        perMove: 1,
-        gap: '1.75rem',
-        arrows: false,
-        pagination: false,
-        padding: { left: '2.5rem', right: '2.5rem' },
-        autoScroll: { speed: 0.6, pauseOnHover: true, pauseOnFocus: true },
-        breakpoints: {
-          1024: { perPage: 3, gap: '1.5rem', padding: { left: '2rem', right: '2rem' } },
-          768:  { perPage: 2, gap: '1.25rem', padding: { left: '1.5rem', right: '1.5rem' } },
-          640:  { perPage: 1.35, gap: '1rem', padding: { left: '1rem', right: '1.5rem' } }
-        }
-      });
-      var root = el.closest('[data-carousel]');
-      var prev = root && root.querySelector('[data-carousel-prev]');
-      var next = root && root.querySelector('[data-carousel-next]');
-      if (prev) prev.addEventListener('click', function () { splide.go('<'); });
-      if (next) next.addEventListener('click', function () { splide.go('>'); });
-      var extensions = (reduce || !window.splide) ? {} : window.splide.Extensions;
-      splide.mount(extensions);
+      var plugins = [];
+      if (!reduce && window.EmblaCarouselAutoScroll) {
+        plugins.push(window.EmblaCarouselAutoScroll({ speed: 1, startDelay: 0, stopOnInteraction: false, stopOnMouseEnter: true }));
+      }
+      var embla = window.EmblaCarousel(viewport, { loop: true, align: 'start', dragFree: true }, plugins);
+      var prev = root.querySelector('[data-carousel-prev]');
+      var next = root.querySelector('[data-carousel-next]');
+      if (prev) prev.addEventListener('click', function () { embla.scrollPrev(); });
+      if (next) next.addEventListener('click', function () { embla.scrollNext(); });
     });
   </script>
 {%- endif -%}

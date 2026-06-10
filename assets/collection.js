@@ -6,29 +6,7 @@
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------------------------------------------------------------- */
-  /* 1. Category pills: mobile scroller edge-fades + active into view */
-  /* ---------------------------------------------------------------- */
-  document.querySelectorAll('[data-pills-scroller]').forEach((scroller) => {
-    const track = scroller.querySelector('[data-pills-track]');
-    const fadeL = scroller.querySelector('[data-pills-fade="left"]');
-    const fadeR = scroller.querySelector('[data-pills-fade="right"]');
-    if (!track) return;
-    const update = () => {
-      const max = track.scrollWidth - track.clientWidth;
-      const x = track.scrollLeft;
-      if (fadeL) fadeL.style.opacity = x > 4 ? '1' : '0';
-      if (fadeR) fadeR.style.opacity = x < max - 4 ? '1' : '0';
-    };
-    track.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-    update();
-    const active = track.querySelector('[aria-current="true"]');
-    if (active) {
-      const offset = active.offsetLeft - (track.clientWidth - active.clientWidth) / 2;
-      track.scrollLeft = Math.max(0, offset);
-    }
-  });
+  /* Category pills are an Embla rail initialised inline in sections/category-pills.liquid. */
 
   /* ---------------------------------------------------------------- */
   /* 2-4. Faceted grid controllers                                    */
