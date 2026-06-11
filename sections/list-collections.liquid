@@ -1,0 +1,127 @@
+{%- comment -%}
+  Collections index (/collections). Renders all store collections as a static,
+  responsive grid styled to match the rest of the theme. Card treatment is ported
+  from sections/curated-edit.liquid; the header mirrors sections/collection-hero.liquid.
+{%- endcomment -%}
+{%- liquid
+  assign cols = section.settings.collection_list
+  if cols == blank or cols.size == 0
+    assign cols = collections
+  endif
+
+  # Count visible collections (excluding the implicit all/frontpage handles).
+  assign visible_count = 0
+  for c in cols
+    unless c.handle == 'all' or c.handle == 'frontpage'
+      assign visible_count = visible_count | plus: 1
+    endunless
+  endfor
+
+  assign heading = section.settings.heading
+  assign last_char = heading | slice: -1
+  assign title_main = heading
+  assign trailing = ''
+  if last_char == '.'
+    assign cut = heading.size | minus: 1
+    assign title_main = heading | slice: 0, cut
+    assign trailing = '.'
+  endif
+-%}
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pb-24">
+  {%- comment -%} Header (mirrors collection-hero) {%- endcomment -%}
+  <header class="pt-6 pb-10 sm:pt-10 sm:pb-14 md:pt-16 md:pb-20">
+    <div class="mb-10 hidden items-center justify-between text-[10px] uppercase tracking-[0.22em] text-stone md:flex">
+      <span class="flex items-center gap-3">
+        {{ shop.name }}
+        <span class="block h-px w-10 bg-stone-soft"></span>
+        <span class="font-display italic normal-case tracking-normal text-stone">{{ section.settings.breadcrumb_label | default: 'Collecties' }}</span>
+      </span>
+      <span>{{ section.settings.breadcrumb_right | default: 'Vanuit Nederland' }}</span>
+    </div>
+
+    <p class="text-label text-clay mb-4 flex items-center gap-3 sm:mb-5">
+      {{ section.settings.eyebrow }}
+      <span class="block h-px w-10 bg-clay/60 sm:w-12"></span>
+    </p>
+
+    <h1 class="font-display text-[clamp(2.25rem,7.5vw,4.75rem)] leading-[1.02] tracking-[-0.025em] text-ink">{{ title_main }}{%- if trailing != '' -%}<span class="italic text-clay/80">{{ trailing }}</span>{%- endif -%}</h1>
+
+    {%- if section.settings.intro != blank -%}
+      <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-ink-soft sm:mt-7 md:text-base">{{ section.settings.intro }}</p>
+    {%- endif -%}
+
+    {%- if visible_count > 0 -%}
+      <p class="mt-8 border-t border-border-soft pt-6 text-[11px] uppercase tracking-[0.22em] text-stone sm:mt-10 sm:pt-7"><span class="tabular-nums text-ink">{{ visible_count }}</span> {% if visible_count == 1 %}collectie{% else %}collecties{% endif %}</p>
+    {%- endif -%}
+  </header>
+
+  {%- comment -%} Grid {%- endcomment -%}
+  {%- if visible_count > 0 -%}
+    <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12 md:gap-x-8 md:gap-y-16">
+      {%- assign card_index = 0 -%}
+      {%- for c in cols -%}
+        {%- if c.handle == 'all' or c.handle == 'frontpage' -%}{%- continue -%}{%- endif -%}
+        {%- assign card_index = card_index | plus: 1 -%}
+        {%- assign c_loading = 'lazy' -%}
+        {%- if card_index <= 6 -%}{%- assign c_loading = 'eager' -%}{%- endif -%}
+        <li class="min-w-0">
+          <a href="{{ c.url }}" class="group block focus-visible:outline-none">
+            <div class="relative aspect-[4/5] overflow-hidden bg-cream">
+              {%- if c.featured_image -%}
+                {{ c.featured_image | image_url: width: 700 | image_tag:
+                  loading: c_loading,
+                  sizes: '(min-width:1024px) 31vw, (min-width:640px) 48vw, 100vw',
+                  widths: '300, 400, 600, 700, 900',
+                  alt: c.title,
+                  class: 'absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]' }}
+              {%- else -%}
+                <div aria-hidden="true" class="absolute inset-0 grid place-items-center text-center px-8" style="background:radial-gradient(70% 80% at 30% 20%, rgba(181,101,29,0.10), transparent 65%), linear-gradient(180deg, #F4ECE5, #EDE4DC);">
+                  <div>
+                    <span class="block text-[10px] uppercase tracking-[0.22em] text-stone mb-3">{{ card_index | prepend: '0' | slice: -2, 2 }} · Collectie</span>
+                    <span class="font-display italic text-2xl leading-snug text-ink/70">{{ c.title }}</span>
+                    <span aria-hidden="true" class="mx-auto mt-4 block h-px w-10 bg-stone-soft"></span>
+                  </div>
+                </div>
+              {%- endif -%}
+              <span aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink/55 via-ink/15 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+              <span class="pointer-events-none absolute bottom-4 left-4 right-4 flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-surface opacity-0 transition-all duration-500 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0"><span class="block h-px w-6 bg-surface/70"></span>Bekijken</span>
+            </div>
+            <div class="mt-4 flex items-baseline justify-between gap-4">
+              <div class="min-w-0">
+                <h2 class="font-display text-h3 leading-tight text-ink transition-colors group-hover:text-clay">{{ c.title }}</h2>
+                <p class="mt-1 text-sm text-ink-soft line-clamp-2">{{ c.description | strip_html | truncate: 80 | default: 'Bekijk de collectie.' }}</p>
+                {%- if c.all_products_count > 0 -%}
+                  <p class="mt-2 text-[11px] uppercase tracking-[0.18em] text-stone-soft tabular-nums">{{ c.all_products_count }} {% if c.all_products_count == 1 %}product{% else %}producten{% endif %}</p>
+                {%- endif -%}
+              </div>
+              <span aria-hidden="true" class="mt-3 block h-px w-6 bg-border-soft transition-all duration-500 group-hover:w-14 group-hover:bg-clay/70 shrink-0"></span>
+            </div>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- else -%}
+    <div class="border-t border-border-soft py-24 text-center">
+      <p class="font-display italic text-2xl text-stone">Er zijn nog geen collecties.</p>
+      <p class="mt-3 text-sm text-ink-soft">Kom snel terug — we vullen de collecties aan.</p>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Collections list",
+  "tag": "section",
+  "settings": [
+    { "type": "collection_list", "id": "collection_list", "label": "Collections", "info": "Optional. Pick and order the collections to show. If left empty, all store collections are shown automatically.", "limit": 50 },
+    { "type": "header", "content": "Breadcrumb (desktop)" },
+    { "type": "text", "id": "breadcrumb_label", "label": "Breadcrumb label", "default": "Collecties" },
+    { "type": "text", "id": "breadcrumb_right", "label": "Breadcrumb right", "default": "Vanuit Nederland" },
+    { "type": "header", "content": "Copy" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Collecties" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Voor elke hoek van je huis." },
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Blader door alle collecties van Zayna Home — stijlvolle keuken- en woonproducten, geselecteerd op design, kwaliteit en functie." }
+  ],
+  "presets": [{ "name": "Collections list" }]
+}
+{% endschema %}

@@ -1,0 +1,6 @@
+{
+  "sections": {
+    "list-collections": { "type": "list-collections", "settings": {} }
+  },
+  "order": ["list-collections"]
+}
