@@ -16,6 +16,56 @@
 
     {{ content_for_header }}
 
+    {%- comment -%} SEO: self-referential hreflang (single-locale store) {%- endcomment -%}
+    <link rel="alternate" hreflang="nl-nl" href="{{ canonical_url }}">
+    <link rel="alternate" hreflang="x-default" href="{{ canonical_url }}">
+
+    {%- comment -%} SEO: noindex thin tag-filtered collection pages (canonical still follows) {%- endcomment -%}
+    {%- if template.name == 'collection' and current_tags != blank -%}
+      <meta name="robots" content="noindex,follow">
+    {%- endif -%}
+
+    {%- comment -%} SEO: complete Open Graph product namespace (Shopify emits og:image only) {%- endcomment -%}
+    {%- if template.name == 'product' and product -%}
+      {%- assign og_variant = product.selected_or_first_available_variant -%}
+      <meta property="og:type" content="product">
+      <meta property="og:title" content="{{ product.title | escape }}">
+      <meta property="og:description" content="{{ product.description | strip_html | truncate: 200 | escape }}">
+      <meta property="og:url" content="{{ canonical_url }}">
+      <meta property="product:price:amount" content="{{ og_variant.price | divided_by: 100.0 }}">
+      <meta property="product:price:currency" content="{{ shop.currency }}">
+      <meta property="product:availability" content="{% if product.available %}in stock{% else %}out of stock{% endif %}">
+      {%- if product.featured_image -%}
+        <link rel="preload" as="image" fetchpriority="high" href="{{ product.featured_image | image_url: width: 1200, format: 'webp' | prepend: 'https:' }}">
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} SEO: Organization + WebSite SearchAction (homepage only) {%- endcomment -%}
+    {%- if template.name == 'index' -%}
+      <script type="application/ld+json">
+      {
+        "@context": "https://schema.org/",
+        "@type": "Organization",
+        "name": {{ shop.name | json }},
+        "url": {{ shop.url | json }}{% if shop.brand.logo %},
+        "logo": {{ shop.brand.logo | image_url: width: 400 | prepend: 'https:' | json }}{% endif %}
+      }
+      </script>
+      <script type="application/ld+json">
+      {
+        "@context": "https://schema.org/",
+        "@type": "WebSite",
+        "name": {{ shop.name | json }},
+        "url": {{ shop.url | json }},
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": { "@type": "EntryPoint", "urlTemplate": "{{ shop.url }}/search?q={search_term_string}" },
+          "query-input": "required name=search_term_string"
+        }
+      }
+      </script>
+    {%- endif -%}
+
     <link rel="stylesheet" href="{{ 'tailwind.css' | asset_url }}">
     <script src="{{ 'theme.js' | asset_url }}" defer></script>
   </head>

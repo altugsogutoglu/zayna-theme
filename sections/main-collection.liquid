@@ -37,6 +37,13 @@
   endif
 -%}
 <div data-collection data-section-id="{{ section.id }}" data-collection-url="{{ collection.url }}" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pb-24">
+  <nav aria-label="Kruimelpad" class="pt-8">
+    <ol class="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-stone">
+      <li><a href="{{ routes.root_url }}" class="transition-colors hover:text-ink">Home</a></li>
+      <li aria-hidden="true" class="text-stone-soft">/</li>
+      <li class="text-ink-soft" aria-current="page">{{ collection.title }}</li>
+    </ol>
+  </nav>
   {%- paginate collection.products by per_page -%}
 
   {%- comment -%} FilterBar (sticky) {%- endcomment -%}
@@ -164,6 +171,18 @@
   {%- endif -%}
 
   {%- endpaginate -%}
+
+  {%- comment -%} SEO: BreadcrumbList JSON-LD {%- endcomment -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org/",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": {{ shop.url | json }} },
+      { "@type": "ListItem", "position": 2, "name": {{ collection.title | json }}, "item": {{ canonical_url | json }} }
+    ]
+  }
+  </script>
 </div>
 
 {% schema %}

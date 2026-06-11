@@ -28,6 +28,21 @@
       </div>
     </div>
   </section>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org/",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {%- for faq in faqs -%}
+      {
+        "@type": "Question",
+        "name": {{ faq.question | strip_html | json }},
+        "acceptedAnswer": { "@type": "Answer", "text": {{ faq.answer | strip_html | json }} }
+      }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  }
+  </script>
 {%- endif -%}
 
 {% schema %}

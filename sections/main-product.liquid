@@ -1,5 +1,6 @@
 {%- liquid
   assign cv = product.selected_or_first_available_variant
+  assign coll = product.collections.first
   assign is_sold = false
   unless cv.available
     assign is_sold = true
@@ -35,6 +36,17 @@
   endfor
 -%}
 <section data-product-root class="relative">
+  <nav aria-label="Kruimelpad" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pt-8">
+    <ol class="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-stone">
+      <li><a href="{{ routes.root_url }}" class="transition-colors hover:text-ink">Home</a></li>
+      {%- if coll -%}
+        <li aria-hidden="true" class="text-stone-soft">/</li>
+        <li><a href="{{ coll.url }}" class="transition-colors hover:text-ink">{{ coll.title }}</a></li>
+      {%- endif -%}
+      <li aria-hidden="true" class="text-stone-soft">/</li>
+      <li class="text-ink-soft" aria-current="page">{{ product.title }}</li>
+    </ol>
+  </nav>
   <article class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-12 grid gap-12 md:grid-cols-2">
     {%- comment -%} Left column: gallery block(s) {%- endcomment -%}
     <div class="md:sticky md:top-24 md:self-start">
@@ -298,6 +310,9 @@
     }
   </script>
   <script src="{{ 'product.js' | asset_url }}" defer></script>
+
+  {%- comment -%} SEO: Product + Offer + BreadcrumbList JSON-LD {%- endcomment -%}
+  {% render 'product-structured-data', product: product %}
 </section>
 
 {% schema %}

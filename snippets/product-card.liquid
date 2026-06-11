@@ -55,14 +55,14 @@
   <a href="{{ product.url }}" class="block focus-visible:outline-none">
     <div class="zh-frame relative aspect-[4/5] overflow-hidden">
       {%- if primary -%}
-        {{ primary | image_url: width: 600 | image_tag:
+        {{ primary | image_url: width: 600, format: 'webp' | image_tag:
           loading: loading,
           sizes: '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw',
           widths: '300, 400, 600, 800',
           alt: primary_alt,
           class: 'absolute inset-0 h-full w-full object-contain' }}
         {%- if secondary -%}
-          {{ secondary | image_url: width: 600 | image_tag:
+          {{ secondary | image_url: width: 600, format: 'webp' | image_tag:
             loading: 'lazy',
             sizes: '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw',
             alt: '',

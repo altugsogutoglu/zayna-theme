@@ -1,0 +1,50 @@
+{%- comment -%}
+  JSON-LD structured data for a product page: Product + Offer + BreadcrumbList.
+  Pass: product. Renders nothing visible. Validate in Google Rich Results Test.
+{%- endcomment -%}
+{%- liquid
+  assign cv = product.selected_or_first_available_variant
+  assign coll = product.collections.first
+  assign avail = 'OutOfStock'
+  if product.available
+    assign avail = 'InStock'
+  endif
+-%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "description": {{ product.description | strip_html | truncate: 4000 | json }},
+  "sku": {{ cv.sku | default: product.id | json }},
+  {% if cv.barcode != blank %}"gtin13": {{ cv.barcode | json }},{% endif %}
+  "mpn": {{ cv.sku | default: product.id | json }},
+  "brand": { "@type": "Brand", "name": {{ product.vendor | default: shop.name | json }} },
+  "url": {{ canonical_url | json }},
+  "image": [
+    {%- for image in product.images -%}
+      {{ image | image_url: width: 1200, format: 'webp' | prepend: 'https:' | json }}{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ],
+  "offers": {
+    "@type": "Offer",
+    "url": {{ canonical_url | json }},
+    "priceCurrency": {{ shop.currency | json }},
+    "price": "{{ cv.price | divided_by: 100.0 }}",
+    "availability": "https://schema.org/{{ avail }}",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": { "@type": "Organization", "name": {{ shop.name | json }} }
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": {{ shop.url | json }} }{% if coll %},
+    { "@type": "ListItem", "position": 2, "name": {{ coll.title | json }}, "item": {{ coll.url | prepend: shop.url | json }} }{% endif %},
+    { "@type": "ListItem", "position": {% if coll %}3{% else %}2{% endif %}, "name": {{ product.title | json }}, "item": {{ canonical_url | json }} }
+  ]
+}
+</script>
