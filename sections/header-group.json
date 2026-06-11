@@ -47,12 +47,16 @@
           "type": "mega_panel",
           "settings": {
             "nav_title": "Assortiment",
+            "show_all_products": true,
             "eyebrow": "De collectie",
             "blurb": "Stijlvol, praktisch en zorgvuldig geselecteerd. Verzonden vanuit Nederland.",
             "cta_text": "Alle collecties bekijken",
+            "cta_url": "",
             "featured_title": "Nieuw deze week",
             "featured_body": "Net binnen — onze nieuwste producten voor je keuken en huis.",
-            "aside_heading": "Klantenservice"
+            "featured_collection": "",
+            "aside_heading": "Klantenservice",
+            "aside_menu": ""
           }
         }
       },
