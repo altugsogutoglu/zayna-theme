@@ -29,14 +29,14 @@
 -%}
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pb-24">
   {%- comment -%} Header (mirrors collection-hero) {%- endcomment -%}
-  <header class="pt-6 pb-10 sm:pt-10 sm:pb-14 md:pt-16 md:pb-20">
+  <header class="pt-6 pb-8 sm:pt-8 sm:pb-10 md:pt-12 md:pb-12">
     <div class="mb-10 hidden items-center justify-between text-[10px] uppercase tracking-[0.22em] text-stone md:flex">
       <span class="flex items-center gap-3">
         {{ shop.name }}
         <span class="block h-px w-10 bg-stone-soft"></span>
-        <span class="font-display italic normal-case tracking-normal text-stone">{{ section.settings.breadcrumb_label | default: 'Collecties' }}</span>
+        <span>{{ section.settings.breadcrumb_label | default: 'Collecties' }}</span>
       </span>
-      <span>{{ section.settings.breadcrumb_right | default: 'Vanuit Nederland' }}</span>
+      <span>{{ section.settings.breadcrumb_right | default: 'Keuken · Wonen · Opbergen' }}</span>
     </div>
 
     <p class="text-label text-clay mb-4 flex items-center gap-3 sm:mb-5">
@@ -44,20 +44,20 @@
       <span class="block h-px w-10 bg-clay/60 sm:w-12"></span>
     </p>
 
-    <h1 class="font-display text-[clamp(2.25rem,7.5vw,4.75rem)] leading-[1.02] tracking-[-0.025em] text-ink">{{ title_main }}{%- if trailing != '' -%}<span class="italic text-clay/80">{{ trailing }}</span>{%- endif -%}</h1>
+    <h1 class="font-display text-[clamp(2.25rem,6.5vw,4.25rem)] leading-[1.02] tracking-[-0.025em] text-ink">{{ title_main }}{%- if trailing != '' -%}<span class="text-clay/80">{{ trailing }}</span>{%- endif -%}</h1>
 
     {%- if section.settings.intro != blank -%}
       <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-ink-soft sm:mt-7 md:text-base">{{ section.settings.intro }}</p>
     {%- endif -%}
 
     {%- if visible_count > 0 -%}
-      <p class="mt-8 border-t border-border-soft pt-6 text-[11px] uppercase tracking-[0.22em] text-stone sm:mt-10 sm:pt-7"><span class="tabular-nums text-ink">{{ visible_count }}</span> {% if visible_count == 1 %}collectie{% else %}collecties{% endif %}</p>
+      <p class="mt-7 border-t border-border-soft pt-5 text-[11px] uppercase tracking-[0.22em] text-stone sm:mt-8 sm:pt-6"><span class="tabular-nums text-ink">{{ visible_count }}</span> {% if visible_count == 1 %}collectie{% else %}collecties{% endif %}</p>
     {%- endif -%}
   </header>
 
   {%- comment -%} Grid {%- endcomment -%}
   {%- if visible_count > 0 -%}
-    <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12 md:gap-x-8 md:gap-y-16">
+    <ul class="zayna-collections-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10 md:gap-x-8 md:gap-y-14">
       {%- assign card_index = 0 -%}
       {%- for c in cols -%}
         {%- if c.handle == 'all' or c.handle == 'frontpage' -%}{%- continue -%}{%- endif -%}
@@ -108,6 +108,30 @@
   {%- endif -%}
 </div>
 
+{% comment %}
+  Grid columns are forced via this scoped CSS so /collections renders 3/2/1
+  even if assets/tailwind.css is stale and lacks sm:grid-cols-2 / lg:grid-cols-3.
+{% endcomment %}
+{% style %}
+  .zayna-collections-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    column-gap: 1.5rem;
+    row-gap: 2.5rem;
+  }
+  .zayna-collections-grid > li { min-width: 0; }
+  @media screen and (min-width: 640px) {
+    .zayna-collections-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media screen and (min-width: 1024px) {
+    .zayna-collections-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: 2rem;
+      row-gap: 3.5rem;
+    }
+  }
+{% endstyle %}
+
 {% schema %}
 {
   "name": "Collections list",
@@ -116,11 +140,11 @@
     { "type": "collection_list", "id": "collection_list", "label": "Collections", "info": "Optional. Pick and order the collections to show. If left empty, all store collections are shown automatically.", "limit": 50 },
     { "type": "header", "content": "Breadcrumb (desktop)" },
     { "type": "text", "id": "breadcrumb_label", "label": "Breadcrumb label", "default": "Collecties" },
-    { "type": "text", "id": "breadcrumb_right", "label": "Breadcrumb right", "default": "Vanuit Nederland" },
+    { "type": "text", "id": "breadcrumb_right", "label": "Breadcrumb right", "default": "Keuken · Wonen · Opbergen" },
     { "type": "header", "content": "Copy" },
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Collecties" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "Voor elke hoek van je huis." },
-    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Blader door alle collecties van Zayna Home — stijlvolle keuken- en woonproducten, geselecteerd op design, kwaliteit en functie." }
+    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Ontdek onze collecties met stijlvolle keuken- en woonproducten voor een rustig, verzorgd en praktisch thuis." }
   ],
   "presets": [{ "name": "Collections list" }]
 }
