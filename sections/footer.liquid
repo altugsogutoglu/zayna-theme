@@ -1,7 +1,12 @@
 <footer class="border-t border-border-soft bg-cream">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-16 grid gap-12 md:grid-cols-4">
     <div class="md:col-span-1">
-      <p class="font-signature text-3xl text-ink">{{ section.settings.brand_name | default: shop.name }}</p>
+      {%- if section.settings.logo != blank -%}
+        {%- assign flogo_w = section.settings.logo_width | default: 160 -%}
+        {{ section.settings.logo | image_url: width: flogo_w | image_tag: loading: 'lazy', class: 'block h-auto w-auto', widths: '160,320,480', style: 'max-width:' | append: flogo_w | append: 'px', alt: section.settings.brand_name | default: shop.name }}
+      {%- else -%}
+        <p class="font-signature text-3xl text-ink">{{ section.settings.brand_name | default: shop.name }}</p>
+      {%- endif -%}
       <p class="mt-3 max-w-sm text-sm text-ink-soft">{{ section.settings.blurb }}</p>
     </div>
 
@@ -66,6 +71,8 @@
   "name": "Footer",
   "tag": "section",
   "settings": [
+    { "type": "image_picker", "id": "logo", "label": "Logo", "info": "Leave empty to show the brand name as text." },
+    { "type": "range", "id": "logo_width", "min": 80, "max": 360, "step": 10, "unit": "px", "label": "Logo width", "default": 160 },
     { "type": "text", "id": "brand_name", "label": "Brand name", "default": "Zayna Home" },
     { "type": "textarea", "id": "blurb", "label": "Brand blurb", "default": "Stijlvolle keuken- en woonproducten, zorgvuldig geselecteerd en verzonden vanuit Nederland." },
     { "type": "link_list", "id": "service_menu", "label": "Service menu", "default": "footer" },

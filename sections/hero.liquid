@@ -39,7 +39,7 @@
     <div class="relative z-10 mx-auto flex min-h-[78dvh] max-w-7xl flex-col px-5 pt-[calc(var(--header-height)+3rem)] pb-16 sm:px-10 sm:pt-[calc(var(--header-height)+5rem)] sm:pb-24 md:min-h-[86dvh]">
       <div class="mb-12 flex flex-wrap items-center justify-between gap-y-3 text-[10px] uppercase tracking-[0.22em] text-stone">
         <span class="flex items-center gap-3"><span aria-hidden="true" class="block h-px w-10 bg-stone-soft"></span>{{ s.meta_left | default: 'Zayna Home · Keuken & Wonen' }}</span>
-        <span class="hidden font-display italic normal-case tracking-normal text-stone md:inline">{{ s.meta_center | default: 'Stijlvol, praktisch, betaalbaar.' }}</span>
+        <span class="hidden md:inline">{{ s.meta_center | default: 'Stijlvol · Praktisch · Betaalbaar' }}</span>
         <span>{{ s.meta_right | default: 'Geselecteerd · Verzonden vanuit NL' }}</span>
       </div>
       <div class="grid flex-1 grid-cols-12 items-end gap-y-12 gap-x-8 md:gap-x-12">
@@ -75,7 +75,7 @@
     { "type": "text", "id": "cta_url", "label": "CTA link", "default": "/collections/all" },
     { "type": "header", "content": "Typographic hero meta (shown when no image)" },
     { "type": "text", "id": "meta_left", "label": "Meta left", "default": "Zayna Home · Keuken & Wonen" },
-    { "type": "text", "id": "meta_center", "label": "Meta center", "default": "Stijlvol, praktisch, betaalbaar." },
+    { "type": "text", "id": "meta_center", "label": "Meta center", "default": "Stijlvol · Praktisch · Betaalbaar" },
     { "type": "text", "id": "meta_right", "label": "Meta right", "default": "Geselecteerd · Verzonden vanuit NL" }
   ],
   "presets": [{ "name": "Hero" }]

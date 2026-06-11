@@ -7,7 +7,12 @@
 >
   <div class="mx-auto flex h-[var(--header-height)] max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-10">
     <a href="{{ routes.root_url }}" class="shrink-0">
-      <span class="font-display text-2xl tracking-tight text-ink">{{ shop.name }}</span>
+      {%- if section.settings.logo != blank -%}
+        {%- assign logo_w = section.settings.logo_width | default: 140 -%}
+        {{ section.settings.logo | image_url: width: logo_w | image_tag: loading: 'eager', class: 'block h-auto w-auto', widths: '140,280,420', style: 'max-width:' | append: logo_w | append: 'px', alt: shop.name }}
+      {%- else -%}
+        <span class="font-display text-2xl tracking-tight text-ink">{{ shop.name }}</span>
+      {%- endif -%}
     </a>
 
     <nav aria-label="Hoofdnavigatie" class="hidden md:flex items-center gap-7" data-nav>
@@ -158,6 +163,8 @@
   "name": "Header",
   "tag": "section",
   "settings": [
+    { "type": "image_picker", "id": "logo", "label": "Logo", "info": "Leave empty to show the shop name as text." },
+    { "type": "range", "id": "logo_width", "min": 80, "max": 320, "step": 10, "unit": "px", "label": "Logo width", "default": 140 },
     { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" }
   ],
   "blocks": [
