@@ -9,7 +9,32 @@
  */
 {
   "sections": {
-    "main": { "type": "contact-form", "settings": {} }
+    "main": {
+      "type": "contact-form",
+      "settings": {
+        "eyebrow": "Contact",
+        "heading": "Stuur ons een bericht.",
+        "intro": "Heb je een vraag over een product, je bestelling of iets anders? Stuur ons een bericht en we reageren zo snel mogelijk — meestal binnen 24 uur op werkdagen.",
+        "label_name": "Naam",
+        "label_email": "E-mailadres",
+        "label_subject": "Onderwerp",
+        "subject_placeholder": "Kies een onderwerp",
+        "subjects": "Vraag over een product, Vraag over een bestelling, Retour of ruil, Anders",
+        "label_message": "Bericht",
+        "submit_label": "Verstuur bericht",
+        "success_text": "Bedankt voor je bericht. We reageren zo snel mogelijk.",
+        "error_text": "Er ging iets mis. Controleer je gegevens en probeer het opnieuw.",
+        "email": "info@zaynahome.nl",
+        "instagram_url": "https://www.instagram.com/zaynahome.nl",
+        "instagram_label": "@zaynahome.nl",
+        "note_response": "Reactietijd: binnen 24 uur op werkdagen.",
+        "note_shipping": "Verzending: binnen 1–3 werkdagen vanuit Nederland.",
+        "company_heading": "Bedrijfsgegevens",
+        "company_details": "<p>Zayna Home</p><p>KvK: 97745200</p><p>btw-id: NL005285507B86</p>"
+      }
+    }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }
