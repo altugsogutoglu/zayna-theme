@@ -11,6 +11,7 @@
   "sections": {
     "hero": {
       "type": "hero",
+      "custom_css": [],
       "settings": {
         "eyebrow": "Zayna Home",
         "headline": "Mooi wonen begint in de keuken.",
