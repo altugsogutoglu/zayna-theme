@@ -49,12 +49,12 @@
     {%- endif -%}
 
     <div class="mt-2 flex items-center justify-between gap-3">
-      <div class="inline-flex items-center h-10 border border-border-soft bg-surface select-none" role="group" aria-label="Aantal">
-        <button type="button" data-cart-change data-line-key="{{ li.key }}" data-quantity="{{ dec_qty }}" aria-label="Aantal verlagen" {% if li.quantity <= 1 %}disabled{% endif %} class="grid h-full w-10 place-items-center text-ink-soft hover:text-clay disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:text-clay">
+      <div data-qty-stepper class="relative inline-flex items-center h-10 border border-border-soft bg-surface select-none" role="group" aria-label="Aantal">
+        <button type="button" data-cart-change data-step="dec" data-line-key="{{ li.key }}" data-quantity="{{ dec_qty }}" aria-label="Aantal verlagen" {% if li.quantity <= 1 %}disabled{% endif %} class="grid h-full w-10 place-items-center text-ink-soft hover:text-clay disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:text-clay">
           {% render 'icon', name: 'minus', size: 14 %}
         </button>
-        <span aria-live="polite" class="min-w-[2ch] text-center text-sm tabular-nums text-ink">{{ li.quantity }}</span>
-        <button type="button" data-cart-change data-line-key="{{ li.key }}" data-quantity="{{ inc_qty }}" aria-label="Aantal verhogen" class="grid h-full w-10 place-items-center text-ink-soft hover:text-clay disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:text-clay">
+        <span data-line-qty aria-live="polite" class="min-w-[2ch] text-center text-sm tabular-nums text-ink">{{ li.quantity }}</span>
+        <button type="button" data-cart-change data-step="inc" data-line-key="{{ li.key }}" data-quantity="{{ inc_qty }}" aria-label="Aantal verhogen" class="grid h-full w-10 place-items-center text-ink-soft hover:text-clay disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:text-clay">
           {% render 'icon', name: 'plus', size: 14 %}
         </button>
       </div>

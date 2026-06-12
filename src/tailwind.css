@@ -265,6 +265,29 @@ html:has(.overlay.expanded) { overflow: hidden; }
 .overlay.expanded aside { transform: translateX(0); }
 .cart-drawer-footer { padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0)); }
 
+/* ---- Cart busy feedback (assets/cart.js toggles aria-busy + .is-updating) ---- */
+[data-cart-drawer][aria-busy='true'],
+[data-cart-page][aria-busy='true'] { cursor: progress; }
+[data-cart-drawer][aria-busy='true'] [data-cart-line],
+[data-cart-page][aria-busy='true'] [data-cart-line] { pointer-events: none; }
+[data-cart-line].is-updating { opacity: 0.6; }
+[data-cart-line].is-updating [data-qty-stepper]::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 14px; height: 14px;
+  margin: -7px 0 0 -7px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: zh-spin 0.6s linear infinite;
+}
+[data-cart-line].is-updating [data-qty-stepper] [data-line-qty] { opacity: 0.25; }
+@keyframes zh-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  [data-cart-line].is-updating [data-qty-stepper]::after { animation-duration: 1.4s; }
+}
+
 /* ---- Announcement marquee (used by announcement-bar in Milestone 2) ---- */
 .marquee {
   overflow: hidden;

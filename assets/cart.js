@@ -61,15 +61,59 @@
     });
   }
 
-  async function change(lineKey, quantity) {
-    if (busy) return;
+  // Quantity changes are optimistic and debounced: the UI updates on every
+  // click, rapid clicks coalesce into one request carrying the final quantity,
+  // and requests are serialized so responses never apply out of order.
+  const pendingQty = new Map(); // lineKey -> latest target quantity
+  const debounceTimers = new Map();
+  let chain = Promise.resolve();
+
+  function optimisticChange(lineKey, quantity) {
+    document.querySelectorAll('[data-cart-line][data-line-key="' + CSS.escape(lineKey) + '"]').forEach((line) => {
+      line.classList.add('is-updating');
+      if (quantity <= 0) return;
+      const qty = line.querySelector('[data-line-qty]');
+      if (qty) qty.textContent = quantity;
+      // Re-target the stepper buttons so further clicks step from the new
+      // quantity before the server re-render lands.
+      line.querySelectorAll('[data-cart-change][data-step]').forEach((btn) => {
+        const inc = btn.getAttribute('data-step') === 'inc';
+        btn.setAttribute('data-quantity', String(inc ? quantity + 1 : quantity - 1));
+        if (!inc) btn.disabled = quantity <= 1;
+      });
+    });
+  }
+
+  function change(lineKey, quantity) {
+    optimisticChange(lineKey, quantity);
+    pendingQty.set(lineKey, quantity);
+    clearTimeout(debounceTimers.get(lineKey));
+    debounceTimers.set(lineKey, setTimeout(() => {
+      chain = chain.then(() => sendChange(lineKey));
+    }, quantity === 0 ? 0 : 250));
+  }
+
+  async function sendChange(lineKey) {
+    if (!pendingQty.has(lineKey)) return;
+    const quantity = pendingQty.get(lineKey);
+    pendingQty.delete(lineKey);
     setBusy(true);
     try {
       const data = await postJSON('/cart/change.js', { id: lineKey, quantity });
-      applySections(data.sections);
+      // If more changes were queued while this was in flight, this response is
+      // already stale — let the next one render.
+      if (pendingQty.size === 0) applySections(data.sections);
     } catch (e) {
       console.error(e);
+      // Optimistic DOM may now disagree with the real cart; re-render from server.
+      try {
+        const data = await postJSON('/cart/update.js', {});
+        applySections(data.sections);
+      } catch (_) { /* offline; leave DOM as-is */ }
     } finally {
+      if (pendingQty.size === 0) {
+        document.querySelectorAll('[data-cart-line].is-updating').forEach((line) => line.classList.remove('is-updating'));
+      }
       setBusy(false);
     }
   }
@@ -114,16 +158,27 @@
     if (trigger) trigger.click();
   }
 
+  // Section swaps wipe the element (and its dataset.loaded marker), so cache
+  // the fetched upsell HTML module-side to avoid refetching on every cart change.
+  const upsellCache = new Map(); // url -> innerHTML
+
   function bindUpsell() {
     document.querySelectorAll('[data-cart-upsell][data-url]').forEach(async (el) => {
       const url = el.getAttribute('data-url');
       if (!url || el.dataset.loaded === url) return;
       el.dataset.loaded = url;
+      if (upsellCache.has(url)) {
+        el.innerHTML = upsellCache.get(url);
+        return;
+      }
       try {
         const res = await fetch(url);
         if (!res.ok) return;
         const fresh = new DOMParser().parseFromString(await res.text(), 'text/html').querySelector('[data-cart-upsell]');
-        if (fresh) el.innerHTML = fresh.innerHTML;
+        if (fresh) {
+          upsellCache.set(url, fresh.innerHTML);
+          el.innerHTML = fresh.innerHTML;
+        }
       } catch (e) {
         console.error(e);
       }
