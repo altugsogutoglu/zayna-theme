@@ -1,125 +1,568 @@
 {%- liquid
   assign s = section.settings
-  assign image_fit = s.image_fit | default: 'cover'
-  if image_fit == 'contain'
-    assign image_fit_class = 'object-contain p-[clamp(1.75rem,5vw,3.5rem)]'
-  else
-    assign image_fit_class = 'object-cover'
+  assign desktop_image = s.image | default: s.mobile_image
+  assign mobile_image = s.mobile_image | default: desktop_image
+  assign hero_alt = desktop_image.alt | default: s.headline
+  assign primary_url = s.cta_url | default: routes.all_products_collection_url
+
+  assign image_loading = 'lazy'
+  assign image_fetchpriority = 'auto'
+
+  if section.index == 1
+    assign image_loading = 'eager'
+    assign image_fetchpriority = 'high'
   endif
 -%}
 
-<section class="relative -mt-[var(--header-height)] overflow-hidden bg-bg text-ink isolate max-lg:mt-0">
-  <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10" style="background:radial-gradient(54% 62% at 84% 24%, color-mix(in srgb, var(--color-clay) 12%, transparent), transparent 62%), radial-gradient(45% 54% at 12% 86%, color-mix(in srgb, var(--color-sage) 12%, transparent), transparent 70%), linear-gradient(180deg, #F4ECE5 0%, var(--color-bg) 55%, var(--color-cream) 100%);"></div>
-
-  <div class="mx-auto grid w-[min(100%,1376px)] items-center gap-[clamp(2.125rem,6vw,5.75rem)] px-[clamp(1.125rem,5vw,2.5rem)] pt-[calc(var(--header-height)+3.375rem)] pb-16 max-lg:min-h-0 max-lg:grid-cols-1 max-lg:gap-[2.125rem] max-lg:py-[2.875rem] lg:min-h-[min(760px,calc(100dvh-36px))] lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,1.08fr)]">
-    <div class="max-w-[660px]">
-      <div class="mb-[clamp(1.875rem,5vw,4.25rem)] flex items-center justify-between gap-[22px] whitespace-nowrap text-[10px] uppercase leading-snug tracking-[0.22em] text-stone max-lg:whitespace-normal">
-        <span>{{ s.meta_left | default: 'Zayna Home · Keuken & Wonen' }}</span>
-        <span class="hidden xl:inline">{{ s.meta_center | default: 'Stijlvol · Praktisch · Betaalbaar' }}</span>
-        <span class="hidden xl:inline">{{ s.meta_right | default: 'Geselecteerd · Verzonden vanuit NL' }}</span>
-      </div>
-
+<div
+  id="ZaynaHero-{{ section.id }}"
+  class="zayna-home-hero{% if desktop_image == blank %} zayna-home-hero--no-image{% endif %}"
+>
+  <div class="zayna-home-hero__content-wrap">
+    <div class="zayna-home-hero__content">
       {%- if s.eyebrow != blank -%}
-        <p class="mb-[22px] flex items-center gap-[14px] text-[11px] uppercase leading-snug tracking-[0.24em] text-clay">
-          <span aria-hidden="true" class="block h-px w-12 bg-clay/60 max-sm:w-[34px]"></span>
-          {{ s.eyebrow }}
+        <p class="zayna-home-hero__eyebrow">
+          <span aria-hidden="true"></span>
+          {{ s.eyebrow | escape }}
         </p>
       {%- endif -%}
 
       {%- if s.headline != blank -%}
-        <h1 class="m-0 max-w-[11ch] font-display text-[clamp(2.625rem,12vw,3.625rem)] font-normal leading-[0.95] tracking-[-0.035em] text-ink lg:max-w-[11ch] lg:text-[clamp(3.5rem,4.6vw,5.125rem)] lg:leading-[0.98]">{{ s.headline }}</h1>
+        {%- if request.page_type == 'index' -%}
+          <h1 class="zayna-home-hero__title">
+            {{ s.headline | escape }}
+          </h1>
+        {%- else -%}
+          <h2 class="zayna-home-hero__title">
+            {{ s.headline | escape }}
+          </h2>
+        {%- endif -%}
       {%- endif -%}
 
       {%- if s.subhead != blank -%}
-        <p class="mt-7 max-w-[460px] text-[15px] leading-[1.75] text-ink-soft lg:text-base lg:leading-[1.8]">{{ s.subhead }}</p>
+        <p class="zayna-home-hero__subhead">
+          {{ s.subhead | escape }}
+        </p>
       {%- endif -%}
 
-      <div class="mt-[34px] flex flex-wrap items-center gap-x-[22px] gap-y-4 max-lg:mt-7">
-        {%- if s.cta_label != blank -%}
-          <a href="{{ s.cta_url | default: routes.all_products_collection_url }}" class="inline-flex min-h-[46px] items-center justify-center gap-3 border border-ink bg-ink px-6 py-[15px] text-[11px] uppercase leading-none tracking-[0.18em] text-surface transition-soft hover:-translate-y-px hover:border-clay hover:bg-clay max-sm:w-full">
-            {{ s.cta_label }}
-            <span aria-hidden="true">→</span>
-          </a>
-        {%- endif -%}
-
-        {%- if s.secondary_cta_label != blank -%}
-          <a href="{{ s.secondary_cta_url | default: routes.all_products_collection_url }}" class="inline-flex min-h-[38px] items-center justify-center border-b border-ink/40 text-[11px] uppercase leading-none tracking-[0.18em] text-ink transition-soft hover:border-clay hover:text-clay max-sm:w-full">
-            {{ s.secondary_cta_label }}
-          </a>
-        {%- endif -%}
-      </div>
-
-      {%- if s.trust_text != blank -%}
-        <p class="mt-[26px] text-xs leading-[1.7] tracking-[0.08em] text-stone max-sm:text-[11px] max-sm:tracking-[0.06em]">{{ s.trust_text }}</p>
-      {%- endif -%}
-    </div>
-
-    <div class="w-full min-w-0">
-      {%- if s.image != blank -%}
-        <div class="relative min-h-[360px] overflow-hidden border border-border-soft bg-cream shadow-[0_30px_80px_color-mix(in_srgb,var(--color-ink)_8%,transparent)] lg:min-h-[520px]">
-          {{ s.image | image_url: width: 1800 | image_tag:
-            loading: 'eager',
-            fetchpriority: 'high',
-            sizes: '(min-width: 1024px) 48vw, 92vw',
-            widths: '600, 900, 1200, 1500, 1800',
-            alt: s.image.alt | default: s.headline,
-            class: 'block h-full min-h-[360px] w-full lg:min-h-[520px] ' | append: image_fit_class }}
-
-          {%- if s.media_caption != blank -%}
-            <p class="absolute bottom-[18px] left-[22px] m-0 bg-bg/80 px-[14px] py-[10px] text-[10px] uppercase leading-snug tracking-[0.18em] text-ink-soft backdrop-blur-[10px]">{{ s.media_caption }}</p>
+      {%- if s.cta_label != blank or s.secondary_cta_label != blank -%}
+        <div class="zayna-home-hero__actions">
+          {%- if s.cta_label != blank -%}
+            <a
+              class="zayna-home-hero__primary"
+              href="{{ primary_url | escape }}"
+            >
+              {{ s.cta_label | escape }}
+              <span aria-hidden="true">→</span>
+            </a>
           {%- endif -%}
-        </div>
-      {%- else -%}
-        <div class="relative min-h-[390px] overflow-hidden border border-border-soft shadow-[0_30px_80px_color-mix(in_srgb,var(--color-ink)_8%,transparent)] lg:min-h-[560px] max-sm:min-h-[340px]" style="background:radial-gradient(42% 36% at 62% 44%, color-mix(in srgb, var(--color-clay) 10%, transparent), transparent 70%), linear-gradient(180deg, var(--color-bg) 0%, #F1E8DF 100%);" aria-label="Zayna Home productcompositie">
-          {%- render 'hero-product-card', image: s.product_image_1, label: s.product_label_1, default_label: 'Voorraadpotten', eager: true, size: 'lg', position: 'absolute bottom-[9%] left-[9%] h-[70%] w-[52%] max-lg:bottom-[8%] max-lg:left-[6%] max-lg:h-[68%] max-lg:w-[56%]' -%}
-          {%- render 'hero-product-card', image: s.product_image_2, label: s.product_label_2, default_label: 'Glaswerk', eager: false, size: 'sm', position: 'absolute right-[9%] top-[10%] h-[34%] w-[34%] max-lg:right-[6%] max-lg:h-[31%] max-lg:w-[35%]' -%}
-          {%- render 'hero-product-card', image: s.product_image_3, label: s.product_label_3, default_label: 'Keukentextiel', eager: false, size: 'sm', position: 'absolute bottom-[12%] right-[9%] h-[34%] w-[34%] max-lg:right-[6%] max-lg:h-[31%] max-lg:w-[35%]' -%}
+
+          {%- if s.secondary_cta_label != blank and s.secondary_cta_url != blank -%}
+            <a
+              class="zayna-home-hero__secondary"
+              href="{{ s.secondary_cta_url | escape }}"
+            >
+              {{ s.secondary_cta_label | escape }}
+            </a>
+          {%- endif -%}
         </div>
       {%- endif -%}
     </div>
   </div>
-</section>
+
+  {%- if desktop_image != blank -%}
+    <picture class="zayna-home-hero__picture">
+      {%- if mobile_image != blank -%}
+        <source
+          media="(max-width: 749px)"
+          srcset="
+            {{ mobile_image | image_url: width: 600 }} 600w,
+            {{ mobile_image | image_url: width: 900 }} 900w,
+            {{ mobile_image | image_url: width: 1200 }} 1200w
+          "
+          sizes="100vw"
+        >
+      {%- endif -%}
+
+      {{
+        desktop_image
+        | image_url: width: 2200
+        | image_tag:
+          loading: image_loading,
+          fetchpriority: image_fetchpriority,
+          sizes: '100vw',
+          widths: '750, 1100, 1500, 1800, 2200',
+          alt: hero_alt,
+          class: 'zayna-home-hero__image'
+      }}
+    </picture>
+  {%- endif -%}
+</div>
+
+{% style %}
+  #ZaynaHero-{{ section.id }} {
+    --zayna-hero-bg: #f8f3ed;
+    --zayna-hero-bg-soft: #fbf7f2;
+    --zayna-hero-ink: #2b2622;
+    --zayna-hero-text: #675c53;
+    --zayna-hero-accent: #a66a3f;
+    --zayna-hero-border: #e7ddd2;
+
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--zayna-hero-bg);
+    color: var(--zayna-hero-ink);
+  }
+
+  #ZaynaHero-{{ section.id }}::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(248, 243, 237, 0.99) 0%,
+        rgba(248, 243, 237, 0.97) 28%,
+        rgba(248, 243, 237, 0.78) 42%,
+        rgba(248, 243, 237, 0.20) 59%,
+        rgba(248, 243, 237, 0) 72%
+      );
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__picture {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--zayna-hero-bg);
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__image {
+    display: block;
+    flex: 0 0 auto;
+    width: auto !important;
+    max-width: none !important;
+    height: 100% !important;
+    object-fit: contain;
+    object-position: right center;
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__content-wrap {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    width: min(
+      calc(100% - clamp(48px, 6vw, 80px)),
+      1376px
+    );
+    margin: 0 auto;
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__content {
+    min-width: 0;
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0;
+    color: var(--zayna-hero-accent);
+    font-size: 10px;
+    line-height: 1.4;
+    letter-spacing: 0.23em;
+    text-transform: uppercase;
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__eyebrow span {
+    width: 38px;
+    height: 1px;
+    flex: 0 0 auto;
+    background: rgba(166, 106, 63, 0.66);
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__title {
+    max-width: 9.5ch;
+    margin: 0;
+    color: var(--zayna-hero-ink);
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-weight: 400;
+    letter-spacing: -0.04em;
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__subhead {
+    margin-bottom: 0;
+    color: var(--zayna-hero-text);
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px 22px;
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__primary,
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__secondary {
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 46px;
+    padding: 13px 21px;
+    border: 1px solid var(--zayna-hero-ink);
+    background: var(--zayna-hero-ink);
+    color: #fffaf5;
+    font-size: 10.5px;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      transform 180ms ease;
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__primary:hover {
+    border-color: var(--zayna-hero-accent);
+    background: var(--zayna-hero-accent);
+    transform: translateY(-1px);
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__secondary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    border-bottom: 1px solid rgba(43, 38, 34, 0.36);
+    color: var(--zayna-hero-ink);
+    font-size: 10.5px;
+    line-height: 1;
+    letter-spacing: 0.19em;
+    transition:
+      color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__secondary:hover {
+    border-color: var(--zayna-hero-accent);
+    color: var(--zayna-hero-accent);
+  }
+
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__primary:focus-visible,
+  #ZaynaHero-{{ section.id }} .zayna-home-hero__secondary:focus-visible {
+    outline: 2px solid var(--zayna-hero-accent);
+    outline-offset: 4px;
+  }
+
+  #ZaynaHero-{{ section.id }}.zayna-home-hero--no-image {
+    background:
+      radial-gradient(
+        60% 75% at 85% 20%,
+        rgba(166, 106, 63, 0.10),
+        transparent 65%
+      ),
+      linear-gradient(
+        180deg,
+        var(--zayna-hero-bg) 0%,
+        var(--zayna-hero-bg-soft) 100%
+      );
+  }
+
+  #ZaynaHero-{{ section.id }}.zayna-home-hero--no-image::after {
+    display: none;
+  }
+
+  /* Grote desktop */
+  @media (min-width: 1100px) {
+    #ZaynaHero-{{ section.id }} {
+      min-height: clamp(455px, 29vw, 485px);
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__content-wrap {
+      min-height: clamp(455px, 29vw, 485px);
+      padding-block: 24px;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__content {
+      width: min(38%, 455px);
+      transform: translateY(-18px);
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__eyebrow {
+      margin-bottom: 14px;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__title {
+      font-size: clamp(45px, 2.7vw, 50px);
+      line-height: 0.97;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__subhead {
+      max-width: 410px;
+      margin-top: 16px;
+      font-size: 14.5px;
+      line-height: 1.56;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__actions {
+      margin-top: 20px;
+    }
+  }
+
+  /* Tablet en desktopvensters naast elkaar */
+  @media (min-width: 750px) and (max-width: 1099px) {
+    #ZaynaHero-{{ section.id }} {
+      min-height: 450px;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__content-wrap {
+      width: calc(100% - 48px);
+      min-height: 450px;
+      padding-block: 28px;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__content {
+      width: min(47%, 405px);
+      transform: translateY(-10px);
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__eyebrow {
+      margin-bottom: 14px;
+      font-size: 9.5px;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__eyebrow span {
+      width: 32px;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__title {
+      font-size: clamp(39px, 5vw, 46px);
+      line-height: 0.97;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__subhead {
+      max-width: 345px;
+      margin-top: 16px;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__actions {
+      margin-top: 19px;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__picture {
+      display: block;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__image {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
+      object-fit: contain;
+      object-position: right center;
+    }
+
+    #ZaynaHero-{{ section.id }}::after {
+      background:
+        linear-gradient(
+          90deg,
+          rgba(248, 243, 237, 0.99) 0%,
+          rgba(248, 243, 237, 0.97) 35%,
+          rgba(248, 243, 237, 0.77) 50%,
+          rgba(248, 243, 237, 0.20) 66%,
+          rgba(248, 243, 237, 0) 77%
+        );
+    }
+  }
+
+  /* Mobiel */
+  @media (max-width: 749px) {
+    #ZaynaHero-{{ section.id }} {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+      background: var(--zayna-hero-bg);
+    }
+
+    #ZaynaHero-{{ section.id }}::after {
+      display: none;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__content-wrap {
+      order: 1;
+      display: block;
+      width: 100%;
+      min-height: 0;
+      padding: 27px 20px 23px;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__content {
+      width: 100%;
+      transform: none;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__eyebrow {
+      margin-bottom: 13px;
+      font-size: 9.5px;
+      letter-spacing: 0.21em;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__eyebrow span {
+      width: 30px;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__title {
+      max-width: 9.5ch;
+      font-size: clamp(38px, 10.5vw, 45px);
+      line-height: 0.96;
+      letter-spacing: -0.038em;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__subhead {
+      max-width: 38ch;
+      margin-top: 16px;
+      font-size: 14px;
+      line-height: 1.56;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__actions {
+      display: block;
+      margin-top: 20px;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__primary {
+      width: 100%;
+      min-height: 47px;
+      padding: 13px 18px;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__secondary {
+      width: fit-content;
+      min-height: 34px;
+      margin-top: 17px;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__picture {
+      position: relative;
+      inset: auto;
+      order: 2;
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      border-top: 1px solid var(--zayna-hero-border);
+      background: #efe7dd;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__image {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
+      object-fit: contain;
+      object-position: center center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__primary,
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__secondary {
+      transition: none;
+    }
+  }
+{% endstyle %}
 
 {% schema %}
 {
   "name": "Hero",
   "tag": "section",
   "settings": [
-    { "type": "header", "content": "Tekst" },
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Zayna Home" },
-    { "type": "text", "id": "headline", "label": "Titel", "default": "Mooi wonen begint in de keuken." },
-    { "type": "textarea", "id": "subhead", "label": "Subtekst", "default": "Geselecteerde keuken- en woonproducten met een rustige uitstraling. Praktisch in gebruik, zorgvuldig verpakt en betaalbaar gekozen." },
-    { "type": "text", "id": "cta_label", "label": "Primaire CTA label", "default": "Bekijk de collectie" },
-    { "type": "text", "id": "cta_url", "label": "Primaire CTA link", "default": "/collections/all" },
-    { "type": "text", "id": "secondary_cta_label", "label": "Secundaire CTA label", "default": "Nieuw binnen" },
-    { "type": "text", "id": "secondary_cta_url", "label": "Secundaire CTA link", "default": "/collections/all" },
-    { "type": "textarea", "id": "trust_text", "label": "Trustregel", "default": "Verzonden vanuit Nederland · met zorg verpakt · stijlvol voor dagelijks gebruik" },
-    { "type": "header", "content": "Bovenste kleine regels" },
-    { "type": "text", "id": "meta_left", "label": "Meta links", "default": "Zayna Home · Keuken & Wonen" },
-    { "type": "text", "id": "meta_center", "label": "Meta midden", "default": "Stijlvol · Praktisch · Betaalbaar" },
-    { "type": "text", "id": "meta_right", "label": "Meta rechts", "default": "Geselecteerd · Verzonden vanuit NL" },
-    { "type": "header", "content": "Hoofdbeeld rechts" },
-    { "type": "image_picker", "id": "image", "label": "Hoofdafbeelding rechts", "info": "Gebruik hier bij voorkeur één rustige lifestyle/editorial compositie. Leeg = fallback productcompositie." },
     {
-      "type": "select",
-      "id": "image_fit",
-      "label": "Afbeelding passend maken",
-      "default": "cover",
-      "options": [
-        { "value": "cover", "label": "Cover — voor lifestylefoto" },
-        { "value": "contain", "label": "Contain — voor losse productfoto" }
-      ]
+      "type": "header",
+      "content": "Afbeeldingen"
     },
-    { "type": "text", "id": "media_caption", "label": "Kleine tekst op afbeelding", "default": "Keuken & wonen" },
-    { "type": "header", "content": "Fallback productcompositie" },
-    { "type": "paragraph", "content": "Deze beelden worden gebruikt wanneer er geen hoofdafbeelding is ingesteld." },
-    { "type": "image_picker", "id": "product_image_1", "label": "Productbeeld 1 groot" },
-    { "type": "text", "id": "product_label_1", "label": "Label product 1", "default": "Voorraadpotten" },
-    { "type": "image_picker", "id": "product_image_2", "label": "Productbeeld 2 klein" },
-    { "type": "text", "id": "product_label_2", "label": "Label product 2", "default": "Glaswerk" },
-    { "type": "image_picker", "id": "product_image_3", "label": "Productbeeld 3 klein" },
-    { "type": "text", "id": "product_label_3", "label": "Label product 3", "default": "Keukentextiel" }
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Desktop hero-afbeelding",
+      "info": "Gebruik de brede Zayna Home-lifestylefoto."
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobiele hero-afbeelding",
+      "info": "Optioneel. Wanneer dit leeg blijft, wordt de desktopafbeelding gebruikt."
+    },
+    {
+      "type": "header",
+      "content": "Tekst"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Kleine bovenregel",
+      "default": "Keuken & wonen"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Titel",
+      "default": "Mooi wonen begint in de keuken."
+    },
+    {
+      "type": "textarea",
+      "id": "subhead",
+      "label": "Subtekst",
+      "default": "Rustige keuken- en woonproducten, zorgvuldig geselecteerd voor dagelijks gebruik en een verzorgde uitstraling."
+    },
+    {
+      "type": "header",
+      "content": "Knoppen"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Primaire knoptekst",
+      "default": "Bekijk het assortiment"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Primaire knoplink"
+    },
+    {
+      "type": "text",
+      "id": "secondary_cta_label",
+      "label": "Secundaire linktekst",
+      "default": "Nieuw binnen"
+    },
+    {
+      "type": "url",
+      "id": "secondary_cta_url",
+      "label": "Secundaire linkbestemming"
+    }
   ],
-  "presets": [{ "name": "Hero" }]
+  "presets": [
+    {
+      "name": "Hero"
+    }
+  ]
 }
 {% endschema %}

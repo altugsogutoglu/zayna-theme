@@ -1,190 +1,826 @@
 {%- liquid
   assign menu = section.settings.menu
+  assign logo_width = section.settings.logo_width | default: 140
+  assign logo_style = 'max-width: ' | append: logo_width | append: 'px; max-height: 48px;'
+  assign logo_sizes = logo_width | append: 'px'
+  assign logo_alt = section.settings.logo.alt | default: shop.name
 -%}
+
 <header
-  class="sticky top-0 z-30 border-b border-border-soft bg-bg/90 backdrop-blur supports-[backdrop-filter]:bg-bg/75"
+  class="sticky top-0 z-30 border-b border-border-soft bg-bg"
   data-header
 >
-  <div class="mx-auto flex h-[var(--header-height)] max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-10">
-    <a href="{{ routes.root_url }}" class="shrink-0">
+  <div class="zayna-header-inner mx-auto flex h-[var(--header-height)] max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-10">
+    <a
+      href="{{ routes.root_url }}"
+      class="zayna-header-logo shrink-0"
+      aria-label="{{ shop.name | escape }}"
+    >
       {%- if section.settings.logo != blank -%}
-        {%- assign logo_w = section.settings.logo_width | default: 140 -%}
-        {{ section.settings.logo | image_url: width: logo_w | image_tag: loading: 'eager', class: 'block h-auto w-auto', widths: '140,280,420', style: 'max-width:' | append: logo_w | append: 'px', alt: shop.name }}
+        {{
+          section.settings.logo
+          | image_url: width: 640
+          | image_tag:
+            loading: 'eager',
+            class: 'block h-auto w-auto',
+            widths: '140, 280, 420, 640',
+            sizes: logo_sizes,
+            style: logo_style,
+            alt: logo_alt
+        }}
       {%- else -%}
-        <span class="font-display text-2xl tracking-tight text-ink">{{ shop.name }}</span>
+        <span class="font-display text-2xl tracking-tight text-ink">
+          {{ shop.name | escape }}
+        </span>
       {%- endif -%}
     </a>
 
-    <nav aria-label="Hoofdnavigatie" class="hidden md:flex items-center gap-7" data-nav>
+    <nav
+      aria-label="Hoofdnavigatie"
+      class="zayna-header-nav hidden items-center gap-7 md:flex"
+      data-nav
+    >
       {%- for link in linklists[menu].links -%}
         {%- assign panel_key = link.title | downcase | strip -%}
+
         {%- if link.links.size > 0 -%}
           <div class="group/mega" data-mega-item>
-            <a href="{{ link.url }}" class="group relative inline-flex items-center py-2" aria-haspopup="true">
-              <span class="text-[11px] uppercase tracking-[0.2em] transition-colors text-ink-soft group-hover:text-ink">{{ link.title }}</span>
-              <span aria-hidden="true" class="absolute inset-x-0 -bottom-0.5 block h-px origin-left bg-clay transition-transform duration-300 ease-out scale-x-0 group-hover:scale-x-100"></span>
+            <a
+              href="{{ link.url }}"
+              class="group relative inline-flex items-center py-2"
+              aria-haspopup="true"
+            >
+              <span class="zayna-header-nav-label text-[11px] uppercase tracking-[0.2em] text-ink-soft transition-colors group-hover:text-ink">
+                {{ link.title | escape }}
+              </span>
+
+              <span
+                aria-hidden="true"
+                class="absolute inset-x-0 -bottom-0.5 block h-px origin-left bg-clay transition-transform duration-300 ease-out {% if link.active %}scale-x-100{% else %}scale-x-0{% endif %}"
+              ></span>
             </a>
-            {%- comment -%} Mega panel — revealed on hover/focus of the parent item {%- endcomment -%}
+
             {%- assign panel_block = null -%}
+
             {%- for block in section.blocks -%}
-              {%- assign bk = block.settings.nav_title | downcase | strip -%}
-              {%- if block.type == 'mega_panel' and bk == panel_key -%}
+              {%- assign block_key = block.settings.nav_title | downcase | strip -%}
+
+              {%- if block.type == 'mega_panel' and block_key == panel_key -%}
                 {%- assign panel_block = block -%}
               {%- endif -%}
             {%- endfor -%}
-            <div
-              role="region"
-              aria-label="{{ link.title }}"
-              class="invisible absolute inset-x-0 top-full z-40 opacity-0 transition-[opacity,visibility] duration-200 group-hover/mega:visible group-hover/mega:opacity-100 group-focus-within/mega:visible group-focus-within/mega:opacity-100"
-              data-mega-panel
-            >
-              <div class="border-y border-border-soft bg-bg/98 shadow-[0_24px_60px_-30px_rgba(42,37,32,0.35)] backdrop-blur supports-[backdrop-filter]:bg-bg/95">
-                <div class="mx-auto grid max-w-7xl grid-cols-12 gap-x-10 px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
-                  <div class="col-span-3">
-                    <p class="mb-5 flex items-center gap-3 text-[10px] uppercase tracking-[0.22em] text-clay">
-                      <span aria-hidden="true" class="block h-px w-8 bg-clay/60"></span>
-                      {{ panel_block.settings.eyebrow | default: link.title }}
-                    </p>
-                    {%- if panel_block.settings.blurb != blank -%}
-                      <p class="font-display italic text-lg leading-relaxed text-stone max-w-[28ch]">{{ panel_block.settings.blurb }}</p>
-                    {%- endif -%}
-                    {%- if panel_block.settings.aside_heading != blank -%}
-                      <div class="mt-10">
-                        <p class="mb-3 text-[10px] uppercase tracking-[0.22em] text-stone-soft">{{ panel_block.settings.aside_heading }}</p>
-                        <ul class="space-y-2">
-                          {%- if panel_block.settings.aside_menu != blank -%}
-                            {%- for l in linklists[panel_block.settings.aside_menu].links -%}
-                              <li><a href="{{ l.url }}" class="text-[13px] text-ink-soft hover:text-clay transition-colors">{{ l.title }}</a></li>
-                            {%- endfor -%}
-                          {%- else -%}
-                            <li><a href="/policies/shipping-policy" class="text-[13px] text-ink-soft hover:text-clay transition-colors">Verzending</a></li>
-                            <li><a href="/policies/refund-policy" class="text-[13px] text-ink-soft hover:text-clay transition-colors">Retourneren</a></li>
-                            <li><a href="/pages/contact" class="text-[13px] text-ink-soft hover:text-clay transition-colors">Contact</a></li>
-                          {%- endif -%}
-                        </ul>
-                      </div>
-                    {%- endif -%}
-                  </div>
 
-                  <div class="col-span-5">
-                    <p class="mb-6 text-[10px] uppercase tracking-[0.22em] text-stone-soft">Bekijken</p>
-                    <ul class="-mx-3">
-                      {%- if panel_block.settings.show_all_products -%}
-                        <li>
-                          <a href="{{ routes.all_products_collection_url }}" class="group flex items-center justify-between gap-4 rounded-sm px-3 py-3 transition-colors hover:bg-cream/60">
-                            <span class="min-w-0">
-                              <span class="block font-display text-[clamp(1.05rem,1.1vw,1.2rem)] leading-snug text-ink transition-colors group-hover:text-clay">Alle producten</span>
-                              <span class="mt-1 block truncate font-display italic text-[13px] leading-snug text-stone">Bekijk de hele shop</span>
-                            </span>
-                            <span aria-hidden="true" class="shrink-0 text-stone-soft transition-all duration-300 group-hover:translate-x-1 group-hover:text-clay">→</span>
-                          </a>
-                        </li>
+            {%- if panel_block != null -%}
+              <div
+                role="region"
+                aria-label="{{ link.title | escape }}"
+                class="invisible absolute inset-x-0 top-full z-40 opacity-0 transition-[opacity,visibility] duration-200 group-hover/mega:visible group-hover/mega:opacity-100 group-focus-within/mega:visible group-focus-within/mega:opacity-100"
+                data-mega-panel
+                {{ panel_block.shopify_attributes }}
+              >
+                <div class="zayna-mega-surface border-y border-border-soft shadow-[0_24px_60px_-30px_rgba(42,37,32,0.35)]">
+                  <div class="zayna-mega-inner mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+
+                    <div class="zayna-mega-intro">
+                      <p class="zayna-mega-kicker">
+                        <span aria-hidden="true"></span>
+                        {{ panel_block.settings.eyebrow | default: link.title | escape }}
+                      </p>
+
+                      {%- if panel_block.settings.intro_copy != blank -%}
+                        <p class="zayna-mega-blurb">
+                          {{ panel_block.settings.intro_copy | escape }}
+                        </p>
                       {%- endif -%}
-                      {%- assign cat_count = 0 -%}
-                      {%- for child in link.links -%}
-                        {%- if child.type == 'collection_link' -%}{%- assign cat_count = cat_count | plus: 1 -%}{%- endif -%}
-                        {%- assign hint = '' -%}
-                        {%- if child.object.description != blank -%}{%- assign hint = child.object.description | strip_html | truncate: 42 -%}{%- endif -%}
-                        <li>
-                          <a href="{{ child.url }}" class="group flex items-center justify-between gap-4 rounded-sm px-3 py-3 transition-colors hover:bg-cream/60">
-                            <span class="min-w-0">
-                              <span class="block font-display text-[clamp(1.05rem,1.1vw,1.2rem)] leading-snug text-ink transition-colors group-hover:text-clay">{{ child.title }}</span>
-                              {%- if hint != blank -%}<span class="mt-1 block truncate font-display italic text-[13px] leading-snug text-stone">{{ hint }}</span>{%- endif -%}
-                            </span>
-                            <span aria-hidden="true" class="shrink-0 text-stone-soft transition-all duration-300 group-hover:translate-x-1 group-hover:text-clay">→</span>
-                          </a>
-                        </li>
-                      {%- endfor -%}
-                    </ul>
-                    {%- if panel_block.settings.cta_text != blank -%}
-                      <a href="{{ panel_block.settings.cta_url | default: routes.collections_url }}" class="group mt-5 inline-flex items-center gap-3 border-t border-border-soft pt-5 text-[11px] uppercase tracking-[0.22em] text-ink transition-colors hover:text-clay">
-                        <span>{{ panel_block.settings.cta_text }}</span>
-                        {%- if cat_count > 0 -%}<span class="text-stone-soft normal-case tracking-normal font-display italic text-sm">{{ cat_count | prepend: '0' | slice: -2, 2 }} categorieën</span>{%- endif -%}
-                        <span aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1">→</span>
-                      </a>
-                    {%- endif -%}
-                  </div>
 
-                  <div class="col-span-4">
-                    {%- assign fc = panel_block.settings.featured_collection -%}
-                    {%- if panel_block.settings.featured_title != blank -%}
-                      <a href="{% if fc != blank %}{{ fc.url }}{% else %}{{ panel_block.settings.cta_url | default: routes.collections_url }}{% endif %}" class="group relative block overflow-hidden bg-cream">
-                        <div class="relative aspect-[4/5] w-full overflow-hidden">
-                          {%- if fc != blank and fc.featured_image -%}
-                            {{ fc.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', class: 'absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]', alt: fc.title }}
-                          {%- else -%}
-                            <span aria-hidden="true" class="absolute inset-0" style="background:radial-gradient(70% 90% at 30% 20%, rgba(181,101,29,0.12), transparent 65%), radial-gradient(60% 70% at 80% 80%, rgba(138,154,123,0.16), transparent 60%), linear-gradient(180deg, #F4ECE5, #E8E1DA);"></span>
-                          {%- endif -%}
-                          <span aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/60 via-ink/15 to-transparent"></span>
-                          <div class="absolute inset-x-6 bottom-6 text-surface">
-                            <p class="mb-2 text-[10px] uppercase tracking-[0.22em] opacity-90">Uitgelicht</p>
-                            <p class="font-display text-2xl leading-tight">{{ panel_block.settings.featured_title }}</p>
-                            {%- if panel_block.settings.featured_body != blank -%}
-                              <p class="mt-2 max-w-[28ch] text-[13px] leading-relaxed opacity-90">{{ panel_block.settings.featured_body }}</p>
+                      {%- if panel_block.settings.aside_heading != blank -%}
+                        <div class="zayna-mega-service">
+                          <p class="zayna-mega-small-heading">
+                            {{ panel_block.settings.aside_heading | escape }}
+                          </p>
+
+                          <ul class="space-y-2">
+                            {%- if panel_block.settings.aside_menu != blank -%}
+                              {%- for aside_link in linklists[panel_block.settings.aside_menu].links -%}
+                                <li>
+                                  <a
+                                    href="{{ aside_link.url }}"
+                                    class="zayna-mega-service-link"
+                                  >
+                                    {{ aside_link.title | escape }}
+                                  </a>
+                                </li>
+                              {%- endfor -%}
+                            {%- else -%}
+                              <li>
+                                <a
+                                  href="/policies/shipping-policy"
+                                  class="zayna-mega-service-link"
+                                >
+                                  Verzending
+                                </a>
+                              </li>
+
+                              <li>
+                                <a
+                                  href="/policies/refund-policy"
+                                  class="zayna-mega-service-link"
+                                >
+                                  Retourneren
+                                </a>
+                              </li>
+
+                              <li>
+                                <a
+                                  href="/pages/contact"
+                                  class="zayna-mega-service-link"
+                                >
+                                  Contact
+                                </a>
+                              </li>
                             {%- endif -%}
-                          </div>
+                          </ul>
                         </div>
-                      </a>
-                    {%- endif -%}
+                      {%- endif -%}
+                    </div>
+
+                    <div class="zayna-mega-navigation">
+                      <p class="zayna-mega-small-heading">
+                        {{ panel_block.settings.categories_heading | default: 'Shop per categorie' | escape }}
+                      </p>
+
+                      <ul class="zayna-mega-categories">
+                        {%- if panel_block.settings.show_all_products -%}
+                          <li class="min-w-0">
+                            <a
+                              href="{{ routes.all_products_collection_url }}"
+                              class="zayna-mega-link group"
+                            >
+                              <span class="zayna-mega-category-title">
+                                Alle producten
+                              </span>
+
+                              <span
+                                aria-hidden="true"
+                                class="zayna-mega-arrow"
+                              >
+                                →
+                              </span>
+                            </a>
+                          </li>
+                        {%- endif -%}
+
+                        {%- for child in link.links -%}
+                          <li class="min-w-0">
+                            <a
+                              href="{{ child.url }}"
+                              class="zayna-mega-link group"
+                            >
+                              <span class="zayna-mega-category-title">
+                                {{ child.title | escape }}
+                              </span>
+
+                              <span
+                                aria-hidden="true"
+                                class="zayna-mega-arrow"
+                              >
+                                →
+                              </span>
+                            </a>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+
+                      {%- if panel_block.settings.cta_label != blank -%}
+                        <a
+                          href="{{ panel_block.settings.cta_url | default: routes.collections_url }}"
+                          class="zayna-mega-cta group"
+                        >
+                          <span>
+                            {{ panel_block.settings.cta_label | escape }}
+                          </span>
+
+                          <span aria-hidden="true">
+                            →
+                          </span>
+                        </a>
+                      {%- endif -%}
+                    </div>
+
+                    <div class="zayna-mega-feature">
+                      {%- assign featured_collection = panel_block.settings.featured_collection -%}
+
+                      {%- if panel_block.settings.featured_heading != blank -%}
+                        <a
+                          href="{% if featured_collection != blank %}{{ featured_collection.url }}{% else %}{{ panel_block.settings.cta_url | default: routes.collections_url }}{% endif %}"
+                          class="group block h-full w-full overflow-hidden bg-cream"
+                        >
+                          <div class="zayna-mega-feature-media">
+                            {%- if featured_collection != blank and featured_collection.featured_image -%}
+                              {{
+                                featured_collection.featured_image
+                                | image_url: width: 1000
+                                | image_tag:
+                                  loading: 'lazy',
+                                  class: 'absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]',
+                                  alt: featured_collection.title
+                              }}
+                            {%- else -%}
+                              <span
+                                aria-hidden="true"
+                                class="absolute inset-0"
+                                style="
+                                  background:
+                                    radial-gradient(
+                                      70% 90% at 30% 20%,
+                                      rgba(181, 101, 29, 0.15),
+                                      transparent 65%
+                                    ),
+                                    radial-gradient(
+                                      60% 70% at 80% 80%,
+                                      rgba(138, 154, 123, 0.18),
+                                      transparent 60%
+                                    ),
+                                    linear-gradient(
+                                      180deg,
+                                      #f4ece5,
+                                      #ddd4ca
+                                    );
+                                "
+                              ></span>
+                            {%- endif -%}
+
+                            <span
+                              aria-hidden="true"
+                              class="zayna-mega-feature-overlay"
+                            ></span>
+
+                            <div class="zayna-mega-feature-copy">
+                              <p class="zayna-mega-feature-kicker">
+                                {{ panel_block.settings.featured_kicker | default: 'Uitgelicht' | escape }}
+                              </p>
+
+                              <p class="zayna-mega-feature-title">
+                                {{ panel_block.settings.featured_heading | escape }}
+                              </p>
+
+                              {%- if panel_block.settings.featured_text != blank -%}
+                                <p class="zayna-mega-feature-text">
+                                  {{ panel_block.settings.featured_text | escape }}
+                                </p>
+                              {%- endif -%}
+                            </div>
+                          </div>
+                        </a>
+                      {%- endif -%}
+                    </div>
+
                   </div>
                 </div>
               </div>
-            </div>
+            {%- endif -%}
           </div>
+
         {%- else -%}
-          <a href="{{ link.url }}" class="group relative py-2">
-            <span class="text-[11px] uppercase tracking-[0.2em] transition-colors {% if link.active %}text-ink{% else %}text-ink-soft group-hover:text-ink{% endif %}">{{ link.title }}</span>
-            <span aria-hidden="true" class="absolute inset-x-0 -bottom-0.5 block h-px origin-left bg-clay transition-transform duration-300 ease-out {% if link.active %}scale-x-100{% else %}scale-x-0 group-hover:scale-x-100{% endif %}"></span>
+          <a
+            href="{{ link.url }}"
+            class="group relative py-2"
+          >
+            <span class="zayna-header-nav-label text-[11px] uppercase tracking-[0.2em] transition-colors {% if link.active %}text-ink{% else %}text-ink-soft group-hover:text-ink{% endif %}">
+              {{ link.title | escape }}
+            </span>
+
+            <span
+              aria-hidden="true"
+              class="absolute inset-x-0 -bottom-0.5 block h-px origin-left bg-clay transition-transform duration-300 ease-out {% if link.active %}scale-x-100{% else %}scale-x-0 group-hover:scale-x-100{% endif %}"
+            ></span>
           </a>
         {%- endif -%}
       {%- endfor -%}
     </nav>
 
-    <nav class="ml-auto flex items-center gap-3 sm:gap-4" aria-label="{{ 'general.accessibility.menu' | t }}">
-      <button type="button" class="md:hidden p-2 -m-2 text-ink" aria-label="{{ 'general.accessibility.open_menu' | t }}" data-aside-open="mobile">
+    <nav
+      class="zayna-header-actions ml-auto flex items-center gap-3 sm:gap-4"
+      aria-label="{{ 'general.accessibility.menu' | t }}"
+    >
+      <button
+        type="button"
+        class="-m-2 p-2 text-ink md:hidden"
+        aria-label="{{ 'general.accessibility.open_menu' | t }}"
+        data-aside-open="mobile"
+      >
         {% render 'icon', name: 'menu', size: 22 %}
       </button>
-      <a href="{{ routes.account_url }}" aria-label="{{ 'layout.header.login' | t }}" class="hidden md:inline-flex p-2 -m-2 text-ink hover:text-clay transition-colors rounded">
+
+      <a
+        href="{{ routes.account_url }}"
+        aria-label="{{ 'layout.header.login' | t }}"
+        class="zayna-account-link -m-2 hidden rounded p-2 text-ink transition-colors hover:text-clay md:inline-flex"
+      >
         {% render 'icon', name: 'user', size: 20 %}
       </a>
-      <button type="button" class="p-2 -m-2 text-ink hover:text-clay transition-colors rounded" aria-label="{{ 'general.accessibility.search' | t }}" data-aside-open="search">
+
+      <button
+        type="button"
+        class="-m-2 rounded p-2 text-ink transition-colors hover:text-clay"
+        aria-label="{{ 'general.accessibility.search' | t }}"
+        data-aside-open="search"
+      >
         {% render 'icon', name: 'search', size: 20 %}
       </button>
-      <a href="{{ routes.cart_url }}" class="relative p-2 -m-2 text-ink hover:text-clay transition-colors rounded" aria-label="{{ 'general.accessibility.cart' | t }}" data-aside-open="cart">
+
+      <a
+        href="{{ routes.cart_url }}"
+        class="relative -m-2 rounded p-2 text-ink transition-colors hover:text-clay"
+        aria-label="{{ 'general.accessibility.cart' | t }}"
+        data-aside-open="cart"
+      >
         {% render 'icon', name: 'shopping-bag', size: 20 %}
-        <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-clay text-[10px] font-medium text-surface flex items-center justify-center tabular-nums {% if cart == empty or cart.item_count == 0 %}hidden{% endif %}" data-cart-count>{{ cart.item_count }}</span>
+
+        <span
+          class="absolute -top-0.5 -right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-clay px-1 text-[10px] font-medium tabular-nums text-surface {% if cart == empty or cart.item_count == 0 %}hidden{% endif %}"
+          data-cart-count
+        >
+          {{ cart.item_count }}
+        </span>
       </a>
     </nav>
   </div>
 </header>
+
+{% style %}
+  #shopify-section-{{ section.id }} [data-mega-panel] {
+    max-height: calc(100vh - var(--header-height) - 40px);
+    max-height: calc(100dvh - var(--header-height) - 40px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-surface {
+    background: #fbf7f2;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-inner {
+    display: grid;
+    grid-template-columns:
+      minmax(190px, 0.75fr)
+      minmax(0, 2.25fr)
+      minmax(260px, 0.95fr);
+    align-items: start;
+    gap: 28px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-intro,
+  #shopify-section-{{ section.id }} .zayna-mega-navigation,
+  #shopify-section-{{ section.id }} .zayna-mega-feature {
+    min-width: 0;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-kicker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 14px;
+    color: #a66a3f;
+    font-size: 10px;
+    line-height: 1.4;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-kicker span {
+    display: block;
+    width: 32px;
+    height: 1px;
+    flex: 0 0 auto;
+    background: rgba(166, 106, 63, 0.6);
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-blurb {
+    max-width: 30ch;
+    margin: 0;
+    color: #675f58;
+    font-family: var(--font-body-family, Arial, sans-serif);
+    font-size: 13.5px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.65;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-service {
+    margin-top: 22px;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-small-heading {
+    margin: 0 0 13px;
+    color: #9b9188;
+    font-size: 10px;
+    line-height: 1.4;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-service-link {
+    color: #5f5750;
+    font-size: 13px;
+    line-height: 1.45;
+    text-decoration: none;
+    transition: color 180ms ease;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-service-link:hover {
+    color: #a66a3f;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-categories {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 22px;
+    row-gap: 0;
+    margin: 0 -9px;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-link {
+    display: flex;
+    min-width: 0;
+    min-height: 42px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 9px;
+    padding: 5px 9px;
+    border-radius: 2px;
+    color: inherit;
+    text-decoration: none;
+    transition: background-color 180ms ease;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-link:hover {
+    background: rgba(232, 225, 218, 0.46);
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-category-title {
+    display: block;
+    min-width: 0;
+    color: #2b2622;
+    font-family: var(--font-heading-family, Georgia, serif);
+    font-size: 15.5px;
+    font-weight: 400;
+    line-height: 1.22;
+    transition: color 180ms ease;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-link:hover .zayna-mega-category-title {
+    color: #a66a3f;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-arrow {
+    flex: 0 0 auto;
+    color: #9b9188;
+    font-size: 14px;
+    transition:
+      color 180ms ease,
+      transform 180ms ease;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-link:hover .zayna-mega-arrow {
+    color: #a66a3f;
+    transform: translateX(4px);
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    margin-top: 12px;
+    padding-top: 13px;
+    border-top: 1px solid #e7ddd2;
+    color: #2b2622;
+    font-size: 10.5px;
+    line-height: 1.4;
+    letter-spacing: 0.21em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 180ms ease;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-cta:hover {
+    color: #a66a3f;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-feature {
+    display: flex;
+    min-height: 305px;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-feature > a {
+    min-height: 305px;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-feature-media {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 305px;
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-feature-media img {
+    object-position: center 45%;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-feature-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(43, 38, 34, 0.01) 18%,
+        rgba(43, 38, 34, 0.14) 44%,
+        rgba(43, 38, 34, 0.88) 100%
+      );
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-feature-copy {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    left: 20px;
+    z-index: 2;
+    color: #fffaf5;
+    text-shadow: 0 1px 8px rgba(43, 38, 34, 0.3);
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-feature-kicker {
+    margin: 0 0 6px;
+    font-size: 9.5px;
+    line-height: 1.4;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-feature-title {
+    margin: 0;
+    font-family: var(--font-heading-family, Georgia, serif);
+    font-size: clamp(21px, 1.45vw, 27px);
+    font-weight: 400;
+    line-height: 1.12;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-feature-text {
+    max-width: 28ch;
+    margin: 8px 0 0;
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+
+  @media (min-width: 1200px) {
+    #shopify-section-{{ section.id }} .zayna-mega-category-title {
+      white-space: nowrap;
+    }
+  }
+
+  /* Gesplitste desktopvensters en tablets */
+  @media (min-width: 768px) and (max-width: 1099px) {
+    #shopify-section-{{ section.id }} .zayna-header-inner {
+      gap: 16px;
+      padding-right: 22px;
+      padding-left: 22px;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-header-logo img {
+      max-width: 120px !important;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-header-nav {
+      gap: 17px;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-header-nav-label {
+      font-size: 10px;
+      letter-spacing: 0.16em;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-header-actions {
+      gap: 9px;
+    }
+
+    #shopify-section-{{ section.id }} [data-mega-panel] {
+      max-height: calc(100vh - var(--header-height) - 32px);
+      max-height: calc(100dvh - var(--header-height) - 32px);
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-inner {
+      grid-template-columns:
+        minmax(165px, 0.7fr)
+        minmax(0, 2.3fr);
+      align-items: start;
+      gap: 20px;
+      padding-top: 17px;
+      padding-bottom: 17px;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-feature {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-kicker {
+      gap: 10px;
+      margin-bottom: 11px;
+      font-size: 9px;
+      letter-spacing: 0.19em;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-kicker span {
+      width: 26px;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-blurb {
+      max-width: 25ch;
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-service {
+      margin-top: 17px;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-small-heading {
+      margin-bottom: 9px;
+      font-size: 9px;
+      letter-spacing: 0.19em;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-service ul {
+      display: grid;
+      gap: 5px;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-service-link {
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-categories {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 16px;
+      row-gap: 0;
+      margin: 0 -6px;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-link {
+      min-height: 38px;
+      gap: 7px;
+      padding: 4px 6px;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-category-title {
+      font-size: 14px;
+      line-height: 1.22;
+      white-space: normal;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-arrow {
+      font-size: 12px;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-mega-cta {
+      margin-top: 8px;
+      padding-top: 10px;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .zayna-mega-link,
+    #shopify-section-{{ section.id }} .zayna-mega-arrow,
+    #shopify-section-{{ section.id }} .zayna-mega-feature img {
+      transition: none;
+    }
+  }
+{% endstyle %}
 
 {% schema %}
 {
   "name": "Header",
   "tag": "section",
   "settings": [
-    { "type": "image_picker", "id": "logo", "label": "Logo", "info": "Leave empty to show the shop name as text." },
-    { "type": "range", "id": "logo_width", "min": 80, "max": 320, "step": 10, "unit": "px", "label": "Logo width", "default": 140 },
-    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" }
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo",
+      "info": "Laat dit leeg om de winkelnaam als tekst te tonen."
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 80,
+      "max": 320,
+      "step": 10,
+      "unit": "px",
+      "label": "Logobreedte",
+      "default": 140
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    }
   ],
   "blocks": [
     {
       "type": "mega_panel",
-      "name": "Mega panel",
+      "name": "Mega-menu",
       "settings": [
-        { "type": "text", "id": "nav_title", "label": "Matches nav item titled", "info": "Case-insensitive match against a top-level menu item that has sub-links.", "default": "Assortiment" },
-        { "type": "checkbox", "id": "show_all_products", "label": "Show \"Alle producten\" link first", "default": true },
-        { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "De collectie" },
-        { "type": "textarea", "id": "blurb", "label": "Blurb", "default": "Stijlvol, praktisch en zorgvuldig geselecteerd. Verzonden vanuit Nederland." },
-        { "type": "text", "id": "cta_text", "label": "CTA text", "default": "Alle collecties bekijken" },
-        { "type": "url", "id": "cta_url", "label": "CTA link" },
-        { "type": "header", "content": "Featured tile" },
-        { "type": "text", "id": "featured_title", "label": "Featured title", "default": "Nieuw deze week" },
-        { "type": "textarea", "id": "featured_body", "label": "Featured body", "default": "Net binnen — onze nieuwste producten voor je keuken en huis." },
-        { "type": "collection", "id": "featured_collection", "label": "Featured collection (image)" },
-        { "type": "header", "content": "Aside" },
-        { "type": "text", "id": "aside_heading", "label": "Aside heading", "default": "Klantenservice" },
-        { "type": "link_list", "id": "aside_menu", "label": "Aside menu" }
+        {
+          "type": "text",
+          "id": "nav_title",
+          "label": "Naam van het hoofdmenu-item",
+          "info": "Moet overeenkomen met een hoofdmenu-item dat sublinks bevat.",
+          "default": "Assortiment"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_all_products",
+          "label": "Toon Alle producten als eerste link",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Kleine bovenregel",
+          "default": "De collectie"
+        },
+        {
+          "type": "textarea",
+          "id": "intro_copy",
+          "label": "Korte introductietekst",
+          "default": "Praktische producten voor keuken en tafel, gekozen voor dagelijks gebruik en een verzorgde uitstraling."
+        },
+        {
+          "type": "text",
+          "id": "categories_heading",
+          "label": "Kop boven de categorieën",
+          "default": "Shop per categorie"
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "Onderste linktekst",
+          "default": "Bekijk alle categorieën"
+        },
+        {
+          "type": "url",
+          "id": "cta_url",
+          "label": "Onderste linkbestemming"
+        },
+        {
+          "type": "header",
+          "content": "Uitgelichte kaart"
+        },
+        {
+          "type": "text",
+          "id": "featured_kicker",
+          "label": "Kleine bovenregel",
+          "default": "Uitgelicht"
+        },
+        {
+          "type": "text",
+          "id": "featured_heading",
+          "label": "Titel",
+          "default": "Nieuw binnen"
+        },
+        {
+          "type": "textarea",
+          "id": "featured_text",
+          "label": "Tekst",
+          "default": "Bekijk de nieuwste producten voor keuken en tafel."
+        },
+        {
+          "type": "collection",
+          "id": "featured_collection",
+          "label": "Collectie en afbeelding"
+        },
+        {
+          "type": "header",
+          "content": "Klantenservice"
+        },
+        {
+          "type": "text",
+          "id": "aside_heading",
+          "label": "Koptekst",
+          "default": "Klantenservice"
+        },
+        {
+          "type": "link_list",
+          "id": "aside_menu",
+          "label": "Klantenservicemenu"
+        }
       ]
     }
   ],
@@ -193,7 +829,20 @@
     {
       "name": "Header",
       "blocks": [
-        { "type": "mega_panel", "settings": { "nav_title": "Assortiment", "eyebrow": "De collectie", "cta_text": "Alle collecties bekijken", "featured_title": "Nieuw deze week", "aside_heading": "Klantenservice" } }
+        {
+          "type": "mega_panel",
+          "settings": {
+            "nav_title": "Assortiment",
+            "eyebrow": "De collectie",
+            "intro_copy": "Praktische producten voor keuken en tafel, gekozen voor dagelijks gebruik en een verzorgde uitstraling.",
+            "categories_heading": "Shop per categorie",
+            "cta_label": "Bekijk alle categorieën",
+            "featured_kicker": "Uitgelicht",
+            "featured_heading": "Nieuw binnen",
+            "featured_text": "Bekijk de nieuwste producten voor keuken en tafel.",
+            "aside_heading": "Klantenservice"
+          }
+        }
       ]
     }
   ]

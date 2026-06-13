@@ -1,49 +1,651 @@
 {%- liquid
-  assign menu = section_menu | default: 'main-menu'
+assign menu = section_menu | default: 'main-menu'
 -%}
-<div class="flex h-full flex-col bg-bg">
-  <nav aria-label="Hoofdnavigatie" class="relative px-6 pt-8 pb-2 sm:px-8">
-    <p class="mb-5 text-[10px] uppercase tracking-[0.22em] text-stone-soft">{{ 'general.accessibility.menu' | t }}</p>
-    <ul class="space-y-1">
+
+<div class="zayna-mobile-menu">
+  <nav
+    aria-label="Hoofdnavigatie"
+    class="zayna-mobile-menu__nav"
+  >
+    <p class="zayna-mobile-menu__label">
+      {{ 'general.accessibility.menu' | t }}
+    </p>
+
+
+<ul class="zayna-mobile-menu__main-list">
+  <li>
+    <a
+      href="{{ routes.root_url }}"
+      data-aside-close
+      class="zayna-mobile-menu__main-link{% if request.page_type == 'index' %} is-active{% endif %}"
+    >
+      <span>Home</span>
+
+      <span
+        aria-hidden="true"
+        class="zayna-mobile-menu__arrow"
+      >
+        →
+      </span>
+    </a>
+  </li>
+
+  {%- for link in linklists[menu].links -%}
+    {%- assign link_key = link.title | downcase | strip -%}
+
+    {%- unless link_key == 'home' -%}
       <li>
-        <a href="{{ routes.root_url }}" data-aside-close class="group block border-b border-border-soft/70 py-4 font-display text-[clamp(2rem,7vw,2.75rem)] leading-[1.05] tracking-[-0.015em] transition-colors {% if request.page_type == 'index' %}text-clay{% else %}text-ink hover:text-clay{% endif %}">
-          <span class="flex items-center justify-between gap-4"><span>Home</span><span aria-hidden="true" class="text-base text-stone-soft transition-all duration-300 group-hover:translate-x-1 group-hover:text-clay">→</span></span>
-        </a>
+        {%- if link.links.size > 0 -%}
+          <details
+            class="zayna-mobile-menu__details"
+            {% if link.active or link.child_active %}open{% endif %}
+          >
+            <summary
+              class="zayna-mobile-menu__summary{% if link.active or link.child_active %} is-active{% endif %}"
+            >
+              <span>{{ link.title | escape }}</span>
+
+              <span
+                aria-hidden="true"
+                class="zayna-mobile-menu__toggle"
+              >
+                <span class="zayna-mobile-menu__plus">+</span>
+                <span class="zayna-mobile-menu__minus">−</span>
+              </span>
+            </summary>
+
+            <div class="zayna-mobile-menu__submenu">
+              <p class="zayna-mobile-menu__submenu-label">
+                Shop per categorie
+              </p>
+
+              <ul class="zayna-mobile-menu__categories">
+                <li class="zayna-mobile-menu__category-all">
+                  <a
+                    href="{{ routes.all_products_collection_url }}"
+                    data-aside-close
+                    class="zayna-mobile-menu__all-products"
+                  >
+                    <span>Alle producten</span>
+                    <span aria-hidden="true">→</span>
+                  </a>
+                </li>
+
+                {%- for child in link.links -%}
+                  <li>
+                    <a
+                      href="{{ child.url }}"
+                      data-aside-close
+                      class="zayna-mobile-menu__category-link{% if child.active %} is-active{% endif %}"
+                    >
+                      {{ child.title | escape }}
+                    </a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          </details>
+        {%- else -%}
+          <a
+            href="{{ link.url }}"
+            data-aside-close
+            class="zayna-mobile-menu__main-link{% if link.active %} is-active{% endif %}"
+          >
+            <span>{{ link.title | escape }}</span>
+
+            <span
+              aria-hidden="true"
+              class="zayna-mobile-menu__arrow"
+            >
+              →
+            </span>
+          </a>
+        {%- endif -%}
       </li>
-      {%- for link in linklists[menu].links -%}
-        {%- assign t = link.title | downcase -%}
-        {%- unless t == 'home' -%}
-          <li>
-            <a href="{{ link.url }}" data-aside-close class="group block border-b border-border-soft/70 py-4 font-display text-[clamp(2rem,7vw,2.75rem)] leading-[1.05] tracking-[-0.015em] transition-colors {% if link.active %}text-clay{% else %}text-ink hover:text-clay{% endif %}">
-              <span class="flex items-center justify-between gap-4"><span>{{ link.title }}</span><span aria-hidden="true" class="text-base text-stone-soft transition-all duration-300 group-hover:translate-x-1 group-hover:text-clay">→</span></span>
-            </a>
-          </li>
-        {%- endunless -%}
-      {%- endfor -%}
-    </ul>
+    {%- endunless -%}
+  {%- endfor -%}
+</ul>
+
+
   </nav>
 
-  <section aria-label="Account" class="relative px-6 pb-8 sm:px-8 mt-4">
-    <ul class="divide-y divide-border-soft border-y border-border-soft">
-      <li>
-        <button type="button" data-aside-open="search" class="flex w-full items-center justify-between py-4 text-[14px] uppercase tracking-[0.18em] text-ink transition-colors hover:text-clay">
-          <span class="inline-flex items-center gap-3">{% render 'icon', name: 'search', size: 16 %}{{ 'general.accessibility.search' | t }}</span>
-          <span aria-hidden="true" class="text-stone-soft">→</span>
-        </button>
-      </li>
-      <li>
-        <a href="{{ routes.account_url }}" data-aside-close class="flex w-full items-center justify-between py-4 text-[14px] uppercase tracking-[0.18em] text-ink transition-colors hover:text-clay">
-          <span class="inline-flex items-center gap-3">{% render 'icon', name: 'user', size: 16 %}{{ 'layout.header.login' | t }}</span>
-          <span aria-hidden="true" class="text-stone-soft">→</span>
-        </a>
-      </li>
-    </ul>
+  <section
+    aria-label="Service"
+    class="zayna-mobile-menu__service"
+  >
+    <p class="zayna-mobile-menu__label">
+      Service
+    </p>
+
+
+<ul class="zayna-mobile-menu__service-list">
+  <li>
+    <button
+      type="button"
+      data-aside-open="search"
+      class="zayna-mobile-menu__service-link"
+    >
+      <span class="zayna-mobile-menu__service-copy">
+        {% render 'icon', name: 'search', size: 16 %}
+        <span>{{ 'general.accessibility.search' | t }}</span>
+      </span>
+
+      <span
+        aria-hidden="true"
+        class="zayna-mobile-menu__service-arrow"
+      >
+        →
+      </span>
+    </button>
+  </li>
+
+  <li>
+    <a
+      href="{{ routes.account_url }}"
+      data-aside-close
+      class="zayna-mobile-menu__service-link"
+    >
+      <span class="zayna-mobile-menu__service-copy">
+        {% render 'icon', name: 'user', size: 16 %}
+        <span>{{ 'layout.header.login' | t }}</span>
+      </span>
+
+      <span
+        aria-hidden="true"
+        class="zayna-mobile-menu__service-arrow"
+      >
+        →
+      </span>
+    </a>
+  </li>
+
+  <li>
+    <a
+      href="/policies/shipping-policy"
+      data-aside-close
+      class="zayna-mobile-menu__service-link"
+    >
+      <span class="zayna-mobile-menu__service-copy">
+        <svg
+          class="zayna-mobile-menu__service-icon"
+          width="17"
+          height="17"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            d="M3.5 6.75H14.25V17.25H3.5V6.75Z"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M14.25 10H18.25L21 13.15V17.25H14.25V10Z"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M6.75 20C7.7165 20 8.5 19.2165 8.5 18.25C8.5 17.2835 7.7165 16.5 6.75 16.5C5.7835 16.5 5 17.2835 5 18.25C5 19.2165 5.7835 20 6.75 20Z"
+            fill="#FBF7F2"
+            stroke="currentColor"
+            stroke-width="1.5"
+          />
+          <path
+            d="M17.5 20C18.4665 20 19.25 19.2165 19.25 18.25C19.25 17.2835 18.4665 16.5 17.5 16.5C16.5335 16.5 15.75 17.2835 15.75 18.25C15.75 19.2165 16.5335 20 17.5 20Z"
+            fill="#FBF7F2"
+            stroke="currentColor"
+            stroke-width="1.5"
+          />
+        </svg>
+
+        <span>Verzending</span>
+      </span>
+
+      <span
+        aria-hidden="true"
+        class="zayna-mobile-menu__service-arrow"
+      >
+        →
+      </span>
+    </a>
+  </li>
+
+  <li>
+    <a
+      href="/policies/refund-policy"
+      data-aside-close
+      class="zayna-mobile-menu__service-link"
+    >
+      <span class="zayna-mobile-menu__service-copy">
+        <svg
+          class="zayna-mobile-menu__service-icon"
+          width="17"
+          height="17"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            d="M8.5 7H4V2.5"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M4.25 7.15C5.9 4.9 8.55 3.5 11.5 3.5C16.5 3.5 20.5 7.5 20.5 12.5C20.5 17.5 16.5 21.5 11.5 21.5C7.75 21.5 4.5 19.2 3.15 15.85"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+
+        <span>Retourneren</span>
+      </span>
+
+      <span
+        aria-hidden="true"
+        class="zayna-mobile-menu__service-arrow"
+      >
+        →
+      </span>
+    </a>
+  </li>
+</ul>
+
+
   </section>
 
-  <div class="relative mt-auto px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-8 sm:px-8">
-    <div class="border-t border-border-soft pt-6">
-      <p class="font-display italic text-stone">Stijlvol wonen, vanuit Nederland.</p>
-      <p class="mt-2 max-w-[28ch] text-[13px] leading-relaxed text-ink-soft">Zorgvuldig geselecteerde producten voor je keuken en huis. Verzonden binnen 1–3 werkdagen.</p>
-    </div>
+  <div class="zayna-mobile-menu__footer">
+    <p>
+      Met zorg geselecteerd en verzonden vanuit Nederland.
+    </p>
   </div>
 </div>
+
+{% style %}
+.zayna-mobile-menu {
+display: flex;
+width: 100%;
+min-height: 100%;
+flex-direction: column;
+overflow-y: auto;
+overscroll-behavior: contain;
+background: #fbf7f2;
+color: #2b2622;
+}
+
+.zayna-mobile-menu__nav {
+padding: 24px 24px 4px;
+}
+
+.zayna-mobile-menu__label {
+margin: 0 0 11px;
+color: #9b9188;
+font-size: 9.5px;
+line-height: 1.4;
+letter-spacing: 0.22em;
+text-transform: uppercase;
+}
+
+.zayna-mobile-menu__main-list,
+.zayna-mobile-menu__categories,
+.zayna-mobile-menu__service-list {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+
+.zayna-mobile-menu__main-link,
+.zayna-mobile-menu__summary {
+display: flex;
+width: 100%;
+min-height: 58px;
+align-items: center;
+justify-content: space-between;
+gap: 16px;
+margin: 0;
+padding: 11px 0;
+border: 0;
+border-bottom: 1px solid #e7ddd2;
+background: transparent;
+color: #2b2622;
+font-family:
+var(
+--font-display,
+var(--font-heading-family, Georgia, serif)
+);
+font-size: clamp(27px, 7vw, 30px);
+font-weight: 400;
+line-height: 1.08;
+letter-spacing: -0.025em;
+text-align: left;
+text-decoration: none;
+cursor: pointer;
+transition: color 180ms ease;
+}
+
+/*
+Alleen de werkelijk actieve pagina krijgt de accentkleur.
+Het openen van Assortiment verandert de titel niet naar bruin.
+*/
+.zayna-mobile-menu__main-link.is-active,
+.zayna-mobile-menu__summary.is-active {
+color: #a66a3f;
+}
+
+.zayna-mobile-menu__main-link:hover,
+.zayna-mobile-menu__summary:hover {
+color: #8f5732;
+}
+
+.zayna-mobile-menu__details[open]
+> .zayna-mobile-menu__summary:not(.is-active) {
+color: #2b2622;
+}
+
+.zayna-mobile-menu__details[open]
+> .zayna-mobile-menu__summary
+.zayna-mobile-menu__toggle {
+color: #a66a3f;
+}
+
+.zayna-mobile-menu__arrow {
+flex: 0 0 auto;
+color: #9b9188;
+font-family: Arial, sans-serif;
+font-size: 14px;
+transition:
+color 180ms ease,
+transform 180ms ease;
+}
+
+.zayna-mobile-menu__main-link:hover
+.zayna-mobile-menu__arrow {
+color: #a66a3f;
+transform: translateX(3px);
+}
+
+.zayna-mobile-menu__summary {
+list-style: none;
+}
+
+.zayna-mobile-menu__summary::-webkit-details-marker {
+display: none;
+}
+
+.zayna-mobile-menu__summary::marker {
+content: "";
+}
+
+.zayna-mobile-menu__toggle {
+display: grid;
+width: 23px;
+height: 23px;
+flex: 0 0 23px;
+place-items: center;
+color: #9b9188;
+font-family: Arial, sans-serif;
+font-size: 21px;
+font-weight: 300;
+line-height: 1;
+transition: color 180ms ease;
+}
+
+.zayna-mobile-menu__plus,
+.zayna-mobile-menu__minus {
+grid-area: 1 / 1;
+transition:
+opacity 180ms ease,
+transform 180ms ease;
+}
+
+.zayna-mobile-menu__minus {
+opacity: 0;
+transform: rotate(-45deg);
+}
+
+.zayna-mobile-menu__details[open]
+.zayna-mobile-menu__plus {
+opacity: 0;
+transform: rotate(45deg);
+}
+
+.zayna-mobile-menu__details[open]
+.zayna-mobile-menu__minus {
+opacity: 1;
+transform: rotate(0);
+}
+
+.zayna-mobile-menu__submenu {
+margin: 0 -24px;
+padding: 17px 24px 19px;
+border-bottom: 1px solid #e7ddd2;
+background: #f7f1ea;
+}
+
+.zayna-mobile-menu__submenu-label {
+margin: 0 0 10px;
+color: #9b9188;
+font-size: 9.5px;
+line-height: 1.4;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+}
+
+/*
+Open collectieoverzicht met twee kolommen,
+gelijke rijhoogtes en rustige onderlijnen.
+*/
+.zayna-mobile-menu__categories {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+grid-auto-rows: minmax(62px, auto);
+column-gap: 18px;
+row-gap: 0;
+}
+
+.zayna-mobile-menu__category-all {
+grid-column: 1 / -1;
+min-height: auto;
+border-bottom: 1px solid #dfd3c7;
+}
+
+.zayna-mobile-menu__all-products {
+display: flex;
+min-height: 47px;
+align-items: center;
+justify-content: space-between;
+gap: 14px;
+padding: 7px 0 12px;
+color: #a66a3f;
+font-size: 11px;
+line-height: 1.4;
+letter-spacing: 0.17em;
+text-decoration: none;
+text-transform: uppercase;
+transition: color 180ms ease;
+}
+
+.zayna-mobile-menu__all-products:hover {
+color: #794521;
+}
+
+.zayna-mobile-menu__categories
+> li:not(.zayna-mobile-menu__category-all) {
+display: flex;
+min-width: 0;
+border-bottom: 1px solid rgba(231, 221, 210, 0.9);
+}
+
+.zayna-mobile-menu__category-link {
+display: flex;
+width: 100%;
+min-width: 0;
+min-height: 62px;
+align-items: center;
+padding: 11px 3px;
+color: #5f5750;
+font-size: 13.5px;
+line-height: 1.35;
+text-decoration: none;
+transition:
+color 180ms ease,
+background-color 180ms ease;
+}
+
+.zayna-mobile-menu__category-link:hover,
+.zayna-mobile-menu__category-link.is-active {
+color: #a66a3f;
+background: rgba(244, 236, 228, 0.52);
+}
+
+.zayna-mobile-menu__service {
+padding: 17px 24px 0;
+}
+
+.zayna-mobile-menu__service-list {
+border-top: 1px solid #e7ddd2;
+}
+
+.zayna-mobile-menu__service-list li {
+border-bottom: 1px solid #e7ddd2;
+}
+
+.zayna-mobile-menu__service-link {
+display: flex;
+width: 100%;
+min-height: 47px;
+align-items: center;
+justify-content: space-between;
+gap: 16px;
+padding: 11px 0;
+border: 0;
+background: transparent;
+color: #554d47;
+font-family: var(--font-body-family, Arial, sans-serif);
+font-size: 14px;
+font-weight: 400;
+line-height: 1.4;
+letter-spacing: 0;
+text-align: left;
+text-decoration: none;
+text-transform: none;
+cursor: pointer;
+transition: color 180ms ease;
+}
+
+.zayna-mobile-menu__service-link:hover {
+color: #a66a3f;
+}
+
+.zayna-mobile-menu__service-copy {
+display: inline-flex;
+min-width: 0;
+align-items: center;
+gap: 10px;
+}
+
+.zayna-mobile-menu__service-icon {
+display: block;
+width: 17px;
+height: 17px;
+flex: 0 0 17px;
+color: #514942;
+transition: color 180ms ease;
+}
+
+.zayna-mobile-menu__service-link:hover
+.zayna-mobile-menu__service-icon {
+color: #a66a3f;
+}
+
+.zayna-mobile-menu__service-arrow {
+flex: 0 0 auto;
+color: #9b9188;
+font-size: 13px;
+}
+
+.zayna-mobile-menu__footer {
+margin-top: auto;
+padding:
+25px 24px
+max(25px, env(safe-area-inset-bottom));
+}
+
+.zayna-mobile-menu__footer::before {
+content: "";
+display: block;
+height: 1px;
+margin-bottom: 16px;
+background: #e7ddd2;
+}
+
+.zayna-mobile-menu__footer p {
+max-width: 33ch;
+margin: 0;
+color: #7a7068;
+font-size: 12px;
+line-height: 1.55;
+}
+
+@media (max-width: 339px) {
+.zayna-mobile-menu__nav,
+.zayna-mobile-menu__service,
+.zayna-mobile-menu__footer {
+padding-right: 19px;
+padding-left: 19px;
+}
+
+
+.zayna-mobile-menu__submenu {
+  margin-right: -19px;
+  margin-left: -19px;
+  padding-right: 19px;
+  padding-left: 19px;
+}
+
+.zayna-mobile-menu__main-link,
+.zayna-mobile-menu__summary {
+  min-height: 55px;
+  font-size: 26px;
+}
+
+.zayna-mobile-menu__categories {
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: auto;
+}
+
+.zayna-mobile-menu__category-all {
+  grid-column: auto;
+}
+
+.zayna-mobile-menu__category-link {
+  min-height: 52px;
+}
+
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+.zayna-mobile-menu__main-link,
+.zayna-mobile-menu__summary,
+.zayna-mobile-menu__arrow,
+.zayna-mobile-menu__toggle,
+.zayna-mobile-menu__plus,
+.zayna-mobile-menu__minus,
+.zayna-mobile-menu__all-products,
+.zayna-mobile-menu__category-link,
+.zayna-mobile-menu__service-link,
+.zayna-mobile-menu__service-icon {
+transition: none;
+}
+}
+{% endstyle %}

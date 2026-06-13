@@ -1,25 +1,48 @@
 {%- if section.blocks.size > 0 -%}
   <div class="bg-ink text-surface">
     <div class="marquee py-2.5">
-      <div class="marquee__track text-[11px] uppercase tracking-[0.18em]" aria-hidden="true">
-        {%- comment -%} Two identical halves; each half repeats the messages enough to overflow wide viewports so translateX(-50%) loops seamlessly. {%- endcomment -%}
+      <div
+        class="marquee__track text-[11px] uppercase tracking-[0.18em]"
+        aria-hidden="true"
+      >
+        {%- comment -%}
+          Two identical halves; each half repeats the messages enough
+          to overflow wide viewports so translateX(-50%) loops seamlessly.
+        {%- endcomment -%}
+
         {%- for half in (1..2) -%}
           {%- for rep in (1..3) -%}
             {%- for block in section.blocks -%}
-              <span class="flex items-center whitespace-nowrap" {{ block.shopify_attributes }}>
+              <span
+                class="flex items-center whitespace-nowrap"
+                {{ block.shopify_attributes }}
+              >
                 {{ block.settings.text }}
-                <span aria-hidden="true" class="mx-6 inline-block h-[5px] w-[5px] shrink-0 rotate-45 bg-clay/80 align-middle"></span>
+
+                <span
+                  aria-hidden="true"
+                  class="mx-6 inline-block h-[5px] w-[5px] shrink-0 rotate-45 bg-clay/80 align-middle"
+                ></span>
               </span>
             {%- endfor -%}
           {%- endfor -%}
         {%- endfor -%}
       </div>
+
       <p class="sr-only">
-        {%- for block in section.blocks -%}{{ block.settings.text }}. {% endfor -%}
+        {%- for block in section.blocks -%}
+          {{ block.settings.text }}.
+        {% endfor -%}
       </p>
     </div>
   </div>
 {%- endif -%}
+
+{% style %}
+  #shopify-section-{{ section.id }} .marquee__track {
+    animation-duration: 50s !important;
+  }
+{% endstyle %}
 
 {% schema %}
 {
@@ -30,7 +53,12 @@
       "type": "message",
       "name": "Message",
       "settings": [
-        { "type": "text", "id": "text", "label": "Text", "default": "Gratis verzending vanaf €100" }
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Gratis verzending vanaf €100"
+        }
       ]
     }
   ],
@@ -39,9 +67,24 @@
     {
       "name": "Announcement bar",
       "blocks": [
-        { "type": "message", "settings": { "text": "Gratis verzending vanaf €100" } },
-        { "type": "message", "settings": { "text": "Voor 23:00 besteld, morgen verzonden" } },
-        { "type": "message", "settings": { "text": "Met zorg ingepakt vanuit Nederland" } }
+        {
+          "type": "message",
+          "settings": {
+            "text": "Gratis verzending vanaf €100"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "text": "Voor 23:00 besteld, morgen verzonden"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "text": "Met zorg ingepakt vanuit Nederland"
+          }
+        }
       ]
     }
   ]
