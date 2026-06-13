@@ -295,6 +295,19 @@
       min-height: clamp(455px, 29vw, 485px);
     }
 
+    #ZaynaHero-{{ section.id }}::after {
+      background:
+        linear-gradient(
+          90deg,
+          rgba(248, 243, 237, 0.99) 0%,
+          rgba(248, 243, 237, 0.98) 32%,
+          rgba(248, 243, 237, 0.88) 43%,
+          rgba(248, 243, 237, 0.58) 52%,
+          rgba(248, 243, 237, 0.22) 61%,
+          rgba(248, 243, 237, 0) 69%
+        );
+    }
+
     #ZaynaHero-{{ section.id }} .zayna-home-hero__content-wrap {
       min-height: clamp(455px, 29vw, 485px);
       padding-block: 24px;
@@ -323,6 +336,36 @@
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__actions {
       margin-top: 20px;
+    }
+
+    /*
+      De afbeelding behoudt haar originele verhouding.
+      De linkerkant van de afbeelding vervaagt transparant
+      in de beige achtergrond van de hero.
+    */
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__image {
+      -webkit-mask-image:
+        linear-gradient(
+          90deg,
+          rgba(0, 0, 0, 0) 0%,
+          rgba(0, 0, 0, 0.22) 7%,
+          rgba(0, 0, 0, 0.68) 17%,
+          rgba(0, 0, 0, 1) 29%,
+          rgba(0, 0, 0, 1) 100%
+        );
+      mask-image:
+        linear-gradient(
+          90deg,
+          rgba(0, 0, 0, 0) 0%,
+          rgba(0, 0, 0, 0.22) 7%,
+          rgba(0, 0, 0, 0.68) 17%,
+          rgba(0, 0, 0, 1) 29%,
+          rgba(0, 0, 0, 1) 100%
+        );
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
     }
   }
 
@@ -378,6 +421,8 @@
       height: 100% !important;
       object-fit: contain;
       object-position: right center;
+      -webkit-mask-image: none;
+      mask-image: none;
     }
 
     #ZaynaHero-{{ section.id }}::after {
@@ -478,6 +523,8 @@
       height: 100% !important;
       object-fit: contain;
       object-position: center center;
+      -webkit-mask-image: none;
+      mask-image: none;
     }
   }
 
