@@ -80,7 +80,6 @@
               >
                 <div class="zayna-mega-surface border-y border-border-soft shadow-[0_24px_60px_-30px_rgba(42,37,32,0.35)]">
                   <div class="zayna-mega-inner mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-
                     <div class="zayna-mega-intro">
                       <p class="zayna-mega-kicker">
                         <span aria-hidden="true"></span>
@@ -193,7 +192,7 @@
 
                       {%- if panel_block.settings.cta_label != blank -%}
                         <a
-                          href="{{ panel_block.settings.cta_url | default: routes.collections_url }}"
+                          href="{{ routes.collections_url }}"
                           class="zayna-mega-cta group"
                         >
                           <span>
@@ -212,7 +211,7 @@
 
                       {%- if panel_block.settings.featured_heading != blank -%}
                         <a
-                          href="{% if featured_collection != blank %}{{ featured_collection.url }}{% else %}{{ panel_block.settings.cta_url | default: routes.collections_url }}{% endif %}"
+                          href="{% if featured_collection != blank %}{{ featured_collection.url }}{% else %}{{ routes.collections_url }}{% endif %}"
                           class="group block h-full w-full overflow-hidden bg-cream"
                         >
                           <div class="zayna-mega-feature-media">
@@ -274,13 +273,11 @@
                         </a>
                       {%- endif -%}
                     </div>
-
                   </div>
                 </div>
               </div>
             {%- endif -%}
           </div>
-
         {%- else -%}
           <a
             href="{{ link.url }}"
