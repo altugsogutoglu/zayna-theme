@@ -13,14 +13,15 @@
       "type": "hero",
       "custom_css": [],
       "settings": {
+        "image": "shopify://shop_images/hero_png.jpg",
+        "mobile_image": "shopify://shop_images/hero_png.jpg",
         "eyebrow": "Zayna Home",
         "headline": "Mooi wonen begint in de keuken.",
         "subhead": "Stijlvolle keuken- en woonproducten die je zichtbaar durft neer te zetten. Praktisch, betaalbaar en zorgvuldig geselecteerd.",
         "cta_label": "Bekijk de collectie",
         "cta_url": "/collections",
-        "meta_left": "Zayna Home · Keuken & Wonen",
-        "meta_center": "Stijlvol · Praktisch · Betaalbaar",
-        "meta_right": "Geselecteerd · Verzonden vanuit NL"
+        "secondary_cta_label": "Nieuw binnen",
+        "secondary_cta_url": ""
       }
     },
     "value-props": {

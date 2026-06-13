@@ -49,11 +49,13 @@
             "nav_title": "Assortiment",
             "show_all_products": true,
             "eyebrow": "De collectie",
-            "blurb": "Stijlvol, praktisch en zorgvuldig geselecteerd. Verzonden vanuit Nederland.",
-            "cta_text": "Alle collecties bekijken",
+            "intro_copy": "Praktische producten voor keuken en tafel, gekozen voor dagelijks gebruik en een verzorgde uitstraling.",
+            "categories_heading": "Shop per categorie",
+            "cta_label": "Bekijk alle categorieën",
             "cta_url": "",
-            "featured_title": "Nieuw deze week",
-            "featured_body": "Net binnen — onze nieuwste producten voor je keuken en huis.",
+            "featured_kicker": "Uitgelicht",
+            "featured_heading": "Nieuw binnen",
+            "featured_text": "Bekijk de nieuwste producten voor keuken en tafel.",
             "featured_collection": "",
             "aside_heading": "Klantenservice",
             "aside_menu": ""
@@ -64,6 +66,8 @@
         "shop"
       ],
       "settings": {
+        "logo": "shopify://shop_images/Logo_13-06-2026.png",
+        "logo_width": 140,
         "menu": "main-menu"
       }
     }
