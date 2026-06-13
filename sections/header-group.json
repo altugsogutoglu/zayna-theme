@@ -49,11 +49,8 @@
             "nav_title": "Assortiment",
             "show_all_products": true,
             "eyebrow": "De collectie",
-            "intro_copy": "Praktische producten voor keuken en tafel, gekozen voor dagelijks gebruik en een verzorgde uitstraling.",
-            "categories_heading": "Shop per categorie",
             "cta_label": "Bekijk alle categorieën",
-            "cta_url": "",
-            "featured_kicker": "Uitgelicht",
+            "cta_url": "shopify://collections",
             "featured_heading": "Nieuw binnen",
             "featured_text": "Bekijk de nieuwste producten voor keuken en tafel.",
             "featured_collection": "drinkglazen-bekers",
@@ -67,7 +64,7 @@
       ],
       "settings": {
         "logo": "shopify://shop_images/Logo_13-06-2026.png",
-        "logo_width": 140,
+        "logo_width": 130,
         "menu": "main-menu"
       }
     }
