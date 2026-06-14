@@ -357,6 +357,23 @@
       });
     };
 
+    /*
+      Op mobiel en gesplitste schermen blijft maximaal één onderdeel
+      tegelijk open. Een geopend onderdeel mag wel opnieuw worden
+      gesloten, waardoor ook alle onderdelen gesloten kunnen zijn.
+    */
+    groups.forEach((group) => {
+      group.addEventListener('toggle', () => {
+        if (desktopQuery.matches || !group.open) return;
+
+        groups.forEach((otherGroup) => {
+          if (otherGroup !== group && otherGroup.open) {
+            otherGroup.open = false;
+          }
+        });
+      });
+    });
+
     syncFooterGroups(desktopQuery.matches);
 
     const handleDesktopChange = (event) => {
