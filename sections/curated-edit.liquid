@@ -268,6 +268,9 @@
         let resizeTimer = null;
         let isNormalising = false;
         let sectionIsVisible = false;
+        let wheelAccumulator = 0;
+        let wheelResetTimer = null;
+        let wheelLockedUntil = 0;
 
         const getVisibleCount = () =>
           Math.min(getVisibleCardCount(), slides.length);
@@ -399,6 +402,82 @@
             }, 80);
           }
         });
+
+        const normaliseWheelDelta = (value, deltaMode) => {
+          if (deltaMode === 1) {
+            return value * 16;
+          }
+
+          if (deltaMode === 2) {
+            return value * viewport.clientWidth;
+          }
+
+          return value;
+        };
+
+        viewport.addEventListener(
+          'wheel',
+          (event) => {
+            if (event.ctrlKey || event.metaKey || event.altKey) {
+              return;
+            }
+
+            const rawDeltaX =
+              Math.abs(event.deltaX) > 0.5
+                ? event.deltaX
+                : event.shiftKey
+                  ? event.deltaY
+                  : 0;
+
+            const deltaX = normaliseWheelDelta(
+              rawDeltaX,
+              event.deltaMode
+            );
+            const deltaY = normaliseWheelDelta(
+              event.deltaY,
+              event.deltaMode
+            );
+
+            const isHorizontalGesture =
+              Math.abs(deltaX) > 1 &&
+              Math.abs(deltaX) >= Math.abs(deltaY) * 0.8;
+
+            if (!isHorizontalGesture) {
+              return;
+            }
+
+            /*
+              Horizontale touchpadbeweging hoort bij de collectiecarrousel.
+              Verticale tweevingerbeweging blijft beschikbaar voor de pagina.
+            */
+            event.preventDefault();
+
+            const now = Date.now();
+
+            if (now < wheelLockedUntil) {
+              return;
+            }
+
+            wheelAccumulator += deltaX;
+
+            window.clearTimeout(wheelResetTimer);
+            wheelResetTimer = window.setTimeout(() => {
+              wheelAccumulator = 0;
+            }, 180);
+
+            if (Math.abs(wheelAccumulator) < 42) {
+              return;
+            }
+
+            const direction = wheelAccumulator > 0 ? 1 : -1;
+
+            wheelAccumulator = 0;
+            wheelLockedUntil = now + 430;
+
+            scrollBy(direction);
+          },
+          { passive: false }
+        );
 
         viewport.addEventListener(
           'click',
@@ -743,6 +822,7 @@
     padding: 0 20px;
     cursor: grab;
     touch-action: pan-y pinch-zoom;
+    overscroll-behavior-x: contain;
   }
 
   #ZaynaCuratedEdit-{{ section.id }}
