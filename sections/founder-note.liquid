@@ -25,7 +25,7 @@
           | image_url: width: 1600
           | image_tag:
             loading: 'lazy',
-            sizes: '(min-width: 1180px) 500px, (min-width: 760px) 43vw, 100vw',
+            sizes: '(min-width: 1180px) 500px, (min-width: 560px) 42vw, 100vw',
             widths: '480, 720, 960, 1200, 1600',
             alt: image_alt,
             class: 'zayna-founder-note__image',
@@ -327,8 +327,8 @@
 
   @media (min-width: 980px) {
     #ZaynaFounderNote-{{ section.id }} {
-      padding-top: 58px;
-      padding-bottom: 60px;
+      padding-top: 32px;
+      padding-bottom: 52px;
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
@@ -355,8 +355,8 @@
 
   @media (min-width: 1180px) {
     #ZaynaFounderNote-{{ section.id }} {
-      padding-top: 62px;
-      padding-bottom: 64px;
+      padding-top: 34px;
+      padding-bottom: 54px;
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
@@ -380,6 +380,64 @@
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body {
       font-size: 15px;
+    }
+  }
+
+
+  /*
+    Smalle desktopvensters met een echte muis of touchpad krijgen
+    eerder een compacte tweekolomsindeling. Echte telefoons en
+    touch-only apparaten behouden de rustige gestapelde mobiele versie.
+  */
+  @media (hover: hover) and (pointer: fine) and (min-width: 560px) and (max-width: 979px) {
+    #ZaynaFounderNote-{{ section.id }} {
+      padding-top: 28px;
+      padding-bottom: 42px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
+      grid-template-columns: minmax(0, 0.41fr) minmax(0, 0.59fr);
+      align-items: center;
+      gap: clamp(24px, 3.2vw, 38px);
+      padding-right: 26px;
+      padding-left: 26px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__media {
+      max-height: 285px;
+      aspect-ratio: 4 / 3;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__eyebrow {
+      margin-bottom: 8px;
+      font-size: 8.5px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__heading {
+      max-width: 13ch;
+      font-size: clamp(29px, 3.8vw, 32px);
+      line-height: 1.06;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body {
+      margin-top: 13px;
+      font-size: 13.4px;
+      line-height: 1.56;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body p {
+      margin-bottom: 9px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__link {
+      min-height: 40px;
+      margin-top: 10px;
+      font-size: 9.5px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__closing {
+      margin-top: 13px;
+      font-size: 14.5px;
     }
   }
 
