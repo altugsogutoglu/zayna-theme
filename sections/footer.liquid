@@ -141,7 +141,6 @@
                     {% endif %}
                   >
                     <span>{{ footer_link_label | escape }}</span>
-                    <span aria-hidden="true">→</span>
                   </a>
                 </li>
               {%- endunless -%}
@@ -154,7 +153,6 @@
                   class="zayna-footer__link"
                 >
                   <span>Bestelling volgen</span>
-                  <span aria-hidden="true">→</span>
                 </a>
               </li>
             {%- endunless -%}
@@ -166,7 +164,6 @@
                   class="zayna-footer__link"
                 >
                   <span>Verzending</span>
-                  <span aria-hidden="true">→</span>
                 </a>
               </li>
             {%- endunless -%}
@@ -178,7 +175,6 @@
                   class="zayna-footer__link"
                 >
                   <span>Retourneren</span>
-                  <span aria-hidden="true">→</span>
                 </a>
               </li>
             {%- endunless -%}
@@ -222,7 +218,6 @@
                 class="zayna-footer__link"
               >
                 <span>Algemene voorwaarden</span>
-                <span aria-hidden="true">→</span>
               </a>
             </li>
 
@@ -232,7 +227,6 @@
                 class="zayna-footer__link"
               >
                 <span>Privacybeleid</span>
-                <span aria-hidden="true">→</span>
               </a>
             </li>
           </ul>
@@ -273,7 +267,6 @@
                   class="zayna-footer__link"
                 >
                   <span>{{ s.contact_email_label | escape }}</span>
-                  <span aria-hidden="true">→</span>
                 </a>
               </li>
             {%- endif -%}
@@ -288,7 +281,6 @@
                 >
                   {% render 'icon', name: 'instagram', size: 17 %}
                   <span>Instagram</span>
-                  <span aria-hidden="true">→</span>
                 </a>
               </li>
             {%- endif -%}
@@ -334,6 +326,50 @@
     </div>
   </div>
 </footer>
+
+
+<script>
+  (() => {
+    const footer = document.getElementById(
+      'ZaynaFooter-{{ section.id }}'
+    );
+
+    if (!footer) return;
+
+    const groups = Array.from(
+      footer.querySelectorAll('.zayna-footer__group')
+    );
+    const desktopQuery = window.matchMedia('(min-width: 960px)');
+
+    const syncFooterGroups = (isDesktop) => {
+      groups.forEach((group) => {
+        const summary = group.querySelector('summary');
+
+        if (isDesktop) {
+          group.open = true;
+          summary?.setAttribute('aria-disabled', 'true');
+          summary?.setAttribute('tabindex', '-1');
+        } else {
+          group.open = false;
+          summary?.removeAttribute('aria-disabled');
+          summary?.removeAttribute('tabindex');
+        }
+      });
+    };
+
+    syncFooterGroups(desktopQuery.matches);
+
+    const handleDesktopChange = (event) => {
+      syncFooterGroups(event.matches);
+    };
+
+    if (typeof desktopQuery.addEventListener === 'function') {
+      desktopQuery.addEventListener('change', handleDesktopChange);
+    } else {
+      desktopQuery.addListener(handleDesktopChange);
+    }
+  })();
+</script>
 
 {% style %}
   #ZaynaFooter-{{ section.id }} {
@@ -409,9 +445,9 @@
 
   #ZaynaFooter-{{ section.id }} .zayna-footer__summary {
     display: flex;
-    min-height: 54px;
+    min-height: 52px;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 18px;
     padding: 0;
     color: var(--zayna-footer-ink);
@@ -462,7 +498,7 @@
   }
 
   #ZaynaFooter-{{ section.id }} .zayna-footer__content {
-    padding: 1px 0 15px 32px;
+    padding: 1px 0 12px 32px;
   }
 
   #ZaynaFooter-{{ section.id }} .zayna-footer__links {
@@ -491,26 +527,8 @@
     transition: color 180ms ease;
   }
 
-  #ZaynaFooter-{{ section.id }}
-    .zayna-footer__link
-    > span:last-child {
-    flex: 0 0 auto;
-    color: var(--zayna-footer-muted);
-    font-family: inherit;
-    font-size: 13px;
-    transition:
-      color 180ms ease,
-      transform 180ms ease;
-  }
-
   #ZaynaFooter-{{ section.id }} .zayna-footer__link--social {
     justify-content: flex-start;
-  }
-
-  #ZaynaFooter-{{ section.id }}
-    .zayna-footer__link--social
-    > span:last-child {
-    margin-left: auto;
   }
 
   #ZaynaFooter-{{ section.id }}
@@ -544,7 +562,7 @@
   #ZaynaFooter-{{ section.id }} .zayna-footer__meta-label {
     margin: 0;
     color: var(--zayna-footer-muted);
-    font-size: 9px;
+    font-size: 9.5px;
     line-height: 1.3;
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -565,7 +583,7 @@
 
   #ZaynaFooter-{{ section.id }} .zayna-footer__business dt {
     color: var(--zayna-footer-muted);
-    font-size: 9px;
+    font-size: 9.5px;
     line-height: 1.3;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -573,8 +591,8 @@
 
   #ZaynaFooter-{{ section.id }} .zayna-footer__business dd {
     margin: 0;
-    color: var(--zayna-footer-soft);
-    font-size: 12px;
+    color: #756b62;
+    font-size: 13px;
     line-height: 1.45;
     font-variant-numeric: tabular-nums;
   }
@@ -584,8 +602,8 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 13px 18px;
-    color: var(--zayna-footer-soft);
-    font-size: 12px;
+    color: #756b62;
+    font-size: 13px;
     line-height: 1.45;
   }
 
@@ -598,12 +616,6 @@
       color: var(--zayna-footer-ink);
     }
 
-    #ZaynaFooter-{{ section.id }}
-      .zayna-footer__link:hover
-      > span:last-child {
-      color: var(--zayna-footer-accent);
-      transform: translateX(3px);
-    }
   }
 
   @media (max-width: 389px) {
@@ -627,6 +639,10 @@
   }
 
   @media (min-width: 700px) and (max-width: 959px) {
+    #ZaynaFooter-{{ section.id }} .zayna-footer__wordmark {
+      font-size: 32px;
+    }
+
     #ZaynaFooter-{{ section.id }} .zayna-footer__main {
       padding-right: 28px;
       padding-left: 28px;
@@ -675,6 +691,7 @@
       margin-bottom: 17px;
       cursor: default;
       pointer-events: none;
+      user-select: none;
     }
 
     #ZaynaFooter-{{ section.id }} .zayna-footer__chevron {
@@ -695,12 +712,6 @@
       justify-content: flex-start;
       gap: 8px;
       font-size: 15px;
-    }
-
-    #ZaynaFooter-{{ section.id }}
-      .zayna-footer__link
-      > span:last-child {
-      display: none;
     }
 
     #ZaynaFooter-{{ section.id }} .zayna-footer__bottom-inner {
@@ -740,10 +751,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     #ZaynaFooter-{{ section.id }} .zayna-footer__chevron,
-    #ZaynaFooter-{{ section.id }} .zayna-footer__link,
-    #ZaynaFooter-{{ section.id }}
-      .zayna-footer__link
-      > span:last-child {
+    #ZaynaFooter-{{ section.id }} .zayna-footer__link {
       transition: none;
     }
   }
