@@ -1,1349 +1,254 @@
 {%- liquid
-  assign edits = section.settings.collection_list
-  assign section_heading_id = 'ZaynaCuratedHeading-' | append: section.id
+  assign coll = section.settings.collection
+  assign mobile_product_limit = 6
+  assign desktop_product_limit = 8
+  assign section_heading_id = 'FreshlyListedHeading-' | append: section.id
 
-  if edits == blank or edits.size == 0
-    assign edits = collections
+  if coll != blank
+    assign products = coll.products
+  else
+    assign products = collections.all.products
   endif
 -%}
 
-{%- if edits.size > 0 -%}
+{%- if products.size > 0 -%}
   <section
-    id="ZaynaCuratedEdit-{{ section.id }}"
-    class="zayna-curated-edit"
-    data-zayna-curated
-    aria-labelledby="{{ section_heading_id }}"
+    id="ZaynaFreshlyListed-{{ section.id }}"
+    class="zayna-freshly-listed"
+    {% if section.settings.heading != blank %}
+      aria-labelledby="{{ section_heading_id }}"
+    {% else %}
+      aria-label="{{ section.settings.eyebrow | default: 'Nieuw binnen' | escape }}"
+    {% endif %}
   >
-    <div class="zayna-curated-edit__header">
-      <div class="zayna-curated-edit__heading-group">
-        {%- if section.settings.eyebrow != blank -%}
-          <p class="zayna-curated-edit__eyebrow">
-            <span aria-hidden="true"></span>
-            {{ section.settings.eyebrow | escape }}
-          </p>
-        {%- endif -%}
+    <div class="zayna-freshly-listed__inner">
+      <header class="zayna-freshly-listed__header">
+        <div class="zayna-freshly-listed__heading-group">
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="zayna-freshly-listed__eyebrow">
+              {{ section.settings.eyebrow | escape }}
+            </p>
+          {%- endif -%}
 
-        {%- if section.settings.heading != blank -%}
-          <h2
-            id="{{ section_heading_id }}"
-            class="zayna-curated-edit__title"
-          >
-            {{ section.settings.heading | escape }}
-          </h2>
-        {%- endif -%}
-      </div>
-
-      <div class="zayna-curated-edit__actions">
-        <div
-          class="zayna-curated-edit__controls"
-          aria-label="Collecties doorbladeren"
-        >
-          <button
-            type="button"
-            class="zayna-curated-edit__control"
-            data-curated-prev
-            aria-label="Vorige collectie"
-            aria-keyshortcuts="ArrowLeft"
-            disabled
-          >
-            <span aria-hidden="true">←</span>
-          </button>
-
-          <button
-            type="button"
-            class="zayna-curated-edit__control"
-            data-curated-next
-            aria-label="Volgende collectie"
-            aria-keyshortcuts="ArrowRight"
-          >
-            <span aria-hidden="true">→</span>
-          </button>
+          {%- if section.settings.heading != blank -%}
+            <h2
+              id="{{ section_heading_id }}"
+              class="zayna-freshly-listed__title"
+            >
+              {{ section.settings.heading | escape }}
+            </h2>
+          {%- endif -%}
         </div>
 
         {%- if section.settings.link_label != blank -%}
           <a
-            href="{{ section.settings.link_url | default: routes.collections_url }}"
-            class="zayna-curated-edit__all-link"
+            href="{{ section.settings.link_url | default: routes.all_products_collection_url }}"
+            class="zayna-freshly-listed__link"
           >
             <span>{{ section.settings.link_label | escape }}</span>
             <span aria-hidden="true">→</span>
           </a>
         {%- endif -%}
+      </header>
+
+      <div class="zayna-freshly-listed__grid">
+        {%- for product in products limit: desktop_product_limit -%}
+          <div
+            class="zayna-freshly-listed__item{% if forloop.index > mobile_product_limit %} zayna-freshly-listed__item--desktop-only{% endif %}"
+          >
+            {% render 'product-card', product: product, loading: 'lazy' %}
+          </div>
+        {%- endfor -%}
       </div>
     </div>
-
-    <div
-      class="zayna-curated-edit__viewport"
-      data-curated-viewport
-      tabindex="0"
-      role="region"
-      aria-roledescription="carrousel"
-      aria-keyshortcuts="ArrowLeft ArrowRight Home End"
-      aria-label="Collecties. Gebruik de pijltoetsen links en rechts om te bladeren."
-    >
-      <ul class="zayna-curated-edit__track">
-        {%- for collection_item in edits -%}
-          {%- if collection_item.handle == 'all' or collection_item.handle == 'frontpage' -%}
-            {%- continue -%}
-          {%- endif -%}
-
-          {%- liquid
-            assign focal_point = collection_item.featured_image.presentation.focal_point | default: 'center'
-          -%}
-
-          <li
-            class="zayna-curated-edit__slide"
-            role="group"
-            aria-roledescription="slide"
-            aria-label="{{ collection_item.title | escape }}"
-          >
-            <a
-              href="{{ collection_item.url }}"
-              class="zayna-curated-edit__card"
-            >
-              <div
-                class="zayna-curated-edit__media"
-                style="--zayna-focal-point: {{ focal_point }};"
-              >
-                {%- if collection_item.featured_image -%}
-                  {{
-                    collection_item.featured_image
-                    | image_url: width: 1200
-                    | image_tag:
-                      loading: 'lazy',
-                      sizes: '(min-width: 1200px) 23vw, (min-width: 900px) 31vw, (min-width: 600px) 47vw, 86vw',
-                      widths: '400, 600, 800, 1000, 1200',
-                      alt: collection_item.title,
-                      draggable: false,
-                      class: 'zayna-curated-edit__image'
-                  }}
-                {%- else -%}
-                  <div
-                    class="zayna-curated-edit__placeholder"
-                    aria-hidden="true"
-                  >
-                    <span class="zayna-curated-edit__number">
-                      {{ forloop.index | prepend: '0' | slice: -2, 2 }}
-                    </span>
-
-                    <span class="zayna-curated-edit__placeholder-title">
-                      {{ collection_item.title }}
-                    </span>
-
-                    <span class="zayna-curated-edit__placeholder-line"></span>
-                  </div>
-                {%- endif -%}
-
-                <span
-                  class="zayna-curated-edit__overlay"
-                  aria-hidden="true"
-                ></span>
-
-                <span
-                  class="zayna-curated-edit__view-label"
-                  aria-hidden="true"
-                >
-                  <span></span>
-                  Bekijk collectie
-                </span>
-              </div>
-
-              <div class="zayna-curated-edit__content">
-                <h3 class="zayna-curated-edit__card-title">
-                  {{ collection_item.title | escape }}
-                </h3>
-
-                <span
-                  class="zayna-curated-edit__card-arrow"
-                  aria-hidden="true"
-                >
-                  →
-                </span>
-              </div>
-            </a>
-          </li>
-        {%- endfor -%}
-      </ul>
-    </div>
-
-    <p
-      class="zayna-curated-edit__sr-only"
-      data-curated-live
-      aria-live="polite"
-      aria-atomic="true"
-    ></p>
-
-    <button
-      type="button"
-      class="zayna-curated-edit__progress"
-      data-curated-progress
-      aria-label="Spring naar een andere positie in de collecties"
-      aria-keyshortcuts="ArrowLeft ArrowRight Home End"
-    >
-      <span
-        class="zayna-curated-edit__progress-track"
-        data-curated-progress-track
-      >
-        <span
-          class="zayna-curated-edit__progress-thumb"
-          data-curated-progress-thumb
-        ></span>
-      </span>
-    </button>
   </section>
-
-  <script
-    src="{{ 'embla-carousel.umd.js' | asset_url }}"
-    defer="defer"
-  ></script>
-
-  <script>
-    (() => {
-      const sectionId = 'ZaynaCuratedEdit-{{ section.id }}';
-
-      const getVisibleCardCount = () => {
-        if (window.matchMedia('(min-width: 1200px)').matches) {
-          return 4;
-        }
-
-        if (window.matchMedia('(min-width: 900px)').matches) {
-          return 3;
-        }
-
-        if (window.matchMedia('(min-width: 600px)').matches) {
-          return 2;
-        }
-
-        return 1;
-      };
-
-      const initialiseCuratedEdit = () => {
-        const root = document.getElementById(sectionId);
-
-        if (
-          !root ||
-          root.dataset.carouselInitialised === 'true' ||
-          !window.EmblaCarousel
-        ) {
-          return;
-        }
-
-        const viewport = root.querySelector('[data-curated-viewport]');
-        const previousButton = root.querySelector('[data-curated-prev]');
-        const nextButton = root.querySelector('[data-curated-next]');
-        const progressButton = root.querySelector(
-          '[data-curated-progress]'
-        );
-        const progressTrack = root.querySelector(
-          '[data-curated-progress-track]'
-        );
-        const progressThumb = root.querySelector(
-          '[data-curated-progress-thumb]'
-        );
-        const liveRegion = root.querySelector('[data-curated-live]');
-        const slides = Array.from(
-          root.querySelectorAll('.zayna-curated-edit__slide')
-        );
-
-        if (!viewport || slides.length === 0) return;
-
-        root.querySelectorAll('img').forEach((image) => {
-          image.draggable = false;
-        });
-
-        const embla = window.EmblaCarousel(viewport, {
-          loop: false,
-          align: 'start',
-          dragFree: false,
-          slidesToScroll: 1,
-          skipSnaps: false,
-          containScroll: 'keepSnaps',
-          watchDrag: true
-        });
-
-        let pointerStartX = 0;
-        let pointerStartY = 0;
-        let pointerMoved = false;
-        let suppressNextClick = false;
-        let resizeTimer = null;
-        let isNormalising = false;
-        let sectionIsVisible = false;
-        let wheelAccumulator = 0;
-        let wheelResetTimer = null;
-        let wheelLockedUntil = 0;
-
-        const getVisibleCount = () =>
-          Math.min(getVisibleCardCount(), slides.length);
-
-        const getMaximumStart = () =>
-          Math.max(0, slides.length - getVisibleCount());
-
-        const getStartIndex = () =>
-          Math.min(
-            Math.max(0, embla.selectedScrollSnap()),
-            getMaximumStart()
-          );
-
-        const scrollToIndex = (index, jump = false) => {
-          const targetIndex = Math.min(
-            Math.max(0, index),
-            getMaximumStart()
-          );
-
-          embla.scrollTo(targetIndex, jump);
-        };
-
-        const scrollBy = (difference) => {
-          scrollToIndex(getStartIndex() + difference);
-        };
-
-        const isEditableTarget = (target) => {
-          if (!(target instanceof Element)) return false;
-
-          return Boolean(
-            target.closest(
-              'input, textarea, select, [contenteditable="true"]'
-            )
-          );
-        };
-
-        const handleCarouselKeydown = (event) => {
-          if (
-            isEditableTarget(event.target) ||
-            event.altKey ||
-            event.ctrlKey ||
-            event.metaKey ||
-            event.shiftKey
-          ) {
-            return;
-          }
-
-          if (event.key === 'ArrowLeft') {
-            event.preventDefault();
-            scrollBy(-1);
-          }
-
-          if (event.key === 'ArrowRight') {
-            event.preventDefault();
-            scrollBy(1);
-          }
-
-          if (event.key === 'Home') {
-            event.preventDefault();
-            scrollToIndex(0);
-          }
-
-          if (event.key === 'End') {
-            event.preventDefault();
-            scrollToIndex(getMaximumStart());
-          }
-        };
-
-        const focusViewport = () => {
-          try {
-            viewport.focus({ preventScroll: true });
-          } catch (error) {
-            viewport.focus();
-          }
-        };
-
-        const visibilityObserver = new IntersectionObserver(
-          (entries) => {
-            sectionIsVisible = Boolean(entries[0]?.isIntersecting);
-          },
-          {
-            root: null,
-            rootMargin: '-22% 0px -22% 0px',
-            threshold: 0
-          }
-        );
-
-        visibilityObserver.observe(root);
-
-        root.addEventListener('keydown', handleCarouselKeydown);
-
-        document.addEventListener('keydown', (event) => {
-          if (
-            !sectionIsVisible ||
-            event.defaultPrevented ||
-            root.contains(document.activeElement)
-          ) {
-            return;
-          }
-
-          handleCarouselKeydown(event);
-        });
-
-        viewport.addEventListener('pointerdown', (event) => {
-          pointerStartX = event.clientX;
-          pointerStartY = event.clientY;
-          pointerMoved = false;
-
-          if (event.pointerType === 'mouse') {
-            focusViewport();
-          }
-        });
-
-        viewport.addEventListener('pointermove', (event) => {
-          const distanceX = Math.abs(event.clientX - pointerStartX);
-          const distanceY = Math.abs(event.clientY - pointerStartY);
-
-          if (distanceX > 7 || distanceY > 7) {
-            pointerMoved = true;
-          }
-        });
-
-        viewport.addEventListener('pointerup', () => {
-          suppressNextClick = pointerMoved;
-
-          if (suppressNextClick) {
-            window.setTimeout(() => {
-              suppressNextClick = false;
-            }, 80);
-          }
-        });
-
-        const normaliseWheelDelta = (value, deltaMode) => {
-          if (deltaMode === 1) {
-            return value * 16;
-          }
-
-          if (deltaMode === 2) {
-            return value * viewport.clientWidth;
-          }
-
-          return value;
-        };
-
-        viewport.addEventListener(
-          'wheel',
-          (event) => {
-            if (event.ctrlKey || event.metaKey || event.altKey) {
-              return;
-            }
-
-            const rawDeltaX =
-              Math.abs(event.deltaX) > 0.5
-                ? event.deltaX
-                : event.shiftKey
-                  ? event.deltaY
-                  : 0;
-
-            const deltaX = normaliseWheelDelta(
-              rawDeltaX,
-              event.deltaMode
-            );
-            const deltaY = normaliseWheelDelta(
-              event.deltaY,
-              event.deltaMode
-            );
-
-            const isHorizontalGesture =
-              Math.abs(deltaX) > 1 &&
-              Math.abs(deltaX) >= Math.abs(deltaY) * 0.8;
-
-            if (!isHorizontalGesture) {
-              return;
-            }
-
-            /*
-              Horizontale touchpadbeweging hoort bij de collectiecarrousel.
-              Verticale tweevingerbeweging blijft beschikbaar voor de pagina.
-            */
-            event.preventDefault();
-
-            const now = Date.now();
-
-            if (now < wheelLockedUntil) {
-              return;
-            }
-
-            wheelAccumulator += deltaX;
-
-            window.clearTimeout(wheelResetTimer);
-            wheelResetTimer = window.setTimeout(() => {
-              wheelAccumulator = 0;
-            }, 180);
-
-            if (Math.abs(wheelAccumulator) < 42) {
-              return;
-            }
-
-            const direction = wheelAccumulator > 0 ? 1 : -1;
-
-            wheelAccumulator = 0;
-            wheelLockedUntil = now + 430;
-
-            scrollBy(direction);
-          },
-          { passive: false }
-        );
-
-        viewport.addEventListener(
-          'click',
-          (event) => {
-            if (!suppressNextClick) return;
-
-            event.preventDefault();
-            event.stopPropagation();
-            suppressNextClick = false;
-          },
-          true
-        );
-
-        root.addEventListener('dragstart', (event) => {
-          if (event.target.closest('.zayna-curated-edit__image')) {
-            event.preventDefault();
-          }
-        });
-
-        const updateNavigation = () => {
-          const startIndex = getStartIndex();
-          const maximumStart = getMaximumStart();
-
-          if (previousButton) {
-            const disabled = startIndex <= 0;
-            previousButton.disabled = disabled;
-            previousButton.setAttribute(
-              'aria-disabled',
-              String(disabled)
-            );
-          }
-
-          if (nextButton) {
-            const disabled = startIndex >= maximumStart;
-            nextButton.disabled = disabled;
-            nextButton.setAttribute(
-              'aria-disabled',
-              String(disabled)
-            );
-          }
-        };
-
-        const updateProgress = () => {
-          if (!progressThumb) return;
-
-          const totalSlides = slides.length;
-          const visibleCount = getVisibleCount();
-          const maximumStart = getMaximumStart();
-          const startIndex = getStartIndex();
-
-          const thumbWidth =
-            totalSlides <= visibleCount
-              ? 100
-              : (visibleCount / totalSlides) * 100;
-
-          const maximumTravel = 100 - thumbWidth;
-          const thumbLeft =
-            maximumStart === 0
-              ? 0
-              : (startIndex / maximumStart) * maximumTravel;
-
-          progressThumb.style.width = `${thumbWidth}%`;
-          progressThumb.style.left = `${thumbLeft}%`;
-        };
-
-        const updateLiveRegion = () => {
-          if (!liveRegion) return;
-
-          const startIndex = getStartIndex();
-          const endIndex = Math.min(
-            slides.length,
-            startIndex + getVisibleCount()
-          );
-
-          liveRegion.textContent =
-            `Collecties ${startIndex + 1} tot ${endIndex} van ${slides.length} zichtbaar.`;
-        };
-
-        const updateInterface = () => {
-          updateNavigation();
-          updateProgress();
-          updateLiveRegion();
-        };
-
-        const normaliseEndPosition = () => {
-          const selectedIndex = embla.selectedScrollSnap();
-          const maximumStart = getMaximumStart();
-
-          if (selectedIndex > maximumStart && !isNormalising) {
-            isNormalising = true;
-            embla.scrollTo(maximumStart);
-
-            window.setTimeout(() => {
-              isNormalising = false;
-            }, 350);
-
-            return true;
-          }
-
-          return false;
-        };
-
-        previousButton?.addEventListener('click', () => {
-          scrollBy(-1);
-        });
-
-        nextButton?.addEventListener('click', () => {
-          scrollBy(1);
-        });
-
-        const jumpFromProgressPosition = (clientX) => {
-          if (!progressTrack) return;
-
-          const rectangle = progressTrack.getBoundingClientRect();
-
-          if (rectangle.width <= 0) return;
-
-          const rawRatio =
-            (clientX - rectangle.left) / rectangle.width;
-          const ratio = Math.min(Math.max(rawRatio, 0), 1);
-          const targetIndex = Math.round(
-            ratio * getMaximumStart()
-          );
-
-          scrollToIndex(targetIndex);
-        };
-
-        progressButton?.addEventListener('pointerdown', (event) => {
-          if (event.pointerType === 'mouse' && event.button !== 0) {
-            return;
-          }
-
-          event.preventDefault();
-          event.stopPropagation();
-
-          jumpFromProgressPosition(event.clientX);
-        });
-
-        progressButton?.addEventListener('keydown', (event) => {
-          if (
-            event.key === 'Enter' ||
-            event.key === ' '
-          ) {
-            event.preventDefault();
-            scrollToIndex(
-              Math.round(getMaximumStart() / 2)
-            );
-          }
-        });
-
-        embla.on('select', updateInterface);
-
-        embla.on('settle', () => {
-          if (!normaliseEndPosition()) {
-            updateInterface();
-          }
-        });
-
-        embla.on('reInit', () => {
-          scrollToIndex(getStartIndex(), true);
-          updateInterface();
-        });
-
-        window.addEventListener('resize', () => {
-          window.clearTimeout(resizeTimer);
-
-          resizeTimer = window.setTimeout(() => {
-            embla.reInit();
-            scrollToIndex(getStartIndex(), true);
-            updateInterface();
-          }, 140);
-        });
-
-        updateInterface();
-
-        root.dataset.carouselInitialised = 'true';
-        root.__zaynaEmbla = embla;
-      };
-
-      const waitForEmbla = (attempt = 0) => {
-        if (window.EmblaCarousel) {
-          initialiseCuratedEdit();
-          return;
-        }
-
-        if (attempt < 40) {
-          window.setTimeout(() => waitForEmbla(attempt + 1), 100);
-        }
-      };
-
-      if (document.readyState === 'loading') {
-        document.addEventListener(
-          'DOMContentLoaded',
-          () => waitForEmbla(),
-          { once: true }
-        );
-      } else {
-        waitForEmbla();
-      }
-
-      document.addEventListener('shopify:section:load', (event) => {
-        const loadedSection = event.target;
-
-        if (
-          loadedSection?.id === sectionId ||
-          loadedSection?.querySelector?.(`#${sectionId}`)
-        ) {
-          waitForEmbla();
-        }
-      });
-    })();
-  </script>
 {%- endif -%}
 
 {% style %}
-  #ZaynaCuratedEdit-{{ section.id }} {
-    --zayna-curated-bg: #faf5f2;
-    --zayna-curated-ink: #2a2520;
-    --zayna-curated-soft: #6f665e;
-    --zayna-curated-accent: #a66a3f;
-    --zayna-curated-border: #e7ddd2;
+  #ZaynaFreshlyListed-{{ section.id }} {
+    --zayna-fresh-bg: #faf5f2;
+    --zayna-fresh-ink: #2a2520;
+    --zayna-fresh-soft: #675f58;
+    --zayna-fresh-accent: #a66a3f;
+    --zayna-fresh-border: #e7ddd2;
 
-    overflow: hidden;
-    padding: 34px 0 28px;
-    background: var(--zayna-curated-bg);
+    background: var(--zayna-fresh-bg);
   }
 
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header {
+  #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__inner {
+    width: min(100%, 1280px);
+    margin: 0 auto;
+    padding: 46px 20px 20px;
+  }
+
+  #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__header {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: end;
     gap: 18px;
-    width: min(100%, 1280px);
-    margin: 0 auto 25px;
-    padding: 0 20px;
+    margin-bottom: 25px;
   }
 
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__heading-group {
+  #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__heading-group {
     min-width: 0;
   }
 
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__eyebrow {
     margin: 0 0 8px;
-    color: var(--zayna-curated-accent);
+    color: var(--zayna-fresh-accent);
     font-size: 9px;
     line-height: 1.4;
-    letter-spacing: 0.21em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
   }
 
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__eyebrow > span {
-    display: block;
-    width: 26px;
-    height: 1px;
-    flex: 0 0 26px;
-    background: rgba(166, 106, 63, 0.62);
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
-    max-width: 17ch;
+  #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__title {
     margin: 0;
-    color: var(--zayna-curated-ink);
+    color: var(--zayna-fresh-ink);
     font-family:
       var(
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: clamp(30px, 8vw, 35px);
+    font-size: clamp(32px, 8.5vw, 35px);
     font-weight: 400;
-    line-height: 1.06;
-    letter-spacing: -0.027em;
-    text-wrap: balance;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
   }
 
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__actions {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__controls {
-    display: none;
-    align-items: center;
-    border-bottom: 1px solid var(--zayna-curated-border);
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__control {
-    position: relative;
-    display: grid;
-    width: 42px;
-    height: 44px;
-    place-items: center;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--zayna-curated-ink);
-    font: inherit;
-    cursor: pointer;
-    transition:
-      opacity 180ms ease,
-      color 180ms ease,
-      background-color 180ms ease;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__control:first-child {
-    border-right: 1px solid var(--zayna-curated-border);
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__control:disabled {
-    opacity: 0.24;
-    cursor: default;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link {
+  #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__link {
     display: inline-flex;
-    min-height: 44px;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: flex-end;
     gap: 7px;
-    padding: 0 0 3px;
-    border-bottom: 1px solid var(--zayna-curated-border);
-    color: var(--zayna-curated-soft);
-    font-size: 8.5px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--zayna-fresh-border);
+    color: var(--zayna-fresh-soft);
+    font-size: 9px;
     line-height: 1.3;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.16em;
     text-align: right;
     text-decoration: none;
     text-transform: uppercase;
     white-space: nowrap;
     transition:
-      border-color 180ms ease,
-      color 180ms ease;
+      color 180ms ease,
+      border-color 180ms ease;
   }
 
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
-    overflow: hidden;
-    padding: 0 20px;
-    cursor: grab;
-    touch-action: pan-y pinch-zoom;
-    overscroll-behavior-x: contain;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__viewport:focus {
-    outline: none;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport:active {
-    cursor: grabbing;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
-    display: flex;
-    gap: 14px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    will-change: transform;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__slide {
-    min-width: 0;
-    flex: 0 0 86%;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card {
-    display: block;
-    color: inherit;
-    text-decoration: none;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__media {
-    position: relative;
-    aspect-ratio: 5 / 4;
-    overflow: hidden;
-    background: #f1e8df;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__image {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: var(--zayna-focal-point, center);
-    pointer-events: none;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
-    transition: transform 700ms ease;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__placeholder {
-    position: absolute;
-    inset: 0;
+  #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__grid {
     display: grid;
-    place-content: center;
-    justify-items: center;
-    padding: 28px;
-    text-align: center;
-    background:
-      radial-gradient(
-        70% 80% at 30% 20%,
-        rgba(181, 101, 29, 0.1),
-        transparent 65%
-      ),
-      linear-gradient(180deg, #f4ece5, #ede4dc);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 14px;
+    row-gap: 28px;
   }
 
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__number {
-    margin-bottom: 11px;
-    color: var(--zayna-curated-soft);
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__placeholder-title {
-    color: rgba(42, 37, 32, 0.72);
-    font-family:
-      var(
-        --font-display,
-        var(--font-heading-family, Georgia, serif)
-      );
-    font-size: 23px;
-    font-style: italic;
-    line-height: 1.15;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__placeholder-line {
-    width: 38px;
-    height: 1px;
-    margin-top: 15px;
-    background: rgba(111, 102, 94, 0.5);
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__overlay {
-    position: absolute;
-    inset: auto 0 0;
-    height: 30%;
-    background: linear-gradient(
-      to top,
-      rgba(42, 37, 32, 0.42),
-      rgba(42, 37, 32, 0.06),
-      transparent
-    );
-    opacity: 0;
-    transition: opacity 350ms ease;
-    pointer-events: none;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__view-label {
-    position: absolute;
-    right: 14px;
-    bottom: 14px;
-    left: 14px;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    color: #fffaf6;
-    font-size: 8.5px;
-    line-height: 1.2;
-    letter-spacing: 0.17em;
-    text-transform: uppercase;
-    opacity: 0;
-    transform: translateY(4px);
-    transition:
-      opacity 350ms ease,
-      transform 350ms ease;
-    pointer-events: none;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__view-label > span {
-    display: block;
-    width: 22px;
-    height: 1px;
-    background: rgba(255, 250, 246, 0.75);
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__content {
-    display: flex;
-    min-height: 28px;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    margin-top: 12px;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title {
-    display: -webkit-box;
+  #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__item {
     min-width: 0;
-    margin: 0;
-    overflow: hidden;
-    color: var(--zayna-curated-ink);
-    font-family:
-      var(
-        --font-display,
-        var(--font-heading-family, Georgia, serif)
-      );
-    font-size: 20px;
-    font-weight: 400;
-    line-height: 1.15;
-    letter-spacing: -0.015em;
-    transition: color 250ms ease;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
   }
 
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-arrow {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    color: var(--zayna-curated-soft);
-    font-size: 15px;
-    transition:
-      color 250ms ease,
-      transform 250ms ease;
+  #ZaynaFreshlyListed-{{ section.id }}
+    .zayna-freshly-listed__item--desktop-only {
+    display: none;
   }
 
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
-    position: relative;
-    z-index: 5;
-    display: block;
-    box-sizing: border-box;
-    width: min(100%, 1280px);
-    height: 1px;
-    min-height: 0;
-    margin: 15px auto 0;
-    padding: 0 20px;
-    overflow: visible;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  /*
-    De zichtbare voortgangslijn blijft 1px hoog. Dit transparante
-    pseudo-element vergroot alleen het klik- en tikgebied tot 44px,
-    zonder extra lege ruimte aan de pagina toe te voegen.
-  */
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__progress::before {
-    content: "";
-    position: absolute;
-    top: -21px;
-    right: 0;
-    bottom: -22px;
-    left: 0;
-    display: block;
-    cursor: pointer;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__progress-track {
-    position: relative;
-    z-index: 1;
-    display: block;
-    width: 100%;
-    height: 1px;
-    background: var(--zayna-curated-border);
-    pointer-events: none;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__progress-thumb {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: block;
-    width: 10%;
-    height: 1px;
-    background: var(--zayna-curated-accent);
-    transition:
-      left 340ms ease,
-      width 340ms ease,
-      height 180ms ease,
-      top 180ms ease;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__progress:focus-visible {
-    outline: none;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__progress:focus-visible
-    .zayna-curated-edit__progress-thumb {
-    top: -0.5px;
-    height: 2px;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__sr-only {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0, 0, 0, 0) !important;
-    white-space: nowrap !important;
-    border: 0 !important;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card:focus-visible,
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__control:focus-visible,
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link:focus-visible {
-    outline: 2px solid var(--zayna-curated-accent);
+  #ZaynaFreshlyListed-{{ section.id }}
+    .zayna-freshly-listed__link:focus-visible {
+    outline: 2px solid var(--zayna-fresh-accent);
     outline-offset: 4px;
   }
 
   @media (hover: hover) and (pointer: fine) {
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__controls {
-      display: flex;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__control:not(:disabled):hover {
-      color: var(--zayna-curated-accent);
-      background: rgba(166, 106, 63, 0.035);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link:hover {
-      border-color: var(--zayna-curated-accent);
-      color: var(--zayna-curated-accent);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__image,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__image {
-      transform: scale(1.02);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__overlay,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__view-label,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__overlay,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__view-label {
-      opacity: 1;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__view-label,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__view-label {
-      transform: translateY(0);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__card-title,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__card-arrow,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__card-title,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__card-arrow {
-      color: var(--zayna-curated-accent);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__card-arrow,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__card-arrow {
-      transform: translateX(3px);
+    #ZaynaFreshlyListed-{{ section.id }}
+      .zayna-freshly-listed__link:hover {
+      border-color: var(--zayna-fresh-accent);
+      color: var(--zayna-fresh-accent);
     }
   }
 
   @media (max-width: 389px) {
-    #ZaynaCuratedEdit-{{ section.id }} {
-      padding-top: 34px;
-      padding-bottom: 24px;
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__inner {
+      padding: 42px 18px 18px;
     }
 
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header {
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__header {
       gap: 12px;
-      padding-right: 18px;
-      padding-left: 18px;
+      margin-bottom: 23px;
     }
 
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
-      font-size: 29px;
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__title {
+      font-size: 31px;
     }
 
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link {
-      font-size: 8px;
-      letter-spacing: 0.13em;
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__link {
+      font-size: 8.5px;
+      letter-spacing: 0.14em;
     }
 
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
-      padding-right: 18px;
-      padding-left: 18px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
-      padding-right: 18px;
-      padding-left: 18px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
-      gap: 12px;
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__grid {
+      column-gap: 12px;
+      row-gap: 26px;
     }
   }
 
-  @media (min-width: 600px) {
-    #ZaynaCuratedEdit-{{ section.id }} {
-      padding-top: 40px;
-      padding-bottom: 38px;
+  @media (min-width: 750px) {
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__inner {
+      padding: 60px 32px 20px;
     }
 
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
-      padding-right: 32px;
-      padding-left: 32px;
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__header {
+      gap: 28px;
+      margin-bottom: 30px;
     }
 
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
-      padding-right: 32px;
-      padding-left: 32px;
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__eyebrow {
+      margin-bottom: 10px;
+      font-size: 10px;
     }
 
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header {
-      margin-bottom: 28px;
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__title {
+      font-size: clamp(38px, 4vw, 42px);
+      line-height: 1.04;
     }
 
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
-      gap: 20px;
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__link {
+      margin-bottom: 3px;
+      font-size: 10px;
     }
 
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__slide {
-      flex-basis: calc((100% - 20px) / 2);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__media {
-      aspect-ratio: 1 / 1;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
-      font-size: clamp(35px, 4vw, 40px);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link {
-      font-size: 9.5px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title {
-      font-size: 19px;
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      column-gap: 24px;
+      row-gap: 38px;
     }
   }
 
-  @media (min-width: 900px) {
-    #ZaynaCuratedEdit-{{ section.id }} {
-      padding-top: 42px;
-      padding-bottom: 44px;
+  @media (min-width: 1100px) {
+    #ZaynaFreshlyListed-{{ section.id }}
+      .zayna-freshly-listed__item--desktop-only {
+      display: block;
     }
 
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
-      padding-right: 36px;
-      padding-left: 36px;
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__inner {
+      padding: 62px 40px 18px;
     }
 
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
-      width: min(100%, 1280px);
-      margin: 0 auto;
-      padding-right: 36px;
-      padding-left: 36px;
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__header {
+      margin-bottom: 30px;
     }
 
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
-      gap: 24px;
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__title {
+      font-size: 42px;
     }
 
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__slide {
-      flex-basis: calc((100% - 48px) / 3);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
-      font-size: 36px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title {
-      font-size: 19px;
-    }
-  }
-
-  @media (min-width: 1200px) {
-    #ZaynaCuratedEdit-{{ section.id }} {
-      padding-top: 42px;
-      padding-bottom: 46px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
-      padding-right: 40px;
-      padding-left: 40px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
-      padding-right: 40px;
-      padding-left: 40px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header {
-      align-items: center;
-      margin-bottom: 29px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
-      gap: 24px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__slide {
-      flex-basis: calc((100% - 72px) / 4);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
-      max-width: none;
-      font-size: 38px;
-      line-height: 1.05;
-      letter-spacing: -0.025em;
-      white-space: nowrap;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__content {
-      margin-top: 11px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title {
-      font-size: 19px;
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__grid {
+      column-gap: 30px;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__image,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__overlay,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__view-label,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-arrow,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__control,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress-thumb {
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__link {
       transition: none;
     }
   }
@@ -1351,43 +256,53 @@
 
 {% schema %}
 {
-  "name": "Curated edit",
+  "name": "Freshly listed",
   "tag": "section",
   "settings": [
     {
-      "type": "collection_list",
-      "id": "collection_list",
-      "label": "Collecties",
-      "limit": 12
+      "type": "collection",
+      "id": "collection",
+      "label": "Collectie",
+      "info": "Wanneer dit leeg blijft, worden producten uit Alle producten gebruikt."
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "min": 4,
+      "max": 8,
+      "step": 1,
+      "label": "Aantal producten",
+      "info": "De homepage toont 6 producten op mobiel en gesplitst scherm en 8 op brede desktop.",
+      "default": 6
     },
     {
       "type": "text",
       "id": "eyebrow",
       "label": "Kleine bovenregel",
-      "default": "Collecties"
+      "default": "Net binnen"
     },
     {
       "type": "text",
       "id": "heading",
       "label": "Titel",
-      "default": "Voor elke hoek van je huis."
+      "default": "Nieuw binnen"
     },
     {
       "type": "text",
       "id": "link_label",
       "label": "Linktekst",
-      "default": "Alle collecties"
+      "default": "Bekijk alles"
     },
     {
       "type": "text",
       "id": "link_url",
       "label": "Link URL",
-      "default": "/collections"
+      "default": "/collections/all"
     }
   ],
   "presets": [
     {
-      "name": "Curated edit"
+      "name": "Freshly listed"
     }
   ]
 }
