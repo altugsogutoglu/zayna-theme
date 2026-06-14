@@ -1,46 +1,184 @@
-<section aria-label="{{ section.settings.aria | default: 'Waarom Zayna Home' }}" class="border-y border-border-soft bg-bg/60">
-  <ul class="mx-auto grid max-w-7xl grid-cols-2 gap-y-10 gap-x-6 px-4 py-14 sm:px-6 lg:grid-cols-4 lg:gap-x-10 lg:px-10 lg:py-16">
-    {%- for block in section.blocks -%}
-      <li class="flex flex-col" {{ block.shopify_attributes }}>
-        {% render 'icon', name: block.settings.icon, size: 22, class: 'mb-3 text-clay' %}
-        <h3 class="font-display text-xl leading-snug tracking-[-0.01em] text-ink">{{ block.settings.label }}</h3>
-        <p class="mt-2 max-w-[28ch] text-sm leading-relaxed text-ink-soft">{{ block.settings.body }}</p>
-      </li>
-    {%- endfor -%}
-  </ul>
-</section>
+{%- liquid
+  assign aside_logo = logo
 
-{% schema %}
-{
-  "name": "Value props",
-  "tag": "section",
-  "blocks": [
-    {
-      "type": "prop",
-      "name": "Value prop",
-      "settings": [
-        { "type": "select", "id": "icon", "label": "Icon", "default": "sparkles", "options": [
-          { "value": "sparkles", "label": "Sparkles" },
-          { "value": "shield-check", "label": "Shield" },
-          { "value": "truck", "label": "Truck" },
-          { "value": "file-text", "label": "Document" }
-        ] },
-        { "type": "text", "id": "label", "label": "Label", "default": "Zorgvuldig geselecteerd" },
-        { "type": "textarea", "id": "body", "label": "Body", "default": "Elk product is gekozen op design, kwaliteit en functie." }
-      ]
+  if aside_logo == blank and section.settings.logo != blank
+    assign aside_logo = section.settings.logo
+  endif
+
+  if aside_logo == blank and settings.logo != blank
+    assign aside_logo = settings.logo
+  endif
+
+  assign aside_logo_width = logo_width
+
+  if aside_logo_width == blank and section.settings.logo_width != blank
+    assign aside_logo_width = section.settings.logo_width
+  endif
+
+  if aside_logo_width == blank
+    assign aside_logo_width = 150
+  endif
+
+  assign aside_logo_style = 'max-width: ' | append: aside_logo_width | append: 'px; max-height: 42px;'
+-%}
+
+<div
+  class="overlay"
+  data-aside="{{ type }}"
+  role="dialog"
+  aria-modal="true"
+  aria-label="{{ heading | default: shop.name | escape }}"
+>
+  <button
+    type="button"
+    class="close-outside"
+    aria-label="{{ 'general.accessibility.close' | t }}"
+    data-aside-close
+  ></button>
+
+  <aside class="flex h-full flex-col">
+    <header class="zayna-aside-header">
+
+      {%- if type == 'mobile' -%}
+        <a
+          href="{{ routes.root_url }}"
+          class="zayna-aside-logo"
+          aria-label="{{ shop.name | escape }}"
+          data-aside-close
+        >
+          {%- if aside_logo != blank -%}
+            {{
+              aside_logo
+              | image_url: width: 480
+              | image_tag:
+                loading: 'eager',
+                widths: '120, 180, 240, 360, 480',
+                sizes: '160px',
+                class: 'zayna-aside-logo__image',
+                style: aside_logo_style,
+                alt: shop.name
+            }}
+          {%- else -%}
+            <span class="zayna-aside-logo__fallback">
+              {{ shop.name | escape }}
+            </span>
+          {%- endif -%}
+        </a>
+
+      {%- else -%}
+        <span class="text-label text-ink">
+          {{ heading }}
+        </span>
+      {%- endif -%}
+
+      <button
+        type="button"
+        class="zayna-aside-close"
+        aria-label="{{ 'general.accessibility.close' | t }}"
+        data-aside-close
+      >
+        {% render 'icon', name: 'x', size: 21 %}
+      </button>
+    </header>
+
+    <div class="flex-1 overflow-y-auto overscroll-contain">
+      {{ aside_body }}
+    </div>
+  </aside>
+</div>
+
+{% style %}
+  .zayna-aside-header {
+    display: flex;
+    height: var(--header-height);
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 24px;
+    padding-left: 24px;
+    border-bottom: 1px solid #e7ddd2;
+    background: #fffdfb;
+  }
+
+  [data-aside="mobile"] .zayna-aside-header {
+    height: 88px;
+  }
+
+  .zayna-aside-logo {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    color: #2b2622;
+    text-decoration: none;
+  }
+
+  .zayna-aside-logo__image {
+    display: block;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .zayna-aside-logo__fallback {
+    color: #2b2622;
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .zayna-aside-close {
+    display: inline-grid;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    margin-right: -10px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #2b2622;
+    cursor: pointer;
+    transition:
+      color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .zayna-aside-close:hover {
+    background: #f4ece4;
+    color: #a66a3f;
+  }
+
+  .zayna-aside-close:focus-visible,
+  .zayna-aside-logo:focus-visible {
+    outline: 2px solid #a66a3f;
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 389px) {
+    [data-aside="mobile"] .zayna-aside-header {
+      height: 82px;
+      padding-right: 20px;
+      padding-left: 20px;
     }
-  ],
-  "max_blocks": 4,
-  "presets": [
-    {
-      "name": "Value props",
-      "blocks": [
-        { "type": "prop", "settings": { "icon": "sparkles", "label": "Zorgvuldig geselecteerd", "body": "Elk product is gekozen op design, kwaliteit en functie. Geen rommel, alleen mooie stukken." } },
-        { "type": "prop", "settings": { "icon": "shield-check", "label": "Veilig verpakt", "body": "Glaswerk wordt zorgvuldig ingepakt met beschermingsmateriaal, zodat alles heel aankomt." } },
-        { "type": "prop", "settings": { "icon": "truck", "label": "Verzonden vanuit NL", "body": "Bestellingen worden binnen 1–3 werkdagen verzonden vanuit Nederland." } },
-        { "type": "prop", "settings": { "icon": "file-text", "label": "Eerlijke productinfo", "body": "Materiaal, afmetingen en inhoud staan altijd duidelijk vermeld. Geen verrassingen." } }
-      ]
+
+    .zayna-aside-logo__image {
+      max-width: 145px !important;
+      max-height: 38px !important;
     }
-  ]
-}
-{% endschema %}
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .zayna-aside-close {
+      transition: none;
+    }
+  }
+{% endstyle %}
+

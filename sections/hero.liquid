@@ -4,6 +4,7 @@
   assign mobile_image = s.mobile_image | default: desktop_image
   assign hero_alt = desktop_image.alt | default: s.headline
   assign primary_url = s.cta_url | default: routes.all_products_collection_url
+  assign heading_id = 'ZaynaHeroHeading-' | append: section.id
 
   assign image_loading = 'lazy'
   assign image_fetchpriority = 'auto'
@@ -14,9 +15,12 @@
   endif
 -%}
 
-<div
+<section
   id="ZaynaHero-{{ section.id }}"
   class="zayna-home-hero{% if desktop_image == blank %} zayna-home-hero--no-image{% endif %}"
+  {% if s.headline != blank %}
+    aria-labelledby="{{ heading_id }}"
+  {% endif %}
 >
   <div class="zayna-home-hero__content-wrap">
     <div class="zayna-home-hero__content">
@@ -29,11 +33,17 @@
 
       {%- if s.headline != blank -%}
         {%- if request.page_type == 'index' -%}
-          <h1 class="zayna-home-hero__title">
+          <h1
+            id="{{ heading_id }}"
+            class="zayna-home-hero__title"
+          >
             {{ s.headline | escape }}
           </h1>
         {%- else -%}
-          <h2 class="zayna-home-hero__title">
+          <h2
+            id="{{ heading_id }}"
+            class="zayna-home-hero__title"
+          >
             {{ s.headline | escape }}
           </h2>
         {%- endif -%}
@@ -50,9 +60,9 @@
           {%- if s.cta_label != blank -%}
             <a
               class="zayna-home-hero__primary"
-              href="{{ primary_url | escape }}"
+              href="{{ primary_url }}"
             >
-              {{ s.cta_label | escape }}
+              <span>{{ s.cta_label | escape }}</span>
               <span aria-hidden="true">→</span>
             </a>
           {%- endif -%}
@@ -60,7 +70,7 @@
           {%- if s.secondary_cta_label != blank and s.secondary_cta_url != blank -%}
             <a
               class="zayna-home-hero__secondary"
-              href="{{ s.secondary_cta_url | escape }}"
+              href="{{ s.secondary_cta_url }}"
             >
               {{ s.secondary_cta_label | escape }}
             </a>
@@ -76,8 +86,9 @@
         <source
           media="(max-width: 749px)"
           srcset="
-            {{ mobile_image | image_url: width: 600 }} 600w,
-            {{ mobile_image | image_url: width: 900 }} 900w,
+            {{ mobile_image | image_url: width: 480 }} 480w,
+            {{ mobile_image | image_url: width: 750 }} 750w,
+            {{ mobile_image | image_url: width: 1000 }} 1000w,
             {{ mobile_image | image_url: width: 1200 }} 1200w
           "
           sizes="100vw"
@@ -90,14 +101,15 @@
         | image_tag:
           loading: image_loading,
           fetchpriority: image_fetchpriority,
-          sizes: '100vw',
-          widths: '750, 1100, 1500, 1800, 2200',
+          decoding: 'async',
+          sizes: '(min-width: 1100px) 70vw, (min-width: 750px) 68vw, 100vw',
+          widths: '480, 750, 1000, 1200, 1500, 1800, 2200',
           alt: hero_alt,
           class: 'zayna-home-hero__image'
       }}
     </picture>
   {%- endif -%}
-</div>
+</section>
 
 {% style %}
   #ZaynaHero-{{ section.id }} {
@@ -110,6 +122,7 @@
 
     position: relative;
     isolation: isolate;
+    width: 100%;
     overflow: hidden;
     background: var(--zayna-hero-bg);
     color: var(--zayna-hero-ink);
@@ -121,49 +134,20 @@
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    background:
-      linear-gradient(
-        90deg,
-        rgba(248, 243, 237, 0.99) 0%,
-        rgba(248, 243, 237, 0.97) 28%,
-        rgba(248, 243, 237, 0.78) 42%,
-        rgba(248, 243, 237, 0.20) 59%,
-        rgba(248, 243, 237, 0) 72%
-      );
   }
 
   #ZaynaHero-{{ section.id }} .zayna-home-hero__picture {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    display: flex;
-    align-items: stretch;
-    justify-content: flex-end;
-    width: 100%;
-    height: 100%;
     overflow: hidden;
     background: var(--zayna-hero-bg);
   }
 
   #ZaynaHero-{{ section.id }} .zayna-home-hero__image {
     display: block;
-    flex: 0 0 auto;
-    width: auto !important;
-    max-width: none !important;
-    height: 100% !important;
-    object-fit: contain;
-    object-position: right center;
   }
 
   #ZaynaHero-{{ section.id }} .zayna-home-hero__content-wrap {
     position: relative;
     z-index: 2;
-    display: flex;
-    align-items: center;
-    width: min(
-      calc(100% - clamp(48px, 6vw, 80px)),
-      1376px
-    );
     margin: 0 auto;
   }
 
@@ -179,7 +163,7 @@
     color: var(--zayna-hero-accent);
     font-size: 10px;
     line-height: 1.4;
-    letter-spacing: 0.23em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
   }
 
@@ -210,8 +194,8 @@
 
   #ZaynaHero-{{ section.id }} .zayna-home-hero__actions {
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
+    align-items: center;
     gap: 16px 22px;
   }
 
@@ -223,11 +207,11 @@
 
   #ZaynaHero-{{ section.id }} .zayna-home-hero__primary {
     display: inline-flex;
+    min-height: 50px;
     align-items: center;
     justify-content: center;
     gap: 12px;
-    min-height: 46px;
-    padding: 13px 21px;
+    padding: 14px 22px;
     border: 1px solid var(--zayna-hero-ink);
     background: var(--zayna-hero-ink);
     color: #fffaf5;
@@ -240,16 +224,10 @@
       transform 180ms ease;
   }
 
-  #ZaynaHero-{{ section.id }} .zayna-home-hero__primary:hover {
-    border-color: var(--zayna-hero-accent);
-    background: var(--zayna-hero-accent);
-    transform: translateY(-1px);
-  }
-
   #ZaynaHero-{{ section.id }} .zayna-home-hero__secondary {
     display: inline-flex;
+    min-height: 44px;
     align-items: center;
-    min-height: 34px;
     border-bottom: 1px solid rgba(43, 38, 34, 0.36);
     color: var(--zayna-hero-ink);
     font-size: 10.5px;
@@ -258,11 +236,6 @@
     transition:
       color 180ms ease,
       border-color 180ms ease;
-  }
-
-  #ZaynaHero-{{ section.id }} .zayna-home-hero__secondary:hover {
-    border-color: var(--zayna-hero-accent);
-    color: var(--zayna-hero-accent);
   }
 
   #ZaynaHero-{{ section.id }} .zayna-home-hero__primary:focus-visible,
@@ -289,101 +262,139 @@
     display: none;
   }
 
-  /* Grote desktop */
+  @media (hover: hover) and (pointer: fine) {
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__primary:hover {
+      border-color: var(--zayna-hero-accent);
+      background: var(--zayna-hero-accent);
+      transform: translateY(-1px);
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__secondary:hover {
+      border-color: var(--zayna-hero-accent);
+      color: var(--zayna-hero-accent);
+    }
+  }
+
+  /* Brede desktop */
   @media (min-width: 1100px) {
     #ZaynaHero-{{ section.id }} {
-      min-height: clamp(455px, 29vw, 485px);
+      min-height: clamp(470px, 31vw, 535px);
     }
 
     #ZaynaHero-{{ section.id }}::after {
       background:
         linear-gradient(
           90deg,
-          rgba(248, 243, 237, 0.99) 0%,
-          rgba(248, 243, 237, 0.98) 32%,
-          rgba(248, 243, 237, 0.88) 43%,
-          rgba(248, 243, 237, 0.58) 52%,
-          rgba(248, 243, 237, 0.22) 61%,
-          rgba(248, 243, 237, 0) 69%
+          rgba(248, 243, 237, 1) 0%,
+          rgba(248, 243, 237, 1) 31%,
+          rgba(248, 243, 237, 0.94) 40%,
+          rgba(248, 243, 237, 0.72) 49%,
+          rgba(248, 243, 237, 0.28) 59%,
+          rgba(248, 243, 237, 0) 68%
         );
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__content-wrap {
-      min-height: clamp(455px, 29vw, 485px);
-      padding-block: 24px;
+      display: flex;
+      width: min(calc(100% - clamp(48px, 6vw, 80px)), 1376px);
+      min-height: clamp(470px, 31vw, 535px);
+      align-items: center;
+      padding-block: 32px;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__content {
-      width: min(38%, 455px);
-      transform: translateY(-18px);
+      width: min(39%, 480px);
+      transform: translateY(-8px);
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__eyebrow {
-      margin-bottom: 14px;
+      margin-bottom: 15px;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__title {
-      font-size: clamp(45px, 2.7vw, 50px);
-      line-height: 0.97;
+      font-size: clamp(46px, 3vw, 54px);
+      line-height: 0.98;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__subhead {
-      max-width: 410px;
-      margin-top: 16px;
-      font-size: 14.5px;
-      line-height: 1.56;
+      max-width: 420px;
+      margin-top: 18px;
+      font-size: 15px;
+      line-height: 1.62;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__actions {
-      margin-top: 20px;
+      margin-top: 24px;
     }
 
-    /*
-      De afbeelding behoudt haar originele verhouding.
-      De linkerkant van de afbeelding vervaagt transparant
-      in de beige achtergrond van de hero.
-    */
-    #ZaynaHero-{{ section.id }} .zayna-home-hero__image {
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__picture {
+      position: absolute;
+      inset: 0 0 0 auto;
+      z-index: 0;
+      width: min(70%, 1080px);
+      height: 100%;
       -webkit-mask-image:
         linear-gradient(
           90deg,
-          rgba(0, 0, 0, 0) 0%,
-          rgba(0, 0, 0, 0.22) 7%,
-          rgba(0, 0, 0, 0.68) 17%,
-          rgba(0, 0, 0, 1) 29%,
-          rgba(0, 0, 0, 1) 100%
+          transparent 0%,
+          rgba(0, 0, 0, 0.25) 8%,
+          rgba(0, 0, 0, 0.75) 18%,
+          #000 30%,
+          #000 100%
         );
       mask-image:
         linear-gradient(
           90deg,
-          rgba(0, 0, 0, 0) 0%,
-          rgba(0, 0, 0, 0.22) 7%,
-          rgba(0, 0, 0, 0.68) 17%,
-          rgba(0, 0, 0, 1) 29%,
-          rgba(0, 0, 0, 1) 100%
+          transparent 0%,
+          rgba(0, 0, 0, 0.25) 8%,
+          rgba(0, 0, 0, 0.75) 18%,
+          #000 30%,
+          #000 100%
         );
       -webkit-mask-repeat: no-repeat;
       mask-repeat: no-repeat;
       -webkit-mask-size: 100% 100%;
       mask-size: 100% 100%;
     }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__image {
+      width: 100% !important;
+      max-width: none !important;
+      height: 100% !important;
+      object-fit: cover;
+      object-position: right center;
+    }
   }
 
-  /* Tablet en desktopvensters naast elkaar */
+  /* Tablet en gesplitste desktopvensters */
   @media (min-width: 750px) and (max-width: 1099px) {
     #ZaynaHero-{{ section.id }} {
-      min-height: 450px;
+      min-height: 465px;
+    }
+
+    #ZaynaHero-{{ section.id }}::after {
+      background:
+        linear-gradient(
+          90deg,
+          rgba(248, 243, 237, 1) 0%,
+          rgba(248, 243, 237, 0.98) 34%,
+          rgba(248, 243, 237, 0.80) 47%,
+          rgba(248, 243, 237, 0.34) 61%,
+          rgba(248, 243, 237, 0) 74%
+        );
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__content-wrap {
+      display: flex;
       width: calc(100% - 48px);
-      min-height: 450px;
-      padding-block: 28px;
+      min-height: 465px;
+      align-items: center;
+      padding-block: 30px;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__content {
-      width: min(47%, 405px);
-      transform: translateY(-10px);
+      width: min(47%, 410px);
+      transform: translateY(-6px);
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__eyebrow {
@@ -396,45 +407,57 @@
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__title {
-      font-size: clamp(39px, 5vw, 46px);
-      line-height: 0.97;
+      font-size: clamp(39px, 5vw, 47px);
+      line-height: 0.98;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__subhead {
-      max-width: 345px;
-      margin-top: 16px;
-      font-size: 14px;
-      line-height: 1.55;
+      max-width: 350px;
+      margin-top: 17px;
+      font-size: 14.5px;
+      line-height: 1.58;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__actions {
-      margin-top: 19px;
+      margin-top: 22px;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__picture {
-      display: block;
+      position: absolute;
+      inset: 0 0 0 auto;
+      z-index: 0;
+      width: 68%;
+      height: 100%;
+      -webkit-mask-image:
+        linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(0, 0, 0, 0.32) 10%,
+          rgba(0, 0, 0, 0.82) 24%,
+          #000 38%,
+          #000 100%
+        );
+      mask-image:
+        linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(0, 0, 0, 0.32) 10%,
+          rgba(0, 0, 0, 0.82) 24%,
+          #000 38%,
+          #000 100%
+        );
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__image {
       width: 100% !important;
-      max-width: 100% !important;
+      max-width: none !important;
       height: 100% !important;
-      object-fit: contain;
+      object-fit: cover;
       object-position: right center;
-      -webkit-mask-image: none;
-      mask-image: none;
-    }
-
-    #ZaynaHero-{{ section.id }}::after {
-      background:
-        linear-gradient(
-          90deg,
-          rgba(248, 243, 237, 0.99) 0%,
-          rgba(248, 243, 237, 0.97) 35%,
-          rgba(248, 243, 237, 0.77) 50%,
-          rgba(248, 243, 237, 0.20) 66%,
-          rgba(248, 243, 237, 0) 77%
-        );
     }
   }
 
@@ -456,7 +479,7 @@
       display: block;
       width: 100%;
       min-height: 0;
-      padding: 27px 20px 23px;
+      padding: 30px 20px 26px;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__content {
@@ -465,7 +488,7 @@
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__eyebrow {
-      margin-bottom: 13px;
+      margin-bottom: 14px;
       font-size: 9.5px;
       letter-spacing: 0.21em;
     }
@@ -476,33 +499,32 @@
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__title {
       max-width: 9.5ch;
-      font-size: clamp(38px, 10.5vw, 45px);
-      line-height: 0.96;
-      letter-spacing: -0.038em;
+      font-size: clamp(40px, 11vw, 48px);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__subhead {
-      max-width: 38ch;
-      margin-top: 16px;
-      font-size: 14px;
-      line-height: 1.56;
+      max-width: 39ch;
+      margin-top: 17px;
+      font-size: 15px;
+      line-height: 1.62;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__actions {
       display: block;
-      margin-top: 20px;
+      margin-top: 22px;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__primary {
       width: 100%;
-      min-height: 47px;
-      padding: 13px 18px;
+      min-height: 50px;
+      padding: 14px 18px;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__secondary {
       width: fit-content;
-      min-height: 34px;
-      margin-top: 17px;
+      margin-top: 14px;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__picture {
@@ -523,8 +545,21 @@
       height: 100% !important;
       object-fit: contain;
       object-position: center center;
-      -webkit-mask-image: none;
-      mask-image: none;
+    }
+  }
+
+  @media (max-width: 359px) {
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__content-wrap {
+      padding: 26px 18px 23px;
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__title {
+      font-size: clamp(37px, 11.4vw, 41px);
+    }
+
+    #ZaynaHero-{{ section.id }} .zayna-home-hero__subhead {
+      font-size: 14px;
+      line-height: 1.58;
     }
   }
 

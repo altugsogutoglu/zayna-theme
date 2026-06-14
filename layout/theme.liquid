@@ -96,19 +96,181 @@
 
     {%- capture search_heading -%}{{ 'general.search.title' | t }}{%- endcapture -%}
     {%- capture search_body -%}
-      <div class="px-5 md:px-6 py-6">
-        <form action="{{ routes.search_url }}" method="get" role="search" class="group flex items-center gap-3 border-b-2 border-ink/15 pb-3 transition-colors focus-within:border-clay" data-predictive-form>
-          <span aria-hidden="true" class="shrink-0 text-stone-soft transition-colors group-focus-within:text-clay">{% render 'icon', name: 'search', size: 20 %}</span>
-          <input type="search" name="q" data-predictive-input placeholder="{{ 'general.search.placeholder' | t }}" autocomplete="off" autocorrect="off" spellcheck="false" class="min-w-0 flex-1 bg-transparent text-lg text-ink placeholder:text-stone-soft focus:outline-none" aria-label="{{ 'general.search.title' | t }}" />
-          <input type="hidden" name="type" value="product,page,article" />
-          <button type="submit" class="shrink-0 bg-ink px-5 py-2.5 text-[11px] uppercase tracking-[0.22em] text-surface transition-colors hover:bg-clay focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2">{{ 'general.search.submit' | t }}</button>
+      <div class="zayna-search-panel">
+        <form
+          action="{{ routes.search_url }}"
+          method="get"
+          role="search"
+          class="zayna-search-form"
+          data-predictive-form
+        >
+          <label class="sr-only" for="ZaynaSearchInput">
+            {{ 'general.search.title' | t }}
+          </label>
+
+          <div class="zayna-search-field">
+            <span
+              aria-hidden="true"
+              class="zayna-search-icon"
+            >
+              {% render 'icon', name: 'search', size: 20 %}
+            </span>
+
+            <input
+              id="ZaynaSearchInput"
+              type="search"
+              name="q"
+              data-predictive-input
+              placeholder="{{ 'general.search.placeholder' | t }}"
+              autocomplete="off"
+              autocorrect="off"
+              spellcheck="false"
+              class="zayna-search-input"
+            >
+          </div>
+
+          <input type="hidden" name="type" value="product,page,article">
+
+          <button
+            type="submit"
+            class="zayna-search-submit"
+          >
+            {{ 'general.search.submit' | t }}
+          </button>
         </form>
-        <div class="mt-6" data-predictive-results aria-live="polite">
-          <p class="text-sm text-ink-soft">{{ 'general.search.start_typing' | t }}</p>
+
+        <div
+          class="zayna-search-results"
+          data-predictive-results
+          aria-live="polite"
+        >
+          <p class="text-sm text-ink-soft">
+            {{ 'general.search.start_typing' | t }}
+          </p>
         </div>
       </div>
     {%- endcapture -%}
     {% render 'aside', type: 'search', heading: search_heading, aside_body: search_body %}
+
+    {% style %}
+      [data-aside="search"] .zayna-search-panel {
+        padding: 24px 20px;
+      }
+
+      [data-aside="search"] .zayna-search-form {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+        width: 100%;
+      }
+
+      [data-aside="search"] .zayna-search-field {
+        display: flex;
+        min-width: 0;
+        min-height: 50px;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 2px solid rgba(42, 37, 32, 0.18);
+        transition: border-color 180ms ease;
+      }
+
+      [data-aside="search"] .zayna-search-field:focus-within {
+        border-color: #b5651d;
+      }
+
+      [data-aside="search"] .zayna-search-icon {
+        display: inline-flex;
+        flex: 0 0 auto;
+        color: #8f877f;
+        transition: color 180ms ease;
+      }
+
+      [data-aside="search"] .zayna-search-field:focus-within .zayna-search-icon {
+        color: #b5651d;
+      }
+
+      [data-aside="search"] .zayna-search-input {
+        width: 100%;
+        min-width: 0;
+        min-height: 48px;
+        padding: 12px 0;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: #2a2520;
+        font-size: 16px;
+        line-height: 1.4;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+
+      [data-aside="search"] .zayna-search-input::placeholder {
+        color: #78716c;
+        opacity: 1;
+      }
+
+      [data-aside="search"] .zayna-search-submit {
+        display: inline-flex;
+        width: 100%;
+        min-height: 50px;
+        align-items: center;
+        justify-content: center;
+        padding: 0 22px;
+        border: 1px solid #2a2520;
+        background: #2a2520;
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition:
+          background-color 180ms ease,
+          border-color 180ms ease,
+          color 180ms ease;
+      }
+
+      [data-aside="search"] .zayna-search-submit:hover {
+        border-color: #b5651d;
+        background: #b5651d;
+      }
+
+      [data-aside="search"] .zayna-search-submit:focus-visible {
+        outline: 2px solid #b5651d;
+        outline-offset: 3px;
+      }
+
+      [data-aside="search"] .zayna-search-results {
+        margin-top: 24px;
+      }
+
+      @media (min-width: 480px) {
+        [data-aside="search"] .zayna-search-panel {
+          padding-right: 24px;
+          padding-left: 24px;
+        }
+
+        [data-aside="search"] .zayna-search-form {
+          grid-template-columns: minmax(0, 1fr) auto;
+          align-items: end;
+        }
+
+        [data-aside="search"] .zayna-search-submit {
+          width: auto;
+          min-width: 112px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        [data-aside="search"] .zayna-search-field,
+        [data-aside="search"] .zayna-search-icon,
+        [data-aside="search"] .zayna-search-submit {
+          transition: none;
+        }
+      }
+    {% endstyle %}
+
     <script src="{{ 'search.js' | asset_url }}" defer></script>
 
     {% section 'cart-drawer' %}

@@ -297,12 +297,12 @@
     </nav>
 
     <nav
-      class="zayna-header-actions ml-auto flex items-center gap-3 sm:gap-4"
+      class="zayna-header-actions ml-auto flex items-center"
       aria-label="{{ 'general.accessibility.menu' | t }}"
     >
       <button
         type="button"
-        class="-m-2 p-2 text-ink md:hidden"
+        class="zayna-header-action zayna-header-action--menu text-ink"
         aria-label="{{ 'general.accessibility.open_menu' | t }}"
         data-aside-open="mobile"
       >
@@ -312,14 +312,14 @@
       <a
         href="{{ routes.account_url }}"
         aria-label="{{ 'layout.header.login' | t }}"
-        class="zayna-account-link -m-2 hidden rounded p-2 text-ink transition-colors hover:text-clay md:inline-flex"
+        class="zayna-header-action zayna-account-link text-ink"
       >
         {% render 'icon', name: 'user', size: 20 %}
       </a>
 
       <button
         type="button"
-        class="-m-2 rounded p-2 text-ink transition-colors hover:text-clay"
+        class="zayna-header-action text-ink"
         aria-label="{{ 'general.accessibility.search' | t }}"
         data-aside-open="search"
       >
@@ -328,14 +328,14 @@
 
       <a
         href="{{ routes.cart_url }}"
-        class="relative -m-2 rounded p-2 text-ink transition-colors hover:text-clay"
+        class="zayna-header-action zayna-header-action--cart relative text-ink"
         aria-label="{{ 'general.accessibility.cart' | t }}"
         data-aside-open="cart"
       >
         {% render 'icon', name: 'shopping-bag', size: 20 %}
 
         <span
-          class="absolute -top-0.5 -right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-clay px-1 text-[10px] font-medium tabular-nums text-surface {% if cart == empty or cart.item_count == 0 %}hidden{% endif %}"
+          class="zayna-header-cart-count absolute flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-clay px-1 text-[10px] font-medium tabular-nums text-surface {% if cart == empty or cart.item_count == 0 %}hidden{% endif %}"
           data-cart-count
         >
           {{ cart.item_count }}
@@ -346,6 +346,105 @@
 </header>
 
 {% style %}
+  #shopify-section-{{ section.id }} .zayna-header-actions {
+    gap: 8px;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-header-action {
+    display: inline-grid;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    place-items: center;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #2a2520;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-header-action svg {
+    display: block;
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-account-link {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    #shopify-section-{{ section.id }} .zayna-header-action--menu {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-account-link {
+      display: inline-grid;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .zayna-header-action:focus-visible,
+  #shopify-section-{{ section.id }} .zayna-header-logo:focus-visible {
+    outline: 2px solid #a66a3f;
+    outline-offset: 2px;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-header-cart-count {
+    top: 1px;
+    right: 0;
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    #shopify-section-{{ section.id }} .zayna-header-action:hover {
+      background: rgba(181, 101, 29, 0.08);
+      color: #a66a3f;
+    }
+  }
+
+  @media (max-width: 767px) {
+    #shopify-section-{{ section.id }} .zayna-header-actions {
+      gap: 2px;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-header-inner {
+      gap: 8px;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-header-logo {
+      min-width: 0;
+      max-width: calc(100vw - 188px);
+      flex-shrink: 1;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-header-logo img {
+      max-width: 100% !important;
+    }
+  }
+
+  @media (max-width: 339px) {
+    #shopify-section-{{ section.id }} .zayna-header-inner {
+      gap: 4px;
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-header-actions {
+      gap: 0;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-header-logo {
+      max-width: calc(100vw - 168px);
+    }
+  }
+
   #shopify-section-{{ section.id }} [data-mega-panel] {
     max-height: calc(100vh - var(--header-height) - 40px);
     max-height: calc(100dvh - var(--header-height) - 40px);
@@ -693,6 +792,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .zayna-header-action,
     #shopify-section-{{ section.id }} .zayna-mega-link,
     #shopify-section-{{ section.id }} .zayna-mega-arrow,
     #shopify-section-{{ section.id }} .zayna-mega-feature img {
