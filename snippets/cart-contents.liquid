@@ -42,7 +42,15 @@
   assign applied_discounts = cart.cart_level_discount_applications
 -%}
 <span data-cart-total-count data-count="{{ cart.item_count }}" hidden></span>
-<section class="flex {% unless is_page %}h-full{% endunless %} flex-col bg-surface" aria-label="{% if is_page %}Winkelmand pagina{% else %}Winkelmand lade{% endif %}">
+<section
+  class="flex {% unless is_page %}h-full{% endunless %} flex-col bg-surface"
+  aria-label="{% if is_page %}Winkelmand pagina{% else %}Winkelmand lade{% endif %}"
+  data-cart-money-root
+  data-cart-subtotal-cents="{{ subtotal_cents }}"
+  data-free-shipping-threshold-cents="{{ threshold_cents }}"
+  data-money-locale="{{ request.locale.iso_code | default: 'nl-NL' }}"
+  data-money-currency="{{ cart.currency.iso_code | default: shop.currency }}"
+>
   {%- if cart.item_count > 0 -%}
     <div class="flex flex-1 flex-col {% unless is_page %}overflow-hidden{% endunless %}">
       <p class="sr-only">Producten in winkelmand</p>
@@ -61,15 +69,27 @@
       <div class="cart-drawer-footer border-t border-border-soft bg-surface px-5 md:px-6 pt-4 md:pt-5 space-y-4">
         {%- if threshold_cents > 0 -%}
           <div class="space-y-2">
-            <p class="text-xs text-ink-soft">
+            <p class="text-xs text-ink-soft" data-free-shipping-message>
               {%- if reached -%}
                 Je komt in aanmerking voor gratis verzending <span aria-hidden="true">🎉</span>
               {%- else -%}
-                Nog <span class="text-ink font-medium tabular-nums">{{ remaining_cents | money }}</span> tot gratis verzending
+                Nog <span class="text-ink font-medium tabular-nums" data-free-shipping-remaining>{{ remaining_cents | money }}</span> tot gratis verzending
               {%- endif -%}
             </p>
-            <div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ pct }}" aria-label="Voortgang gratis verzending" class="h-1.5 w-full overflow-hidden rounded-full bg-border-soft">
-              <div class="h-full rounded-full bg-clay transition-[width] duration-500" style="width: {{ pct }}%"></div>
+            <div
+              role="progressbar"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="{{ pct }}"
+              aria-label="Voortgang gratis verzending"
+              class="h-1.5 w-full overflow-hidden rounded-full bg-border-soft"
+              data-free-shipping-progress
+            >
+              <div
+                class="h-full rounded-full bg-clay transition-[width] duration-300"
+                style="width: {{ pct }}%"
+                data-free-shipping-progress-fill
+              ></div>
             </div>
           </div>
         {%- endif -%}
@@ -100,7 +120,12 @@
 
         <div class="flex items-baseline justify-between">
           <span class="text-label text-ink-soft">Subtotaal</span>
-          <span class="text-price text-ink">{{ cart.items_subtotal_price | money }}</span>
+          <span
+            class="text-price text-ink tabular-nums"
+            data-cart-subtotal
+          >
+            {{ cart.items_subtotal_price | money }}
+          </span>
         </div>
 
         <div class="space-y-3">
