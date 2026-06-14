@@ -1,35 +1,506 @@
 {%- liquid
   assign s = section.settings
+
+  assign story_eyebrow = s.story_eyebrow | default: 'Over Zayna Home'
+  assign story_heading = s.story_heading | default: 'Rust in huis, aandacht in detail.'
+  assign story_signature = s.story_signature | default: 'Zayna Home'
+  assign story_link_label = s.story_link_label | default: 'Lees ons verhaal'
+  assign story_link_url = s.story_link_url | default: '/pages/over-ons'
+
+  assign image_alt = s.image.alt | default: 'De rustige stijl van Zayna Home'
+  assign image_focal_point = s.image.presentation.focal_point | default: 'center'
 -%}
-<section class="bg-cream">
-  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10 py-24 grid gap-12 md:grid-cols-[1fr_2fr] items-center">
-    <div class="aspect-[4/5] max-w-sm bg-stone-soft/20 overflow-hidden">
+
+<section
+  id="ZaynaFounderNote-{{ section.id }}"
+  class="zayna-founder-note"
+  aria-labelledby="ZaynaFounderHeading-{{ section.id }}"
+>
+  <div class="zayna-founder-note__inner">
+    <div class="zayna-founder-note__media">
       {%- if s.image != blank -%}
-        {{ s.image | image_url: width: 800 | image_tag: loading: 'lazy', sizes: '(min-width:768px) 33vw, 100vw', alt: s.image.alt | default: 'Zayna Home', class: 'h-full w-full object-cover' }}
+        {{
+          s.image
+          | image_url: width: 1600
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 1180px) 520px, (min-width: 900px) 46vw, 100vw',
+            widths: '480, 720, 960, 1200, 1600',
+            alt: image_alt,
+            class: 'zayna-founder-note__image',
+            style: 'object-position: ' | append: image_focal_point | append: ';'
+        }}
       {%- else -%}
-        <div class="h-full w-full grid place-items-center text-ink-soft text-sm">Portrait</div>
+        <div class="zayna-founder-note__placeholder" aria-hidden="true">
+          <span>Zayna Home</span>
+        </div>
       {%- endif -%}
     </div>
-    <div>
-      <p class="text-label text-clay mb-4">{{ s.eyebrow }}</p>
-      <h2 class="text-3xl md:text-4xl font-display mb-6">{{ s.heading }}</h2>
-      <div class="text-ink-soft leading-relaxed [&_p]:mb-4 [&_p:last-child]:mb-0">{{ s.body }}</div>
-      <p class="mt-8 font-signature text-3xl text-ink">— {{ s.signature }}</p>
+
+    <div class="zayna-founder-note__content">
+      <p class="zayna-founder-note__eyebrow">
+        <span aria-hidden="true"></span>
+        {{ story_eyebrow | escape }}
+      </p>
+
+      <h2
+        id="ZaynaFounderHeading-{{ section.id }}"
+        class="zayna-founder-note__heading"
+      >
+        {{ story_heading | escape }}
+      </h2>
+
+      <div class="zayna-founder-note__body">
+        {%- if s.story_body != blank -%}
+          {{ s.story_body }}
+        {%- else -%}
+          <p>
+            Zayna Home brengt rustige keuken- en woonproducten samen die mooi
+            ogen en prettig zijn in dagelijks gebruik. Ieder item wordt gekozen
+            op uitstraling, functie en hoe het samenkomt in huis.
+          </p>
+
+          <p>
+            Van glaswerk en opbergen tot textiel en praktische keukenitems:
+            een overzichtelijke collectie, met zorg verpakt en verzonden
+            vanuit Nederland.
+          </p>
+        {%- endif -%}
+      </div>
+
+      <p class="zayna-founder-note__welcome">
+        {{ s.welcome_line | default: 'Fijn dat je er bent.' | escape }}
+      </p>
+
+      <div class="zayna-founder-note__footer">
+        <p class="zayna-founder-note__signature">
+          <span aria-hidden="true">—</span>
+          {{ story_signature | escape }}
+        </p>
+
+        {%- if story_link_label != blank -%}
+          <a
+            href="{{ story_link_url }}"
+            class="zayna-founder-note__link"
+          >
+            <span>{{ story_link_label | escape }}</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        {%- endif -%}
+      </div>
     </div>
   </div>
 </section>
+
+{% style %}
+  #ZaynaFounderNote-{{ section.id }} {
+    --zayna-founder-bg: #f7f1ec;
+    --zayna-founder-ink: #2a2520;
+    --zayna-founder-soft: #6f665e;
+    --zayna-founder-accent: #a66a3f;
+    --zayna-founder-border: #e5d9cf;
+
+    overflow: hidden;
+    padding: 48px 0 56px;
+    background: var(--zayna-founder-bg);
+  }
+
+  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
+    display: grid;
+    width: min(100%, 1180px);
+    margin: 0 auto;
+    padding: 0 20px;
+    gap: 28px;
+  }
+
+  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__media {
+    position: relative;
+    width: 100%;
+    max-height: 250px;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #eee4dc;
+  }
+
+  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__placeholder {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    background:
+      radial-gradient(
+        80% 100% at 25% 10%,
+        rgba(166, 106, 63, 0.09),
+        transparent 70%
+      ),
+      #eee4dc;
+    color: rgba(42, 37, 32, 0.58);
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 22px;
+    font-style: italic;
+  }
+
+  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__content {
+    min-width: 0;
+  }
+
+  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 10px;
+    color: var(--zayna-founder-accent);
+    font-size: 9px;
+    line-height: 1.4;
+    letter-spacing: 0.21em;
+    text-transform: uppercase;
+  }
+
+  #ZaynaFounderNote-{{ section.id }}
+    .zayna-founder-note__eyebrow
+    > span {
+    display: block;
+    width: 27px;
+    height: 1px;
+    flex: 0 0 27px;
+    background: rgba(166, 106, 63, 0.62);
+  }
+
+  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__heading {
+    max-width: 16ch;
+    margin: 0;
+    color: var(--zayna-founder-ink);
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: clamp(30px, 8.2vw, 35px);
+    font-weight: 400;
+    line-height: 1.07;
+    letter-spacing: -0.027em;
+    text-wrap: balance;
+  }
+
+  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body {
+    max-width: 55ch;
+    margin-top: 18px;
+    color: var(--zayna-founder-soft);
+    font-size: 14px;
+    line-height: 1.68;
+  }
+
+  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body p {
+    margin: 0 0 12px;
+  }
+
+  #ZaynaFounderNote-{{ section.id }}
+    .zayna-founder-note__body
+    p:last-child {
+    margin-bottom: 0;
+  }
+
+  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__welcome {
+    margin: 17px 0 0;
+    color: var(--zayna-founder-ink);
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 16px;
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__footer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    margin-top: 22px;
+  }
+
+  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__signature {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    margin: 0;
+    color: var(--zayna-founder-ink);
+    font-family:
+      var(
+        --font-signature,
+        var(
+          --font-display,
+          var(--font-heading-family, Georgia, serif)
+        )
+      );
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  #ZaynaFounderNote-{{ section.id }}
+    .zayna-founder-note__signature
+    > span {
+    color: var(--zayna-founder-accent);
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 15px;
+  }
+
+  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__link {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--zayna-founder-border);
+    color: var(--zayna-founder-soft);
+    font-size: 9px;
+    line-height: 1.3;
+    letter-spacing: 0.16em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition:
+      color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  #ZaynaFounderNote-{{ section.id }}
+    .zayna-founder-note__link
+    span:last-child {
+    transition: transform 180ms ease;
+  }
+
+  #ZaynaFounderNote-{{ section.id }}
+    .zayna-founder-note__link:focus-visible {
+    outline: 2px solid var(--zayna-founder-accent);
+    outline-offset: 4px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    #ZaynaFounderNote-{{ section.id }}
+      .zayna-founder-note__link:hover {
+      border-color: var(--zayna-founder-accent);
+      color: var(--zayna-founder-accent);
+    }
+
+    #ZaynaFounderNote-{{ section.id }}
+      .zayna-founder-note__link:hover
+      span:last-child {
+      transform: translateX(3px);
+    }
+  }
+
+  @media (max-width: 389px) {
+    #ZaynaFounderNote-{{ section.id }} {
+      padding-top: 44px;
+      padding-bottom: 52px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
+      padding-right: 18px;
+      padding-left: 18px;
+      gap: 25px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__media {
+      max-height: 220px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__heading {
+      font-size: 29px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body {
+      font-size: 13.5px;
+    }
+  }
+
+  @media (min-width: 640px) {
+    #ZaynaFounderNote-{{ section.id }} {
+      padding-top: 58px;
+      padding-bottom: 66px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
+      padding-right: 32px;
+      padding-left: 32px;
+      gap: 34px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__media {
+      max-height: 330px;
+      aspect-ratio: 3 / 2;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__heading {
+      font-size: 37px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body {
+      font-size: 15px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__footer {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+  }
+
+  @media (min-width: 900px) {
+    #ZaynaFounderNote-{{ section.id }} {
+      padding-top: 64px;
+      padding-bottom: 70px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      align-items: center;
+      gap: clamp(42px, 5vw, 68px);
+      padding-right: 36px;
+      padding-left: 36px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__media {
+      max-height: 360px;
+      aspect-ratio: 4 / 3;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__heading {
+      max-width: 14ch;
+      font-size: clamp(35px, 3.4vw, 41px);
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body {
+      margin-top: 19px;
+      font-size: 14.5px;
+      line-height: 1.65;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__welcome {
+      margin-top: 15px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__footer {
+      margin-top: 20px;
+    }
+  }
+
+  @media (min-width: 1180px) {
+    #ZaynaFounderNote-{{ section.id }} {
+      padding-top: 68px;
+      padding-bottom: 76px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
+      grid-template-columns: minmax(0, 520px) minmax(0, 1fr);
+      gap: 76px;
+      padding-right: 0;
+      padding-left: 0;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__media {
+      max-height: 350px;
+      aspect-ratio: 3 / 2;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__content {
+      max-width: 520px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__heading {
+      font-size: 42px;
+    }
+
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body {
+      font-size: 15px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__link,
+    #ZaynaFounderNote-{{ section.id }}
+      .zayna-founder-note__link
+      span:last-child {
+      transition: none;
+    }
+  }
+{% endstyle %}
 
 {% schema %}
 {
   "name": "Founder note",
   "tag": "section",
   "settings": [
-    { "type": "image_picker", "id": "image", "label": "Portrait image" },
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Welkom" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Mooi dat je er bent." },
-    { "type": "richtext", "id": "body", "label": "Body", "default": "<p>Zayna Home is een Nederlandse webshop voor stijlvolle keuken- en woonproducten — gekozen op design, kwaliteit en functie.</p><p>Van glaswerk en voorraadpotten tot kruidenpotten met labels en slimme keukentools. Producten die mooi staan én dagelijks meegaan, zorgvuldig verpakt en verzonden vanuit Nederland.</p><p>Veel plezier met rondkijken.</p>" },
-    { "type": "text", "id": "signature", "label": "Signature", "default": "Zayna" }
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Afbeelding"
+    },
+    {
+      "type": "text",
+      "id": "story_eyebrow",
+      "label": "Kleine bovenregel",
+      "default": "Over Zayna Home"
+    },
+    {
+      "type": "text",
+      "id": "story_heading",
+      "label": "Titel",
+      "default": "Rust in huis, aandacht in detail."
+    },
+    {
+      "type": "richtext",
+      "id": "story_body",
+      "label": "Tekst",
+      "default": "<p>Zayna Home brengt rustige keuken- en woonproducten samen die mooi ogen en prettig zijn in dagelijks gebruik. Ieder item wordt gekozen op uitstraling, functie en hoe het samenkomt in huis.</p><p>Van glaswerk en opbergen tot textiel en praktische keukenitems: een overzichtelijke collectie, met zorg verpakt en verzonden vanuit Nederland.</p>"
+    },
+    {
+      "type": "text",
+      "id": "welcome_line",
+      "label": "Afsluitende zin",
+      "default": "Fijn dat je er bent."
+    },
+    {
+      "type": "text",
+      "id": "story_signature",
+      "label": "Handtekening",
+      "default": "Zayna Home"
+    },
+    {
+      "type": "text",
+      "id": "story_link_label",
+      "label": "Linktekst",
+      "default": "Lees ons verhaal"
+    },
+    {
+      "type": "url",
+      "id": "story_link_url",
+      "label": "Link naar Over ons"
+    }
   ],
-  "presets": [{ "name": "Founder note" }]
+  "presets": [
+    {
+      "name": "Founder note"
+    }
+  ]
 }
 {% endschema %}
