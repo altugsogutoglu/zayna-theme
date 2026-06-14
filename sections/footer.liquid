@@ -340,37 +340,211 @@
       footer.querySelectorAll('.zayna-footer__group')
     );
     const desktopQuery = window.matchMedia('(min-width: 960px)');
+    const reducedMotionQuery = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    );
+
+    const runningAnimations = new WeakMap();
+    const animationDuration = 230;
+    const animationEasing = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+    const getSummary = (group) =>
+      group.querySelector('.zayna-footer__summary');
+
+    const setExpandedState = (group, isOpen) => {
+      const summary = getSummary(group);
+
+      if (summary) {
+        summary.setAttribute(
+          'aria-expanded',
+          isOpen ? 'true' : 'false'
+        );
+      }
+    };
+
+    const cancelGroupAnimation = (group) => {
+      const animation = runningAnimations.get(group);
+
+      if (animation) {
+        animation.cancel();
+        runningAnimations.delete(group);
+      }
+
+      group.style.removeProperty('height');
+      group.style.removeProperty('overflow');
+    };
+
+    const setGroupImmediately = (group, isOpen) => {
+      cancelGroupAnimation(group);
+      group.open = isOpen;
+      setExpandedState(group, isOpen);
+    };
+
+    const animateGroup = (group, shouldOpen) => {
+      cancelGroupAnimation(group);
+
+      const summary = getSummary(group);
+
+      if (!summary) {
+        setGroupImmediately(group, shouldOpen);
+        return Promise.resolve();
+      }
+
+      if (reducedMotionQuery.matches) {
+        setGroupImmediately(group, shouldOpen);
+        return Promise.resolve();
+      }
+
+      const startHeight = group.getBoundingClientRect().height;
+
+      if (shouldOpen) {
+        group.open = true;
+      }
+
+      setExpandedState(group, shouldOpen);
+
+      const endHeight = shouldOpen
+        ? group.scrollHeight
+        : summary.getBoundingClientRect().height;
+
+      group.style.height = `${startHeight}px`;
+      group.style.overflow = 'clip';
+
+      const animation = group.animate(
+        [
+          { height: `${startHeight}px` },
+          { height: `${endHeight}px` }
+        ],
+        {
+          duration: animationDuration,
+          easing: animationEasing
+        }
+      );
+
+      runningAnimations.set(group, animation);
+
+      return new Promise((resolve) => {
+        const finish = () => {
+          if (runningAnimations.get(group) !== animation) {
+            resolve();
+            return;
+          }
+
+          runningAnimations.delete(group);
+
+          if (!shouldOpen) {
+            group.open = false;
+          }
+
+          group.style.removeProperty('height');
+          group.style.removeProperty('overflow');
+          setExpandedState(group, shouldOpen);
+          resolve();
+        };
+
+        animation.addEventListener('finish', finish, { once: true });
+        animation.addEventListener(
+          'cancel',
+          () => resolve(),
+          { once: true }
+        );
+      });
+    };
+
+    const keepAnchorStable = async (summary, animations) => {
+      const initialTop = summary.getBoundingClientRect().top;
+
+      if (reducedMotionQuery.matches) {
+        await Promise.all(animations);
+
+        const finalDifference =
+          summary.getBoundingClientRect().top - initialTop;
+
+        if (Math.abs(finalDifference) > 0.5) {
+          window.scrollBy(0, finalDifference);
+        }
+
+        return;
+      }
+
+      let active = true;
+      let frameId = 0;
+
+      const stabilise = () => {
+        if (!active) return;
+
+        const difference =
+          summary.getBoundingClientRect().top - initialTop;
+
+        if (Math.abs(difference) > 0.5) {
+          window.scrollBy(0, difference);
+        }
+
+        frameId = window.requestAnimationFrame(stabilise);
+      };
+
+      frameId = window.requestAnimationFrame(stabilise);
+
+      await Promise.all(animations);
+
+      active = false;
+      window.cancelAnimationFrame(frameId);
+
+      const finalDifference =
+        summary.getBoundingClientRect().top - initialTop;
+
+      if (Math.abs(finalDifference) > 0.5) {
+        window.scrollBy(0, finalDifference);
+      }
+    };
 
     const syncFooterGroups = (isDesktop) => {
       groups.forEach((group) => {
-        const summary = group.querySelector('summary');
+        const summary = getSummary(group);
+
+        setGroupImmediately(group, isDesktop);
 
         if (isDesktop) {
-          group.open = true;
           summary?.setAttribute('aria-disabled', 'true');
           summary?.setAttribute('tabindex', '-1');
         } else {
-          group.open = false;
           summary?.removeAttribute('aria-disabled');
           summary?.removeAttribute('tabindex');
         }
       });
     };
 
-    /*
-      Op mobiel en gesplitste schermen blijft maximaal één onderdeel
-      tegelijk open. Een geopend onderdeel mag wel opnieuw worden
-      gesloten, waardoor ook alle onderdelen gesloten kunnen zijn.
-    */
     groups.forEach((group) => {
-      group.addEventListener('toggle', () => {
-        if (desktopQuery.matches || !group.open) return;
+      const summary = getSummary(group);
 
-        groups.forEach((otherGroup) => {
-          if (otherGroup !== group && otherGroup.open) {
-            otherGroup.open = false;
-          }
-        });
+      if (!summary) return;
+
+      summary.addEventListener('click', async (event) => {
+        if (desktopQuery.matches) {
+          event.preventDefault();
+          return;
+        }
+
+        event.preventDefault();
+
+        const shouldOpen = !group.open;
+        const animations = [];
+
+        if (shouldOpen) {
+          groups.forEach((otherGroup) => {
+            if (otherGroup !== group && otherGroup.open) {
+              animations.push(
+                animateGroup(otherGroup, false)
+              );
+            }
+          });
+        }
+
+        animations.push(
+          animateGroup(group, shouldOpen)
+        );
+
+        await keepAnchorStable(summary, animations);
       });
     });
 
@@ -381,7 +555,10 @@
     };
 
     if (typeof desktopQuery.addEventListener === 'function') {
-      desktopQuery.addEventListener('change', handleDesktopChange);
+      desktopQuery.addEventListener(
+        'change',
+        handleDesktopChange
+      );
     } else {
       desktopQuery.addListener(handleDesktopChange);
     }
@@ -458,6 +635,7 @@
 
   #ZaynaFooter-{{ section.id }} .zayna-footer__group {
     border-bottom: 1px solid var(--zayna-footer-border);
+    overflow-anchor: none;
   }
 
   #ZaynaFooter-{{ section.id }} .zayna-footer__summary {
@@ -797,13 +975,13 @@
 
   @media (min-width: 1280px) {
     #ZaynaFooter-{{ section.id }} .zayna-footer__main {
-      padding-right: 0;
-      padding-left: 0;
+      padding-right: clamp(44px, 4vw, 64px);
+      padding-left: clamp(44px, 4vw, 64px);
     }
 
     #ZaynaFooter-{{ section.id }} .zayna-footer__bottom-inner {
-      padding-right: 0;
-      padding-left: 0;
+      padding-right: clamp(44px, 4vw, 64px);
+      padding-left: clamp(44px, 4vw, 64px);
     }
   }
 
