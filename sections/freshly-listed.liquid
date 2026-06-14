@@ -1,6 +1,7 @@
 {%- liquid
   assign coll = section.settings.collection
-  assign product_limit = section.settings.product_limit | default: 6
+  assign mobile_product_limit = 6
+  assign desktop_product_limit = 8
   assign section_heading_id = 'FreshlyListedHeading-' | append: section.id
 
   if coll != blank
@@ -51,8 +52,12 @@
       </header>
 
       <div class="zayna-freshly-listed__grid">
-        {%- for product in products limit: product_limit -%}
-          {% render 'product-card', product: product, loading: 'lazy' %}
+        {%- for product in products limit: desktop_product_limit -%}
+          <div
+            class="zayna-freshly-listed__item{% if forloop.index > mobile_product_limit %} zayna-freshly-listed__item--desktop-only{% endif %}"
+          >
+            {% render 'product-card', product: product, loading: 'lazy' %}
+          </div>
         {%- endfor -%}
       </div>
     </div>
@@ -139,6 +144,15 @@
     row-gap: 28px;
   }
 
+  #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__item {
+    min-width: 0;
+  }
+
+  #ZaynaFreshlyListed-{{ section.id }}
+    .zayna-freshly-listed__item--desktop-only {
+    display: none;
+  }
+
   #ZaynaFreshlyListed-{{ section.id }}
     .zayna-freshly-listed__link:focus-visible {
     outline: 2px solid var(--zayna-fresh-accent);
@@ -211,6 +225,11 @@
   }
 
   @media (min-width: 1100px) {
+    #ZaynaFreshlyListed-{{ section.id }}
+      .zayna-freshly-listed__item--desktop-only {
+      display: block;
+    }
+
     #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__inner {
       padding: 62px 40px 18px;
     }
@@ -253,6 +272,7 @@
       "max": 8,
       "step": 1,
       "label": "Aantal producten",
+      "info": "De homepage toont 6 producten op mobiel en gesplitst scherm en 8 op brede desktop.",
       "default": 6
     },
     {
