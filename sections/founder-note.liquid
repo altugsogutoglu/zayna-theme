@@ -55,13 +55,13 @@
       </h2>
 
       <div class="zayna-founder-note__body">
-        {%- if s.story_body_compact != blank -%}
-          {{ s.story_body_compact }}
+        {%- if s.story_body_final != blank -%}
+          {{ s.story_body_final }}
         {%- else -%}
           <p>
-            Zayna Home is ontstaan vanuit liefde voor een rustig, verzorgd
-            huis. We kiezen producten die mooi ogen, prettig zijn in gebruik
-            en vanzelf hun plek vinden.
+            Zayna Home is ontstaan uit liefde voor een huis dat rustig en
+            verzorgd aanvoelt. We kiezen producten die mooi ogen, prettig zijn
+            in gebruik en vanzelf hun plek vinden.
           </p>
 
           <p>
@@ -97,7 +97,7 @@
     --zayna-founder-border: #e5d9cf;
 
     overflow: hidden;
-    padding: 38px 0 40px;
+    padding: 38px 0 30px;
     background: var(--zayna-founder-bg);
   }
 
@@ -275,7 +275,7 @@
   @media (max-width: 389px) {
     #ZaynaFounderNote-{{ section.id }} {
       padding-top: 36px;
-      padding-bottom: 39px;
+      padding-bottom: 30px;
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
@@ -335,7 +335,7 @@
   @media (min-width: 980px) {
     #ZaynaFounderNote-{{ section.id }} {
       padding-top: 32px;
-      padding-bottom: 52px;
+      padding-bottom: 36px;
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
@@ -364,7 +364,7 @@
   @media (min-width: 1180px) {
     #ZaynaFounderNote-{{ section.id }} {
       padding-top: 34px;
-      padding-bottom: 54px;
+      padding-bottom: 36px;
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
@@ -401,21 +401,21 @@
   @media (hover: hover) and (pointer: fine) and (min-width: 560px) and (max-width: 979px) {
     #ZaynaFounderNote-{{ section.id }} {
       padding-top: 28px;
-      padding-bottom: 42px;
+      padding-bottom: 32px;
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
-      grid-template-columns: minmax(0, 0.41fr) minmax(0, 0.59fr);
+      grid-template-columns: minmax(0, 0.44fr) minmax(0, 0.56fr);
       align-items: start;
-      gap: clamp(24px, 3.2vw, 38px);
+      gap: clamp(24px, 3vw, 34px);
       padding-right: 26px;
       padding-left: 26px;
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__media {
-      max-height: 285px;
+      max-height: 300px;
       aspect-ratio: 4 / 3;
-      margin-top: 2px;
+      margin-top: 28px;
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__eyebrow {
@@ -486,9 +486,9 @@
     },
     {
       "type": "richtext",
-      "id": "story_body_compact",
+      "id": "story_body_final",
       "label": "Tekst",
-      "default": "<p>Zayna Home is ontstaan vanuit liefde voor een rustig, verzorgd huis. We kiezen producten die mooi ogen, prettig zijn in gebruik en vanzelf hun plek vinden.</p><p>Geen overdaad, maar een zorgvuldig gekozen collectie waarin eenvoud, functie en aandacht voor detail samenkomen.</p>"
+      "default": "<p>Zayna Home is ontstaan uit liefde voor een huis dat rustig en verzorgd aanvoelt. We kiezen producten die mooi ogen, prettig zijn in gebruik en vanzelf hun plek vinden.</p><p>Geen overdaad, maar een zorgvuldig gekozen collectie waarin eenvoud, functie en aandacht voor detail samenkomen.</p>"
     },
     {
       "type": "text",
