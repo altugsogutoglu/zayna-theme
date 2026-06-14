@@ -55,18 +55,18 @@
       </h2>
 
       <div class="zayna-founder-note__body">
-        {%- if s.story_body != blank -%}
-          {{ s.story_body }}
+        {%- if s.story_body_compact != blank -%}
+          {{ s.story_body_compact }}
         {%- else -%}
           <p>
             Zayna Home is ontstaan vanuit liefde voor een rustig, verzorgd
             huis. We kiezen producten die mooi ogen, prettig zijn in gebruik
-            en moeiteloos een plek vinden in het dagelijks leven.
+            en vanzelf hun plek vinden.
           </p>
 
           <p>
-            Geen overdaad, maar een zorgvuldig gekozen collectie met aandacht
-            voor eenvoud, functie en de details die een huis eigen maken.
+            Geen overdaad, maar een zorgvuldig gekozen collectie waarin
+            eenvoud, functie en aandacht voor detail samenkomen.
           </p>
         {%- endif -%}
       </div>
@@ -406,7 +406,7 @@
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
       grid-template-columns: minmax(0, 0.41fr) minmax(0, 0.59fr);
-      align-items: center;
+      align-items: start;
       gap: clamp(24px, 3.2vw, 38px);
       padding-right: 26px;
       padding-left: 26px;
@@ -415,6 +415,7 @@
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__media {
       max-height: 285px;
       aspect-ratio: 4 / 3;
+      margin-top: 2px;
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__eyebrow {
@@ -485,9 +486,9 @@
     },
     {
       "type": "richtext",
-      "id": "story_body",
+      "id": "story_body_compact",
       "label": "Tekst",
-      "default": "<p>Zayna Home is ontstaan vanuit liefde voor een rustig, verzorgd huis. We kiezen producten die mooi ogen, prettig zijn in gebruik en moeiteloos een plek vinden in het dagelijks leven.</p><p>Geen overdaad, maar een zorgvuldig gekozen collectie met aandacht voor eenvoud, functie en de details die een huis eigen maken.</p>"
+      "default": "<p>Zayna Home is ontstaan vanuit liefde voor een rustig, verzorgd huis. We kiezen producten die mooi ogen, prettig zijn in gebruik en vanzelf hun plek vinden.</p><p>Geen overdaad, maar een zorgvuldig gekozen collectie waarin eenvoud, functie en aandacht voor detail samenkomen.</p>"
     },
     {
       "type": "text",
