@@ -15,8 +15,15 @@
   endunless
   assign dec_qty = li.quantity | minus: 1
   assign inc_qty = li.quantity | plus: 1
+  assign unit_price_cents = li.final_price
 -%}
-<li data-cart-line data-line-key="{{ li.key }}" class="flex gap-4 py-5 border-b border-border-soft last:border-0">
+<li
+  data-cart-line
+  data-line-key="{{ li.key }}"
+  data-unit-price-cents="{{ unit_price_cents }}"
+  data-current-quantity="{{ li.quantity }}"
+  class="flex gap-4 py-5 border-b border-border-soft last:border-0"
+>
   {%- if img -%}
     <a href="{{ li.url }}" class="block h-24 w-20 shrink-0 overflow-hidden bg-cream">
       {{ img | image_url: width: 200 | image_tag:
@@ -58,7 +65,13 @@
           {% render 'icon', name: 'plus', size: 14 %}
         </button>
       </div>
-      <div class="text-price text-ink shrink-0">{{ li.final_line_price | money }}</div>
+      <div
+        class="text-price text-ink shrink-0 tabular-nums"
+        data-line-price
+        data-line-price-cents="{{ li.final_line_price }}"
+      >
+        {{ li.final_line_price | money }}
+      </div>
     </div>
   </div>
 </li>
