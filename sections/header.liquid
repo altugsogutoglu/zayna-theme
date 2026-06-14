@@ -44,10 +44,10 @@
         {%- assign panel_key = link.title | downcase | strip -%}
 
         {%- if link.links.size > 0 -%}
-          <div class="group/mega" data-mega-item>
+          <div class="zayna-header-nav-item group/mega" data-mega-item>
             <a
               href="{{ link.url }}"
-              class="group relative inline-flex items-center py-2"
+              class="zayna-header-nav-link group relative inline-flex items-center"
               aria-haspopup="true"
             >
               <span class="zayna-header-nav-label text-[11px] uppercase tracking-[0.2em] text-ink-soft transition-colors group-hover:text-ink">
@@ -281,7 +281,7 @@
         {%- else -%}
           <a
             href="{{ link.url }}"
-            class="group relative py-2"
+            class="zayna-header-nav-link group relative inline-flex items-center"
           >
             <span class="zayna-header-nav-label text-[11px] uppercase tracking-[0.2em] transition-colors {% if link.active %}text-ink{% else %}text-ink-soft group-hover:text-ink{% endif %}">
               {{ link.title | escape }}
@@ -346,6 +346,36 @@
 </header>
 
 {% style %}
+  /*
+    Alle desktopnavigatie-items gebruiken exact dezelfde interne box.
+    Hierdoor staan gewone links en het mega-menu-item op één tekstlijn.
+  */
+  @media (min-width: 768px) {
+    #shopify-section-{{ section.id }} .zayna-header-nav {
+      align-items: center;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-header-nav-item {
+      display: flex;
+      height: 36px;
+      align-items: center;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-header-nav-link {
+      display: inline-flex;
+      height: 36px;
+      align-items: center;
+      padding: 0;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+    #shopify-section-{{ section.id }} .zayna-header-nav-label {
+      display: block;
+      line-height: 1;
+    }
+  }
+
   #shopify-section-{{ section.id }} .zayna-header-actions {
     gap: 8px;
   }
