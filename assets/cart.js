@@ -17,6 +17,7 @@
   let quantityVersion = 0;
 
   const QUANTITY_DEBOUNCE = 140;
+  const REMOVAL_ANIMATION_MS = 170;
 
 
   function formatMoney(cents, root) {
@@ -359,49 +360,208 @@
       });
   }
 
-  function optimisticChange(lineKey, quantity) {
-    document
-      .querySelectorAll(
-        '[data-cart-line][data-line-key="' +
-          CSS.escape(lineKey) +
-          '"]'
-      )
-      .forEach((line) => {
-        line.setAttribute(
-          'data-optimistic-quantity',
-          String(Math.max(0, quantity))
-        );
-        line.setAttribute(
-          'data-current-quantity',
-          String(Math.max(0, quantity))
-        );
+  function getCartLinesForKey(lineKey) {
+    return document.querySelectorAll(
+      '[data-cart-line][data-line-key="' +
+        CSS.escape(lineKey) +
+        '"]'
+    );
+  }
 
-        const quantityElement = line.querySelector('[data-line-qty]');
+  function showPendingEmptyMessage(line) {
+    const list = line.closest('ul');
 
-        if (quantityElement && quantity > 0) {
-          quantityElement.textContent = String(quantity);
-        }
+    if (!list || list.querySelector('[data-cart-empty-pending]')) {
+      return;
+    }
 
-        line
-          .querySelectorAll('[data-cart-change][data-step]')
-          .forEach((button) => {
-            const isIncrease =
-              button.getAttribute('data-step') === 'inc';
+    const hasRemainingLine = Array.from(
+      list.querySelectorAll('[data-cart-line]')
+    ).some((cartLine) => getLineQuantity(cartLine) > 0);
 
+    if (hasRemainingLine) return;
+
+    const message = document.createElement('li');
+
+    message.setAttribute('data-cart-empty-pending', '');
+    message.setAttribute('aria-live', 'polite');
+    message.className = 'py-12 text-center';
+    message.innerHTML =
+      '<p class="font-display text-xl leading-tight text-ink">' +
+      'Je winkelmand is nog leeg.</p>' +
+      '<p class="mt-2 text-sm text-ink-soft">' +
+      'De winkelmand wordt bijgewerkt.</p>';
+
+    list.appendChild(message);
+  }
+
+  function animateLineRemoval(line) {
+    if (line.getAttribute('data-cart-removing') === 'true') {
+      return;
+    }
+
+    const storedOriginalQuantity = Number.parseInt(
+      line.getAttribute('data-pre-remove-quantity'),
+      10
+    );
+    const originalQuantity = storedOriginalQuantity ||
+      Math.max(1, getLineQuantity(line));
+    const height = line.getBoundingClientRect().height;
+
+    line.setAttribute('data-cart-removing', 'true');
+
+    if (!storedOriginalQuantity) {
+      line.setAttribute(
+        'data-pre-remove-quantity',
+        String(originalQuantity)
+      );
+    }
+    line.setAttribute('aria-hidden', 'true');
+
+    line.style.height = height + 'px';
+    line.style.overflow = 'hidden';
+    line.style.pointerEvents = 'none';
+    line.style.willChange = 'height, opacity, transform, padding';
+    line.style.transition =
+      'height ' + REMOVAL_ANIMATION_MS + 'ms ease, ' +
+      'opacity 120ms ease, ' +
+      'transform ' + REMOVAL_ANIMATION_MS + 'ms ease, ' +
+      'padding ' + REMOVAL_ANIMATION_MS + 'ms ease, ' +
+      'border-color ' + REMOVAL_ANIMATION_MS + 'ms ease';
+
+    window.requestAnimationFrame(() => {
+      line.style.height = '0px';
+      line.style.opacity = '0';
+      line.style.transform = 'translateX(8px)';
+      line.style.paddingTop = '0';
+      line.style.paddingBottom = '0';
+      line.style.borderColor = 'transparent';
+    });
+
+    window.setTimeout(() => {
+      line.hidden = true;
+      showPendingEmptyMessage(line);
+    }, REMOVAL_ANIMATION_MS);
+  }
+
+  function restoreOptimisticallyRemovedLine(lineKey) {
+    getCartLinesForKey(lineKey).forEach((line) => {
+      const previousQuantity = Number.parseInt(
+        line.getAttribute('data-pre-remove-quantity'),
+        10
+      ) || 1;
+
+      line.hidden = false;
+      line.removeAttribute('aria-hidden');
+      line.removeAttribute('data-cart-removing');
+      line.removeAttribute('data-pre-remove-quantity');
+      line.removeAttribute('data-optimistic-quantity');
+      line.setAttribute(
+        'data-current-quantity',
+        String(previousQuantity)
+      );
+
+      line.removeAttribute('style');
+
+      const quantityElement = line.querySelector('[data-line-qty]');
+
+      if (quantityElement) {
+        quantityElement.textContent = String(previousQuantity);
+      }
+
+      line
+        .querySelectorAll('[data-cart-change][data-step]')
+        .forEach((button) => {
+          const isIncrease =
+            button.getAttribute('data-step') === 'inc';
+
+          button.setAttribute(
+            'data-quantity',
+            String(
+              isIncrease
+                ? previousQuantity + 1
+                : Math.max(0, previousQuantity - 1)
+            )
+          );
+
+          if (!isIncrease) {
+            button.disabled = false;
             button.setAttribute(
-              'data-quantity',
-              String(
-                isIncrease
-                  ? quantity + 1
-                  : Math.max(0, quantity - 1)
-              )
+              'aria-label',
+              previousQuantity <= 1
+                ? 'Product verwijderen'
+                : 'Aantal verlagen'
             );
+          }
+        });
 
-            if (!isIncrease) {
-              button.disabled = quantity <= 1;
-            }
-          });
-      });
+      line
+        .closest('ul')
+        ?.querySelector('[data-cart-empty-pending]')
+        ?.remove();
+    });
+
+    syncCountFromVisibleQuantities();
+    updateOptimisticMoney();
+  }
+
+  function optimisticChange(lineKey, quantity) {
+    getCartLinesForKey(lineKey).forEach((line) => {
+      const currentQuantity = Math.max(0, getLineQuantity(line));
+
+      if (quantity <= 0) {
+        line.setAttribute(
+          'data-pre-remove-quantity',
+          String(Math.max(1, currentQuantity))
+        );
+      }
+
+      line.setAttribute(
+        'data-optimistic-quantity',
+        String(Math.max(0, quantity))
+      );
+      line.setAttribute(
+        'data-current-quantity',
+        String(Math.max(0, quantity))
+      );
+
+      if (quantity <= 0) {
+        animateLineRemoval(line);
+        return;
+      }
+
+      const quantityElement = line.querySelector('[data-line-qty]');
+
+      if (quantityElement) {
+        quantityElement.textContent = String(quantity);
+      }
+
+      line
+        .querySelectorAll('[data-cart-change][data-step]')
+        .forEach((button) => {
+          const isIncrease =
+            button.getAttribute('data-step') === 'inc';
+
+          button.setAttribute(
+            'data-quantity',
+            String(
+              isIncrease
+                ? quantity + 1
+                : Math.max(0, quantity - 1)
+            )
+          );
+
+          if (!isIncrease) {
+            button.disabled = false;
+            button.setAttribute(
+              'aria-label',
+              quantity <= 1
+                ? 'Product verwijderen'
+                : 'Aantal verlagen'
+            );
+          }
+        });
+    });
 
     syncCountFromVisibleQuantities();
     updateOptimisticMoney();
@@ -489,6 +649,12 @@
           'Zayna cart refresh failed:',
           refreshError
         );
+
+        Object.keys(updates).forEach((lineKey) => {
+          if (updates[lineKey] === 0) {
+            restoreOptimisticallyRemovedLine(lineKey);
+          }
+        });
       }
 
       lineSyncing.forEach((lineKey) => {
@@ -686,6 +852,47 @@
   });
 
   document.addEventListener('submit', (event) => {
+    const checkoutButton =
+      event.submitter?.matches?.('[name="checkout"]')
+        ? event.submitter
+        : null;
+    const checkoutForm = checkoutButton
+      ? event.target.closest('form')
+      : null;
+
+    if (
+      checkoutForm &&
+      checkoutForm.dataset.cartCheckoutReady !== 'true'
+    ) {
+      event.preventDefault();
+
+      checkoutForm.dataset.cartCheckoutReady = 'true';
+
+      const originalLabel = checkoutButton.textContent;
+
+      checkoutButton.disabled = true;
+      checkoutButton.textContent = 'Afrekenen laden…';
+
+      settleQuantityUpdates()
+        .then(() => {
+          checkoutButton.disabled = false;
+          checkoutButton.textContent = originalLabel;
+          checkoutForm.requestSubmit(checkoutButton);
+        })
+        .catch((error) => {
+          console.error(
+            'Zayna cart checkout preparation failed:',
+            error
+          );
+
+          checkoutForm.dataset.cartCheckoutReady = 'false';
+          checkoutButton.disabled = false;
+          checkoutButton.textContent = originalLabel;
+        });
+
+      return;
+    }
+
     const discountForm = event.target.closest(
       '[data-discount-form]'
     );
