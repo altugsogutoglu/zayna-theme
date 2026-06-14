@@ -190,8 +190,9 @@
   }
 
   #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body {
-    max-width: 54ch;
+    max-width: 46ch;
     margin-top: 17px;
+    margin-right: auto;
     color: var(--zayna-founder-soft);
     font-size: 14px;
     line-height: 1.64;
@@ -199,6 +200,12 @@
 
   #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body p {
     margin: 0 0 11px;
+    text-wrap: pretty;
+    word-break: normal;
+    overflow-wrap: normal;
+    hyphens: none;
+    orphans: 2;
+    widows: 2;
   }
 
   #ZaynaFounderNote-{{ section.id }}
@@ -348,6 +355,7 @@
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body {
+      max-width: 49ch;
       font-size: 14.5px;
       line-height: 1.65;
     }
@@ -379,6 +387,7 @@
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body {
+      max-width: 50ch;
       font-size: 15px;
     }
   }
@@ -420,6 +429,7 @@
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__body {
+      max-width: 46ch;
       margin-top: 13px;
       font-size: 13.4px;
       line-height: 1.56;
