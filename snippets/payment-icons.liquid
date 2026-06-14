@@ -1,21 +1,52 @@
 {%- liquid
   assign h = icon_height | default: 24
-  assign w = h | times: 1.58 | round
+  assign payment_types = 'ideal,bancontact,apple_pay,google_pay,visa,master' | split: ','
 -%}
-<ul aria-label="Geaccepteerde betaalmethoden" class="flex flex-wrap items-center gap-1.5">
-  <li class="leading-none">
-    <svg role="img" aria-label="iDEAL" width="{{ w }}" height="{{ h }}" viewBox="0 0 38 24" class="rounded-[3px] ring-1 ring-black/10"><rect width="38" height="24" rx="3" fill="#fff"/><text x="19" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="700"><tspan fill="#000">i</tspan><tspan fill="#cc0066">DEAL</tspan></text></svg>
-  </li>
-  <li class="leading-none">
-    <svg role="img" aria-label="Bancontact" width="{{ w }}" height="{{ h }}" viewBox="0 0 38 24" class="rounded-[3px] ring-1 ring-black/10"><rect width="38" height="24" rx="3" fill="#fff"/><rect x="6" y="9" width="14" height="6" rx="1" fill="#005498"/><rect x="18" y="9" width="14" height="6" rx="1" fill="#ffd800"/></svg>
-  </li>
-  <li class="leading-none">
-    <svg role="img" aria-label="Klarna" width="{{ w }}" height="{{ h }}" viewBox="0 0 38 24" class="rounded-[3px] ring-1 ring-black/10"><rect width="38" height="24" rx="3" fill="#ffb3c7"/><text x="19" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#0a0b09">Klarna</text></svg>
-  </li>
-  <li class="leading-none">
-    <svg role="img" aria-label="Visa" width="{{ w }}" height="{{ h }}" viewBox="0 0 38 24" class="rounded-[3px] ring-1 ring-black/10"><rect width="38" height="24" rx="3" fill="#fff"/><text x="19" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-style="italic" font-weight="700" fill="#1a1f71">VISA</text></svg>
-  </li>
-  <li class="leading-none">
-    <svg role="img" aria-label="Mastercard" width="{{ w }}" height="{{ h }}" viewBox="0 0 38 24" class="rounded-[3px] ring-1 ring-black/10"><rect width="38" height="24" rx="3" fill="#fff"/><circle cx="16" cy="12" r="6" fill="#eb001b"/><circle cx="23" cy="12" r="6" fill="#f79e1b" fill-opacity="0.9"/></svg>
-  </li>
+
+<ul
+  class="zayna-payment-icons"
+  aria-label="Geaccepteerde betaalmethoden"
+  style="--zayna-payment-icon-height: {{ h }}px;"
+>
+  {%- for type in payment_types -%}
+    <li class="zayna-payment-icons__item">
+      {{ type | payment_type_svg_tag: class: 'zayna-payment-icons__svg' }}
+    </li>
+  {%- endfor -%}
 </ul>
+
+{% style %}
+  .zayna-payment-icons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .zayna-payment-icons__item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+  }
+
+  .zayna-payment-icons__svg {
+    display: block;
+    width: auto;
+    height: var(--zayna-payment-icon-height);
+    max-width: 48px;
+  }
+
+  @media (max-width: 389px) {
+    .zayna-payment-icons {
+      gap: 5px;
+    }
+
+    .zayna-payment-icons__svg {
+      max-width: 46px;
+    }
+  }
+{% endstyle %}
