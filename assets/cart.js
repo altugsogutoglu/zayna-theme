@@ -18,6 +18,134 @@
 
   const QUANTITY_DEBOUNCE = 140;
 
+
+  function formatMoney(cents, root) {
+    const locale = root?.getAttribute('data-money-locale') ||
+      document.documentElement.lang ||
+      'nl-NL';
+    const currency = root?.getAttribute('data-money-currency') || 'EUR';
+
+    try {
+      return new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(cents / 100);
+    } catch (error) {
+      return '€ ' + (cents / 100).toFixed(2).replace('.', ',');
+    }
+  }
+
+  function getLineQuantity(line) {
+    const optimistic = line.getAttribute('data-optimistic-quantity');
+
+    if (optimistic !== null) {
+      return Number.parseInt(optimistic, 10) || 0;
+    }
+
+    const stored = line.getAttribute('data-current-quantity');
+
+    if (stored !== null) {
+      return Number.parseInt(stored, 10) || 0;
+    }
+
+    const quantity = line.querySelector('[data-line-qty]');
+
+    return quantity
+      ? Number.parseInt(quantity.textContent, 10) || 0
+      : 0;
+  }
+
+  function updateOptimisticMoney() {
+    document.querySelectorAll('[data-cart-money-root]').forEach((root) => {
+      let subtotalCents = 0;
+
+      root.querySelectorAll('[data-cart-line]').forEach((line) => {
+        const quantity = getLineQuantity(line);
+        const unitPriceCents = Number.parseInt(
+          line.getAttribute('data-unit-price-cents'),
+          10
+        ) || 0;
+        const linePriceCents = Math.max(0, quantity * unitPriceCents);
+        const linePrice = line.querySelector('[data-line-price]');
+
+        line.setAttribute('data-current-quantity', String(quantity));
+
+        if (linePrice) {
+          linePrice.setAttribute(
+            'data-line-price-cents',
+            String(linePriceCents)
+          );
+          linePrice.textContent = formatMoney(linePriceCents, root);
+        }
+
+        subtotalCents += linePriceCents;
+      });
+
+      root.setAttribute(
+        'data-cart-subtotal-cents',
+        String(subtotalCents)
+      );
+
+      const subtotal = root.querySelector('[data-cart-subtotal]');
+
+      if (subtotal) {
+        subtotal.textContent = formatMoney(subtotalCents, root);
+      }
+
+      const thresholdCents = Number.parseInt(
+        root.getAttribute('data-free-shipping-threshold-cents'),
+        10
+      ) || 0;
+
+      if (thresholdCents <= 0) return;
+
+      const remainingCents = Math.max(
+        0,
+        thresholdCents - subtotalCents
+      );
+      const percentage = Math.min(
+        100,
+        Math.max(0, (subtotalCents / thresholdCents) * 100)
+      );
+      const message = root.querySelector(
+        '[data-free-shipping-message]'
+      );
+      const progress = root.querySelector(
+        '[data-free-shipping-progress]'
+      );
+      const progressFill = root.querySelector(
+        '[data-free-shipping-progress-fill]'
+      );
+
+      if (message) {
+        if (remainingCents === 0) {
+          message.innerHTML =
+            'Je komt in aanmerking voor gratis verzending ' +
+            '<span aria-hidden="true">🎉</span>';
+        } else {
+          message.innerHTML =
+            'Nog <span class="text-ink font-medium tabular-nums" ' +
+            'data-free-shipping-remaining>' +
+            formatMoney(remainingCents, root) +
+            '</span> tot gratis verzending';
+        }
+      }
+
+      if (progress) {
+        progress.setAttribute(
+          'aria-valuenow',
+          String(Math.round(percentage))
+        );
+      }
+
+      if (progressFill) {
+        progressFill.style.width = percentage + '%';
+      }
+    });
+  }
+
   const sectionsForPath = () => {
     const ids = ['cart-drawer'];
 
@@ -243,6 +371,10 @@
           'data-optimistic-quantity',
           String(Math.max(0, quantity))
         );
+        line.setAttribute(
+          'data-current-quantity',
+          String(Math.max(0, quantity))
+        );
 
         const quantityElement = line.querySelector('[data-line-qty]');
 
@@ -272,6 +404,7 @@
       });
 
     syncCountFromVisibleQuantities();
+    updateOptimisticMoney();
   }
 
   function scheduleQuantityFlush(delay = QUANTITY_DEBOUNCE) {
