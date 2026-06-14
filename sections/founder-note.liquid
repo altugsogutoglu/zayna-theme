@@ -6,7 +6,6 @@
   assign story_link_label = s.story_link_label | default: 'Lees ons verhaal'
   assign story_link_url = s.story_link_url | default: '/pages/over-ons'
   assign welcome_line = s.welcome_line | default: 'Fijn dat je er bent.'
-  assign story_signature = s.story_signature | default: 'Zayna Home'
 
   assign image_alt = s.image.alt | default: 'De rustige stijl van Zayna Home'
   assign image_focal_point = s.image.presentation.focal_point | default: 'center'
@@ -83,11 +82,7 @@
       {%- endif -%}
 
       <p class="zayna-founder-note__closing">
-        <span>{{ welcome_line | escape }}</span>
-        <span class="zayna-founder-note__signature">
-          <span aria-hidden="true">—</span>
-          {{ story_signature | escape }}
-        </span>
+        {{ welcome_line | escape }}
       </p>
     </div>
   </div>
@@ -220,8 +215,8 @@
     margin-top: 15px;
     padding-bottom: 3px;
     border-bottom: 1px solid var(--zayna-founder-border);
-    color: var(--zayna-founder-soft);
-    font-size: 9px;
+    color: #5f564e;
+    font-size: 9.5px;
     line-height: 1.3;
     letter-spacing: 0.16em;
     text-decoration: none;
@@ -238,11 +233,7 @@
   }
 
   #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__closing {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 5px 8px;
-    margin: 18px 0 0;
+    margin: 20px 0 0;
     color: var(--zayna-founder-ink);
     font-family:
       var(
@@ -252,22 +243,6 @@
     font-size: 15px;
     font-style: italic;
     line-height: 1.45;
-  }
-
-  #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__signature {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 6px;
-    color: var(--zayna-founder-ink);
-    font-size: 17px;
-    white-space: nowrap;
-  }
-
-  #ZaynaFounderNote-{{ section.id }}
-    .zayna-founder-note__signature
-    > span {
-    color: var(--zayna-founder-accent);
-    font-size: 13px;
   }
 
   #ZaynaFounderNote-{{ section.id }}
@@ -356,8 +331,8 @@
 
   @media (min-width: 980px) {
     #ZaynaFounderNote-{{ section.id }} {
-      padding-top: 62px;
-      padding-bottom: 66px;
+      padding-top: 58px;
+      padding-bottom: 60px;
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
@@ -384,8 +359,8 @@
 
   @media (min-width: 1180px) {
     #ZaynaFounderNote-{{ section.id }} {
-      padding-top: 66px;
-      padding-bottom: 70px;
+      padding-top: 62px;
+      padding-bottom: 64px;
     }
 
     #ZaynaFounderNote-{{ section.id }} .zayna-founder-note__inner {
@@ -466,12 +441,6 @@
       "id": "welcome_line",
       "label": "Afsluitende zin",
       "default": "Fijn dat je er bent."
-    },
-    {
-      "type": "text",
-      "id": "story_signature",
-      "label": "Handtekening",
-      "default": "Zayna Home"
     }
   ],
   "presets": [
