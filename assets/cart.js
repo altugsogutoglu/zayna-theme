@@ -485,11 +485,8 @@
     scroller.scrollTop = state.scrollTop;
   }
 
-  function restoreCartViewState(state) {
+  function restoreCartFocus(state) {
     if (!state) return;
-
-    restoreRootViewState('[data-cart-drawer]', state.drawer);
-    restoreRootViewState('[data-cart-page]', state.page);
 
     if (state.focusLineKey && state.focusStep) {
       const selector =
@@ -522,7 +519,11 @@
     }
   }
 
-  function swap(html, wrapperSelector) {
+  function swapAndRestore(
+    html,
+    wrapperSelector,
+    rootState
+  ) {
     if (!html) return;
 
     const parsed = new DOMParser().parseFromString(
@@ -532,9 +533,30 @@
     const fresh = parsed.querySelector(wrapperSelector);
     const current = document.querySelector(wrapperSelector);
 
-    if (fresh && current) {
-      current.innerHTML = fresh.innerHTML;
+    if (!fresh || !current) return;
+
+    const oldScroller = getCartScrollRegion(current);
+
+    if (oldScroller) {
+      oldScroller.style.overflowAnchor = 'none';
+      oldScroller.style.scrollBehavior = 'auto';
     }
+
+    current.innerHTML = fresh.innerHTML;
+
+    const newScroller = getCartScrollRegion(current);
+
+    if (newScroller) {
+      newScroller.style.overflowAnchor = 'none';
+      newScroller.style.scrollBehavior = 'auto';
+    }
+
+    /*
+     * Reading the new anchor position forces layout immediately.
+     * The scroll correction therefore happens in the same task as
+     * the DOM replacement, before the browser can paint a jump.
+     */
+    restoreRootViewState(wrapperSelector, rootState);
   }
 
   function applySections(
@@ -542,27 +564,24 @@
     viewState = captureCartViewState()
   ) {
     if (sections?.['cart-drawer']) {
-      swap(
+      swapAndRestore(
         sections['cart-drawer'],
-        '[data-cart-drawer]'
+        '[data-cart-drawer]',
+        viewState?.drawer || null
       );
     }
 
     if (sections?.['main-cart']) {
-      swap(
+      swapAndRestore(
         sections['main-cart'],
-        '[data-cart-page]'
+        '[data-cart-page]',
+        viewState?.page || null
       );
     }
 
     syncCountFromDom();
     bindUpsell();
-
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        restoreCartViewState(viewState);
-      });
-    });
+    restoreCartFocus(viewState);
   }
 
   async function postJSON(url, body = {}) {
@@ -634,6 +653,11 @@
 
     if (!root) return;
 
+    const footer = root.querySelector('[data-cart-footer]');
+    const checkoutButton = root.querySelector(
+      '[data-cart-checkout-button], button[name="checkout"]'
+    );
+
     if (state) {
       const hasRemainingLine = Array.from(
         root.querySelectorAll('[data-cart-line]')
@@ -647,10 +671,15 @@
 
       root.setAttribute('data-cart-emptying', 'true');
 
-      const footer = root.querySelector('[data-cart-footer]');
-
       if (footer) {
-        footer.hidden = true;
+        footer.style.pointerEvents = 'none';
+        footer.style.opacity = '0.62';
+        footer.style.transition = 'opacity 140ms ease';
+      }
+
+      if (checkoutButton) {
+        checkoutButton.disabled = true;
+        checkoutButton.setAttribute('aria-disabled', 'true');
       }
 
       return;
@@ -658,10 +687,15 @@
 
     root.removeAttribute('data-cart-emptying');
 
-    const footer = root.querySelector('[data-cart-footer]');
-
     if (footer) {
-      footer.hidden = false;
+      footer.style.pointerEvents = '';
+      footer.style.opacity = '';
+      footer.style.transition = '';
+    }
+
+    if (checkoutButton) {
+      checkoutButton.disabled = false;
+      checkoutButton.removeAttribute('aria-disabled');
     }
   }
 
@@ -752,32 +786,29 @@
         String(originalQuantity)
       );
     }
-    line.setAttribute('aria-hidden', 'true');
 
+    /*
+     * Keep the occupied height until Shopify confirms the removal.
+     * This prevents the content below from moving once locally and
+     * then moving a second time when the refreshed section arrives.
+     */
     line.style.height = height + 'px';
+    line.style.minHeight = height + 'px';
     line.style.overflow = 'hidden';
     line.style.pointerEvents = 'none';
-    line.style.willChange = 'height, opacity, transform, padding';
+    line.style.willChange = 'opacity, transform';
     line.style.transition =
-      'height ' + REMOVAL_ANIMATION_MS + 'ms ease, ' +
-      'opacity 120ms ease, ' +
-      'transform ' + REMOVAL_ANIMATION_MS + 'ms ease, ' +
-      'padding ' + REMOVAL_ANIMATION_MS + 'ms ease, ' +
-      'border-color ' + REMOVAL_ANIMATION_MS + 'ms ease';
+      'opacity 140ms ease, transform ' +
+      REMOVAL_ANIMATION_MS +
+      'ms ease, filter 140ms ease';
+
+    setLastLineEmptyingState(line, true);
 
     window.requestAnimationFrame(() => {
-      line.style.height = '0px';
-      line.style.opacity = '0';
-      line.style.transform = 'translateX(8px)';
-      line.style.paddingTop = '0';
-      line.style.paddingBottom = '0';
-      line.style.borderColor = 'transparent';
+      line.style.opacity = '0.38';
+      line.style.transform = 'translateX(6px)';
+      line.style.filter = 'grayscale(0.18)';
     });
-
-    window.setTimeout(() => {
-      line.hidden = true;
-      setLastLineEmptyingState(line, true);
-    }, REMOVAL_ANIMATION_MS);
   }
 
   function restoreOptimisticallyRemovedLine(lineKey) {
