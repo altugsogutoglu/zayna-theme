@@ -15,6 +15,7 @@
   let quantityRequestRunning = false;
   let flushRequestedAfterCurrent = false;
   let quantityVersion = 0;
+  let pendingQuantityViewState = null;
 
   const QUANTITY_DEBOUNCE = 140;
   const REMOVAL_ANIMATION_MS = 170;
@@ -291,56 +292,234 @@
     );
   }
 
-  function captureCartViewState() {
-    const activeElement = document.activeElement;
-    const activeButton = activeElement?.closest?.('[data-cart-change]');
-    const activeLine = activeButton?.closest?.('[data-cart-line]');
+  function getCartScrollRegion(root) {
+    if (!root) return null;
 
-    const drawerScroller = document.querySelector(
-      '[data-cart-drawer] .overflow-y-auto'
+    return (
+      root.querySelector('[data-cart-scroll-region]') ||
+      root.querySelector('.overflow-y-auto')
     );
-    const pageScroller = document.querySelector(
-      '[data-cart-page] .overflow-y-auto'
+  }
+
+  function findAddFormByVariant(root, variantId) {
+    if (!root || !variantId) return null;
+
+    return Array.from(
+      root.querySelectorAll('[data-cart-add-form]')
+    ).find((form) => {
+      const input = form.querySelector('input[name="id"]');
+
+      return input?.value === String(variantId);
+    }) || null;
+  }
+
+  function getStableAnchor(element, root) {
+    if (!element || !root || !root.contains(element)) return null;
+
+    const line = element.closest('[data-cart-line]');
+
+    if (line) {
+      return {
+        type: 'line',
+        key: line.getAttribute('data-line-key') || '',
+      };
+    }
+
+    const form = element.closest('[data-cart-add-form]');
+
+    if (form) {
+      const variantInput = form.querySelector(
+        'input[name="id"]'
+      );
+      const variantId = variantInput?.value || '';
+
+      if (variantId) {
+        return {
+          type: 'variant',
+          key: variantId,
+        };
+      }
+    }
+
+    const suggestions = element.closest(
+      '[data-cart-persistent-suggestions]'
     );
+
+    if (suggestions) {
+      return {
+        type: 'suggestions',
+      };
+    }
+
+    const emptyState = element.closest('[data-cart-empty-state]');
+
+    if (emptyState) {
+      return {
+        type: 'empty',
+      };
+    }
+
+    return null;
+  }
+
+  function resolveStableAnchor(root, descriptor) {
+    if (!root || !descriptor) return null;
+
+    if (descriptor.type === 'line' && descriptor.key) {
+      return root.querySelector(
+        '[data-cart-line][data-line-key="' +
+          CSS.escape(descriptor.key) +
+          '"]'
+      );
+    }
+
+    if (descriptor.type === 'variant' && descriptor.key) {
+      const form = findAddFormByVariant(
+        root,
+        descriptor.key
+      );
+
+      return form?.closest(
+        '.zh-product-card, li, [data-cart-add-form]'
+      ) || null;
+    }
+
+    if (descriptor.type === 'suggestions') {
+      return root.querySelector(
+        '[data-cart-persistent-suggestions]'
+      );
+    }
+
+    if (descriptor.type === 'empty') {
+      return root.querySelector('[data-cart-empty-state]');
+    }
+
+    return null;
+  }
+
+  function captureRootViewState(rootSelector, anchorElement) {
+    const root = document.querySelector(rootSelector);
+    const scroller = getCartScrollRegion(root);
+
+    if (!root || !scroller) return null;
+
+    const anchor = getStableAnchor(anchorElement, root);
+    const resolvedAnchor = anchor
+      ? resolveStableAnchor(root, anchor)
+      : null;
 
     return {
-      drawerScrollTop: drawerScroller?.scrollTop || 0,
-      pageScrollTop: pageScroller?.scrollTop || 0,
-      focusLineKey: activeLine?.getAttribute('data-line-key') || '',
-      focusStep: activeButton?.getAttribute('data-step') || '',
+      scrollTop: scroller.scrollTop,
+      anchor,
+      anchorOffset: resolvedAnchor
+        ? resolvedAnchor.getBoundingClientRect().top -
+          scroller.getBoundingClientRect().top
+        : null,
     };
+  }
+
+  function captureCartViewState(options = {}) {
+    const activeElement = document.activeElement;
+    const activeButton = activeElement?.closest?.(
+      '[data-cart-change]'
+    );
+    const activeLine = activeButton?.closest?.(
+      '[data-cart-line]'
+    );
+    const activeAddForm = activeElement?.closest?.(
+      '[data-cart-add-form]'
+    );
+    const activeVariant = activeAddForm
+      ?.querySelector('input[name="id"]')
+      ?.value || '';
+
+    const anchorElement =
+      options.anchorElement ||
+      activeLine ||
+      activeAddForm ||
+      null;
+
+    return {
+      drawer: captureRootViewState(
+        '[data-cart-drawer]',
+        anchorElement
+      ),
+      page: captureRootViewState(
+        '[data-cart-page]',
+        anchorElement
+      ),
+      focusLineKey: options.suppressFocus
+        ? ''
+        : activeLine?.getAttribute('data-line-key') || '',
+      focusStep: options.suppressFocus
+        ? ''
+        : activeButton?.getAttribute('data-step') || '',
+      focusVariant: options.suppressFocus
+        ? ''
+        : activeVariant,
+    };
+  }
+
+  function restoreRootViewState(rootSelector, state) {
+    if (!state) return;
+
+    const root = document.querySelector(rootSelector);
+    const scroller = getCartScrollRegion(root);
+
+    if (!root || !scroller) return;
+
+    const anchor = resolveStableAnchor(root, state.anchor);
+
+    if (
+      anchor &&
+      Number.isFinite(state.anchorOffset)
+    ) {
+      const newOffset =
+        anchor.getBoundingClientRect().top -
+        scroller.getBoundingClientRect().top;
+
+      scroller.scrollTop += newOffset - state.anchorOffset;
+      return;
+    }
+
+    scroller.scrollTop = state.scrollTop;
   }
 
   function restoreCartViewState(state) {
     if (!state) return;
 
-    const drawerScroller = document.querySelector(
-      '[data-cart-drawer] .overflow-y-auto'
-    );
-    const pageScroller = document.querySelector(
-      '[data-cart-page] .overflow-y-auto'
-    );
+    restoreRootViewState('[data-cart-drawer]', state.drawer);
+    restoreRootViewState('[data-cart-page]', state.page);
 
-    if (drawerScroller) {
-      drawerScroller.scrollTop = state.drawerScrollTop;
+    if (state.focusLineKey && state.focusStep) {
+      const selector =
+        '[data-cart-line][data-line-key="' +
+        CSS.escape(state.focusLineKey) +
+        '"] [data-cart-change][data-step="' +
+        CSS.escape(state.focusStep) +
+        '"]';
+
+      document
+        .querySelector(selector)
+        ?.focus({ preventScroll: true });
+
+      return;
     }
 
-    if (pageScroller) {
-      pageScroller.scrollTop = state.pageScrollTop;
+    if (state.focusVariant) {
+      const preferredRoot =
+        document.querySelector('[data-cart-drawer]') ||
+        document.querySelector('[data-cart-page]') ||
+        document;
+      const focusForm = findAddFormByVariant(
+        preferredRoot,
+        state.focusVariant
+      );
+
+      focusForm
+        ?.querySelector('[data-cart-add-button]')
+        ?.focus({ preventScroll: true });
     }
-
-    if (!state.focusLineKey || !state.focusStep) return;
-
-    const selector =
-      '[data-cart-line][data-line-key="' +
-      CSS.escape(state.focusLineKey) +
-      '"] [data-cart-change][data-step="' +
-      CSS.escape(state.focusStep) +
-      '"]';
-
-    const nextFocus = document.querySelector(selector);
-
-    nextFocus?.focus({ preventScroll: true });
   }
 
   function swap(html, wrapperSelector) {
@@ -358,9 +537,10 @@
     }
   }
 
-  function applySections(sections) {
-    const viewState = captureCartViewState();
-
+  function applySections(
+    sections,
+    viewState = captureCartViewState()
+  ) {
     if (sections?.['cart-drawer']) {
       swap(
         sections['cart-drawer'],
@@ -379,7 +559,9 @@
     bindUpsell();
 
     window.requestAnimationFrame(() => {
-      restoreCartViewState(viewState);
+      window.requestAnimationFrame(() => {
+        restoreCartViewState(viewState);
+      });
     });
   }
 
@@ -447,31 +629,106 @@
     );
   }
 
-  function showPendingEmptyMessage(line) {
-    const list = line.closest('ul');
+  function setLastLineEmptyingState(line, state) {
+    const root = line.closest('[data-cart-money-root]');
 
-    if (!list || list.querySelector('[data-cart-empty-pending]')) {
+    if (!root) return;
+
+    if (state) {
+      const hasRemainingLine = Array.from(
+        root.querySelectorAll('[data-cart-line]')
+      ).some(
+        (cartLine) =>
+          cartLine !== line &&
+          getLineQuantity(cartLine) > 0
+      );
+
+      if (hasRemainingLine) return;
+
+      root.setAttribute('data-cart-emptying', 'true');
+
+      const footer = root.querySelector('[data-cart-footer]');
+
+      if (footer) {
+        footer.hidden = true;
+      }
+
       return;
     }
 
-    const hasRemainingLine = Array.from(
-      list.querySelectorAll('[data-cart-line]')
-    ).some((cartLine) => getLineQuantity(cartLine) > 0);
+    root.removeAttribute('data-cart-emptying');
 
-    if (hasRemainingLine) return;
+    const footer = root.querySelector('[data-cart-footer]');
 
-    const message = document.createElement('li');
+    if (footer) {
+      footer.hidden = false;
+    }
+  }
 
-    message.setAttribute('data-cart-empty-pending', '');
-    message.setAttribute('aria-live', 'polite');
-    message.className = 'py-12 text-center';
-    message.innerHTML =
-      '<p class="font-display text-xl leading-tight text-ink">' +
-      'Je winkelmand is nog leeg.</p>' +
-      '<p class="mt-2 text-sm text-ink-soft">' +
-      'De winkelmand wordt bijgewerkt.</p>';
+  function elementIsVisibleInScroller(element, scroller) {
+    if (!element || !scroller) return false;
 
-    list.appendChild(message);
+    const elementRect = element.getBoundingClientRect();
+    const scrollerRect = scroller.getBoundingClientRect();
+
+    return (
+      elementRect.bottom > scrollerRect.top &&
+      elementRect.top < scrollerRect.bottom
+    );
+  }
+
+  function getRemovalAnchor(line) {
+    if (!line) return null;
+
+    const root = line.closest('[data-cart-money-root]');
+    const scroller = getCartScrollRegion(root);
+
+    if (!root || !scroller) return null;
+
+    const lines = Array.from(
+      root.querySelectorAll('[data-cart-line]')
+    ).filter(
+      (cartLine) =>
+        cartLine !== line &&
+        getLineQuantity(cartLine) > 0
+    );
+
+    const lineIndex = Array.from(
+      root.querySelectorAll('[data-cart-line]')
+    ).indexOf(line);
+
+    const nextLine = lines.find((cartLine) => {
+      const currentIndex = Array.from(
+        root.querySelectorAll('[data-cart-line]')
+      ).indexOf(cartLine);
+
+      return currentIndex > lineIndex;
+    });
+
+    if (nextLine) return nextLine;
+
+    const previousLine = [...lines].reverse().find((cartLine) => {
+      const currentIndex = Array.from(
+        root.querySelectorAll('[data-cart-line]')
+      ).indexOf(cartLine);
+
+      return currentIndex < lineIndex;
+    });
+
+    if (previousLine) return previousLine;
+
+    const suggestions = root.querySelector(
+      '[data-cart-persistent-suggestions]'
+    );
+
+    if (
+      suggestions &&
+      elementIsVisibleInScroller(suggestions, scroller)
+    ) {
+      return suggestions;
+    }
+
+    return null;
   }
 
   function animateLineRemoval(line) {
@@ -519,7 +776,7 @@
 
     window.setTimeout(() => {
       line.hidden = true;
-      showPendingEmptyMessage(line);
+      setLastLineEmptyingState(line, true);
     }, REMOVAL_ANIMATION_MS);
   }
 
@@ -574,10 +831,7 @@
           }
         });
 
-      line
-        .closest('ul')
-        ?.querySelector('[data-cart-empty-pending]')
-        ?.remove();
+      setLastLineEmptyingState(line, false);
     });
 
     syncCountFromVisibleQuantities();
@@ -658,6 +912,16 @@
     if (!lineKey || Number.isNaN(quantity)) return;
 
     const safeQuantity = Math.max(0, quantity);
+    const line = getCartLinesForKey(lineKey)[0] || null;
+    const anchorElement =
+      safeQuantity === 0
+        ? getRemovalAnchor(line)
+        : line;
+
+    pendingQuantityViewState = captureCartViewState({
+      anchorElement,
+      suppressFocus: safeQuantity === 0,
+    });
 
     optimisticChange(lineKey, safeQuantity);
     pendingUpdates.set(lineKey, safeQuantity);
@@ -668,9 +932,12 @@
     );
   }
 
-  async function refreshCartFromServer() {
+  async function refreshCartFromServer(viewState = null) {
     const data = await postJSON('/cart/update.js', {});
-    applySections(data.sections);
+    applySections(
+      data.sections,
+      viewState || captureCartViewState()
+    );
   }
 
   async function flushQuantityUpdates() {
@@ -689,8 +956,10 @@
 
     const requestVersion = quantityVersion;
     const updates = Object.fromEntries(pendingUpdates);
+    const requestViewState = pendingQuantityViewState;
 
     pendingUpdates.clear();
+    pendingQuantityViewState = null;
 
     Object.keys(updates).forEach((lineKey) => {
       lineSyncing.add(lineKey);
@@ -707,7 +976,10 @@
         pendingUpdates.size > 0;
 
       if (!newerChangesExist) {
-        applySections(data.sections);
+        applySections(
+          data.sections,
+          requestViewState || captureCartViewState()
+        );
 
         lineSyncing.forEach((lineKey) => {
           setLineSyncState(lineKey, false);
@@ -722,7 +994,7 @@
       flushRequestedAfterCurrent = false;
 
       try {
-        await refreshCartFromServer();
+        await refreshCartFromServer(requestViewState);
       } catch (refreshError) {
         console.error(
           'Zayna cart refresh failed:',
@@ -795,6 +1067,14 @@
       1,
       Number.parseInt(formData.get('quantity'), 10) || 1
     );
+    const variantId = String(formData.get('id') || '');
+    const addAnchor =
+      form?.closest('.zh-product-card, li, [data-cart-add-form]') ||
+      null;
+    const addViewState = captureCartViewState({
+      anchorElement: addAnchor,
+      suppressFocus: false,
+    });
     const previousCount = getDisplayedCartCount();
     let countAdjusted = false;
 
@@ -827,7 +1107,7 @@
         throw data;
       }
 
-      applySections(data.sections);
+      applySections(data.sections, addViewState);
 
       if (
         behavior === 'drawer' &&
@@ -836,9 +1116,21 @@
         open();
       }
 
-      if (form?.isConnected) {
-        setAddFormState(form, 'success');
-        resetAddFormState(form);
+      const refreshedForm = variantId
+        ? findAddFormByVariant(
+            document.querySelector('[data-cart-drawer]') ||
+              document.querySelector('[data-cart-page]') ||
+              document,
+            variantId
+          )
+        : null;
+      const feedbackForm = form?.isConnected
+        ? form
+        : refreshedForm;
+
+      if (feedbackForm) {
+        setAddFormState(feedbackForm, 'success');
+        resetAddFormState(feedbackForm);
       }
     } catch (error) {
       console.error('Zayna cart add failed:', error);
