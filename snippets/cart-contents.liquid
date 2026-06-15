@@ -40,6 +40,12 @@
   endcapture
 
   assign applied_discounts = cart.cart_level_discount_applications
+
+  assign suggestion_collection = settings.cart_empty_collection
+  assign has_suggestions = false
+  if suggestion_collection != blank and suggestion_collection.products_count > 0
+    assign has_suggestions = true
+  endif
 -%}
 <span data-cart-total-count data-count="{{ cart.item_count }}" hidden></span>
 <section
@@ -60,11 +66,30 @@
             {% render 'cart-line-item', line_item: item, layout: layout %}
           {%- endfor -%}
         </ul>
-      </div>
 
-      {%- if upsell_pid != blank -%}
-        <div data-cart-upsell data-url="{{ upsell_url }}"></div>
-      {%- endif -%}
+        {%- if has_suggestions -%}
+          <section
+            aria-label="Populaire keuzes"
+            class="mt-5 border-t border-border-soft pt-5 pb-6"
+            data-cart-persistent-suggestions
+          >
+            <div class="mb-4 flex items-center justify-between gap-4">
+              <p class="text-label text-ink-soft">Populaire keuzes</p>
+              <span class="text-[10px] uppercase tracking-[0.16em] text-stone-soft">
+                Verder ontdekken
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-x-4 gap-y-8{% if is_page %} lg:grid-cols-4{% endif %}">
+              {%- for product in suggestion_collection.products limit: 4 -%}
+                {% render 'product-card', product: product, loading: 'lazy' %}
+              {%- endfor -%}
+            </div>
+          </section>
+        {%- elsif upsell_pid != blank -%}
+          <div data-cart-upsell data-url="{{ upsell_url }}"></div>
+        {%- endif -%}
+      </div>
 
       <div class="cart-drawer-footer border-t border-border-soft bg-surface px-5 md:px-6 pt-4 md:pt-5 space-y-4">
         {%- if threshold_cents > 0 -%}
@@ -137,13 +162,6 @@
       </div>
     </div>
   {%- else -%}
-    {%- liquid
-      assign empty_col = settings.cart_empty_collection
-      assign has_suggestions = false
-      if empty_col != blank and empty_col.products_count > 0
-        assign has_suggestions = true
-      endif
-    -%}
     <div class="relative flex flex-1 flex-col {% unless is_page %}overflow-y-auto overscroll-contain{% endunless %} px-6 py-8 sm:px-8 sm:py-12">
       <div aria-hidden="true" class="pointer-events-none absolute inset-0 opacity-80" style="background: radial-gradient(70% 70% at 80% 10%, rgba(181,101,29,0.08), transparent 60%), radial-gradient(60% 60% at 10% 90%, rgba(138,154,123,0.10), transparent 60%);"></div>
       <div class="relative m-auto flex w-full max-w-md flex-col items-center py-4">
@@ -162,7 +180,7 @@
             <section aria-label="Populaire keuzes" class="w-full">
               <p class="text-label text-ink-soft mb-4">Populaire keuzes</p>
               <div class="grid grid-cols-2 gap-x-4 gap-y-8">
-                {%- for product in empty_col.products limit: 4 -%}
+                {%- for product in suggestion_collection.products limit: 4 -%}
                   {% render 'product-card', product: product, loading: 'lazy' %}
                 {%- endfor -%}
               </div>
