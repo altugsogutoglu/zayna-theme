@@ -58,7 +58,10 @@
   data-money-currency="{{ cart.currency.iso_code | default: shop.currency }}"
 >
   {%- if cart.item_count > 0 -%}
-    <div class="flex flex-1 flex-col {% unless is_page %}overflow-hidden{% endunless %}">
+    <div
+      class="flex flex-1 flex-col {% unless is_page %}overflow-hidden{% endunless %}"
+      data-cart-filled-state
+    >
       <p class="sr-only">Producten in winkelmand</p>
       <div
         class="{% unless is_page %}flex-1 overflow-y-auto overscroll-contain{% endunless %} px-5 md:px-6 py-2 md:py-4"
@@ -171,6 +174,7 @@
   {%- else -%}
     <div
       class="relative flex flex-1 flex-col {% unless is_page %}overflow-y-auto overscroll-contain{% endunless %} px-6 py-8 sm:px-8 sm:py-12"
+      data-cart-empty-layout
       data-cart-scroll-region
       style="overflow-anchor: none;"
     >
