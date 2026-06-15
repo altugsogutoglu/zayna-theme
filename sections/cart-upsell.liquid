@@ -1,31 +1,96 @@
 {%- comment -%}
-  Complementary upsell ("Maak je set compleet") for the cart drawer/page.
-  Fetched async by assets/cart.js via routes.product_recommendations_url with
-  intent=complementary. Mirrors the related-products recommendations pattern.
+  Complementary upsell for the cart drawer/page.
+  Fetched asynchronously by assets/cart.js.
 {%- endcomment -%}
 <div data-cart-upsell>
   {%- if recommendations.performed and recommendations.products_count > 0 -%}
-    <section aria-label="Maak je set compleet" class="border-t border-border-soft px-5 md:px-6 py-4">
+    <section
+      aria-label="Maak je set compleet"
+      class="border-t border-border-soft px-5 py-4 md:px-6"
+    >
       <p class="text-label text-ink-soft mb-3">Maak je set compleet</p>
+
       <ul class="space-y-3">
         {%- for product in recommendations.products limit: 3 -%}
-          {%- assign variant = product.selected_or_first_available_variant -%}
+          {%- liquid
+            assign variant = product.selected_or_first_available_variant
+            assign can_quick_add = false
+
+            if product.available and product.has_only_default_variant and variant != blank and variant.available
+              assign can_quick_add = true
+            endif
+          -%}
+
           <li class="flex items-center gap-3">
-            {%- if product.featured_image -%}
-              {{ product.featured_image | image_url: width: 96 | image_tag:
-                loading: 'lazy', width: 48, height: 48,
-                alt: product.title,
-                class: 'h-12 w-12 shrink-0 object-cover' }}
-            {%- endif -%}
+            <a
+              href="{{ product.url }}"
+              class="h-12 w-12 shrink-0 overflow-hidden bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay"
+              aria-label="Bekijk {{ product.title | escape }}"
+            >
+              {%- if product.featured_image -%}
+                {{
+                  product.featured_image
+                  | image_url: width: 144
+                  | image_tag:
+                    loading: 'lazy',
+                    width: 48,
+                    height: 48,
+                    alt: product.title,
+                    class: 'h-full w-full object-cover'
+                }}
+              {%- endif -%}
+            </a>
+
             <div class="min-w-0 flex-1">
-              <a href="{{ product.url }}" class="block truncate text-sm text-ink hover:text-clay transition-colors">{{ product.title }}</a>
-              <p class="text-xs text-ink-soft">{{ product.price_min | money }}</p>
+              <a
+                href="{{ product.url }}"
+                class="block truncate text-sm text-ink transition-colors hover:text-clay focus-visible:outline-none focus-visible:text-clay"
+              >
+                {{ product.title }}
+              </a>
+
+              <p class="mt-0.5 text-xs tabular-nums text-ink-soft">
+                {{ product.price_min | money }}
+              </p>
             </div>
-            {%- if variant -%}
-              <form data-upsell-add class="w-28 shrink-0">
+
+            {%- if can_quick_add -%}
+              <form
+                method="post"
+                action="{{ routes.cart_add_url }}"
+                data-cart-add-form
+                data-upsell-add
+                data-cart-add-behavior="stay-open"
+                data-product-title="{{ product.title | escape }}"
+                class="w-[102px] shrink-0"
+              >
                 <input type="hidden" name="id" value="{{ variant.id }}">
-                <button type="submit" {% unless variant.available %}disabled{% endunless %} class="w-full h-9 bg-ink text-white hover:bg-clay transition-colors text-[11px] uppercase tracking-[0.16em] disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2">Toevoegen</button>
+                <input type="hidden" name="quantity" value="1">
+
+                <button
+                  type="submit"
+                  data-cart-add-button
+                  class="flex h-9 w-full items-center justify-between gap-2 border border-ink px-3 text-[9px] font-medium uppercase tracking-[0.13em] text-ink transition-colors hover:bg-ink hover:text-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-70"
+                  aria-label="Voeg {{ product.title | escape }} toe aan je winkelmand"
+                >
+                  <span data-cart-add-label>Toevoegen</span>
+                  <span data-cart-add-icon aria-hidden="true">+</span>
+                </button>
               </form>
+            {%- elsif product.available -%}
+              <a
+                href="{{ product.url }}"
+                class="flex h-9 w-[102px] shrink-0 items-center justify-between gap-2 border border-border-soft px-3 text-[9px] font-medium uppercase tracking-[0.13em] text-ink transition-colors hover:border-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
+              >
+                <span>Opties</span>
+                <span aria-hidden="true">→</span>
+              </a>
+            {%- else -%}
+              <span
+                class="flex h-9 w-[102px] shrink-0 items-center justify-center border border-border-soft px-2 text-center text-[9px] uppercase tracking-[0.11em] text-stone-soft"
+              >
+                Uitverkocht
+              </span>
             {%- endif -%}
           </li>
         {%- endfor -%}
