@@ -51,87 +51,140 @@
   elsif is_new
     assign status_badge = 'Nieuw'
   endif
+
+  assign quick_variant = product.selected_or_first_available_variant
+  assign can_quick_add = false
+
+  if product.available and product.has_only_default_variant and quick_variant != blank and quick_variant.available
+    assign can_quick_add = true
+  endif
 -%}
 
 <div class="zh-product-card group relative">
-  <a
-    href="{{ product.url }}"
-    class="zh-product-card__link block focus-visible:outline-none"
-  >
-    <div class="zh-product-card__media zh-frame relative overflow-hidden">
-      {%- if primary -%}
-        {{
-          primary
-          | image_url: width: 800, format: 'webp'
-          | image_tag:
-            loading: loading,
-            sizes: '(min-width: 1024px) 25vw, 50vw',
-            widths: '300, 400, 600, 800',
-            alt: primary_alt,
-            class: 'zh-product-card__image zh-product-card__primary absolute inset-0 h-full w-full object-contain'
-        }}
-
-        {%- if secondary -%}
+  <div class="zh-product-card__media-wrap relative overflow-hidden">
+    <a
+      href="{{ product.url }}"
+      class="zh-product-card__media-link block focus-visible:outline-none"
+      aria-label="Bekijk {{ product.title | escape }}"
+    >
+      <div class="zh-product-card__media zh-frame relative overflow-hidden">
+        {%- if primary -%}
           {{
-            secondary
+            primary
             | image_url: width: 800, format: 'webp'
             | image_tag:
-              loading: 'lazy',
+              loading: loading,
               sizes: '(min-width: 1024px) 25vw, 50vw',
               widths: '300, 400, 600, 800',
-              alt: '',
-              class: 'zh-product-card__image zh-product-card__secondary absolute inset-0 h-full w-full object-contain'
+              alt: primary_alt,
+              class: 'zh-product-card__image zh-product-card__primary absolute inset-0 h-full w-full object-contain'
           }}
+
+          {%- if secondary -%}
+            {{
+              secondary
+              | image_url: width: 800, format: 'webp'
+              | image_tag:
+                loading: 'lazy',
+                sizes: '(min-width: 1024px) 25vw, 50vw',
+                widths: '300, 400, 600, 800',
+                alt: '',
+                class: 'zh-product-card__image zh-product-card__secondary absolute inset-0 h-full w-full object-contain'
+            }}
+          {%- endif -%}
+        {%- else -%}
+          <div class="absolute inset-0 grid place-items-center px-6 text-center">
+            <div>
+              <span
+                aria-hidden="true"
+                class="mx-auto mb-3 block h-px w-10 bg-stone-soft"
+              ></span>
+
+              <span class="font-display italic text-sm text-stone block leading-snug">
+                Afbeelding volgt
+              </span>
+
+              <span class="mt-1 block text-[11px] uppercase tracking-[0.18em] text-stone-soft line-clamp-2">
+                {{ product.title }}
+              </span>
+            </div>
+          </div>
         {%- endif -%}
-      {%- else -%}
-        <div class="absolute inset-0 grid place-items-center px-6 text-center">
-          <div>
-            <span
-              aria-hidden="true"
-              class="mx-auto mb-3 block h-px w-10 bg-stone-soft"
-            ></span>
 
-            <span class="font-display italic text-sm text-stone block leading-snug">
-              Afbeelding volgt
+        <div class="zh-product-card__badges">
+          {%- if is_sold == false and status_badge != blank -%}
+            <span class="zh-product-card__status-badge">
+              <span
+                class="zh-product-card__status-dot"
+                aria-hidden="true"
+              ></span>
+              {{ status_badge }}
             </span>
+          {%- endif -%}
 
-            <span class="mt-1 block text-[11px] uppercase tracking-[0.18em] text-stone-soft line-clamp-2">
-              {{ product.title }}
+          {%- if cond_label != blank -%}
+            <span class="zh-product-card__condition-badge">
+              {{ cond_label }}
+            </span>
+          {%- endif -%}
+        </div>
+
+        {%- if is_sold -%}
+          <div
+            class="absolute inset-0 z-10 grid place-items-center bg-white/60 pointer-events-none"
+            aria-hidden="true"
+          >
+            <span class="font-display italic text-sold -rotate-12 text-2xl">
+              Uitverkocht
             </span>
           </div>
-        </div>
-      {%- endif -%}
-
-      <div class="zh-product-card__badges">
-        {%- if is_sold == false and status_badge != blank -%}
-          <span class="zh-product-card__status-badge">
-            <span
-              class="zh-product-card__status-dot"
-              aria-hidden="true"
-            ></span>
-            {{ status_badge }}
-          </span>
-        {%- endif -%}
-
-        {%- if cond_label != blank -%}
-          <span class="zh-product-card__condition-badge">
-            {{ cond_label }}
-          </span>
         {%- endif -%}
       </div>
+    </a>
 
-      {%- if is_sold -%}
-        <div
-          class="absolute inset-0 z-10 grid place-items-center bg-white/60 pointer-events-none"
-          aria-hidden="true"
-        >
-          <span class="font-display italic text-sold -rotate-12 text-2xl">
-            Uitverkocht
-          </span>
-        </div>
-      {%- endif -%}
-    </div>
+    {%- unless is_sold -%}
+      <div class="zh-product-card__quick-action">
+        {%- if can_quick_add -%}
+          <form
+            method="post"
+            action="{{ routes.cart_add_url }}"
+            data-cart-add-form
+            data-quick-add
+            data-cart-add-behavior="silent"
+            data-product-title="{{ product.title | escape }}"
+            class="zh-product-card__quick-form"
+          >
+            <input type="hidden" name="id" value="{{ quick_variant.id }}">
+            <input type="hidden" name="quantity" value="1">
 
+            <button
+              type="submit"
+              class="zh-product-card__quick-button"
+              data-cart-add-button
+              aria-label="Voeg {{ product.title | escape }} toe aan je winkelmand"
+            >
+              <span data-cart-add-label>In winkelmand</span>
+              <span data-cart-add-icon aria-hidden="true">+</span>
+            </button>
+          </form>
+        {%- else -%}
+          <a
+            href="{{ product.url }}"
+            class="zh-product-card__quick-button"
+            aria-label="Kies opties voor {{ product.title | escape }}"
+          >
+            <span>Kies opties</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endunless -%}
+  </div>
+
+  <a
+    href="{{ product.url }}"
+    class="zh-product-card__details-link block focus-visible:outline-none"
+  >
     <div class="zh-product-card__content">
       <h3 class="zh-product-card__title">
         {{ product.title }}
@@ -153,10 +206,14 @@
       class="zh-product-card__underline"
     ></span>
   </a>
+
+  <span class="sr-only" aria-live="polite" data-cart-add-status></span>
 </div>
 
 <style>
-  .zh-product-card__link {
+  .zh-product-card__media-link,
+  .zh-product-card__details-link,
+  .zh-product-card__quick-button {
     touch-action: manipulation;
   }
 
@@ -238,6 +295,68 @@
     white-space: nowrap;
   }
 
+  .zh-product-card__quick-action {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 20;
+  }
+
+  .zh-product-card__quick-form {
+    width: 100%;
+  }
+
+  .zh-product-card__quick-button {
+    display: flex;
+    width: 100%;
+    min-height: 40px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 13px;
+    border-top: 1px solid rgba(231, 221, 210, 0.95);
+    background: rgba(250, 245, 242, 0.96);
+    color: #2a2520;
+    font-size: 9px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition:
+      background-color 220ms ease,
+      color 220ms ease,
+      opacity 220ms ease,
+      transform 280ms ease;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  button.zh-product-card__quick-button {
+    cursor: pointer;
+  }
+
+  .zh-product-card__quick-button:hover {
+    background: #2a2520;
+    color: #faf5f2;
+  }
+
+  .zh-product-card__quick-button:focus-visible,
+  .zh-product-card__media-link:focus-visible,
+  .zh-product-card__details-link:focus-visible {
+    outline: 2px solid #a66a3f;
+    outline-offset: 3px;
+  }
+
+  .zh-product-card__quick-button[aria-busy='true'] {
+    cursor: wait;
+  }
+
+  .zh-product-card__quick-button.is-added {
+    background: #2a2520;
+    color: #faf5f2;
+  }
+
   .zh-product-card__content {
     display: flex;
     flex-direction: column;
@@ -296,32 +415,42 @@
       background-color 400ms ease;
   }
 
-  .zh-product-card__link:focus-visible {
-    outline: 2px solid #a66a3f;
-    outline-offset: 4px;
-  }
-
-  .zh-product-card__link:focus-visible .zh-product-card__secondary {
+  .zh-product-card:focus-within .zh-product-card__secondary {
     opacity: 1;
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .zh-product-card__link:hover .zh-product-card__secondary {
+    .zh-product-card__quick-action {
+      opacity: 0;
+      transform: translateY(100%);
+      transition:
+        opacity 220ms ease,
+        transform 280ms ease;
+    }
+
+    .zh-product-card:hover .zh-product-card__quick-action,
+    .zh-product-card:focus-within .zh-product-card__quick-action {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .zh-product-card:hover .zh-product-card__secondary,
+    .zh-product-card:focus-within .zh-product-card__secondary {
       opacity: 1;
     }
 
-    .zh-product-card__link:hover .zh-product-card__title {
+    .zh-product-card:hover .zh-product-card__title {
       color: #a66a3f;
     }
 
-    .zh-product-card__link:hover .zh-product-card__underline {
+    .zh-product-card:hover .zh-product-card__underline {
       width: 56px;
       background: rgba(166, 106, 63, 0.7);
     }
   }
 
   @media (hover: none) and (pointer: coarse) {
-    .zh-product-card__link.is-touch-preview .zh-product-card__secondary {
+    .zh-product-card__media-link.is-touch-preview .zh-product-card__secondary {
       opacity: 1;
       transition-duration: 120ms;
     }
@@ -344,6 +473,12 @@
     .zh-product-card__condition-badge {
       padding: 6px 8px;
       font-size: 9px;
+    }
+
+    .zh-product-card__quick-button {
+      min-height: 42px;
+      padding: 0 15px;
+      font-size: 10px;
     }
 
     .zh-product-card__content {
@@ -370,7 +505,9 @@
   @media (prefers-reduced-motion: reduce) {
     .zh-product-card__secondary,
     .zh-product-card__title,
-    .zh-product-card__underline {
+    .zh-product-card__underline,
+    .zh-product-card__quick-action,
+    .zh-product-card__quick-button {
       transition: none;
     }
   }
@@ -395,7 +532,9 @@
     document.addEventListener(
       'touchstart',
       (event) => {
-        const link = event.target.closest('.zh-product-card__link');
+        if (event.target.closest('[data-cart-add-form]')) return;
+
+        const link = event.target.closest('.zh-product-card__media-link');
         if (!link) return;
 
         activeLink = link;
