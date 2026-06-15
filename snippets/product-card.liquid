@@ -141,9 +141,10 @@
         {%- endif -%}
       </div>
     </a>
+  </div>
 
-    {%- unless is_sold -%}
-      <div class="zh-product-card__quick-action">
+  {%- unless is_sold -%}
+    <div class="zh-product-card__quick-action">
         {%- if can_quick_add -%}
           <form
             method="post"
@@ -177,9 +178,8 @@
             <span aria-hidden="true">→</span>
           </a>
         {%- endif -%}
-      </div>
-    {%- endunless -%}
-  </div>
+    </div>
+  {%- endunless -%}
 
   <a
     href="{{ product.url }}"
@@ -296,11 +296,9 @@
   }
 
   .zh-product-card__quick-action {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 20;
+    position: relative;
+    z-index: 2;
+    width: 100%;
   }
 
   .zh-product-card__quick-form {
@@ -310,13 +308,14 @@
   .zh-product-card__quick-button {
     display: flex;
     width: 100%;
-    min-height: 40px;
+    min-height: 38px;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 0 13px;
+    padding: 0 12px;
     border-top: 1px solid rgba(231, 221, 210, 0.95);
-    background: rgba(250, 245, 242, 0.96);
+    border-bottom: 1px solid rgba(231, 221, 210, 0.72);
+    background: rgba(250, 245, 242, 0.72);
     color: #2a2520;
     font-size: 9px;
     font-weight: 500;
@@ -420,20 +419,6 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .zh-product-card__quick-action {
-      opacity: 0;
-      transform: translateY(100%);
-      transition:
-        opacity 220ms ease,
-        transform 280ms ease;
-    }
-
-    .zh-product-card:hover .zh-product-card__quick-action,
-    .zh-product-card:focus-within .zh-product-card__quick-action {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
     .zh-product-card:hover .zh-product-card__secondary,
     .zh-product-card:focus-within .zh-product-card__secondary {
       opacity: 1;
@@ -476,8 +461,8 @@
     }
 
     .zh-product-card__quick-button {
-      min-height: 42px;
-      padding: 0 15px;
+      min-height: 40px;
+      padding: 0 14px;
       font-size: 10px;
     }
 
