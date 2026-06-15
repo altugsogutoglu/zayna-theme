@@ -60,8 +60,11 @@
   {%- if cart.item_count > 0 -%}
     <div class="flex flex-1 flex-col {% unless is_page %}overflow-hidden{% endunless %}">
       <p class="sr-only">Producten in winkelmand</p>
-      <div class="{% unless is_page %}flex-1 overflow-y-auto overscroll-contain{% endunless %} px-5 md:px-6 py-2 md:py-4">
-        <ul>
+      <div
+        class="{% unless is_page %}flex-1 overflow-y-auto overscroll-contain{% endunless %} px-5 md:px-6 py-2 md:py-4"
+        data-cart-scroll-region
+      >
+        <ul data-cart-lines>
           {%- for item in cart.items -%}
             {% render 'cart-line-item', line_item: item, layout: layout %}
           {%- endfor -%}
@@ -91,7 +94,10 @@
         {%- endif -%}
       </div>
 
-      <div class="cart-drawer-footer border-t border-border-soft bg-surface px-5 md:px-6 pt-4 md:pt-5 space-y-4">
+      <div
+        class="cart-drawer-footer border-t border-border-soft bg-surface px-5 md:px-6 pt-4 md:pt-5 space-y-4"
+        data-cart-footer
+      >
         {%- if threshold_cents > 0 -%}
           <div class="space-y-2">
             <p class="text-xs text-ink-soft" data-free-shipping-message>
@@ -162,10 +168,13 @@
       </div>
     </div>
   {%- else -%}
-    <div class="relative flex flex-1 flex-col {% unless is_page %}overflow-y-auto overscroll-contain{% endunless %} px-6 py-8 sm:px-8 sm:py-12">
+    <div
+      class="relative flex flex-1 flex-col {% unless is_page %}overflow-y-auto overscroll-contain{% endunless %} px-6 py-8 sm:px-8 sm:py-12"
+      data-cart-scroll-region
+    >
       <div aria-hidden="true" class="pointer-events-none absolute inset-0 opacity-80" style="background: radial-gradient(70% 70% at 80% 10%, rgba(181,101,29,0.08), transparent 60%), radial-gradient(60% 60% at 10% 90%, rgba(138,154,123,0.10), transparent 60%);"></div>
       <div class="relative m-auto flex w-full max-w-md flex-col items-center py-4">
-        <div class="max-w-xs text-center">
+        <div class="max-w-xs text-center" data-cart-empty-state>
           <p class="mb-5 flex items-center justify-center gap-3 text-[10px] uppercase tracking-[0.22em] text-clay">
             <span aria-hidden="true" class="block h-px w-8 bg-clay/60"></span>Winkelmand<span aria-hidden="true" class="block h-px w-8 bg-clay/60"></span>
           </p>
@@ -177,7 +186,11 @@
         </div>
         {%- if has_suggestions -%}
           <div class="mt-10 w-full sm:mt-12">
-            <section aria-label="Populaire keuzes" class="w-full">
+            <section
+              aria-label="Populaire keuzes"
+              class="w-full"
+              data-cart-persistent-suggestions
+            >
               <p class="text-label text-ink-soft mb-4">Populaire keuzes</p>
               <div class="grid grid-cols-2 gap-x-4 gap-y-8">
                 {%- for product in suggestion_collection.products limit: 4 -%}
