@@ -1024,7 +1024,7 @@
         'data-removal-original-text',
         linePrice.textContent.trim()
       );
-      linePrice.textContent = 'Verwijderen…';
+      linePrice.textContent = 'Wordt verwijderd…';
       linePrice.style.fontSize = '11px';
       linePrice.style.fontFamily = 'var(--font-sans, sans-serif)';
       linePrice.style.letterSpacing = '0.08em';
