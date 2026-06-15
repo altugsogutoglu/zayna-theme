@@ -209,7 +209,7 @@
     }
 
     if (state === 'success') {
-      button.disabled = true;
+      button.disabled = false;
       button.classList.add('is-added');
 
       if (label) label.textContent = 'Toegevoegd';
@@ -235,7 +235,7 @@
     if (status) status.textContent = '';
   }
 
-  function resetAddFormState(form, delay = 1400) {
+  function resetAddFormState(form, delay = 550) {
     window.setTimeout(() => {
       if (form?.isConnected) {
         setAddFormState(form, 'idle');
