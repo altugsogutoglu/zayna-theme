@@ -3,7 +3,7 @@
 
   - Twee compacte kolommen op mobiel.
   - Drie compacte kolommen op split-screen en desktop.
-  - Kortere beeldvlakken zodat de collectietitels direct zichtbaar zijn.
+  - Beeldverhouding 5:4: compacter dan vroeger, maar met minder afsnijding.
   - Bij een oneven aantal wordt de laatste kaart op mobiel/tablet gecentreerd.
   - Geen productaantallen: die horen op de individuele collectiepagina.
   - collection.image is primair; de eerste productafbeelding is fallback.
@@ -190,9 +190,9 @@
     --zh-collections-stone: var(--color-stone, #78716c);
     --zh-collections-clay: var(--color-clay, #b5651d);
     --zh-collections-cream: var(--color-cream, #f0ebe6);
-    --zh-collections-border: rgba(42, 37, 32, 0.085);
-    --zh-collections-border-hover: rgba(181, 101, 29, 0.22);
-    --zh-collections-caption: rgba(250, 245, 242, 0.94);
+    --zh-collections-border: rgba(42, 37, 32, 0.07);
+    --zh-collections-border-hover: rgba(181, 101, 29, 0.18);
+    --zh-collections-caption: rgba(250, 245, 242, 0.84);
 
     background: var(--zh-collections-bg);
   }
@@ -309,7 +309,7 @@
   #ZaynaCollectionsIndex-{{ section.id }}
     .zayna-collection-card__media {
     position: relative;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 5 / 4;
     overflow: hidden;
     background: var(--zh-collections-cream);
   }
@@ -375,11 +375,11 @@
   #ZaynaCollectionsIndex-{{ section.id }}
     .zayna-collection-card__content {
     display: flex;
-    min-height: 44px;
+    min-height: 40px;
     flex: 1 0 auto;
     align-items: center;
     margin: 0;
-    padding: 8px 9px;
+    padding: 7px 10px;
     border-top: 1px solid var(--zh-collections-border);
     background: var(--zh-collections-caption);
   }
@@ -521,18 +521,18 @@
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__media {
-      aspect-ratio: 7 / 5;
+      aspect-ratio: 5 / 4;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__image {
-      object-position: center 56%;
+      object-position: center 57%;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__content {
-      min-height: 46px;
-      padding: 8px 9px;
+      min-height: 40px;
+      padding: 7px 10px;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
@@ -586,14 +586,14 @@
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__content {
-      min-height: 50px;
-      padding: 9px 11px;
+      min-height: 42px;
+      padding: 8px 11px;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__title {
-      font-size: 17px;
-      line-height: 1.18;
+      font-size: 16px;
+      line-height: 1.16;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
@@ -616,18 +616,18 @@
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__media {
-      aspect-ratio: 7 / 5;
+      aspect-ratio: 5 / 4;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__image {
-      object-position: center 56%;
+      object-position: center 57%;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__content {
-      min-height: 46px;
-      padding: 8px 9px;
+      min-height: 40px;
+      padding: 7px 10px;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
@@ -658,7 +658,7 @@
 
       #ZaynaCollectionsIndex-{{ section.id }}
         .zayna-collection-card__media {
-        aspect-ratio: 7 / 5;
+        aspect-ratio: 5 / 4;
       }
     }
   }
@@ -666,14 +666,14 @@
   @media (min-width: 1180px) {
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__content {
-      min-height: 50px;
-      padding: 9px 11px;
+      min-height: 42px;
+      padding: 8px 11px;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__title {
-      font-size: 17px;
-      line-height: 1.18;
+      font-size: 16px;
+      line-height: 1.16;
     }
   }
 
