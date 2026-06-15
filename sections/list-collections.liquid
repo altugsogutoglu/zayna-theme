@@ -1,133 +1,677 @@
 {%- comment -%}
-  Collections index (/collections). Renders all store collections as a static,
-  responsive grid styled to match the rest of the theme. Card treatment is ported
-  from sections/curated-edit.liquid; the header mirrors sections/collection-hero.liquid.
+  Zayna Home — collectie-overzicht (/collections)
+
+  Mobiel:
+  - eerste collectie uitgelicht;
+  - overige collecties in twee compacte kolommen.
+
+  Tablet / gesplitst scherm:
+  - eerste collectie horizontaal uitgelicht;
+  - overige collecties in twee kolommen.
+
+  Desktop:
+  - drie gelijkwaardige compacte kolommen.
+
+  Afbeeldingen:
+  - collection.image is de primaire bron;
+  - eerste productafbeelding is de fallback.
 {%- endcomment -%}
+
 {%- liquid
   assign cols = section.settings.collection_list
+
   if cols == blank or cols.size == 0
     assign cols = collections
   endif
 
-  # Count visible collections (excluding the implicit all/frontpage handles).
   assign visible_count = 0
-  for c in cols
-    unless c.handle == 'all' or c.handle == 'frontpage'
+
+  for collection_item in cols
+    unless collection_item.handle == 'all' or collection_item.handle == 'frontpage'
       assign visible_count = visible_count | plus: 1
     endunless
   endfor
 
   assign heading = section.settings.heading
-  assign last_char = heading | slice: -1
+  assign last_character = heading | slice: -1
   assign title_main = heading
-  assign trailing = ''
-  if last_char == '.'
-    assign cut = heading.size | minus: 1
-    assign title_main = heading | slice: 0, cut
-    assign trailing = '.'
+  assign title_punctuation = ''
+
+  if last_character == '.'
+    assign heading_length = heading.size | minus: 1
+    assign title_main = heading | slice: 0, heading_length
+    assign title_punctuation = '.'
   endif
+
+  assign section_heading_id = 'ZaynaCollectionsHeading-' | append: section.id
 -%}
-<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pb-24">
-  {%- comment -%} Header (mirrors collection-hero) {%- endcomment -%}
-  <header class="pt-6 pb-8 sm:pt-8 sm:pb-10 md:pt-12 md:pb-12">
-    <div class="mb-10 hidden items-center justify-between text-[10px] uppercase tracking-[0.22em] text-stone md:flex">
-      <span class="flex items-center gap-3">
-        {{ shop.name }}
-        <span class="block h-px w-10 bg-stone-soft"></span>
-        <span>{{ section.settings.breadcrumb_label | default: 'Collecties' }}</span>
-      </span>
-      <span>{{ section.settings.breadcrumb_right | default: 'Keuken · Wonen · Opbergen' }}</span>
-    </div>
 
-    <p class="text-label text-clay mb-4 flex items-center gap-3 sm:mb-5">
-      {{ section.settings.eyebrow }}
-      <span class="block h-px w-10 bg-clay/60 sm:w-12"></span>
-    </p>
+<section
+  id="ZaynaCollectionsIndex-{{ section.id }}"
+  class="zayna-collections-index"
+  aria-labelledby="{{ section_heading_id }}"
+>
+  <div class="zayna-collections-index__inner">
+    <header class="zayna-collections-index__header">
+      <div class="zayna-collections-index__breadcrumb">
+        <span class="zayna-collections-index__breadcrumb-left">
+          <span>{{ shop.name | escape }}</span>
+          <span aria-hidden="true"></span>
+          <span>
+            {{ section.settings.breadcrumb_label | default: 'Collecties' | escape }}
+          </span>
+        </span>
 
-    <h1 class="font-display text-[clamp(2.25rem,6.5vw,4.25rem)] leading-[1.02] tracking-[-0.025em] text-ink">{{ title_main }}{%- if trailing != '' -%}<span class="text-clay/80">{{ trailing }}</span>{%- endif -%}</h1>
+        <span>
+          {{ section.settings.breadcrumb_right | default: 'Keuken · Wonen · Opbergen' | escape }}
+        </span>
+      </div>
 
-    {%- if section.settings.intro != blank -%}
-      <p class="mt-6 max-w-2xl text-[15px] leading-[1.7] text-ink-soft sm:mt-7 md:text-base">{{ section.settings.intro }}</p>
-    {%- endif -%}
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="zayna-collections-index__eyebrow">
+          <span aria-hidden="true"></span>
+          {{ section.settings.eyebrow | escape }}
+        </p>
+      {%- endif -%}
+
+      {%- if heading != blank -%}
+        <h1
+          id="{{ section_heading_id }}"
+          class="zayna-collections-index__title"
+        >
+          {{ title_main | escape }}
+          {%- if title_punctuation != blank -%}
+            <span>{{ title_punctuation }}</span>
+          {%- endif -%}
+        </h1>
+      {%- endif -%}
+
+      {%- if section.settings.intro != blank -%}
+        <p class="zayna-collections-index__intro">
+          {{ section.settings.intro | escape }}
+        </p>
+      {%- endif -%}
+
+      {%- if visible_count > 0 -%}
+        <span class="sr-only">
+          {{ visible_count }}
+          {% if visible_count == 1 %}
+            collectie
+          {% else %}
+            collecties
+          {% endif %}
+        </span>
+      {%- endif -%}
+    </header>
 
     {%- if visible_count > 0 -%}
-      <p class="mt-7 border-t border-border-soft pt-5 text-[11px] uppercase tracking-[0.22em] text-stone sm:mt-8 sm:pt-6"><span class="tabular-nums text-ink">{{ visible_count }}</span> {% if visible_count == 1 %}collectie{% else %}collecties{% endif %}</p>
-    {%- endif -%}
-  </header>
+      <ul class="zayna-collections-grid">
+        {%- assign card_index = 0 -%}
 
-  {%- comment -%} Grid {%- endcomment -%}
-  {%- if visible_count > 0 -%}
-    <ul class="zayna-collections-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10 md:gap-x-8 md:gap-y-14">
-      {%- assign card_index = 0 -%}
-      {%- for c in cols -%}
-        {%- if c.handle == 'all' or c.handle == 'frontpage' -%}{%- continue -%}{%- endif -%}
-        {%- assign card_index = card_index | plus: 1 -%}
-        {%- assign c_loading = 'lazy' -%}
-        {%- if card_index <= 6 -%}{%- assign c_loading = 'eager' -%}{%- endif -%}
-        <li class="min-w-0">
-          <a href="{{ c.url }}" class="group block focus-visible:outline-none">
-            <div class="relative aspect-[4/5] overflow-hidden bg-cream">
-              {%- if c.featured_image -%}
-                {{ c.featured_image | image_url: width: 700 | image_tag:
-                  loading: c_loading,
-                  sizes: '(min-width:1024px) 31vw, (min-width:640px) 48vw, 100vw',
-                  widths: '300, 400, 600, 700, 900',
-                  alt: c.title,
-                  class: 'absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]' }}
-              {%- else -%}
-                <div aria-hidden="true" class="absolute inset-0 grid place-items-center text-center px-8" style="background:radial-gradient(70% 80% at 30% 20%, rgba(181,101,29,0.10), transparent 65%), linear-gradient(180deg, #F4ECE5, #EDE4DC);">
-                  <div>
-                    <span class="block text-[10px] uppercase tracking-[0.22em] text-stone mb-3">{{ card_index | prepend: '0' | slice: -2, 2 }} · Collectie</span>
-                    <span class="font-display italic text-2xl leading-snug text-ink/70">{{ c.title }}</span>
-                    <span aria-hidden="true" class="mx-auto mt-4 block h-px w-10 bg-stone-soft"></span>
+        {%- for collection_item in cols -%}
+          {%- if collection_item.handle == 'all' or collection_item.handle == 'frontpage' -%}
+            {%- continue -%}
+          {%- endif -%}
+
+          {%- liquid
+            assign card_index = card_index | plus: 1
+            assign card_image = collection_item.image
+
+            if card_image == blank and collection_item.products_count > 0
+              assign first_product = collection_item.products | first
+              assign card_image = first_product.featured_image
+            endif
+
+            assign image_loading = 'lazy'
+            if card_index <= 3
+              assign image_loading = 'eager'
+            endif
+
+            assign card_classes = 'zayna-collection-card'
+            if card_index == 1
+              assign card_classes = card_classes | append: ' zayna-collection-card--featured'
+            endif
+
+            assign image_sizes = '(min-width: 1024px) 31vw, (min-width: 640px) 48vw, 50vw'
+            if card_index == 1
+              assign image_sizes = '(min-width: 1024px) 31vw, (min-width: 640px) 58vw, 100vw'
+            endif
+          -%}
+
+          <li class="{{ card_classes }}">
+            <a
+              href="{{ collection_item.url }}"
+              class="zayna-collection-card__link"
+            >
+              <div class="zayna-collection-card__media">
+                {%- if card_image != blank -%}
+                  {{
+                    card_image
+                    | image_url: width: 1400
+                    | image_tag:
+                      loading: image_loading,
+                      sizes: image_sizes,
+                      widths: '360, 480, 640, 800, 1000, 1200, 1400',
+                      alt: card_image.alt | default: collection_item.title,
+                      class: 'zayna-collection-card__image'
+                  }}
+                {%- else -%}
+                  <div
+                    class="zayna-collection-card__placeholder"
+                    aria-label="{{ collection_item.title | escape }}"
+                  >
+                    <span class="zayna-collection-card__placeholder-index">
+                      {{ card_index | prepend: '0' | slice: -2, 2 }}
+                    </span>
+
+                    <span class="zayna-collection-card__placeholder-title">
+                      {{ collection_item.title | escape }}
+                    </span>
+
+                    <span
+                      class="zayna-collection-card__placeholder-line"
+                      aria-hidden="true"
+                    ></span>
                   </div>
-                </div>
-              {%- endif -%}
-              <span aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink/55 via-ink/15 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
-              <span class="pointer-events-none absolute bottom-4 left-4 right-4 flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-surface opacity-0 transition-all duration-500 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0"><span class="block h-px w-6 bg-surface/70"></span>Bekijken</span>
-            </div>
-            <div class="mt-4 flex items-baseline justify-between gap-4">
-              <div class="min-w-0">
-                <h2 class="font-display text-h3 leading-tight text-ink transition-colors group-hover:text-clay">{{ c.title }}</h2>
-                <p class="mt-1 text-sm text-ink-soft line-clamp-2">{{ c.description | strip_html | truncate: 80 | default: 'Bekijk de collectie.' }}</p>
-                {%- if c.all_products_count > 0 -%}
-                  <p class="mt-2 text-[11px] uppercase tracking-[0.18em] text-stone-soft tabular-nums">{{ c.all_products_count }} {% if c.all_products_count == 1 %}product{% else %}producten{% endif %}</p>
                 {%- endif -%}
               </div>
-              <span aria-hidden="true" class="mt-3 block h-px w-6 bg-border-soft transition-all duration-500 group-hover:w-14 group-hover:bg-clay/70 shrink-0"></span>
-            </div>
-          </a>
-        </li>
-      {%- endfor -%}
-    </ul>
-  {%- else -%}
-    <div class="border-t border-border-soft py-24 text-center">
-      <p class="font-display italic text-2xl text-stone">Er zijn nog geen collecties.</p>
-      <p class="mt-3 text-sm text-ink-soft">Kom snel terug — we vullen de collecties aan.</p>
-    </div>
-  {%- endif -%}
-</div>
 
-{% comment %}
-  Grid columns are forced via this scoped CSS so /collections renders 3/2/1
-  even if assets/tailwind.css is stale and lacks sm:grid-cols-2 / lg:grid-cols-3.
-{% endcomment %}
+              <div class="zayna-collection-card__content">
+                <div class="zayna-collection-card__title-row">
+                  <h2 class="zayna-collection-card__title">
+                    {{ collection_item.title | escape }}
+                  </h2>
+
+                  <span
+                    class="zayna-collection-card__arrow"
+                    aria-hidden="true"
+                  >
+                    →
+                  </span>
+                </div>
+
+                {%- if section.settings.show_product_count and collection_item.all_products_count > 0 -%}
+                  <p class="zayna-collection-card__count">
+                    {{ collection_item.all_products_count }}
+                    {% if collection_item.all_products_count == 1 %}
+                      product
+                    {% else %}
+                      producten
+                    {% endif %}
+                  </p>
+                {%- endif -%}
+              </div>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <div class="zayna-collections-index__empty">
+        <p>Er zijn nog geen collecties.</p>
+        <span>Kom snel terug — we vullen de collecties aan.</span>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
 {% style %}
-  .zayna-collections-grid {
+  #ZaynaCollectionsIndex-{{ section.id }} {
+    --zh-collections-bg: var(--color-bg, #faf5f2);
+    --zh-collections-ink: var(--color-ink, #2a2520);
+    --zh-collections-soft: var(--color-ink-soft, #564e47);
+    --zh-collections-stone: var(--color-stone, #78716c);
+    --zh-collections-stone-soft: var(--color-stone-soft, #a8a29e);
+    --zh-collections-clay: var(--color-clay, #b5651d);
+    --zh-collections-cream: var(--color-cream, #f0ebe6);
+    --zh-collections-border: var(--color-border-soft, #e8e1da);
+
+    background: var(--zh-collections-bg);
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__inner {
+    width: min(100%, 1280px);
+    margin: 0 auto;
+    padding: 0 16px 76px;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__header {
+    max-width: 760px;
+    padding: 24px 0 30px;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__breadcrumb {
+    display: none;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin: 0 0 12px;
+    color: var(--zh-collections-clay);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__eyebrow > span {
+    width: 30px;
+    height: 1px;
+    background: rgba(181, 101, 29, 0.58);
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__title {
+    max-width: 12ch;
+    margin: 0;
+    color: var(--zh-collections-ink);
+    font-family: var(--font-display, var(--font-heading-family, Georgia, serif));
+    font-size: clamp(2.35rem, 9vw, 2.7rem);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__title > span {
+    color: rgba(181, 101, 29, 0.8);
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__intro {
+    max-width: 58ch;
+    margin: 16px 0 0;
+    color: var(--zh-collections-soft);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    column-gap: 1.5rem;
-    row-gap: 2.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 12px;
+    row-gap: 28px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
-  .zayna-collections-grid > li { min-width: 0; }
-  @media screen and (min-width: 640px) {
-    .zayna-collections-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card {
+    min-width: 0;
   }
-  @media screen and (min-width: 1024px) {
-    .zayna-collections-grid {
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card--featured {
+    grid-column: 1 / -1;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    touch-action: manipulation;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__link:focus-visible {
+    outline: 2px solid var(--zh-collections-clay);
+    outline-offset: 4px;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--zh-collections-cream);
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }}
+    .zayna-collection-card--featured
+    .zayna-collection-card__media {
+    aspect-ratio: 4 / 3;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    padding: 20px;
+    text-align: center;
+    background:
+      radial-gradient(75% 85% at 28% 18%, rgba(181, 101, 29, 0.1), transparent 66%),
+      linear-gradient(180deg, #f4ece5, #ede4dc);
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__placeholder-index {
+    margin-bottom: 10px;
+    color: var(--zh-collections-stone);
+    font-size: 9px;
+    line-height: 1;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__placeholder-title {
+    max-width: 15ch;
+    color: rgba(42, 37, 32, 0.72);
+    font-family: var(--font-display, var(--font-heading-family, Georgia, serif));
+    font-size: 18px;
+    font-style: italic;
+    line-height: 1.2;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__placeholder-line {
+    width: 28px;
+    height: 1px;
+    margin-top: 13px;
+    background: var(--zh-collections-stone-soft);
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__content {
+    margin-top: 10px;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }}
+    .zayna-collection-card--featured
+    .zayna-collection-card__content {
+    padding: 15px 16px 16px;
+    margin-top: 0;
+    background: rgba(240, 235, 230, 0.58);
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__title {
+    display: -webkit-box;
+    min-width: 0;
+    min-height: 2.5em;
+    margin: 0;
+    overflow: hidden;
+    color: var(--zh-collections-ink);
+    font-family: var(--font-display, var(--font-heading-family, Georgia, serif));
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    transition: color 220ms ease;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }}
+    .zayna-collection-card--featured
+    .zayna-collection-card__title {
+    min-height: 0;
+    font-size: 21px;
+    line-height: 1.18;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__arrow {
+    flex: 0 0 auto;
+    padding-top: 1px;
+    color: var(--zh-collections-stone);
+    font-size: 15px;
+    line-height: 1;
+    transition: color 220ms ease, transform 220ms ease;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__count {
+    margin: 7px 0 0;
+    color: var(--zh-collections-stone-soft);
+    font-size: 9px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__empty {
+    padding: 72px 20px;
+    border-top: 1px solid var(--zh-collections-border);
+    text-align: center;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__empty p {
+    margin: 0;
+    color: var(--zh-collections-stone);
+    font-family: var(--font-display, var(--font-heading-family, Georgia, serif));
+    font-size: 24px;
+    font-style: italic;
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__empty span {
+    display: block;
+    margin-top: 10px;
+    color: var(--zh-collections-soft);
+    font-size: 14px;
+  }
+
+  @media (min-width: 640px) and (max-width: 1023px) {
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__inner {
+      padding-right: 24px;
+      padding-bottom: 88px;
+      padding-left: 24px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__header {
+      padding-top: 32px;
+      padding-bottom: 36px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__title {
+      max-width: 14ch;
+      font-size: clamp(2.7rem, 6vw, 3.2rem);
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__intro {
+      margin-top: 18px;
+      font-size: 15px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-grid {
+      column-gap: 18px;
+      row-gap: 34px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card--featured
+      .zayna-collection-card__link {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(210px, 0.75fr);
+      min-height: 260px;
+      background: rgba(240, 235, 230, 0.58);
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card--featured
+      .zayna-collection-card__media {
+      aspect-ratio: auto;
+      min-height: 260px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card--featured
+      .zayna-collection-card__content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 28px;
+      background: transparent;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__media {
+      aspect-ratio: 4 / 3;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__content {
+      margin-top: 12px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__title {
+      font-size: 18px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card--featured
+      .zayna-collection-card__title {
+      font-size: 27px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__count {
+      margin-top: 9px;
+      font-size: 10px;
+    }
+  }
+
+  @media (min-width: 900px) {
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__breadcrumb {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 30px;
+      color: var(--zh-collections-stone);
+      font-size: 9px;
+      line-height: 1;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__breadcrumb-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collections-index__breadcrumb-left > span:nth-child(2) {
+      width: 34px;
+      height: 1px;
+      background: var(--zh-collections-stone-soft);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__inner {
+      padding-right: 40px;
+      padding-bottom: 96px;
+      padding-left: 40px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__header {
+      max-width: 800px;
+      padding-top: 42px;
+      padding-bottom: 42px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__eyebrow {
+      margin-bottom: 14px;
+      font-size: 11px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__title {
+      max-width: 14ch;
+      font-size: clamp(3rem, 4.3vw, 3.55rem);
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-index__intro {
+      margin-top: 20px;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collections-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      column-gap: 2rem;
-      row-gap: 3.5rem;
+      column-gap: 28px;
+      row-gap: 42px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card--featured {
+      grid-column: auto;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card--featured
+      .zayna-collection-card__link {
+      display: block;
+      min-height: 0;
+      background: transparent;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__media,
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card--featured
+      .zayna-collection-card__media {
+      aspect-ratio: 4 / 3;
+      min-height: 0;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__content,
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card--featured
+      .zayna-collection-card__content {
+      display: block;
+      margin-top: 13px;
+      padding: 0;
+      background: transparent;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__title,
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card--featured
+      .zayna-collection-card__title {
+      min-height: 0;
+      font-size: 21px;
+      line-height: 1.2;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__arrow {
+      font-size: 17px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__count {
+      margin-top: 8px;
+      font-size: 10px;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card__link:hover
+      .zayna-collection-card__image {
+      transform: scale(1.02);
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card__link:hover
+      .zayna-collection-card__title {
+      color: var(--zh-collections-clay);
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card__link:hover
+      .zayna-collection-card__arrow {
+      color: var(--zh-collections-clay);
+      transform: translateX(3px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__image,
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__title,
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__arrow {
+      transition: none;
     }
   }
 {% endstyle %}
@@ -137,15 +681,62 @@
   "name": "Collections list",
   "tag": "section",
   "settings": [
-    { "type": "collection_list", "id": "collection_list", "label": "Collections", "info": "Optional. Pick and order the collections to show. If left empty, all store collections are shown automatically.", "limit": 50 },
-    { "type": "header", "content": "Breadcrumb (desktop)" },
-    { "type": "text", "id": "breadcrumb_label", "label": "Breadcrumb label", "default": "Collecties" },
-    { "type": "text", "id": "breadcrumb_right", "label": "Breadcrumb right", "default": "Keuken · Wonen · Opbergen" },
-    { "type": "header", "content": "Copy" },
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Collecties" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Voor elke hoek van je huis." },
-    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Ontdek onze collecties met stijlvolle keuken- en woonproducten voor een rustig, verzorgd en praktisch thuis." }
+    {
+      "type": "collection_list",
+      "id": "collection_list",
+      "label": "Collections",
+      "info": "Kies en rangschik de collecties. De eerste collectie wordt op mobiel en tablet uitgelicht.",
+      "limit": 50
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "Toon aantal producten",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Breadcrumb (desktop)"
+    },
+    {
+      "type": "text",
+      "id": "breadcrumb_label",
+      "label": "Breadcrumb label",
+      "default": "Collecties"
+    },
+    {
+      "type": "text",
+      "id": "breadcrumb_right",
+      "label": "Breadcrumb right",
+      "default": "Keuken · Wonen · Opbergen"
+    },
+    {
+      "type": "header",
+      "content": "Teksten"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Collecties"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Voor elke hoek van je huis."
+    },
+    {
+      "type": "textarea",
+      "id": "intro",
+      "label": "Intro",
+      "default": "Ontdek onze collecties met stijlvolle keuken- en woonproducten voor een rustig, verzorgd en praktisch thuis."
+    }
   ],
-  "presets": [{ "name": "Collections list" }]
+  "presets": [
+    {
+      "name": "Collections list"
+    }
+  ]
 }
 {% endschema %}
