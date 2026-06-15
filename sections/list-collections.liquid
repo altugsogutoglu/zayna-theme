@@ -2,7 +2,7 @@
   Zayna Home — collectie-overzicht (/collections)
 
   - Twee compacte kolommen op mobiel.
-  - Drie compacte kolommen op split-screen en desktop.
+  - Drie compacte kolommen vanaf 560 px, zodat split-screen altijd goed uitlijnt.
   - Beeldverhouding 5:4: compacter dan vroeger, maar met minder afsnijding.
   - Bij een oneven aantal wordt de laatste kaart op mobiel/tablet gecentreerd.
   - Geen productaantallen: die horen op de individuele collectiepagina.
@@ -28,7 +28,9 @@
   assign intro_text = section.settings.intro
 
   if intro_text == 'Ontdek onze collecties met stijlvolle keuken- en woonproducten voor een rustig, verzorgd en praktisch thuis.'
-    assign intro_text = 'Bekijk de collecties van Zayna Home — zorgvuldig gekozen voor een rustig en verzorgd thuis.'
+    assign intro_text = 'Zorgvuldig gekozen voor een rustig en verzorgd thuis.'
+  elsif intro_text == 'Bekijk de collecties van Zayna Home — zorgvuldig gekozen voor een rustig en verzorgd thuis.'
+    assign intro_text = 'Zorgvuldig gekozen voor een rustig en verzorgd thuis.'
   endif
 
   assign last_character = heading | slice: -1
@@ -201,7 +203,7 @@
     .zayna-collections-index__inner {
     width: min(100%, 1280px);
     margin: 0 auto;
-    padding: 0 16px 78px;
+    padding: 0 16px 56px;
     container-name: zh-collections-layout;
     container-type: inline-size;
   }
@@ -343,7 +345,7 @@
   #ZaynaCollectionsIndex-{{ section.id }}
     .zayna-collection-card__placeholder-index {
     margin-bottom: 9px;
-    color: var(--zh-collections-stone);
+    color: rgba(42, 37, 32, 0.58);
     font-size: 8px;
     line-height: 1;
     letter-spacing: 0.19em;
@@ -453,11 +455,18 @@
     font-size: 14px;
   }
 
+  @media (max-width: 559px) {
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collections-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
   @media (min-width: 640px) {
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collections-index__inner {
       padding-right: 24px;
-      padding-bottom: 88px;
+      padding-bottom: 64px;
       padding-left: 24px;
     }
   }
@@ -466,7 +475,7 @@
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collections-index__inner {
       padding-right: 40px;
-      padding-bottom: 96px;
+      padding-bottom: 68px;
       padding-left: 40px;
     }
   }
@@ -476,7 +485,7 @@
    * browser window. Split screen, browser zoom and side panels are
    * therefore handled much more reliably.
    */
-  @container zh-collections-layout (min-width: 700px) {
+  @container zh-collections-layout (min-width: 560px) {
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collections-index__header {
       max-width: none;
@@ -515,8 +524,8 @@
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collections-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      column-gap: 16px;
-      row-gap: 24px;
+      column-gap: 14px;
+      row-gap: 22px;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
@@ -525,7 +534,7 @@
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
-      .zayna-collection-card__image {
+      .zayna-collection-card__image:not([style*="object-position"]) {
       object-position: center 57%;
     }
 
@@ -606,7 +615,7 @@
    * Hard responsive fallback: split-screen widths must show
    * three compact columns so captions remain visible immediately.
    */
-  @media (min-width: 760px) {
+  @media (min-width: 560px) {
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collections-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -620,7 +629,7 @@
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
-      .zayna-collection-card__image {
+      .zayna-collection-card__image:not([style*="object-position"]) {
       object-position: center 57%;
     }
 
@@ -750,7 +759,7 @@
       "type": "textarea",
       "id": "intro",
       "label": "Intro",
-      "default": "Bekijk de collecties van Zayna Home — zorgvuldig gekozen voor een rustig en verzorgd thuis."
+      "default": "Zorgvuldig gekozen voor een rustig en verzorgd thuis."
     }
   ],
   "presets": [
