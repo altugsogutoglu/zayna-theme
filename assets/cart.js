@@ -74,7 +74,10 @@
 
         line.setAttribute('data-current-quantity', String(quantity));
 
-        if (linePrice) {
+        const isRemoving =
+          line.getAttribute('data-cart-removing') === 'true';
+
+        if (linePrice && !isRemoving) {
           linePrice.setAttribute(
             'data-line-price-cents',
             String(linePriceCents)
@@ -84,6 +87,15 @@
 
         subtotalCents += linePriceCents;
       });
+
+      /*
+       * When the final line is being removed, keep the existing
+       * subtotal and shipping message visible but dimmed. Showing
+       * €0,00 while the product row still exists looks broken.
+       */
+      if (root.getAttribute('data-cart-emptying') === 'true') {
+        return;
+      }
 
       root.setAttribute(
         'data-cart-subtotal-cents',
@@ -697,6 +709,25 @@
       return;
     }
 
+    if (currentIsFilled && !freshIsFilled) {
+      /*
+       * A newly empty cart should always start at its heading.
+       * Reusing the previous filled-cart scroll position caused
+       * the empty state to open halfway down the recommendations.
+       */
+      replaceWholeCart(
+        current,
+        fresh,
+        wrapperSelector,
+        {
+          scrollTop: 0,
+          anchor: null,
+          anchorOffset: null,
+        }
+      );
+      return;
+    }
+
     replaceWholeCart(
       current,
       fresh,
@@ -948,6 +979,22 @@
       REMOVAL_ANIMATION_MS +
       'ms ease, filter 140ms ease';
 
+    const linePrice = line.querySelector('[data-line-price]');
+
+    if (linePrice) {
+      linePrice.setAttribute(
+        'data-removal-original-text',
+        linePrice.textContent.trim()
+      );
+      linePrice.textContent = 'Verwijderen…';
+      linePrice.style.fontSize = '11px';
+      linePrice.style.fontFamily = 'var(--font-sans, sans-serif)';
+      linePrice.style.letterSpacing = '0.08em';
+      linePrice.style.textTransform = 'uppercase';
+      linePrice.style.color = '#766e67';
+      linePrice.style.whiteSpace = 'nowrap';
+    }
+
     setLastLineEmptyingState(line, true);
 
     window.requestAnimationFrame(() => {
@@ -975,6 +1022,21 @@
       );
 
       line.removeAttribute('style');
+
+      const linePrice = line.querySelector('[data-line-price]');
+
+      if (linePrice) {
+        const originalText = linePrice.getAttribute(
+          'data-removal-original-text'
+        );
+
+        if (originalText) {
+          linePrice.textContent = originalText;
+        }
+
+        linePrice.removeAttribute('data-removal-original-text');
+        linePrice.removeAttribute('style');
+      }
 
       const quantityElement = line.querySelector('[data-line-qty]');
 
