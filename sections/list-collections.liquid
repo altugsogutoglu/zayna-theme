@@ -57,9 +57,6 @@
         <span class="zayna-collections-index__breadcrumb-left">
           <span>{{ shop.name | escape }}</span>
           <span aria-hidden="true"></span>
-          <span>
-            {{ section.settings.breadcrumb_label | default: 'Collecties' | escape }}
-          </span>
         </span>
 
         <span>
@@ -325,7 +322,7 @@
   #ZaynaCollectionsIndex-{{ section.id }}
     .zayna-collection-card--featured
     .zayna-collection-card__media {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 3 / 2;
   }
 
   #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__image {
@@ -380,7 +377,7 @@
   #ZaynaCollectionsIndex-{{ section.id }}
     .zayna-collection-card--featured
     .zayna-collection-card__content {
-    padding: 15px 16px 16px;
+    padding: 13px 14px 14px;
     margin-top: 0;
     background: rgba(240, 235, 230, 0.58);
   }
@@ -400,7 +397,7 @@
     overflow: hidden;
     color: var(--zh-collections-ink);
     font-family: var(--font-display, var(--font-heading-family, Georgia, serif));
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 400;
     line-height: 1.25;
     letter-spacing: -0.01em;
@@ -428,11 +425,11 @@
 
   #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__count {
     margin: 7px 0 0;
-    color: var(--zh-collections-stone-soft);
-    font-size: 9px;
+    color: #8f867e;
+    font-size: 9.5px;
     font-variant-numeric: tabular-nums;
     line-height: 1;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
   }
 
@@ -489,7 +486,8 @@
       .zayna-collection-card__link {
       display: grid;
       grid-template-columns: minmax(0, 1.45fr) minmax(210px, 0.75fr);
-      min-height: 260px;
+      height: clamp(270px, 32vw, 300px);
+      min-height: 0;
       background: rgba(240, 235, 230, 0.58);
     }
 
@@ -497,7 +495,8 @@
       .zayna-collection-card--featured
       .zayna-collection-card__media {
       aspect-ratio: auto;
-      min-height: 260px;
+      height: 100%;
+      min-height: 0;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
@@ -506,12 +505,16 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 28px;
+      padding: 24px;
       background: transparent;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__media {
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 5 / 4;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__image {
+      object-position: center 56%;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__content {
@@ -529,7 +532,7 @@
     }
 
     #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__count {
-      margin-top: 9px;
+      margin-top: 8px;
       font-size: 10px;
     }
   }
@@ -613,8 +616,12 @@
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card--featured
       .zayna-collection-card__media {
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 5 / 4;
       min-height: 0;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__image {
+      object-position: center 56%;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }} .zayna-collection-card__content,
