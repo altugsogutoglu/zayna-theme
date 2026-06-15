@@ -9,7 +9,30 @@
  */
 {
   "sections": {
-    "list-collections": { "type": "list-collections", "settings": {} }
+    "list-collections": {
+      "type": "list-collections",
+      "settings": {
+        "collection_list": [
+          "drinkglazen-bekers",
+          "voorraadpotten-bewaren",
+          "thee-koffieservies",
+          "kruidenpotten-labels",
+          "bestek-lepels",
+          "keukenhulpen-dispensers",
+          "koken-hittebestendige-accessoires",
+          "keukentextiel-tafelaccessoires",
+          "glazen-rietjes"
+        ],
+        "show_product_count": true,
+        "breadcrumb_label": "Collecties",
+        "breadcrumb_right": "Keuken · Wonen · Opbergen",
+        "eyebrow": "Collecties",
+        "heading": "Voor elke hoek van je huis.",
+        "intro": "Ontdek onze collecties met stijlvolle keuken- en woonproducten voor een rustig, verzorgd en praktisch thuis."
+      }
+    }
   },
-  "order": ["list-collections"]
+  "order": [
+    "list-collections"
+  ]
 }
