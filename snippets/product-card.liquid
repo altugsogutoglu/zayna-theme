@@ -164,7 +164,7 @@
               data-cart-add-button
               aria-label="Voeg {{ product.title | escape }} toe aan je winkelmand"
             >
-              <span data-cart-add-label>In winkelmand</span>
+              <span data-cart-add-label>Toevoegen</span>
               <span data-cart-add-icon aria-hidden="true">+</span>
             </button>
           </form>
@@ -314,8 +314,8 @@
     gap: 12px;
     padding: 0 12px;
     border-top: 1px solid rgba(231, 221, 210, 0.95);
-    border-bottom: 1px solid rgba(231, 221, 210, 0.72);
-    background: rgba(250, 245, 242, 0.72);
+    border-bottom: 1px solid rgba(231, 221, 210, 0.82);
+    background: rgba(250, 245, 242, 0.82);
     color: #2a2520;
     font-size: 9px;
     font-weight: 500;
@@ -324,9 +324,10 @@
     text-transform: uppercase;
     transition:
       background-color 220ms ease,
+      border-color 220ms ease,
       color 220ms ease,
       opacity 220ms ease,
-      transform 280ms ease;
+      transform 180ms ease;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
   }
@@ -336,8 +337,13 @@
   }
 
   .zh-product-card__quick-button:hover {
-    background: #2a2520;
-    color: #faf5f2;
+    border-color: rgba(166, 106, 63, 0.28);
+    background: #f1e8e0;
+    color: #a66a3f;
+  }
+
+  .zh-product-card__quick-button:active {
+    transform: translateY(1px);
   }
 
   .zh-product-card__quick-button:focus-visible,
@@ -352,8 +358,9 @@
   }
 
   .zh-product-card__quick-button.is-added {
-    background: #2a2520;
-    color: #faf5f2;
+    border-color: rgba(138, 154, 123, 0.32);
+    background: rgba(138, 154, 123, 0.14);
+    color: #485242;
   }
 
   .zh-product-card__content {
