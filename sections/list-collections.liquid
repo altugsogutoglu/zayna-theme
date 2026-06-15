@@ -6,7 +6,7 @@
   - Beeldverhouding 5:4: compacter dan vroeger, maar met minder afsnijding.
   - Bij een oneven aantal wordt de laatste kaart op mobiel/tablet gecentreerd.
   - Geen productaantallen of intro: de kaarten krijgen direct de aandacht.
-  - Mobiele touchfeedback blijft kort zichtbaar vóór navigatie.
+  - Mobiele touchfeedback staat buiten de desktop-hoverquery en blijft kort zichtbaar vóór navigatie.
   - collection.image is primair; de eerste productafbeelding is fallback.
 {%- endcomment -%}
 
@@ -649,36 +649,6 @@
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
-      .zayna-collection-card__link:active,
-    #ZaynaCollectionsIndex-{{ section.id }}
-      .zayna-collection-card__link.is-touch-active {
-      border-color: rgba(181, 101, 29, 0.36);
-      background: rgba(242, 232, 223, 0.72);
-      transform: scale(0.997);
-    }
-
-    #ZaynaCollectionsIndex-{{ section.id }}
-      .zayna-collection-card__link.is-touch-active
-      .zayna-collection-card__content {
-      background: rgba(242, 232, 223, 0.96);
-    }
-
-    #ZaynaCollectionsIndex-{{ section.id }}
-      .zayna-collection-card__link.is-touch-active
-      .zayna-collection-card__title,
-    #ZaynaCollectionsIndex-{{ section.id }}
-      .zayna-collection-card__link.is-touch-active
-      .zayna-collection-card__arrow {
-      color: var(--zh-collections-clay);
-    }
-
-    #ZaynaCollectionsIndex-{{ section.id }}
-      .zayna-collection-card__link.is-touch-active
-      .zayna-collection-card__arrow {
-      transform: translateX(2px);
-    }
-
-    #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__link:hover
       .zayna-collection-card__image {
       transform: scale(1.018);
@@ -696,6 +666,40 @@
       color: var(--zh-collections-clay);
       transform: translateX(2px);
     }
+  }
+
+  /*
+   * Touch- and pressfeedback must sit outside the desktop-only
+   * hover media query, otherwise phones never display the state.
+   */
+  #ZaynaCollectionsIndex-{{ section.id }}
+    .zayna-collection-card__link:active,
+  #ZaynaCollectionsIndex-{{ section.id }}
+    .zayna-collection-card__link.is-touch-active {
+    border-color: rgba(181, 101, 29, 0.38);
+    background: rgba(242, 232, 223, 0.76);
+    transform: scale(0.996);
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }}
+    .zayna-collection-card__link.is-touch-active
+    .zayna-collection-card__content {
+    background: rgba(242, 232, 223, 0.98);
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }}
+    .zayna-collection-card__link.is-touch-active
+    .zayna-collection-card__title,
+  #ZaynaCollectionsIndex-{{ section.id }}
+    .zayna-collection-card__link.is-touch-active
+    .zayna-collection-card__arrow {
+    color: var(--zh-collections-clay);
+  }
+
+  #ZaynaCollectionsIndex-{{ section.id }}
+    .zayna-collection-card__link.is-touch-active
+    .zayna-collection-card__arrow {
+    transform: translateX(2px);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -729,63 +733,64 @@
     section.querySelectorAll(
       '.zayna-collection-card__link'
     ).forEach((card) => {
-      let lastPointerWasTouch = false;
-      let resetTimer = null;
-
-      const clearResetTimer = () => {
-        if (resetTimer) {
-          window.clearTimeout(resetTimer);
-          resetTimer = null;
-        }
-      };
+      let touchInteraction = false;
+      let navigationTimer = null;
 
       const activate = () => {
-        clearResetTimer();
+        touchInteraction = true;
         card.classList.add('is-touch-active');
       };
 
-      const deactivate = (delay = 180) => {
-        clearResetTimer();
+      const cancel = () => {
+        touchInteraction = false;
+        card.classList.remove('is-touch-active');
 
-        resetTimer = window.setTimeout(() => {
-          card.classList.remove('is-touch-active');
-          lastPointerWasTouch = false;
-        }, delay);
+        if (navigationTimer) {
+          window.clearTimeout(navigationTimer);
+          navigationTimer = null;
+        }
       };
 
+      /*
+       * Pointer Events work in modern Android/iOS browsers.
+       * touchstart is kept as a fallback for older WebKit versions.
+       */
       card.addEventListener(
         'pointerdown',
         (event) => {
-          if (event.pointerType !== 'touch') return;
-
-          lastPointerWasTouch = true;
-          activate();
+          if (event.pointerType === 'touch') {
+            activate();
+          }
         },
+        { passive: true }
+      );
+
+      card.addEventListener(
+        'touchstart',
+        activate,
         { passive: true }
       );
 
       card.addEventListener(
         'pointercancel',
         (event) => {
-          if (event.pointerType !== 'touch') return;
-          deactivate(0);
+          if (event.pointerType === 'touch') {
+            cancel();
+          }
         },
         { passive: true }
       );
 
       card.addEventListener(
-        'pointerleave',
-        (event) => {
-          if (event.pointerType !== 'touch') return;
-          deactivate(0);
-        },
+        'touchcancel',
+        cancel,
         { passive: true }
       );
 
       card.addEventListener('click', (event) => {
-        if (!lastPointerWasTouch) return;
+        if (!touchInteraction) return;
 
-        const modified =
+        const modifiedClick =
           event.metaKey ||
           event.ctrlKey ||
           event.shiftKey ||
@@ -794,7 +799,7 @@
         const sameWindow =
           !card.target || card.target === '_self';
 
-        if (modified || !sameWindow) return;
+        if (modifiedClick || !sameWindow) return;
 
         event.preventDefault();
 
@@ -802,9 +807,9 @@
 
         activate();
 
-        window.setTimeout(() => {
+        navigationTimer = window.setTimeout(() => {
           window.location.assign(destination);
-        }, 120);
+        }, 150);
       });
     });
   })();
