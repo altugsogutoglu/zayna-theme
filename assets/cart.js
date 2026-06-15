@@ -164,6 +164,85 @@
     });
   }
 
+
+  function getDisplayedCartCount() {
+    const counter = document.querySelector('[data-cart-count]');
+
+    return counter
+      ? Number.parseInt(counter.textContent, 10) || 0
+      : 0;
+  }
+
+  function setAddFormState(form, state) {
+    if (!form) return;
+
+    const button = form.querySelector('[data-cart-add-button]');
+    const label = button?.querySelector('[data-cart-add-label]');
+    const icon = button?.querySelector('[data-cart-add-icon]');
+    const card = form.closest('.zh-product-card');
+    const status = card?.querySelector('[data-cart-add-status]');
+
+    if (!button) return;
+
+    if (!button.dataset.defaultLabel && label) {
+      button.dataset.defaultLabel = label.textContent.trim();
+    }
+
+    if (!button.dataset.defaultIcon && icon) {
+      button.dataset.defaultIcon = icon.textContent.trim();
+    }
+
+    const defaultLabel = button.dataset.defaultLabel || 'Toevoegen';
+    const defaultIcon = button.dataset.defaultIcon || '+';
+
+    button.classList.remove('is-added', 'is-error');
+    button.removeAttribute('aria-busy');
+
+    if (state === 'loading') {
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+
+      if (label) label.textContent = 'Toevoegen…';
+      if (icon) icon.textContent = '…';
+      if (status) status.textContent = 'Product wordt toegevoegd.';
+      return;
+    }
+
+    if (state === 'success') {
+      button.disabled = true;
+      button.classList.add('is-added');
+
+      if (label) label.textContent = 'Toegevoegd';
+      if (icon) icon.textContent = '✓';
+      if (status) status.textContent = 'Product is toegevoegd aan je winkelmand.';
+      return;
+    }
+
+    if (state === 'error') {
+      button.disabled = false;
+      button.classList.add('is-error');
+
+      if (label) label.textContent = 'Probeer opnieuw';
+      if (icon) icon.textContent = '!';
+      if (status) status.textContent = 'Toevoegen is niet gelukt. Probeer het opnieuw.';
+      return;
+    }
+
+    button.disabled = false;
+
+    if (label) label.textContent = defaultLabel;
+    if (icon) icon.textContent = defaultIcon;
+    if (status) status.textContent = '';
+  }
+
+  function resetAddFormState(form, delay = 1400) {
+    window.setTimeout(() => {
+      if (form?.isConnected) {
+        setAddFormState(form, 'idle');
+      }
+    }, delay);
+  }
+
   function getPrimaryCartRoot() {
     return (
       document.querySelector('[data-cart-drawer]') ||
@@ -696,23 +775,44 @@
     }
   }
 
-  async function add(formData) {
-    if (actionBusy) return;
+  async function add(formData, options = {}) {
+    const form = options.form || null;
+    const behavior =
+      options.behavior ||
+      form?.getAttribute('data-cart-add-behavior') ||
+      'drawer';
 
-    await settleQuantityUpdates();
+    if (actionBusy || form?.dataset.adding === 'true') return;
 
-    setActionBusy(true);
+    actionBusy = true;
 
-    formData.append(
-      'sections',
-      sectionsForPath()
+    if (form) {
+      form.dataset.adding = 'true';
+      setAddFormState(form, 'loading');
+    }
+
+    const quantity = Math.max(
+      1,
+      Number.parseInt(formData.get('quantity'), 10) || 1
     );
-    formData.append(
-      'sections_url',
-      window.location.pathname
-    );
+    const previousCount = getDisplayedCartCount();
+    let countAdjusted = false;
 
     try {
+      await settleQuantityUpdates();
+
+      updateCount(previousCount + quantity);
+      countAdjusted = true;
+
+      formData.append(
+        'sections',
+        sectionsForPath()
+      );
+      formData.append(
+        'sections_url',
+        window.location.pathname
+      );
+
       const response = await fetch('/cart/add.js', {
         method: 'POST',
         headers: {
@@ -729,13 +829,34 @@
 
       applySections(data.sections);
 
-      if (!document.querySelector('[data-cart-page]')) {
+      if (
+        behavior === 'drawer' &&
+        !document.querySelector('[data-cart-page]')
+      ) {
         open();
+      }
+
+      if (form?.isConnected) {
+        setAddFormState(form, 'success');
+        resetAddFormState(form);
       }
     } catch (error) {
       console.error('Zayna cart add failed:', error);
+
+      if (countAdjusted) {
+        updateCount(previousCount);
+      }
+
+      if (form?.isConnected) {
+        setAddFormState(form, 'error');
+        resetAddFormState(form, 1800);
+      }
     } finally {
-      setActionBusy(false);
+      actionBusy = false;
+
+      if (form?.isConnected) {
+        delete form.dataset.adding;
+      }
     }
   }
 
@@ -911,13 +1032,19 @@
       return;
     }
 
-    const upsellForm = event.target.closest(
-      '[data-upsell-add]'
+    const addForm = event.target.closest(
+      '[data-cart-add-form]'
     );
 
-    if (upsellForm) {
+    if (addForm) {
       event.preventDefault();
-      add(new FormData(upsellForm));
+
+      add(new FormData(addForm), {
+        form: addForm,
+        behavior:
+          addForm.getAttribute('data-cart-add-behavior') ||
+          'drawer',
+      });
     }
   });
 
