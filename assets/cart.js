@@ -420,6 +420,13 @@
       ? resolveStableAnchor(root, anchor)
       : null;
 
+    const lines = root.querySelector('[data-cart-lines]');
+    const preserveBelowLines = Boolean(
+      anchorElement?.closest?.(
+        '[data-cart-persistent-suggestions]'
+      )
+    );
+
     return {
       scrollTop: scroller.scrollTop,
       anchor,
@@ -427,6 +434,10 @@
         ? resolvedAnchor.getBoundingClientRect().top -
           scroller.getBoundingClientRect().top
         : null,
+      preserveBelowLines,
+      linesHeight: lines
+        ? lines.getBoundingClientRect().height
+        : 0,
     };
   }
 
@@ -610,10 +621,19 @@
     const freshLines = fresh.querySelector(
       '[data-cart-lines]'
     );
+    const previousScrollTop =
+      currentScroller?.scrollTop || 0;
+    const previousLinesHeight =
+      currentLines?.getBoundingClientRect().height ||
+      rootState?.linesHeight ||
+      0;
 
     if (currentLines && freshLines) {
       currentLines.innerHTML = freshLines.innerHTML;
     }
+
+    const nextLinesHeight =
+      currentLines?.getBoundingClientRect().height || 0;
 
     /*
      * The fixed footer can be replaced independently without
@@ -636,7 +656,25 @@
     );
 
     copyCartRootData(current, fresh);
-    restoreRootViewState(wrapperSelector, rootState);
+
+    if (
+      currentScroller &&
+      rootState?.preserveBelowLines
+    ) {
+      /*
+       * Recommendations sit below the cart lines. When a new line
+       * is inserted above them, increase scrollTop by exactly the
+       * same height difference so the visible recommendation card
+       * stays at the same screen position.
+       */
+      const heightDifference =
+        nextLinesHeight - previousLinesHeight;
+
+      currentScroller.scrollTop =
+        previousScrollTop + heightDifference;
+    } else {
+      restoreRootViewState(wrapperSelector, rootState);
+    }
   }
 
   function replaceWholeCart(
@@ -1310,9 +1348,14 @@
     const addAnchor =
       form?.closest('.zh-product-card, li, [data-cart-add-form]') ||
       null;
+    const isPersistentSuggestion = Boolean(
+      form?.closest(
+        '[data-cart-persistent-suggestions]'
+      )
+    );
     const addViewState = captureCartViewState({
       anchorElement: addAnchor,
-      suppressFocus: false,
+      suppressFocus: isPersistentSuggestion,
     });
     const previousCount = getDisplayedCartCount();
     let countAdjusted = false;
