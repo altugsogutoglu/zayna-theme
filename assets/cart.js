@@ -519,7 +519,142 @@
     }
   }
 
-  function swapAndRestore(
+  function copyCartRootData(current, fresh) {
+    const currentMoneyRoot = current.querySelector(
+      '[data-cart-money-root]'
+    );
+    const freshMoneyRoot = fresh.querySelector(
+      '[data-cart-money-root]'
+    );
+
+    if (currentMoneyRoot && freshMoneyRoot) {
+      [
+        'data-cart-subtotal-cents',
+        'data-free-shipping-threshold-cents',
+        'data-money-locale',
+        'data-money-currency',
+      ].forEach((attribute) => {
+        const value = freshMoneyRoot.getAttribute(attribute);
+
+        if (value === null) {
+          currentMoneyRoot.removeAttribute(attribute);
+        } else {
+          currentMoneyRoot.setAttribute(attribute, value);
+        }
+      });
+    }
+
+    const currentCount = current.querySelector(
+      '[data-cart-total-count]'
+    );
+    const freshCount = fresh.querySelector(
+      '[data-cart-total-count]'
+    );
+
+    if (currentCount && freshCount) {
+      currentCount.setAttribute(
+        'data-count',
+        freshCount.getAttribute('data-count') || '0'
+      );
+    }
+  }
+
+  function replaceElementFromFresh(
+    currentRoot,
+    freshRoot,
+    selector
+  ) {
+    const currentElement = currentRoot.querySelector(selector);
+    const freshElement = freshRoot.querySelector(selector);
+
+    if (currentElement && freshElement) {
+      currentElement.replaceWith(
+        freshElement.cloneNode(true)
+      );
+      return;
+    }
+
+    if (currentElement && !freshElement) {
+      currentElement.remove();
+    }
+  }
+
+  function patchFilledCart(
+    current,
+    fresh,
+    wrapperSelector,
+    rootState
+  ) {
+    const currentScroller = getCartScrollRegion(current);
+
+    if (currentScroller) {
+      currentScroller.style.overflowAnchor = 'none';
+      currentScroller.style.scrollBehavior = 'auto';
+    }
+
+    const currentLines = current.querySelector(
+      '[data-cart-lines]'
+    );
+    const freshLines = fresh.querySelector(
+      '[data-cart-lines]'
+    );
+
+    if (currentLines && freshLines) {
+      currentLines.innerHTML = freshLines.innerHTML;
+    }
+
+    /*
+     * The fixed footer can be replaced independently without
+     * rebuilding the scroll container or recommendation cards.
+     */
+    replaceElementFromFresh(
+      current,
+      fresh,
+      '[data-cart-footer]'
+    );
+
+    /*
+     * Complementary recommendations depend on the current cart
+     * product. Persistent "Populaire keuzes" cards stay mounted.
+     */
+    replaceElementFromFresh(
+      current,
+      fresh,
+      '[data-cart-upsell]'
+    );
+
+    copyCartRootData(current, fresh);
+    restoreRootViewState(wrapperSelector, rootState);
+  }
+
+  function replaceWholeCart(
+    current,
+    fresh,
+    wrapperSelector,
+    rootState
+  ) {
+    const previousVisibility = current.style.visibility;
+
+    /*
+     * The empty/filled layout change is completed while hidden
+     * within the same JavaScript task, so no intermediate frame
+     * with the wrong scroll position is painted.
+     */
+    current.style.visibility = 'hidden';
+    current.innerHTML = fresh.innerHTML;
+
+    const scroller = getCartScrollRegion(current);
+
+    if (scroller) {
+      scroller.style.overflowAnchor = 'none';
+      scroller.style.scrollBehavior = 'auto';
+    }
+
+    restoreRootViewState(wrapperSelector, rootState);
+    current.style.visibility = previousVisibility;
+  }
+
+  function patchCartSection(
     html,
     wrapperSelector,
     rootState
@@ -535,28 +670,39 @@
 
     if (!fresh || !current) return;
 
-    const oldScroller = getCartScrollRegion(current);
+    const currentIsFilled = Boolean(
+      current.querySelector('[data-cart-lines]')
+    );
+    const freshIsFilled = Boolean(
+      fresh.querySelector('[data-cart-lines]')
+    );
 
-    if (oldScroller) {
-      oldScroller.style.overflowAnchor = 'none';
-      oldScroller.style.scrollBehavior = 'auto';
+    if (currentIsFilled && freshIsFilled) {
+      patchFilledCart(
+        current,
+        fresh,
+        wrapperSelector,
+        rootState
+      );
+      return;
     }
 
-    current.innerHTML = fresh.innerHTML;
-
-    const newScroller = getCartScrollRegion(current);
-
-    if (newScroller) {
-      newScroller.style.overflowAnchor = 'none';
-      newScroller.style.scrollBehavior = 'auto';
+    if (!currentIsFilled && !freshIsFilled) {
+      /*
+       * Nothing structural changed in an empty cart. Keep the
+       * current recommendation cards and scroll position intact.
+       */
+      copyCartRootData(current, fresh);
+      restoreRootViewState(wrapperSelector, rootState);
+      return;
     }
 
-    /*
-     * Reading the new anchor position forces layout immediately.
-     * The scroll correction therefore happens in the same task as
-     * the DOM replacement, before the browser can paint a jump.
-     */
-    restoreRootViewState(wrapperSelector, rootState);
+    replaceWholeCart(
+      current,
+      fresh,
+      wrapperSelector,
+      rootState
+    );
   }
 
   function applySections(
@@ -564,7 +710,7 @@
     viewState = captureCartViewState()
   ) {
     if (sections?.['cart-drawer']) {
-      swapAndRestore(
+      patchCartSection(
         sections['cart-drawer'],
         '[data-cart-drawer]',
         viewState?.drawer || null
@@ -572,7 +718,7 @@
     }
 
     if (sections?.['main-cart']) {
-      swapAndRestore(
+      patchCartSection(
         sections['main-cart'],
         '[data-cart-page]',
         viewState?.page || null
