@@ -6,7 +6,7 @@
   - Beeldverhouding 5:4: compacter dan vroeger, maar met minder afsnijding.
   - Bij een oneven aantal wordt de laatste kaart op mobiel/tablet gecentreerd.
   - Geen productaantallen of intro: de kaarten krijgen direct de aandacht.
-  - Mobiele touchfeedback staat buiten de desktop-hoverquery en blijft kort zichtbaar vóór navigatie.
+  - Mobiele touchfeedback onderscheidt een korte tik van een scrollbeweging.
   - collection.image is primair; de eerste productafbeelding is fallback.
 {%- endcomment -%}
 
@@ -666,14 +666,19 @@
       color: var(--zh-collections-clay);
       transform: translateX(2px);
     }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card__link:active {
+      border-color: rgba(181, 101, 29, 0.36);
+      background: rgba(242, 232, 223, 0.72);
+      transform: scale(0.997);
+    }
   }
 
   /*
    * Touch- and pressfeedback must sit outside the desktop-only
    * hover media query, otherwise phones never display the state.
    */
-  #ZaynaCollectionsIndex-{{ section.id }}
-    .zayna-collection-card__link:active,
   #ZaynaCollectionsIndex-{{ section.id }}
     .zayna-collection-card__link.is-touch-active {
     border-color: rgba(181, 101, 29, 0.38);
@@ -730,65 +735,208 @@
 
     section.dataset.touchFeedbackReady = 'true';
 
+    const FEEDBACK_DELAY = 70;
+    const MOVE_THRESHOLD = 10;
+    const NAVIGATION_DELAY = 140;
+
     section.querySelectorAll(
       '.zayna-collection-card__link'
     ).forEach((card) => {
-      let touchInteraction = false;
+      let activePointerId = null;
+      let startX = 0;
+      let startY = 0;
+      let moved = false;
+      let touchCandidate = false;
+      let feedbackTimer = null;
       let navigationTimer = null;
 
-      const activate = () => {
-        touchInteraction = true;
-        card.classList.add('is-touch-active');
+      const clearFeedbackTimer = () => {
+        if (feedbackTimer) {
+          window.clearTimeout(feedbackTimer);
+          feedbackTimer = null;
+        }
       };
 
-      const cancel = () => {
-        touchInteraction = false;
-        card.classList.remove('is-touch-active');
-
+      const clearNavigationTimer = () => {
         if (navigationTimer) {
           window.clearTimeout(navigationTimer);
           navigationTimer = null;
         }
       };
 
+      const showFeedback = () => {
+        card.classList.add('is-touch-active');
+      };
+
+      const hideFeedback = () => {
+        card.classList.remove('is-touch-active');
+      };
+
+      const resetGesture = () => {
+        clearFeedbackTimer();
+        clearNavigationTimer();
+        hideFeedback();
+
+        activePointerId = null;
+        moved = false;
+        touchCandidate = false;
+      };
+
+      const beginGesture = (x, y, pointerId = null) => {
+        clearFeedbackTimer();
+        clearNavigationTimer();
+
+        activePointerId = pointerId;
+        startX = x;
+        startY = y;
+        moved = false;
+        touchCandidate = true;
+
+        feedbackTimer = window.setTimeout(() => {
+          if (touchCandidate && !moved) {
+            showFeedback();
+          }
+        }, FEEDBACK_DELAY);
+      };
+
+      const updateGesture = (x, y) => {
+        if (!touchCandidate || moved) return;
+
+        const deltaX = Math.abs(x - startX);
+        const deltaY = Math.abs(y - startY);
+
+        if (
+          deltaX > MOVE_THRESHOLD ||
+          deltaY > MOVE_THRESHOLD
+        ) {
+          moved = true;
+          touchCandidate = false;
+          clearFeedbackTimer();
+          hideFeedback();
+        }
+      };
+
+      const confirmTap = () => {
+        if (!touchCandidate || moved) {
+          resetGesture();
+          return false;
+        }
+
+        clearFeedbackTimer();
+        showFeedback();
+        return true;
+      };
+
       /*
-       * Pointer Events work in modern Android/iOS browsers.
-       * touchstart is kept as a fallback for older WebKit versions.
+       * Modern browsers: Pointer Events.
+       * The fallback touch listeners are only installed when
+       * Pointer Events are unavailable, avoiding duplicate events.
        */
-      card.addEventListener(
-        'pointerdown',
-        (event) => {
-          if (event.pointerType === 'touch') {
-            activate();
-          }
-        },
-        { passive: true }
-      );
+      if ('PointerEvent' in window) {
+        card.addEventListener(
+          'pointerdown',
+          (event) => {
+            if (event.pointerType !== 'touch') return;
 
-      card.addEventListener(
-        'touchstart',
-        activate,
-        { passive: true }
-      );
+            beginGesture(
+              event.clientX,
+              event.clientY,
+              event.pointerId
+            );
+          },
+          { passive: true }
+        );
 
-      card.addEventListener(
-        'pointercancel',
-        (event) => {
-          if (event.pointerType === 'touch') {
-            cancel();
-          }
-        },
-        { passive: true }
-      );
+        card.addEventListener(
+          'pointermove',
+          (event) => {
+            if (
+              event.pointerType !== 'touch' ||
+              event.pointerId !== activePointerId
+            ) {
+              return;
+            }
 
-      card.addEventListener(
-        'touchcancel',
-        cancel,
-        { passive: true }
-      );
+            updateGesture(event.clientX, event.clientY);
+          },
+          { passive: true }
+        );
+
+        card.addEventListener(
+          'pointerup',
+          (event) => {
+            if (
+              event.pointerType !== 'touch' ||
+              event.pointerId !== activePointerId
+            ) {
+              return;
+            }
+
+            confirmTap();
+          },
+          { passive: true }
+        );
+
+        card.addEventListener(
+          'pointercancel',
+          (event) => {
+            if (
+              event.pointerType === 'touch' &&
+              event.pointerId === activePointerId
+            ) {
+              resetGesture();
+            }
+          },
+          { passive: true }
+        );
+      } else {
+        card.addEventListener(
+          'touchstart',
+          (event) => {
+            const touch = event.touches[0];
+            if (!touch) return;
+
+            beginGesture(
+              touch.clientX,
+              touch.clientY
+            );
+          },
+          { passive: true }
+        );
+
+        card.addEventListener(
+          'touchmove',
+          (event) => {
+            const touch = event.touches[0];
+            if (!touch) return;
+
+            updateGesture(
+              touch.clientX,
+              touch.clientY
+            );
+          },
+          { passive: true }
+        );
+
+        card.addEventListener(
+          'touchend',
+          confirmTap,
+          { passive: true }
+        );
+
+        card.addEventListener(
+          'touchcancel',
+          resetGesture,
+          { passive: true }
+        );
+      }
+
+      card.addEventListener('contextmenu', resetGesture);
 
       card.addEventListener('click', (event) => {
-        if (!touchInteraction) return;
+        if (!touchCandidate || moved) {
+          return;
+        }
 
         const modifiedClick =
           event.metaKey ||
@@ -799,17 +947,20 @@
         const sameWindow =
           !card.target || card.target === '_self';
 
-        if (modifiedClick || !sameWindow) return;
+        if (modifiedClick || !sameWindow) {
+          resetGesture();
+          return;
+        }
 
         event.preventDefault();
 
         const destination = card.href;
 
-        activate();
+        showFeedback();
 
         navigationTimer = window.setTimeout(() => {
           window.location.assign(destination);
-        }, 150);
+        }, NAVIGATION_DELAY);
       });
     });
   })();
