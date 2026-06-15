@@ -63,6 +63,7 @@
       <div
         class="{% unless is_page %}flex-1 overflow-y-auto overscroll-contain{% endunless %} px-5 md:px-6 py-2 md:py-4"
         data-cart-scroll-region
+        style="overflow-anchor: none;"
       >
         <ul data-cart-lines>
           {%- for item in cart.items -%}
@@ -161,7 +162,7 @@
 
         <div class="space-y-3">
           {% form 'cart', cart %}
-            <button type="submit" name="checkout" class="flex w-full h-12 items-center justify-center bg-stone text-white text-sm uppercase tracking-wide hover:bg-clay transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone focus-visible:ring-offset-2">Doorgaan naar afrekenen</button>
+            <button type="submit" name="checkout" data-cart-checkout-button class="flex w-full h-12 items-center justify-center bg-stone text-white text-sm uppercase tracking-wide hover:bg-clay transition-colors disabled:cursor-wait disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone focus-visible:ring-offset-2">Doorgaan naar afrekenen</button>
           {% endform %}
           <p class="text-xs text-center text-ink-soft">BTW en verzendkosten worden berekend bij het afrekenen.</p>
         </div>
@@ -171,6 +172,7 @@
     <div
       class="relative flex flex-1 flex-col {% unless is_page %}overflow-y-auto overscroll-contain{% endunless %} px-6 py-8 sm:px-8 sm:py-12"
       data-cart-scroll-region
+      style="overflow-anchor: none;"
     >
       <div aria-hidden="true" class="pointer-events-none absolute inset-0 opacity-80" style="background: radial-gradient(70% 70% at 80% 10%, rgba(181,101,29,0.08), transparent 60%), radial-gradient(60% 60% at 10% 90%, rgba(138,154,123,0.10), transparent 60%);"></div>
       <div class="relative m-auto flex w-full max-w-md flex-col items-center py-4">
