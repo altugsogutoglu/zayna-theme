@@ -5,7 +5,7 @@
   - Drie compacte kolommen vanaf 560 px, zodat split-screen altijd goed uitlijnt.
   - Beeldverhouding 5:4: compacter dan vroeger, maar met minder afsnijding.
   - Bij een oneven aantal wordt de laatste kaart op mobiel/tablet gecentreerd.
-  - Geen productaantallen: die horen op de individuele collectiepagina.
+  - Geen productaantallen of intro: de kaarten krijgen direct de aandacht.
   - collection.image is primair; de eerste productafbeelding is fallback.
 {%- endcomment -%}
 
@@ -25,13 +25,6 @@
   endfor
 
   assign heading = section.settings.heading
-  assign intro_text = section.settings.intro
-
-  if intro_text == 'Ontdek onze collecties met stijlvolle keuken- en woonproducten voor een rustig, verzorgd en praktisch thuis.'
-    assign intro_text = 'Zorgvuldig gekozen voor een rustig en verzorgd thuis.'
-  elsif intro_text == 'Bekijk de collecties van Zayna Home — zorgvuldig gekozen voor een rustig en verzorgd thuis.'
-    assign intro_text = 'Zorgvuldig gekozen voor een rustig en verzorgd thuis.'
-  endif
 
   assign last_character = heading | slice: -1
   assign title_main = heading
@@ -74,11 +67,6 @@
           </h1>
         {%- endif -%}
 
-        {%- if intro_text != blank -%}
-          <p class="zayna-collections-index__intro">
-            {{ intro_text | escape }}
-          </p>
-        {%- endif -%}
       </div>
 
       {%- if visible_count > 0 -%}
@@ -193,7 +181,7 @@
     --zh-collections-clay: var(--color-clay, #b5651d);
     --zh-collections-cream: var(--color-cream, #f0ebe6);
     --zh-collections-border: rgba(42, 37, 32, 0.07);
-    --zh-collections-border-hover: rgba(181, 101, 29, 0.18);
+    --zh-collections-border-hover: rgba(181, 101, 29, 0.30);
     --zh-collections-caption: rgba(250, 245, 242, 0.84);
 
     background: var(--zh-collections-bg);
@@ -210,8 +198,8 @@
 
   #ZaynaCollectionsIndex-{{ section.id }}
     .zayna-collections-index__header {
-    max-width: 680px;
-    padding: 14px 0 18px;
+    max-width: none;
+    padding: 12px 0 18px;
   }
 
   #ZaynaCollectionsIndex-{{ section.id }}
@@ -250,7 +238,7 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: clamp(1.9rem, 6.8vw, 2.15rem);
+    font-size: clamp(1.9rem, 6.2vw, 2.1rem);
     font-weight: 400;
     line-height: 1.04;
     letter-spacing: -0.025em;
@@ -259,15 +247,6 @@
   #ZaynaCollectionsIndex-{{ section.id }}
     .zayna-collections-index__title > span {
     color: rgba(181, 101, 29, 0.82);
-  }
-
-  #ZaynaCollectionsIndex-{{ section.id }}
-    .zayna-collections-index__intro {
-    max-width: 52ch;
-    margin: 8px 0 0;
-    color: var(--zh-collections-soft);
-    font-size: 13px;
-    line-height: 1.54;
   }
 
   #ZaynaCollectionsIndex-{{ section.id }}
@@ -297,9 +276,12 @@
     color: inherit;
     text-decoration: none;
     touch-action: manipulation;
+    cursor: pointer;
+    transform-origin: center;
     transition:
-      border-color 220ms ease,
-      background-color 220ms ease;
+      border-color 180ms ease,
+      background-color 180ms ease,
+      transform 120ms ease;
   }
 
   #ZaynaCollectionsIndex-{{ section.id }}
@@ -384,6 +366,7 @@
     padding: 7px 10px;
     border-top: 1px solid var(--zh-collections-border);
     background: var(--zh-collections-caption);
+    transition: background-color 180ms ease;
   }
 
   #ZaynaCollectionsIndex-{{ section.id }}
@@ -419,7 +402,7 @@
   #ZaynaCollectionsIndex-{{ section.id }}
     .zayna-collection-card__arrow {
     flex: 0 0 auto;
-    color: var(--zh-collections-stone);
+    color: rgba(42, 37, 32, 0.68);
     font-size: 14px;
     line-height: 1;
     transition:
@@ -489,8 +472,8 @@
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collections-index__header {
       max-width: none;
-      padding-top: 21px;
-      padding-bottom: 23px;
+      padding-top: 16px;
+      padding-bottom: 20px;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
@@ -499,26 +482,10 @@
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
-      .zayna-collections-index__heading-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(235px, 0.75fr);
-      align-items: end;
-      gap: 26px;
-    }
-
-    #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collections-index__title {
       max-width: none;
-      font-size: clamp(2.1rem, 4.4cqi, 2.55rem);
-      line-height: 1.02;
-    }
-
-    #ZaynaCollectionsIndex-{{ section.id }}
-      .zayna-collections-index__intro {
-      max-width: 42ch;
-      margin: 0 0 2px;
-      font-size: 13px;
-      line-height: 1.58;
+      font-size: clamp(2.05rem, 3.8cqi, 2.35rem);
+      line-height: 1.03;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
@@ -559,8 +526,8 @@
   @container zh-collections-layout (min-width: 1040px) {
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collections-index__header {
-      padding-top: 28px;
-      padding-bottom: 28px;
+      padding-top: 20px;
+      padding-bottom: 24px;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
@@ -570,21 +537,8 @@
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
-      .zayna-collections-index__heading-layout {
-      grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.6fr);
-      gap: 44px;
-    }
-
-    #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collections-index__title {
-      font-size: clamp(2.55rem, 3.9cqi, 3rem);
-    }
-
-    #ZaynaCollectionsIndex-{{ section.id }}
-      .zayna-collections-index__intro {
-      max-width: 43ch;
-      font-size: 14px;
-      line-height: 1.64;
+      font-size: clamp(2.4rem, 3.1cqi, 2.7rem);
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
@@ -651,13 +605,6 @@
    */
   @supports not (container-type: inline-size) {
     @media (min-width: 900px) {
-      #ZaynaCollectionsIndex-{{ section.id }}
-        .zayna-collections-index__heading-layout {
-        display: grid;
-        grid-template-columns: minmax(0, 1.25fr) minmax(235px, 0.75fr);
-        align-items: end;
-        gap: 26px;
-      }
 
       #ZaynaCollectionsIndex-{{ section.id }}
         .zayna-collections-grid {
@@ -695,8 +642,21 @@
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__link:hover
+      .zayna-collection-card__content {
+      background: rgba(242, 232, 223, 0.94);
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card__link:active {
+      border-color: rgba(181, 101, 29, 0.36);
+      background: rgba(242, 232, 223, 0.72);
+      transform: scale(0.997);
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card__link:hover
       .zayna-collection-card__image {
-      transform: scale(1.015);
+      transform: scale(1.018);
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
@@ -718,6 +678,8 @@
       .zayna-collection-card__link,
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__image,
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card__content,
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__title,
     #ZaynaCollectionsIndex-{{ section.id }}
@@ -754,12 +716,6 @@
       "id": "heading",
       "label": "Heading",
       "default": "Voor elke hoek van je huis."
-    },
-    {
-      "type": "textarea",
-      "id": "intro",
-      "label": "Intro",
-      "default": "Zorgvuldig gekozen voor een rustig en verzorgd thuis."
     }
   ],
   "presets": [
