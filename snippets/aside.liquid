@@ -27,16 +27,24 @@
   data-aside="{{ type }}"
   role="dialog"
   aria-modal="true"
+  aria-hidden="true"
   aria-label="{{ heading | default: shop.name | escape }}"
+  inert
 >
   <button
     type="button"
     class="close-outside"
     aria-label="{{ 'general.accessibility.close' | t }}"
+    aria-hidden="true"
+    tabindex="-1"
     data-aside-close
   ></button>
 
-  <aside class="zayna-aside-panel zayna-aside-panel--{{ type }} flex h-full flex-col">
+  <aside
+    class="zayna-aside-panel zayna-aside-panel--{{ type }} flex h-full flex-col"
+    data-aside-panel
+    tabindex="-1"
+  >
     <header class="zayna-aside-header">
       {%- if type == 'mobile' -%}
         <a
@@ -74,6 +82,7 @@
         class="zayna-aside-close"
         aria-label="{{ 'general.accessibility.close' | t }}"
         data-aside-close
+        data-aside-initial-focus
       >
         {% render 'icon', name: 'x', size: 21 %}
       </button>
