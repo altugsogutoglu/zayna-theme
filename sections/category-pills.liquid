@@ -1,5 +1,7 @@
 {%- comment -%}
-  Zayna Home — compacte, horizontaal sleepbare collectienavigatie.
+  Zayna Home — collectie navigatie.
+  Mobiel: één compacte keuzeknop.
+  Vanaf tablet: sleepbare rail met dynamische fades, pijlen en toetsenbordbediening.
 {%- endcomment -%}
 
 {%- liquid
@@ -15,52 +17,61 @@
     assign all_active = true
   endif
 
-  assign active_index = 0
-  assign item_index = 0
+  assign current_label = collection.title
+  if all_active
+    assign current_label = 'Alle producten'
+  endif
 -%}
 
 <nav
   id="ZaynaCategoryPills-{{ section.id }}"
-  class="zh-category-pills"
-  aria-label="Andere collecties"
+  class="zh-category-navigation"
+  aria-label="Bladeren per collectie"
 >
-  <div class="zh-category-pills__fade zh-category-pills__fade--left" aria-hidden="true"></div>
+  <details class="zh-category-mobile" data-category-mobile>
+    <summary class="zh-category-mobile__summary">
+      <span class="zh-category-mobile__summary-text">
+        <small>Andere collecties</small>
+        <strong>{{ current_label | escape }}</strong>
+      </span>
 
-  <div
-    class="zh-category-pills__viewport"
-    data-pills-embla
-    data-start="{{ active_index }}"
-  >
-    <ul class="zh-category-pills__list">
-      <li class="zh-category-pills__item">
-        <a
-          href="{{ routes.all_products_collection_url }}"
-          class="zh-category-pill{% if all_active %} is-active{% endif %}"
-          {% if all_active %}aria-current="page"{% endif %}
-        >
-          Alle
-        </a>
-      </li>
+      <span
+        class="zh-category-mobile__chevron"
+        aria-hidden="true"
+      >
+        {% render 'icon', name: 'chevron-down', size: 15 %}
+      </span>
+    </summary>
+
+    <div class="zh-category-mobile__menu">
+      <a
+        href="{{ routes.all_products_collection_url }}"
+        class="zh-category-mobile__link{% if all_active %} is-active{% endif %}"
+        {% if all_active %}aria-current="page"{% endif %}
+      >
+        <span>Alle producten</span>
+        {%- if all_active -%}
+          {% render 'icon', name: 'check', size: 14 %}
+        {%- endif -%}
+      </a>
 
       {%- if use_menu -%}
         {%- for link in menu.links -%}
-          {%- assign item_index = item_index | plus: 1 -%}
           {%- assign is_active = false -%}
-
           {%- if link.url == collection.url -%}
             {%- assign is_active = true -%}
-            {%- assign active_index = item_index -%}
           {%- endif -%}
 
-          <li class="zh-category-pills__item">
-            <a
-              href="{{ link.url }}"
-              class="zh-category-pill{% if is_active %} is-active{% endif %}"
-              {% if is_active %}aria-current="page"{% endif %}
-            >
-              {{ link.title | escape }}
-            </a>
-          </li>
+          <a
+            href="{{ link.url }}"
+            class="zh-category-mobile__link{% if is_active %} is-active{% endif %}"
+            {% if is_active %}aria-current="page"{% endif %}
+          >
+            <span>{{ link.title | escape }}</span>
+            {%- if is_active -%}
+              {% render 'icon', name: 'check', size: 14 %}
+            {%- endif -%}
+          </a>
         {%- endfor -%}
       {%- else -%}
         {%- for collection_item in collections -%}
@@ -68,52 +79,271 @@
             {%- continue -%}
           {%- endif -%}
 
-          {%- assign item_index = item_index | plus: 1 -%}
           {%- assign is_active = false -%}
-
           {%- if collection_item.handle == collection.handle -%}
             {%- assign is_active = true -%}
-            {%- assign active_index = item_index -%}
           {%- endif -%}
 
-          <li class="zh-category-pills__item">
-            <a
-              href="{{ collection_item.url }}"
-              class="zh-category-pill{% if is_active %} is-active{% endif %}"
-              {% if is_active %}aria-current="page"{% endif %}
-            >
-              {{ collection_item.title | escape }}
-            </a>
-          </li>
+          <a
+            href="{{ collection_item.url }}"
+            class="zh-category-mobile__link{% if is_active %} is-active{% endif %}"
+            {% if is_active %}aria-current="page"{% endif %}
+          >
+            <span>{{ collection_item.title | escape }}</span>
+            {%- if is_active -%}
+              {% render 'icon', name: 'check', size: 14 %}
+            {%- endif -%}
+          </a>
         {%- endfor -%}
       {%- endif -%}
-    </ul>
-  </div>
+    </div>
+  </details>
 
-  <div class="zh-category-pills__fade zh-category-pills__fade--right" aria-hidden="true"></div>
+  <div class="zh-category-rail" data-category-rail>
+    <button
+      type="button"
+      class="zh-category-rail__control zh-category-rail__control--prev"
+      data-pills-prev
+      aria-label="Vorige collecties"
+      disabled
+    >
+      <span aria-hidden="true">←</span>
+    </button>
+
+    <div
+      class="zh-category-rail__viewport"
+      data-pills-embla
+      tabindex="-1"
+    >
+      <ul class="zh-category-rail__list">
+        <li class="zh-category-rail__item">
+          <a
+            href="{{ routes.all_products_collection_url }}"
+            class="zh-category-pill{% if all_active %} is-active{% endif %}"
+            {% if all_active %}aria-current="page"{% endif %}
+          >
+            Alle
+          </a>
+        </li>
+
+        {%- if use_menu -%}
+          {%- for link in menu.links -%}
+            {%- assign is_active = false -%}
+            {%- if link.url == collection.url -%}
+              {%- assign is_active = true -%}
+            {%- endif -%}
+
+            <li class="zh-category-rail__item">
+              <a
+                href="{{ link.url }}"
+                class="zh-category-pill{% if is_active %} is-active{% endif %}"
+                {% if is_active %}aria-current="page"{% endif %}
+              >
+                {{ link.title | escape }}
+              </a>
+            </li>
+          {%- endfor -%}
+        {%- else -%}
+          {%- for collection_item in collections -%}
+            {%- if collection_item.handle == 'all' or collection_item.handle == 'frontpage' -%}
+              {%- continue -%}
+            {%- endif -%}
+
+            {%- assign is_active = false -%}
+            {%- if collection_item.handle == collection.handle -%}
+              {%- assign is_active = true -%}
+            {%- endif -%}
+
+            <li class="zh-category-rail__item">
+              <a
+                href="{{ collection_item.url }}"
+                class="zh-category-pill{% if is_active %} is-active{% endif %}"
+                {% if is_active %}aria-current="page"{% endif %}
+              >
+                {{ collection_item.title | escape }}
+              </a>
+            </li>
+          {%- endfor -%}
+        {%- endif -%}
+      </ul>
+    </div>
+
+    <button
+      type="button"
+      class="zh-category-rail__control zh-category-rail__control--next"
+      data-pills-next
+      aria-label="Volgende collecties"
+      disabled
+    >
+      <span aria-hidden="true">→</span>
+    </button>
+
+    <span
+      class="zh-category-rail__fade zh-category-rail__fade--left"
+      data-pills-fade-left
+      aria-hidden="true"
+    ></span>
+
+    <span
+      class="zh-category-rail__fade zh-category-rail__fade--right"
+      data-pills-fade-right
+      aria-hidden="true"
+    ></span>
+  </div>
 </nav>
 
 {% style %}
   #ZaynaCategoryPills-{{ section.id }} {
     position: relative;
     width: min(100%, 1280px);
-    margin: 0 auto 14px;
+    margin: 0 auto 13px;
     padding: 0 16px;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pills__viewport {
+    .zh-category-mobile {
+    position: relative;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__summary {
+    display: flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 7px 12px;
+    border: 1px solid rgba(42, 37, 32, 0.09);
+    background: rgba(255, 253, 251, 0.48);
+    color: #2a2520;
+    cursor: pointer;
+    list-style: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__summary-text {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__summary-text small {
+    color: rgba(42, 37, 32, 0.48);
+    font-size: 8px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__summary-text strong {
+    overflow: hidden;
+    color: #2a2520;
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__chevron {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    color: rgba(42, 37, 32, 0.58);
+    transition: transform 180ms ease;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile[open]
+    .zh-category-mobile__chevron {
+    transform: rotate(180deg);
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__menu {
+    position: absolute;
+    top: calc(100% + 7px);
+    right: 0;
+    left: 0;
+    z-index: 35;
+    max-height: min(56vh, 390px);
+    overflow-y: auto;
+    padding: 7px;
+    border: 1px solid rgba(42, 37, 32, 0.10);
+    background: #fffdfb;
+    box-shadow: 0 18px 42px -24px rgba(42, 37, 32, 0.42);
+    overscroll-behavior: contain;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__link {
+    display: flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 0 11px;
+    color: rgba(42, 37, 32, 0.70);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__link.is-active {
+    background: rgba(242, 232, 223, 0.72);
+    color: #875235;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__summary:focus-visible,
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__link:focus-visible,
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pill:focus-visible,
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-rail__control:focus-visible {
+    outline: 2px solid #a66a3f;
+    outline-offset: 3px;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-rail {
+    position: relative;
+    display: none;
+    grid-template-columns: 34px minmax(0, 1fr) 34px;
+    align-items: center;
+    gap: 7px;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-rail__viewport {
+    min-width: 0;
     overflow: hidden;
     cursor: grab;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pills__viewport:active {
+    .zh-category-rail__viewport:active {
     cursor: grabbing;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pills__list {
+    .zh-category-rail__list {
     display: flex;
     align-items: center;
     gap: 7px;
@@ -123,7 +353,7 @@
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pills__item {
+    .zh-category-rail__item {
     flex: 0 0 auto;
   }
 
@@ -134,10 +364,10 @@
     align-items: center;
     justify-content: center;
     padding: 0 12px;
-    border: 1px solid rgba(42, 37, 32, 0.09);
+    border: 1px solid rgba(42, 37, 32, 0.085);
     border-radius: 999px;
-    background: rgba(255, 253, 251, 0.40);
-    color: rgba(42, 37, 32, 0.66);
+    background: rgba(255, 253, 251, 0.38);
+    color: rgba(42, 37, 32, 0.64);
     font-size: 11px;
     line-height: 1;
     text-decoration: none;
@@ -147,75 +377,104 @@
       background-color 180ms ease,
       color 180ms ease,
       transform 120ms ease;
-    -webkit-tap-highlight-color: transparent;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-pill.is-active {
-    border-color: rgba(166, 106, 63, 0.28);
-    background: rgba(242, 232, 223, 0.82);
-    color: #875235;
+    border-color: rgba(166, 106, 63, 0.34);
+    background: rgba(242, 232, 223, 0.90);
+    color: #825034;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pills__fade {
+    .zh-category-rail__control {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid rgba(42, 37, 32, 0.085);
+    border-radius: 999px;
+    background: rgba(255, 253, 251, 0.50);
+    color: #655e58;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 160ms ease,
+      border-color 160ms ease,
+      color 160ms ease;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-rail.has-overflow
+    .zh-category-rail__control {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-rail__control:disabled {
+    cursor: default;
+    opacity: 0.28;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-rail__fade {
     position: absolute;
     top: 0;
     bottom: 0;
     z-index: 2;
-    width: 18px;
+    width: 22px;
+    opacity: 0;
     pointer-events: none;
+    transition: opacity 160ms ease;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pills__fade--left {
-    left: 15px;
+    .zh-category-rail__fade--left {
+    left: 41px;
     background: linear-gradient(
       90deg,
-      #faf5f2 10%,
+      #faf5f2 12%,
       rgba(250, 245, 242, 0)
     );
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pills__fade--right {
-    right: 15px;
+    .zh-category-rail__fade--right {
+    right: 41px;
     background: linear-gradient(
       270deg,
-      #faf5f2 10%,
+      #faf5f2 12%,
       rgba(250, 245, 242, 0)
     );
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pill:focus-visible {
-    outline: 2px solid #a66a3f;
-    outline-offset: 3px;
-  }
-
+    .zh-category-rail.can-scroll-prev
+    .zh-category-rail__fade--left,
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pill:active {
-    transform: scale(0.985);
+    .zh-category-rail.can-scroll-next
+    .zh-category-rail__fade--right {
+    opacity: 1;
   }
 
   @media (min-width: 640px) {
     #ZaynaCategoryPills-{{ section.id }} {
-      margin-bottom: 18px;
+      margin-bottom: 17px;
       padding-right: 24px;
       padding-left: 24px;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-pills__list {
-      gap: 8px;
+      .zh-category-mobile {
+      display: none;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-pill {
-      min-height: 35px;
-      padding-right: 13px;
-      padding-left: 13px;
-      font-size: 11.5px;
+      .zh-category-rail {
+      display: grid;
     }
   }
 
@@ -229,8 +488,20 @@
   @media (hover: hover) and (pointer: fine) {
     #ZaynaCategoryPills-{{ section.id }}
       .zh-category-pill:hover {
-      border-color: rgba(166, 106, 63, 0.24);
-      background: rgba(242, 232, 223, 0.54);
+      border-color: rgba(166, 106, 63, 0.25);
+      background: rgba(242, 232, 223, 0.56);
+      color: #955c39;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-rail__control:not(:disabled):hover {
+      border-color: rgba(166, 106, 63, 0.30);
+      color: #955c39;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-mobile__link:hover {
+      background: rgba(242, 232, 223, 0.48);
       color: #955c39;
     }
   }
@@ -243,9 +514,38 @@
       'ZaynaCategoryPills-{{ section.id }}'
     );
 
-    const viewport = section?.querySelector('[data-pills-embla]');
+    if (!section) return;
 
-    if (!viewport || !window.EmblaCarousel) return;
+    const mobileDetails = section.querySelector(
+      '[data-category-mobile]'
+    );
+
+    document.addEventListener('click', (event) => {
+      if (
+        mobileDetails?.open &&
+        !mobileDetails.contains(event.target)
+      ) {
+        mobileDetails.removeAttribute('open');
+      }
+    });
+
+    mobileDetails?.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && mobileDetails.open) {
+        mobileDetails.removeAttribute('open');
+        mobileDetails.querySelector('summary')?.focus();
+      }
+    });
+
+    const rail = section.querySelector('[data-category-rail]');
+    const viewport = section.querySelector('[data-pills-embla]');
+    const prev = section.querySelector('[data-pills-prev]');
+    const next = section.querySelector('[data-pills-next]');
+
+    if (!rail || !viewport || !window.EmblaCarousel) return;
+
+    const links = Array.from(
+      viewport.querySelectorAll('.zh-category-pill')
+    );
 
     const embla = window.EmblaCarousel(viewport, {
       align: 'start',
@@ -254,18 +554,99 @@
       skipSnaps: true
     });
 
-    const active = viewport.querySelector('[aria-current="page"]');
-    const slides = Array.from(
-      viewport.querySelectorAll('.zh-category-pills__item')
+    const activeIndex = Math.max(
+      0,
+      links.findIndex((link) => {
+        return link.getAttribute('aria-current') === 'page';
+      })
     );
 
-    const activeIndex = slides.findIndex((slide) => {
-      return slide.contains(active);
+    let keyboardIndex = activeIndex;
+
+    const setRovingIndex = (index, focus = false) => {
+      keyboardIndex = Math.max(
+        0,
+        Math.min(index, links.length - 1)
+      );
+
+      links.forEach((link, linkIndex) => {
+        link.tabIndex = linkIndex === keyboardIndex ? 0 : -1;
+      });
+
+      embla.scrollTo(keyboardIndex, false);
+
+      if (focus) {
+        links[keyboardIndex]?.focus({
+          preventScroll: true
+        });
+      }
+    };
+
+    const updateRailState = () => {
+      const canPrev = embla.canScrollPrev();
+      const canNext = embla.canScrollNext();
+      const hasOverflow = canPrev || canNext;
+
+      rail.classList.toggle('has-overflow', hasOverflow);
+      rail.classList.toggle('can-scroll-prev', canPrev);
+      rail.classList.toggle('can-scroll-next', canNext);
+
+      if (prev) prev.disabled = !canPrev;
+      if (next) next.disabled = !canNext;
+    };
+
+    links.forEach((link, index) => {
+      link.addEventListener('focus', () => {
+        setRovingIndex(index, false);
+      });
+
+      link.addEventListener('keydown', (event) => {
+        let nextIndex = null;
+
+        if (event.key === 'ArrowRight') {
+          nextIndex = Math.min(
+            keyboardIndex + 1,
+            links.length - 1
+          );
+        }
+
+        if (event.key === 'ArrowLeft') {
+          nextIndex = Math.max(
+            keyboardIndex - 1,
+            0
+          );
+        }
+
+        if (event.key === 'Home') {
+          nextIndex = 0;
+        }
+
+        if (event.key === 'End') {
+          nextIndex = links.length - 1;
+        }
+
+        if (nextIndex === null) return;
+
+        event.preventDefault();
+        setRovingIndex(nextIndex, true);
+      });
     });
 
-    if (activeIndex > 0) {
-      embla.scrollTo(activeIndex, true);
-    }
+    prev?.addEventListener('click', () => {
+      embla.scrollPrev();
+    });
+
+    next?.addEventListener('click', () => {
+      embla.scrollNext();
+    });
+
+    embla.on('select', updateRailState);
+    embla.on('scroll', updateRailState);
+    embla.on('reInit', updateRailState);
+
+    setRovingIndex(activeIndex, false);
+    embla.scrollTo(activeIndex, true);
+    updateRailState();
   });
 </script>
 
