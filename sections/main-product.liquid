@@ -594,28 +594,11 @@
     transform: translateX(3px);
   }
 
-  .zh-product__trust {
-    margin-top: 1rem;
-    padding-top: .95rem;
-    border-top: 1px solid var(--zh-border);
-  }
-
-  .zh-product__trust-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .45rem .7rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  .zh-product__reassurance {
+    margin: .85rem 0 0;
     color: var(--zh-muted);
-    font-size: .78rem;
-    line-height: 1.5;
-  }
-
-  .zh-product__trust-item:not(:last-child)::after {
-    margin-left: .7rem;
-    content: '·';
-    opacity: .45;
+    font-size: .82rem;
+    line-height: 1.55;
   }
 
   .zh-product__spec-overview,
@@ -1029,6 +1012,12 @@
                         <span data-cart-add-icon aria-hidden="true">+</span>
                       </button>
                     </div>
+
+                    {%- if block.settings.show_trust -%}
+                      <p class="zh-product__reassurance">
+                        {{ block.settings.reassurance_text | default: 'Zorgvuldig verpakt en verzonden vanuit Nederland.' }}
+                      </p>
+                    {%- endif -%}
                   </div>
 
                   <div data-buy-sold class="zh-product__sold-state"{% unless is_sold %} hidden{% endunless %}>
@@ -1041,15 +1030,6 @@
                 {%- endform -%}
               </div>
 
-              {%- if block.settings.show_trust -%}
-                <div class="zh-product__trust">
-                  <ul class="zh-product__trust-list" aria-label="Bestelinformatie">
-                    {%- if block.settings.trust_1 != blank -%}<li class="zh-product__trust-item">{{ block.settings.trust_1 }}</li>{%- endif -%}
-                    {%- if block.settings.trust_2 != blank -%}<li class="zh-product__trust-item">{{ block.settings.trust_2 }}</li>{%- endif -%}
-                    {%- if block.settings.trust_3 != blank -%}<li class="zh-product__trust-item">{{ block.settings.trust_3 }}</li>{%- endif -%}
-                  </ul>
-                </div>
-              {%- endif -%}
             </div>
           {%- endif -%}
         {%- endfor -%}
@@ -1235,7 +1215,7 @@
       }
     </script>
 
-    <script src="{{ 'product.js' | asset_url }}" defer></script>
+    <script src="{{ 'product.js' | asset_url | append: '?zh=4' }}" defer></script>
     {% render 'product-structured-data', product: product %}
   </section>
 </div>
@@ -1268,10 +1248,8 @@
       "settings": [
         { "type": "text", "id": "add_label", "label": "Tekst winkelmandknop", "default": "In winkelmand" },
         { "type": "text", "id": "sold_label", "label": "Tekst uitverkocht", "default": "Uitverkocht" },
-        { "type": "checkbox", "id": "show_trust", "label": "Vertrouwensinformatie tonen", "default": true },
-        { "type": "text", "id": "trust_1", "label": "Punt 1", "default": "Veilig betalen" },
-        { "type": "text", "id": "trust_2", "label": "Punt 2", "default": "Levering 1–3 werkdagen" },
-        { "type": "text", "id": "trust_3", "label": "Punt 3", "default": "Verzonden vanuit Nederland" }
+        { "type": "checkbox", "id": "show_trust", "label": "Verpakkingsregel tonen", "default": true },
+        { "type": "text", "id": "reassurance_text", "label": "Tekst onder de winkelmandknop", "default": "Zorgvuldig verpakt en verzonden vanuit Nederland." }
       ]
     },
     { "type": "description", "name": "Productomschrijving", "limit": 1, "settings": [] },
