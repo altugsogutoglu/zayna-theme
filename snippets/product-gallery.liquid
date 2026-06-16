@@ -9,7 +9,7 @@
 {% style %}
   .zh-gallery {
     width: 100%;
-    max-width: 340px;
+    max-width: 330px;
     margin: 0 auto;
     color: var(--color-ink, #2a2520);
   }
@@ -18,7 +18,8 @@
     outline: 0;
   }
 
-  .zh-gallery:focus-visible .zh-gallery__counter {
+  .zh-gallery:focus-visible .zh-gallery__counter,
+  .zh-gallery:focus-visible .zh-gallery__utility-link {
     color: #9b5f35;
   }
 
@@ -27,16 +28,11 @@
     color: #9b5f35;
   }
 
-  .zh-gallery:focus-visible
-    .zh-gallery__segment[aria-current='true']::before {
-    background: #9b5f35;
-  }
-
-  .zh-gallery__mobile {
+  .zh-gallery__compact {
     display: block;
   }
 
-  .zh-gallery__desktop {
+  .zh-gallery__wide {
     display: none;
   }
 
@@ -44,7 +40,7 @@
   .zh-gallery__main-frame {
     position: relative;
     overflow: hidden;
-    background: #fcfaf7;
+    background: transparent;
   }
 
   .zh-gallery__track {
@@ -68,7 +64,7 @@
     aspect-ratio: 1;
     overflow: hidden;
     scroll-snap-align: center;
-    background: #fcfaf7;
+    background: transparent;
   }
 
   .zh-gallery__image,
@@ -96,10 +92,10 @@
     display: grid;
     place-items: center;
     border: 1px solid rgb(42 37 32 / 10%);
-    background: rgb(252 250 247 / 92%);
+    background: rgb(252 250 247 / 90%);
     color: #2a2520;
     cursor: pointer;
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(5px);
     transition:
       background-color 160ms ease,
       color 160ms ease,
@@ -111,17 +107,17 @@
     position: absolute;
     z-index: 3;
     top: 50%;
-    width: 2.45rem;
-    height: 2.45rem;
+    width: 2.35rem;
+    height: 2.35rem;
     transform: translateY(-50%);
   }
 
   .zh-gallery__nav--prev {
-    left: .55rem;
+    left: .5rem;
   }
 
   .zh-gallery__nav--next {
-    right: .55rem;
+    right: .5rem;
   }
 
   .zh-gallery__nav:hover:not(:disabled),
@@ -133,132 +129,130 @@
 
   .zh-gallery__nav:disabled,
   .zh-gallery__viewer-nav:disabled {
-    opacity: .28;
+    opacity: .25;
     cursor: default;
-  }
-
-  .zh-gallery__open {
-    position: absolute;
-    z-index: 3;
-    right: .65rem;
-    bottom: .65rem;
-    display: inline-flex;
-    min-height: 2.35rem;
-    align-items: center;
-    gap: .45rem;
-    padding: .45rem .7rem;
-    border: 1px solid rgb(42 37 32 / 10%);
-    background: rgb(252 250 247 / 92%);
-    color: #2a2520;
-    font-size: .72rem;
-    font-weight: 600;
-    line-height: 1;
-    cursor: pointer;
-    backdrop-filter: blur(6px);
-    transition:
-      background-color 160ms ease,
-      color 160ms ease,
-      border-color 160ms ease;
-  }
-
-  .zh-gallery__open:hover {
-    border-color: #2a2520;
-    background: #2a2520;
-    color: #fff;
   }
 
   .zh-gallery__sold-label {
     position: absolute;
     z-index: 3;
-    top: .65rem;
-    left: .65rem;
+    top: .6rem;
+    left: .6rem;
     display: inline-flex;
-    min-height: 1.75rem;
+    min-height: 1.7rem;
     align-items: center;
-    padding: .25rem .65rem;
-    border: 1px solid rgb(155 76 67 / 16%);
+    padding: .22rem .6rem;
+    border: 1px solid rgb(155 76 67 / 15%);
     background: rgb(252 250 247 / 94%);
     color: var(--color-sold, #9b4c43);
-    font-size: .69rem;
+    font-size: .67rem;
     font-weight: 600;
     letter-spacing: .08em;
     text-transform: uppercase;
-    backdrop-filter: blur(7px);
+    backdrop-filter: blur(6px);
   }
 
-  .zh-gallery__meta {
+  .zh-gallery__utility {
     display: flex;
+    min-height: 2.4rem;
     align-items: center;
-    gap: .85rem;
-    min-height: 2.3rem;
-    margin-top: .55rem;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: .45rem;
   }
 
   .zh-gallery__counter {
     flex: 0 0 auto;
     min-width: 2.8rem;
     color: #625a53;
-    font-size: .74rem;
+    font-size: .75rem;
     font-variant-numeric: tabular-nums;
-    letter-spacing: .06em;
+    letter-spacing: .05em;
     line-height: 1.3;
   }
 
-  .zh-gallery__segments {
-    display: grid;
-    grid-template-columns: repeat(var(--zh-gallery-count, 1), minmax(0, 1fr));
-    flex: 1 1 auto;
-    gap: .28rem;
+  .zh-gallery__utility-link {
+    display: inline-flex;
+    min-height: 2.35rem;
+    align-items: center;
+    gap: .4rem;
+    padding: .25rem 0;
+    border: 0;
+    background: transparent;
+    color: #625a53;
+    font-size: .76rem;
+    font-weight: 500;
+    line-height: 1.3;
+    cursor: pointer;
+    text-underline-offset: 3px;
+    transition: color 160ms ease;
   }
 
-  .zh-gallery__segment {
+  .zh-gallery__utility-link:hover {
+    color: #9b5f35;
+    text-decoration: underline;
+  }
+
+  .zh-gallery__dots {
+    display: flex;
+    min-height: 2rem;
+    align-items: center;
+    justify-content: center;
+    gap: .1rem;
+  }
+
+  .zh-gallery__dot {
     position: relative;
-    min-width: 0;
-    height: 1.65rem;
+    width: 1.75rem;
+    height: 2rem;
+    flex: 0 0 1.75rem;
     padding: 0;
     border: 0;
     background: transparent;
     cursor: pointer;
   }
 
-  .zh-gallery__segment::before {
+  .zh-gallery__dot::before {
     position: absolute;
     top: 50%;
-    right: 0;
-    left: 0;
-    height: 2px;
-    background: #ded5cc;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: #cfc4ba;
     content: '';
-    transform: translateY(-50%);
-    transition: background-color 150ms ease, height 150ms ease;
+    transform: translate(-50%, -50%);
+    transition:
+      width 150ms ease,
+      background-color 150ms ease;
   }
 
-  .zh-gallery__segment:hover::before,
-  .zh-gallery__segment[aria-current='true']::before {
+  .zh-gallery__dot:hover::before,
+  .zh-gallery__dot[aria-current='true']::before {
     background: #2a2520;
   }
 
-  .zh-gallery__segment[aria-current='true']::before {
-    height: 3px;
+  .zh-gallery__dot[aria-current='true']::before {
+    width: 16px;
   }
 
   .zh-gallery__thumbs {
     display: flex;
     flex-wrap: wrap;
-    gap: .5rem;
-    margin-top: .7rem;
+    gap: .45rem;
+    margin-top: .45rem;
   }
 
   .zh-gallery__thumb {
     position: relative;
-    width: 56px;
-    height: 56px;
-    flex: 0 0 56px;
+    width: 54px;
+    height: 54px;
+    flex: 0 0 54px;
     overflow: hidden;
     padding: 0;
     border: 1px solid transparent;
-    background: #fcfaf7;
-    opacity: .7;
+    background: transparent;
+    opacity: .66;
     cursor: pointer;
     transition: border-color 160ms ease, opacity 160ms ease;
   }
@@ -273,8 +267,8 @@
   }
 
   .zh-gallery__nav:focus-visible,
-  .zh-gallery__open:focus-visible,
-  .zh-gallery__segment:focus-visible,
+  .zh-gallery__utility-link:focus-visible,
+  .zh-gallery__dot:focus-visible,
   .zh-gallery__thumb:focus-visible,
   .zh-gallery__viewer button:focus-visible {
     outline: 2px solid #9b5f35;
@@ -316,39 +310,31 @@
     height: 100%;
     padding: 0;
     border: 0;
-    background: rgb(42 37 32 / 30%);
+    background: rgb(42 37 32 / 23%);
     cursor: default;
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(2px);
   }
 
   .zh-gallery__viewer-panel {
     position: relative;
     z-index: 1;
     display: flex;
-    width: min(820px, calc(100vw - 2rem));
+    width: min(690px, calc(100vw - 2rem));
     max-height: calc(100dvh - 2rem);
     flex-direction: column;
     overflow: hidden;
-    border: 1px solid rgb(42 37 32 / 10%);
-    background: #fcfaf7;
-    box-shadow: 0 28px 80px rgb(42 37 32 / 25%);
+    border: 1px solid rgb(42 37 32 / 9%);
+    background: #f8f4ef;
+    box-shadow: 0 24px 70px rgb(42 37 32 / 20%);
   }
 
   .zh-gallery__viewer-header {
     display: flex;
-    min-height: 3.5rem;
+    min-height: 3.35rem;
     align-items: center;
-    gap: .75rem;
-    padding: .55rem .7rem .55rem 1rem;
+    gap: .7rem;
+    padding: .45rem .55rem .45rem .9rem;
     border-bottom: 1px solid #ded5cc;
-  }
-
-  .zh-gallery__viewer-title {
-    margin: 0;
-    color: #2a2520;
-    font-family: var(--font-display, Georgia, serif);
-    font-size: 1rem;
-    font-weight: 400;
   }
 
   .zh-gallery__viewer-counter {
@@ -356,7 +342,7 @@
     color: #625a53;
     font-size: .72rem;
     font-variant-numeric: tabular-nums;
-    letter-spacing: .06em;
+    letter-spacing: .05em;
   }
 
   .zh-gallery__viewer-zoom,
@@ -365,8 +351,8 @@
     min-height: 2.45rem;
     align-items: center;
     justify-content: center;
-    gap: .38rem;
-    padding: .4rem .65rem;
+    gap: .35rem;
+    padding: .35rem .6rem;
     border: 0;
     background: transparent;
     color: #2a2520;
@@ -381,7 +367,8 @@
   }
 
   .zh-gallery__viewer-close {
-    width: 2.45rem;
+    width: 2.65rem;
+    height: 2.65rem;
     padding: 0;
   }
 
@@ -391,14 +378,14 @@
     min-height: 0;
     flex: 1 1 auto;
     place-items: center;
-    padding: 1rem 3.4rem 1.2rem;
+    padding: .7rem 3rem 1rem;
   }
 
   .zh-gallery__viewer-media {
     display: grid;
     width: 100%;
-    max-height: min(64dvh, 620px);
-    min-height: 260px;
+    max-height: min(58dvh, 520px);
+    min-height: 240px;
     overflow: auto;
     place-items: center;
     scrollbar-width: thin;
@@ -409,7 +396,7 @@
     width: auto;
     max-width: 100%;
     height: auto;
-    max-height: min(62dvh, 600px);
+    max-height: min(56dvh, 500px);
     object-fit: contain;
     transition: width 180ms ease, max-width 180ms ease, max-height 180ms ease;
   }
@@ -424,33 +411,23 @@
     position: absolute;
     z-index: 2;
     top: 50%;
-    width: 2.65rem;
-    height: 2.65rem;
+    width: 2.55rem;
+    height: 2.55rem;
     transform: translateY(-50%);
   }
 
   .zh-gallery__viewer-nav--prev {
-    left: .45rem;
+    left: .55rem;
   }
 
   .zh-gallery__viewer-nav--next {
-    right: .45rem;
+    right: .55rem;
   }
 
   @media (max-width: 479px) {
     .zh-gallery__nav {
-      width: 2.25rem;
-      height: 2.25rem;
-    }
-
-    .zh-gallery__open span:last-child {
-      display: none;
-    }
-
-    .zh-gallery__open {
-      width: 2.35rem;
-      padding: 0;
-      justify-content: center;
+      width: 2.2rem;
+      height: 2.2rem;
     }
 
     .zh-gallery__viewer-panel {
@@ -459,7 +436,7 @@
     }
 
     .zh-gallery__viewer-header {
-      padding-left: .8rem;
+      padding-left: .75rem;
     }
 
     .zh-gallery__viewer-zoom span {
@@ -467,45 +444,51 @@
     }
 
     .zh-gallery__viewer-body {
-      padding: .75rem 2.75rem 1rem;
+      padding: .55rem 2.55rem .85rem;
     }
 
     .zh-gallery__viewer-media {
-      max-height: 58dvh;
-      min-height: 220px;
+      max-height: 54dvh;
+      min-height: 210px;
     }
 
     .zh-gallery__viewer-image {
-      max-height: 56dvh;
+      max-height: 52dvh;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .zh-gallery {
+      max-width: 300px;
+      margin: 0;
+    }
+
+    .zh-gallery__compact {
+      display: none;
+    }
+
+    .zh-gallery__wide {
+      display: block;
     }
   }
 
   @media (min-width: 768px) {
     .zh-gallery {
-      max-width: 380px;
-      margin: 0;
-    }
-
-    .zh-gallery__mobile {
-      display: none;
-    }
-
-    .zh-gallery__desktop {
-      display: block;
+      max-width: 360px;
     }
   }
 
   @media (min-width: 1100px) {
     .zh-gallery {
-      max-width: 430px;
+      max-width: 410px;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .zh-gallery__main-image,
     .zh-gallery__nav,
-    .zh-gallery__open,
-    .zh-gallery__segment::before,
+    .zh-gallery__utility-link,
+    .zh-gallery__dot::before,
     .zh-gallery__thumb,
     .zh-gallery__viewer-image {
       transition: none;
@@ -529,7 +512,7 @@
   ]'
   tabindex="0"
   role="region"
-  aria-label="Productgalerij. Gebruik de pijltjestoetsen om door de afbeeldingen te bladeren."
+  aria-label="Productgalerij. Gebruik links en rechts om door de afbeeldingen te bladeren."
 >
   {%- if imgs.size == 0 -%}
     <div class="zh-gallery__empty">
@@ -539,7 +522,7 @@
     {%- assign first = imgs | first -%}
     {%- assign first_alt = first.alt | default: product.title -%}
 
-    <div class="zh-gallery__mobile">
+    <div class="zh-gallery__compact">
       <div class="zh-gallery__frame">
         <div data-gallery-track class="zh-gallery__track">
           {%- for image in imgs -%}
@@ -556,7 +539,7 @@
               data-gallery-index="{{ forloop.index0 }}"
               aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}"
             >
-              {{ image | image_url: width: 1000, format: 'webp' | image_tag: loading: mobile_loading, fetchpriority: mobile_priority, sizes: '(max-width: 767px) min(100vw - 32px, 340px), 340px', widths: '320, 370, 500, 700, 1000', alt: mobile_alt, class: 'zh-gallery__image' }}
+              {{ image | image_url: width: 1000, format: 'webp' | image_tag: loading: mobile_loading, fetchpriority: mobile_priority, sizes: '(max-width: 639px) min(100vw - 32px, 330px), 330px', widths: '320, 370, 500, 700, 1000', alt: mobile_alt, class: 'zh-gallery__image' }}
             </div>
           {%- endfor -%}
         </div>
@@ -573,35 +556,35 @@
         {%- if is_sold -%}
           <span data-gallery-sold-label class="zh-gallery__sold-label">Uitverkocht</span>
         {%- endif -%}
+      </div>
 
-        <button type="button" data-gallery-viewer-open class="zh-gallery__open" aria-label="Bekijk de actieve productfoto groter">
-          {% render 'icon', name: 'zoom-in', size: 15 %}
+      <div class="zh-gallery__utility">
+        <span data-gallery-counter class="zh-gallery__counter" aria-live="polite">1 / {{ imgs.size }}</span>
+        <button type="button" data-gallery-viewer-open class="zh-gallery__utility-link" aria-label="Bekijk de actieve productfoto groter">
+          {% render 'icon', name: 'zoom-in', size: 14 %}
           <span>Bekijk groter</span>
         </button>
       </div>
 
       {%- if imgs.size > 1 -%}
-        <div class="zh-gallery__meta">
-          <span data-gallery-counter class="zh-gallery__counter" aria-live="polite">1 / {{ imgs.size }}</span>
-          <div class="zh-gallery__segments" style="--zh-gallery-count: {{ imgs.size }};" role="group" aria-label="Kies een productafbeelding">
-            {%- for image in imgs -%}
-              <button
-                type="button"
-                data-gallery-segment="{{ forloop.index0 }}"
-                class="zh-gallery__segment"
-                aria-label="Toon afbeelding {{ forloop.index }} van {{ imgs.size }}"
-                aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
-                tabindex="-1"
-              ></button>
-            {%- endfor -%}
-          </div>
+        <div class="zh-gallery__dots" role="group" aria-label="Kies een productafbeelding">
+          {%- for image in imgs -%}
+            <button
+              type="button"
+              data-gallery-segment="{{ forloop.index0 }}"
+              class="zh-gallery__dot"
+              aria-label="Toon afbeelding {{ forloop.index }} van {{ imgs.size }}"
+              aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+              tabindex="-1"
+            ></button>
+          {%- endfor -%}
         </div>
       {%- endif -%}
     </div>
 
-    <div class="zh-gallery__desktop">
+    <div class="zh-gallery__wide">
       <div class="zh-gallery__main-frame">
-        {{ first | image_url: width: 1400, format: 'webp' | image_tag: loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 1100px) 430px, 380px', widths: '400, 500, 700, 900, 1200, 1400', alt: first_alt, class: 'zh-gallery__main-image' }}
+        {{ first | image_url: width: 1400, format: 'webp' | image_tag: loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 1100px) 410px, (min-width: 768px) 360px, 300px', widths: '300, 360, 410, 500, 700, 900, 1200, 1400', alt: first_alt, class: 'zh-gallery__main-image' }}
 
         {%- if imgs.size > 1 -%}
           <button type="button" data-gallery-prev class="zh-gallery__nav zh-gallery__nav--prev" aria-label="Vorige afbeelding" disabled>
@@ -615,30 +598,17 @@
         {%- if is_sold -%}
           <span data-gallery-sold-label class="zh-gallery__sold-label">Uitverkocht</span>
         {%- endif -%}
+      </div>
 
-        <button type="button" data-gallery-viewer-open class="zh-gallery__open" aria-label="Bekijk de actieve productfoto groter">
-          {% render 'icon', name: 'zoom-in', size: 15 %}
+      <div class="zh-gallery__utility">
+        <span data-gallery-counter class="zh-gallery__counter" aria-live="polite">1 / {{ imgs.size }}</span>
+        <button type="button" data-gallery-viewer-open class="zh-gallery__utility-link" aria-label="Bekijk de actieve productfoto groter">
+          {% render 'icon', name: 'zoom-in', size: 14 %}
           <span>Bekijk groter</span>
         </button>
       </div>
 
       {%- if imgs.size > 1 -%}
-        <div class="zh-gallery__meta">
-          <span data-gallery-counter class="zh-gallery__counter" aria-live="polite">1 / {{ imgs.size }}</span>
-          <div class="zh-gallery__segments" style="--zh-gallery-count: {{ imgs.size }};" role="group" aria-label="Kies een productafbeelding">
-            {%- for image in imgs -%}
-              <button
-                type="button"
-                data-gallery-segment="{{ forloop.index0 }}"
-                class="zh-gallery__segment"
-                aria-label="Toon afbeelding {{ forloop.index }} van {{ imgs.size }}"
-                aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
-                tabindex="-1"
-              ></button>
-            {%- endfor -%}
-          </div>
-        </div>
-
         <div class="zh-gallery__thumbs" aria-label="Productafbeeldingen">
           {%- for image in imgs -%}
             {%- assign thumb_alt = image.alt | default: product.title -%}
@@ -650,7 +620,7 @@
               aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
               tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
             >
-              {{ image | image_url: width: 180, format: 'webp' | image_tag: loading: 'lazy', sizes: '56px', widths: '56, 84, 112, 180', alt: thumb_alt }}
+              {{ image | image_url: width: 180, format: 'webp' | image_tag: loading: 'lazy', sizes: '54px', widths: '54, 81, 108, 180', alt: thumb_alt }}
             </button>
           {%- endfor -%}
         </div>
