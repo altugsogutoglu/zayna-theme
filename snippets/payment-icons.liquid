@@ -1,19 +1,25 @@
 {%- liquid
-  assign h = icon_height | default: 24
-  assign payment_types = 'ideal,bancontact,apple_pay,google_pay,visa,master' | split: ','
+  assign icon_height = 22
+  if compact
+    assign icon_height = 19
+  endif
+
+  assign payment_types = shop.enabled_payment_types
 -%}
 
-<ul
-  class="zayna-payment-icons"
-  aria-label="Geaccepteerde betaalmethoden"
-  style="--zayna-payment-icon-height: {{ h }}px;"
->
-  {%- for type in payment_types -%}
-    <li class="zayna-payment-icons__item">
-      {{ type | payment_type_svg_tag: class: 'zayna-payment-icons__svg' }}
-    </li>
-  {%- endfor -%}
-</ul>
+{%- if payment_types != blank -%}
+  <ul
+    class="zayna-payment-icons{% if compact %} is-compact{% endif %}"
+    aria-label="Geaccepteerde betaalmethoden"
+    style="--zayna-payment-icon-height: {{ icon_height }}px;"
+  >
+    {%- for type in payment_types limit: 6 -%}
+      <li class="zayna-payment-icons__item">
+        {{ type | payment_type_svg_tag: class: 'zayna-payment-icons__svg' }}
+      </li>
+    {%- endfor -%}
+  </ul>
+{%- endif -%}
 
 {% style %}
   .zayna-payment-icons {
@@ -37,16 +43,15 @@
     display: block;
     width: auto;
     height: var(--zayna-payment-icon-height);
-    max-width: 48px;
+    max-width: 44px;
   }
 
-  @media (max-width: 389px) {
-    .zayna-payment-icons {
-      gap: 5px;
-    }
+  .zayna-payment-icons.is-compact {
+    gap: 5px;
+    opacity: .82;
+  }
 
-    .zayna-payment-icons__svg {
-      max-width: 46px;
-    }
+  .zayna-payment-icons.is-compact .zayna-payment-icons__svg {
+    max-width: 39px;
   }
 {% endstyle %}
