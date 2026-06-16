@@ -218,6 +218,7 @@
       params.delete('page');
 
       const search = params.toString();
+      const previousScrollY = window.scrollY;
 
       root.setAttribute('aria-busy', 'true');
       startLoading();
@@ -236,6 +237,24 @@
         }
 
         patchCollection(freshRoot);
+
+        /*
+         * The toolbar is not replaced. Restoring the exact window
+         * position therefore cannot trigger a focus-induced jump.
+         */
+        window.scrollTo({
+          top: previousScrollY,
+          left: 0,
+          behavior: 'auto'
+        });
+
+        window.requestAnimationFrame(() => {
+          window.scrollTo({
+            top: previousScrollY,
+            left: 0,
+            behavior: 'auto'
+          });
+        });
 
         window.history.pushState(
           {},
