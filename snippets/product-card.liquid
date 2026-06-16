@@ -491,6 +491,23 @@
     }
   }
 
+
+  @media (hover: none) and (pointer: coarse) {
+    .zh-product-card__quick-button.is-touch-active {
+      border-color: rgba(166, 106, 63, 0.28);
+      background: #f1e8e0;
+      color: #955c39;
+      transform: scale(0.995);
+    }
+
+    .zh-product-card__quick-button--sold.is-touch-active {
+      border-color: rgba(231, 221, 210, 0.92);
+      background: rgba(250, 245, 242, 0.78);
+      color: #6c645e;
+      transform: none;
+    }
+  }
+
   @media (hover: hover) and (pointer: fine) {
     .zh-product-card:hover .zh-product-card__primary {
       transform: scale(1.012);
@@ -609,5 +626,90 @@
         event.preventDefault();
       }
     });
+
+    /*
+     * Mobile Quick Add feedback.
+     * It appears only for a real press and is cancelled as soon as the
+     * finger moves far enough to indicate scrolling.
+     */
+    let quickButton = null;
+    let quickStartX = 0;
+    let quickStartY = 0;
+    let quickTimer = null;
+
+    const clearQuickFeedback = () => {
+      if (quickTimer) {
+        window.clearTimeout(quickTimer);
+        quickTimer = null;
+      }
+
+      quickButton?.classList.remove('is-touch-active');
+      quickButton = null;
+    };
+
+    document.addEventListener(
+      'pointerdown',
+      (event) => {
+        if (event.pointerType !== 'touch') return;
+
+        const button = event.target.closest(
+          '.zh-product-card__quick-button'
+        );
+
+        if (!button) return;
+
+        clearQuickFeedback();
+
+        quickButton = button;
+        quickStartX = event.clientX;
+        quickStartY = event.clientY;
+
+        quickTimer = window.setTimeout(() => {
+          quickButton?.classList.add('is-touch-active');
+        }, 55);
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      'pointermove',
+      (event) => {
+        if (
+          event.pointerType !== 'touch' ||
+          !quickButton
+        ) {
+          return;
+        }
+
+        const movedX = Math.abs(
+          event.clientX - quickStartX
+        );
+
+        const movedY = Math.abs(
+          event.clientY - quickStartY
+        );
+
+        if (movedX > 9 || movedY > 9) {
+          clearQuickFeedback();
+        }
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      'pointerup',
+      (event) => {
+        if (event.pointerType !== 'touch') return;
+
+        window.setTimeout(clearQuickFeedback, 130);
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      'pointercancel',
+      clearQuickFeedback,
+      { passive: true }
+    );
   })();
 </script>
