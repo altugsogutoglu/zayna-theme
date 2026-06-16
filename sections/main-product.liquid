@@ -65,144 +65,8 @@
     assign similar_url = coll.url
   endif
 
-  assign size_note = product.metafields.custom.size_note.value
-  assign size_label = product.metafields.custom.size_label.value | default: ''
-  assign materials = product.metafields.custom.materials.value
-  assign dimensions = product.metafields.custom.dimensions.value
-  assign set_contents = product.metafields.custom.set_contents.value
-  assign included_parts = product.metafields.custom.included_parts.value
-  assign finish = product.metafields.custom.finish.value
-  assign closure = product.metafields.custom.closure.value
-  assign usage = product.metafields.custom.usage.value
-  assign care_summary = product.metafields.custom.care_summary.value
+
   assign zayna_note = product.metafields.custom.zayna_note.value
-
-  if size_label == blank and size_note != blank
-    assign size_note_lower = size_note | downcase
-    assign size_label = 'Formaat'
-    if size_note_lower contains 'ml' or size_note_lower contains 'liter'
-      assign size_label = 'Inhoud'
-    elsif size_note_lower contains 'stuks' or size_note_lower contains 'set van'
-      assign size_label = 'Aantal'
-    endif
-  endif
-
-  assign material_feature_labels = ''
-  assign use_feature_labels = ''
-  assign function_feature_labels = ''
-  assign maintenance_feature_labels = ''
-
-  assign feature_values = product.metafields.custom.features.value
-  if feature_values.first == blank
-    assign feature_string = product.metafields.custom.features.value | remove: '[' | remove: ']' | remove: '"'
-    assign feature_values = feature_string | split: ','
-  endif
-
-  for feature in feature_values
-    assign feature_key = feature | strip | downcase
-    assign feature_label = ''
-    assign feature_group = ''
-
-    case feature_key
-      when 'borosilicate'
-        assign feature_label = 'Borosilicaatglas'
-        assign feature_group = 'material'
-      when 'stainless_steel'
-        assign feature_label = 'Roestvrij staal'
-        assign feature_group = 'material'
-      when 'stainless_steel_304'
-        assign feature_label = '304 roestvrij staal'
-        assign feature_group = 'material'
-      when 'induction'
-        assign feature_label = 'Geschikt voor inductie'
-        assign feature_group = 'use'
-      when 'oven_safe'
-        assign feature_label = 'Ovenbestendig'
-        assign feature_group = 'use'
-      when 'freezer_safe'
-        assign feature_label = 'Vriezerbestendig'
-        assign feature_group = 'use'
-      when 'microwave_safe'
-        assign feature_label = 'Magnetronbestendig'
-        assign feature_group = 'use'
-      when 'heat_resistant'
-        assign feature_label = 'Hittebestendig'
-        assign feature_group = 'use'
-      when 'dishwasher_safe'
-        assign feature_label = 'Vaatwasserbestendig'
-        assign feature_group = 'maintenance'
-      when 'handwash_recommended'
-        assign feature_label = 'Handwas aanbevolen'
-        assign feature_group = 'maintenance'
-      when 'non_stick'
-        assign feature_label = 'Antiaanbaklaag'
-        assign feature_group = 'function'
-      when 'utensil_safe'
-        assign feature_label = 'Geschikt voor keukengerei'
-        assign feature_group = 'function'
-      when 'stay_cool'
-        assign feature_label = 'Koelblijvend handvat'
-        assign feature_group = 'function'
-      when 'bpa_free'
-        assign feature_label = 'BPA-vrij'
-        assign feature_group = 'function'
-      when 'airtight'
-        assign feature_label = 'Luchtdicht'
-        assign feature_group = 'function'
-      when 'reusable'
-        assign feature_label = 'Herbruikbaar'
-        assign feature_group = 'function'
-      when 'leak_proof'
-        assign feature_label = 'Lekvrij'
-        assign feature_group = 'function'
-      when 'scratch_resistant'
-        assign feature_label = 'Krasbestendig'
-        assign feature_group = 'function'
-      when 'stackable'
-        assign feature_label = 'Stapelbaar'
-        assign feature_group = 'function'
-    endcase
-
-    if feature_label != blank
-      case feature_group
-        when 'material'
-          if material_feature_labels != blank
-            assign material_feature_labels = material_feature_labels | append: ', '
-          endif
-          assign material_feature_labels = material_feature_labels | append: feature_label
-        when 'use'
-          if use_feature_labels != blank
-            assign use_feature_labels = use_feature_labels | append: ', '
-          endif
-          assign use_feature_labels = use_feature_labels | append: feature_label
-        when 'function'
-          if function_feature_labels != blank
-            assign function_feature_labels = function_feature_labels | append: ', '
-          endif
-          assign function_feature_labels = function_feature_labels | append: feature_label
-        when 'maintenance'
-          if maintenance_feature_labels != blank
-            assign maintenance_feature_labels = maintenance_feature_labels | append: ', '
-          endif
-          assign maintenance_feature_labels = maintenance_feature_labels | append: feature_label
-      endcase
-    endif
-  endfor
-
-  assign displayed_material = materials
-  if displayed_material == blank
-    assign displayed_material = material_feature_labels
-  endif
-
-  assign displayed_usage = usage
-  if displayed_usage == blank
-    assign displayed_usage = use_feature_labels
-  endif
-
-  assign displayed_care = care_summary
-  if displayed_care == blank
-    assign displayed_care = maintenance_feature_labels
-  endif
 
   assign description_intro_html = product.description
   assign product_care_html = ''
@@ -211,16 +75,6 @@
     assign care_parts = product.description | split: '<h3>Gebruik en onderhoud</h3>'
     assign product_care_html = care_parts | last
     assign description_intro_html = care_parts | first
-  endif
-
-  if description_intro_html contains '<h3>Details</h3>'
-    assign description_parts = description_intro_html | split: '<h3>Details</h3>'
-    assign description_intro_html = description_parts | first
-  endif
-
-  assign has_specs = false
-  if size_note != blank or dimensions != blank or displayed_material != blank or set_contents != blank or included_parts != blank or finish != blank or closure != blank or displayed_usage != blank or function_feature_labels != blank or displayed_care != blank
-    assign has_specs = true
   endif
 -%}
 
@@ -350,14 +204,14 @@
   }
 
   .zh-product__availability {
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: .42rem;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: .48rem;
     min-width: 0;
     color: var(--zh-muted);
     font-size: .86rem;
-    line-height: 1.5;
+    line-height: 1.45;
   }
 
   .zh-product__availability.is-sold {
@@ -367,13 +221,19 @@
   .zh-product__availability-dot {
     width: .45rem;
     height: .45rem;
-    flex: 0 0 auto;
+    margin-top: .36rem;
     border-radius: 999px;
     background: var(--color-sage, #71826d);
   }
 
   .zh-product__availability.is-sold .zh-product__availability-dot {
     background: var(--color-sold, #9b4c43);
+  }
+
+  .zh-product__availability-copy {
+    display: grid;
+    gap: .08rem;
+    min-width: 0;
   }
 
   .zh-product__availability-main {
@@ -385,8 +245,9 @@
     color: inherit;
   }
 
-  .zh-product__availability-separator {
-    opacity: .45;
+  .zh-product__availability [data-delivery-text] {
+    color: var(--zh-muted);
+    font-size: .82rem;
   }
 
   .zh-product__intro {
@@ -480,7 +341,7 @@
 
   .zh-product__qty {
     display: inline-grid;
-    grid-template-columns: 2.45rem 2.55rem 2.45rem;
+    grid-template-columns: 2.35rem 2.5rem 2.35rem;
     height: 3.35rem;
     border: 1px solid var(--zh-border);
   }
@@ -594,61 +455,12 @@
     transform: translateX(3px);
   }
 
-  .zh-product__reassurance {
-    margin: .85rem 0 0;
-    color: var(--zh-muted);
-    font-size: .82rem;
-    line-height: 1.55;
-  }
 
-  .zh-product__spec-overview,
   .zh-product__content,
   .zh-product__logistics {
     border-top: 1px solid var(--zh-border);
   }
 
-  .zh-product__spec-overview {
-    padding-top: 2.4rem;
-    padding-bottom: 2.4rem;
-  }
-
-  .zh-product__spec-grid {
-    display: grid;
-    gap: 1.5rem;
-  }
-
-  .zh-product__section-title {
-    margin: 0;
-    color: var(--color-ink, #2a2520);
-    font-size: clamp(1.45rem, 4vw, 1.9rem);
-    font-weight: 400;
-    line-height: 1.2;
-  }
-
-  .zh-product__specs {
-    margin: 0;
-    padding: 0;
-    border-top: 1px solid var(--zh-border);
-  }
-
-  .zh-product__spec-row {
-    display: grid;
-    grid-template-columns: minmax(7rem, .75fr) minmax(0, 1.4fr);
-    gap: 1rem;
-    padding: .78rem 0;
-    border-bottom: 1px solid var(--zh-border);
-    font-size: .88rem;
-    line-height: 1.55;
-  }
-
-  .zh-product__spec-row dt {
-    color: var(--zh-muted);
-  }
-
-  .zh-product__spec-row dd {
-    margin: 0;
-    color: var(--color-ink, #2a2520);
-  }
 
   .zh-product__content {
     padding-top: 2.5rem;
@@ -767,14 +579,38 @@
     display: none !important;
   }
 
-  @media (max-width: 479px) {
-    .zh-product__availability-separator {
-      display: none;
+
+  @media (min-width: 640px) {
+    .zh-product__purchase {
+      grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+      gap: clamp(1.4rem, 3.5vw, 2.5rem);
+      padding-top: 1.25rem;
+      padding-bottom: 3rem;
     }
 
-    .zh-product__availability [data-delivery-text] {
-      flex-basis: 100%;
-      padding-left: .87rem;
+    .zh-product__gallery-column,
+    .zh-product__buy-column {
+      align-self: start;
+    }
+
+    .zh-product__buy-column {
+      padding-top: .1rem;
+    }
+
+    .zh-product__title {
+      max-width: 22ch;
+      font-size: clamp(1.8rem, 3.5vw, 2.2rem);
+    }
+
+    .zh-product__content-grid.has-note {
+      grid-template-columns: minmax(0, 1.35fr) minmax(16rem, .65fr);
+      gap: clamp(2.5rem, 7vw, 6rem);
+      align-items: start;
+    }
+
+    .zh-product__content {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
     }
   }
 
@@ -792,8 +628,8 @@
     }
 
     .zh-product__purchase {
-      grid-template-columns: minmax(300px, 42%) minmax(0, 1fr);
-      gap: clamp(2rem, 4.5vw, 4.25rem);
+      grid-template-columns: minmax(300px, 38%) minmax(0, 1fr);
+      gap: clamp(2rem, 4vw, 3.75rem);
       padding-top: 1.4rem;
       padding-bottom: 3.5rem;
     }
@@ -801,34 +637,10 @@
     .zh-product__gallery-column {
       position: sticky;
       top: 6.25rem;
-      align-self: start;
-    }
-
-    .zh-product__buy-column {
-      padding-top: .2rem;
     }
 
     .zh-product__title {
-      max-width: 22ch;
-      font-size: clamp(2rem, 3.2vw, 2.55rem);
-    }
-
-    .zh-product__spec-grid {
-      grid-template-columns: minmax(14rem, .55fr) minmax(0, 1.45fr);
-      gap: clamp(2rem, 6vw, 5rem);
-      align-items: start;
-    }
-
-    .zh-product__content-grid.has-note {
-      grid-template-columns: minmax(0, 1.35fr) minmax(16rem, .65fr);
-      gap: clamp(2.5rem, 7vw, 6rem);
-      align-items: start;
-    }
-
-    .zh-product__spec-overview,
-    .zh-product__content {
-      padding-top: 3rem;
-      padding-bottom: 3rem;
+      font-size: clamp(2rem, 3.1vw, 2.5rem);
     }
 
     .zh-product__logistics {
@@ -839,7 +651,7 @@
 
   @media (min-width: 1180px) {
     .zh-product__purchase {
-      grid-template-columns: minmax(0, 460px) minmax(28rem, 1fr);
+      grid-template-columns: minmax(0, 410px) minmax(28rem, 1fr);
     }
   }
 
@@ -909,9 +721,10 @@
 
                 <span data-availability class="zh-product__availability{% if is_sold %} is-sold{% endif %}" aria-live="polite">
                   <span aria-hidden="true" class="zh-product__availability-dot"></span>
-                  <span data-availability-text class="zh-product__availability-main">{% if is_sold %}{{ block.settings.sold_text }}{% else %}{{ block.settings.in_stock_text }}{% endif %}</span>
-                  <span data-delivery-separator class="zh-product__availability-separator"{% if is_sold or block.settings.delivery_text == blank %} hidden{% endif %}>·</span>
-                  <span data-delivery-text{% if is_sold or block.settings.delivery_text == blank %} hidden{% endif %}>{{ block.settings.delivery_text }}</span>
+                  <span class="zh-product__availability-copy">
+                    <span data-availability-text class="zh-product__availability-main">{% if is_sold %}{{ block.settings.sold_text }}{% else %}{{ block.settings.in_stock_text }}{% endif %}</span>
+                    <span data-delivery-text{% if is_sold or block.settings.delivery_text == blank %} hidden{% endif %}>{{ block.settings.delivery_text }}</span>
+                  </span>
                 </span>
               </div>
 
@@ -1013,11 +826,6 @@
                       </button>
                     </div>
 
-                    {%- if block.settings.show_trust -%}
-                      <p class="zh-product__reassurance">
-                        {{ block.settings.reassurance_text | default: 'Zorgvuldig verpakt en verzonden vanuit Nederland.' }}
-                      </p>
-                    {%- endif -%}
                   </div>
 
                   <div data-buy-sold class="zh-product__sold-state"{% unless is_sold %} hidden{% endunless %}>
@@ -1036,65 +844,6 @@
       </div>
     </div>
 
-    {%- if has_specs -%}
-      <section class="zh-product__spec-overview mx-auto max-w-7xl px-4 sm:px-6 lg:px-10" aria-labelledby="zh-specs-heading-{{ section.id }}">
-        <div class="zh-product__spec-grid">
-          <h2 id="zh-specs-heading-{{ section.id }}" class="zh-product__section-title font-display">Belangrijkste details</h2>
-          <dl class="zh-product__specs">
-            {%- assign detail_count = 0 -%}
-
-            {%- if size_note != blank and detail_count < 6 -%}
-              <div class="zh-product__spec-row"><dt>{{ size_label | default: 'Formaat' }}</dt><dd>{{ size_note }}</dd></div>
-              {%- assign detail_count = detail_count | plus: 1 -%}
-            {%- endif -%}
-
-            {%- if dimensions != blank and detail_count < 6 -%}
-              <div class="zh-product__spec-row"><dt>Afmetingen</dt><dd>{{ dimensions }}</dd></div>
-              {%- assign detail_count = detail_count | plus: 1 -%}
-            {%- endif -%}
-
-            {%- if displayed_material != blank and detail_count < 6 -%}
-              <div class="zh-product__spec-row"><dt>Materiaal</dt><dd>{{ displayed_material }}</dd></div>
-              {%- assign detail_count = detail_count | plus: 1 -%}
-            {%- endif -%}
-
-            {%- if set_contents != blank and detail_count < 6 -%}
-              <div class="zh-product__spec-row"><dt>Setinhoud</dt><dd>{{ set_contents }}</dd></div>
-              {%- assign detail_count = detail_count | plus: 1 -%}
-            {%- endif -%}
-
-            {%- if included_parts != blank and detail_count < 6 -%}
-              <div class="zh-product__spec-row"><dt>Meegeleverd</dt><dd>{{ included_parts }}</dd></div>
-              {%- assign detail_count = detail_count | plus: 1 -%}
-            {%- endif -%}
-
-            {%- if finish != blank and detail_count < 6 -%}
-              <div class="zh-product__spec-row"><dt>Uitvoering</dt><dd>{{ finish }}</dd></div>
-              {%- assign detail_count = detail_count | plus: 1 -%}
-            {%- endif -%}
-
-            {%- if closure != blank and detail_count < 6 -%}
-              <div class="zh-product__spec-row"><dt>Sluiting</dt><dd>{{ closure }}</dd></div>
-              {%- assign detail_count = detail_count | plus: 1 -%}
-            {%- endif -%}
-
-            {%- if displayed_usage != blank and detail_count < 6 -%}
-              <div class="zh-product__spec-row"><dt>Gebruik</dt><dd>{{ displayed_usage }}</dd></div>
-              {%- assign detail_count = detail_count | plus: 1 -%}
-            {%- endif -%}
-
-            {%- if function_feature_labels != blank and detail_count < 6 -%}
-              <div class="zh-product__spec-row"><dt>Eigenschappen</dt><dd>{{ function_feature_labels }}</dd></div>
-              {%- assign detail_count = detail_count | plus: 1 -%}
-            {%- endif -%}
-
-            {%- if displayed_care != blank and detail_count < 6 -%}
-              <div class="zh-product__spec-row"><dt>Onderhoud</dt><dd>{{ displayed_care }}</dd></div>
-            {%- endif -%}
-          </dl>
-        </div>
-      </section>
-    {%- endif -%}
 
     <section class="zh-product__content mx-auto max-w-7xl px-4 sm:px-6 lg:px-10" aria-labelledby="zh-description-heading-{{ section.id }}">
       <div class="zh-product__content-grid{% if zayna_note != blank %} has-note{% endif %}">
@@ -1215,7 +964,7 @@
       }
     </script>
 
-    <script src="{{ 'product.js' | asset_url | append: '?zh=4' }}" defer></script>
+    <script src="{{ 'product.js' | asset_url | append: '?zh=6' }}" defer></script>
     {% render 'product-structured-data', product: product %}
   </section>
 </div>
@@ -1243,13 +992,11 @@
     },
     {
       "type": "buy_buttons",
-      "name": "Koopknop en vertrouwen",
+      "name": "Koopknop",
       "limit": 1,
       "settings": [
         { "type": "text", "id": "add_label", "label": "Tekst winkelmandknop", "default": "In winkelmand" },
-        { "type": "text", "id": "sold_label", "label": "Tekst uitverkocht", "default": "Uitverkocht" },
-        { "type": "checkbox", "id": "show_trust", "label": "Verpakkingsregel tonen", "default": true },
-        { "type": "text", "id": "reassurance_text", "label": "Tekst onder de winkelmandknop", "default": "Zorgvuldig verpakt en verzonden vanuit Nederland." }
+        { "type": "text", "id": "sold_label", "label": "Tekst uitverkocht", "default": "Uitverkocht" }
       ]
     },
     { "type": "description", "name": "Productomschrijving", "limit": 1, "settings": [] },

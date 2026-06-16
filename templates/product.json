@@ -30,11 +30,7 @@
           "type": "buy_buttons",
           "settings": {
             "add_label": "In winkelmand",
-            "sold_label": "Uitverkocht",
-            "show_trust": true,
-            "trust_1": "Veilig betalen",
-            "trust_2": "Levering 1–3 werkdagen",
-            "trust_3": "Verzonden vanuit Nederland"
+            "sold_label": "Uitverkocht"
           }
         },
         "description": {
