@@ -22,7 +22,7 @@
     "category-pills": {
       "type": "category-pills",
       "settings": {
-        "menu": "main-menu"
+        "menu": "category-pill-menu"
       }
     },
     "main-collection": {
