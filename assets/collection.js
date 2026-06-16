@@ -53,6 +53,58 @@
     input.value = dutchMoney.format(number);
   };
 
+  const updateKeyboardOffset = () => {
+    const active = document.activeElement;
+    const priceFocused = active?.matches?.(
+      '[data-price-input]'
+    );
+
+    if (!priceFocused || !window.visualViewport) {
+      document.documentElement.style.setProperty(
+        '--zh-keyboard-offset',
+        '0px'
+      );
+      return;
+    }
+
+    const viewport = window.visualViewport;
+
+    const offset = Math.max(
+      0,
+      window.innerHeight -
+        viewport.height -
+        viewport.offsetTop
+    );
+
+    document.documentElement.style.setProperty(
+      '--zh-keyboard-offset',
+      `${offset}px`
+    );
+  };
+
+  if (!window.__zhKeyboardOffsetReady) {
+    window.__zhKeyboardOffsetReady = true;
+
+    window.visualViewport?.addEventListener(
+      'resize',
+      updateKeyboardOffset
+    );
+
+    window.visualViewport?.addEventListener(
+      'scroll',
+      updateKeyboardOffset
+    );
+
+    document.addEventListener(
+      'focusin',
+      updateKeyboardOffset
+    );
+
+    document.addEventListener('focusout', () => {
+      window.setTimeout(updateKeyboardOffset, 80);
+    });
+  }
+
   document.querySelectorAll('[data-collection]').forEach((root) => {
     const sectionId = root.dataset.sectionId;
     const baseUrl = root.dataset.collectionUrl;
@@ -111,14 +163,25 @@
 
       restore();
       window.requestAnimationFrame(restore);
-      window.setTimeout(restore, 80);
+      window.setTimeout(restore, 70);
+    };
+
+    const restoreFocus = (selector) => {
+      if (!selector) return;
+
+      window.requestAnimationFrame(() => {
+        root.querySelector(selector)?.focus({
+          preventScroll: true
+        });
+      });
     };
 
     const replaceSection = async (
       params,
       {
         preserveScroll = true,
-        closeDrawer = false
+        closeDrawer = false,
+        focusAfter = null
       } = {}
     ) => {
       if (busy) return;
@@ -128,9 +191,15 @@
 
       const search = params.toString();
       const previousScrollY = window.scrollY;
+      const previousHeight = root.offsetHeight;
 
+      root.style.minHeight = `${previousHeight}px`;
       root.setAttribute('aria-busy', 'true');
       root.classList.add('is-loading');
+
+      if (closeDrawer) {
+        closeFilters();
+      }
 
       try {
         const html = await fetchSection(search);
@@ -158,20 +227,25 @@
 
         bind();
 
-        if (closeDrawer) {
-          closeFilters();
-        }
-
         if (preserveScroll) {
           restoreScroll(previousScrollY);
         }
+
+        restoreFocus(focusAfter);
       } catch (error) {
         console.error(error);
         window.location.search = search;
       } finally {
         busy = false;
-        root.removeAttribute('aria-busy');
-        root.classList.remove('is-loading');
+
+        window.requestAnimationFrame(() => {
+          root.removeAttribute('aria-busy');
+          root.classList.remove('is-loading');
+
+          window.setTimeout(() => {
+            root.style.minHeight = '';
+          }, 190);
+        });
       }
     };
 
@@ -252,17 +326,42 @@
             formatVisibleMoney(input);
           }
 
-          input.addEventListener('focus', () => {
-            const number = parseMoney(input.value);
+          let preserveSelection = false;
 
-            if (number !== null) {
-              input.value = String(number)
-                .replace('.', ',');
+          input.addEventListener('focus', () => {
+            if (input.value) {
+              formatVisibleMoney(input);
             }
+
+            preserveSelection = true;
+
+            window.requestAnimationFrame(() => {
+              input.select();
+              updateKeyboardOffset();
+            });
+
+            window.setTimeout(() => {
+              input.scrollIntoView({
+                block: 'center',
+                behavior: reduceMotion
+                  ? 'auto'
+                  : 'smooth'
+              });
+            }, 220);
+          });
+
+          input.addEventListener('pointerup', (event) => {
+            if (!preserveSelection) return;
+
+            event.preventDefault();
+            preserveSelection = false;
+            input.select();
           });
 
           input.addEventListener('blur', () => {
+            preserveSelection = false;
             formatVisibleMoney(input);
+            updateKeyboardOffset();
           });
         });
     };
@@ -405,7 +504,8 @@
 
         replaceSection(params, {
           preserveScroll: true,
-          closeDrawer: false
+          closeDrawer: false,
+          focusAfter: '[data-sort-select]'
         });
       });
 
@@ -422,7 +522,8 @@
 
         replaceSection(params, {
           preserveScroll: true,
-          closeDrawer: true
+          closeDrawer: true,
+          focusAfter: '[data-aside-open="filters"]'
         });
       });
 
@@ -442,7 +543,8 @@
 
             replaceSection(params, {
               preserveScroll: true,
-              closeDrawer: true
+              closeDrawer: true,
+              focusAfter: '[data-aside-open="filters"]'
             });
           });
         });
@@ -463,7 +565,8 @@
               new URLSearchParams(query),
               {
                 preserveScroll: true,
-                closeDrawer: false
+                closeDrawer: false,
+                focusAfter: '[data-aside-open="filters"]'
               }
             );
           });
