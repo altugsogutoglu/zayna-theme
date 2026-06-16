@@ -1,150 +1,379 @@
-// Zayna Home — collection page controllers. Loaded once per collection page from main-collection.
+// Zayna Home — collection page controllers.
 (() => {
   'use strict';
+
   if (window.__zhCollectionInit) return;
   window.__zhCollectionInit = true;
 
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduceMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)'
+  ).matches;
 
-  /* Category pills are an Embla rail initialised inline in sections/category-pills.liquid. */
+  const normaliseDecimal = (value) => {
+    return String(value || '')
+      .trim()
+      .replace(',', '.')
+      .replace(/[^\d.]/g, '');
+  };
 
-  /* ---------------------------------------------------------------- */
-  /* 2-4. Faceted grid controllers                                    */
-  /* ---------------------------------------------------------------- */
   document.querySelectorAll('[data-collection]').forEach((root) => {
-    const sectionId = root.getAttribute('data-section-id');
-    const baseUrl = root.getAttribute('data-collection-url');
+    const sectionId = root.dataset.sectionId;
+    const baseUrl = root.dataset.collectionUrl;
+
     if (!sectionId || !baseUrl) return;
+
     let busy = false;
     let infiniteObserver = null;
 
     const fetchSection = async (search) => {
-      const url = baseUrl + '?' + search + (search ? '&' : '') + 'section_id=' + encodeURIComponent(sectionId);
-      const res = await fetch(url, { headers: { 'X-Requested-With': 'fetch' } });
-      if (!res.ok) throw new Error('section fetch failed: ' + res.status);
-      return res.text();
+      const separator = search ? '&' : '';
+      const url =
+        `${baseUrl}?${search}${separator}` +
+        `section_id=${encodeURIComponent(sectionId)}`;
+
+      const response = await fetch(url, {
+        headers: {
+          'X-Requested-With': 'fetch'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Collection section fetch failed: ${response.status}`
+        );
+      }
+
+      return response.text();
     };
 
-    // Whole-section replace (sort / filter apply / clear / remove a pill)
-    const replaceSection = async (params) => {
+    const currentParams = () => {
+      return new URLSearchParams(window.location.search);
+    };
+
+    const closeFilters = () => {
+      const overlay = document.querySelector(
+        '.overlay[data-aside="filters"].expanded'
+      );
+
+      const closeButton = overlay?.querySelector(
+        '[data-aside-close]'
+      );
+
+      closeButton?.click();
+    };
+
+    const announceResults = () => {
+      const count = root.querySelector('[data-result-count]');
+      if (!count) return;
+
+      count.setAttribute('aria-live', 'polite');
+    };
+
+    const scrollToToolbar = () => {
+      if (reduceMotion) return;
+
+      const toolbar = root.querySelector(
+        '[data-collection-toolbar]'
+      );
+
+      toolbar?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    };
+
+    const replaceSection = async (
+      params,
+      { scroll = true } = {}
+    ) => {
       if (busy) return;
+
       busy = true;
       params.delete('page');
+
       const search = params.toString();
+
       root.setAttribute('aria-busy', 'true');
+
       try {
         const html = await fetchSection(search);
-        const fresh = new DOMParser().parseFromString(html, 'text/html').querySelector('[data-collection]');
-        if (fresh) root.innerHTML = fresh.innerHTML;
-        window.history.pushState({}, '', baseUrl + (search ? '?' + search : ''));
+        const documentFragment = new DOMParser()
+          .parseFromString(html, 'text/html');
+
+        const fresh = documentFragment.querySelector(
+          '[data-collection]'
+        );
+
+        if (!fresh) {
+          throw new Error('Updated collection markup was not found.');
+        }
+
+        root.innerHTML = fresh.innerHTML;
+
+        window.history.pushState(
+          {},
+          '',
+          baseUrl + (search ? `?${search}` : '')
+        );
+
         bind();
-        if (!reduce) root.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } catch (e) {
-        console.error(e);
-        window.location.search = search; // hard fallback
+        announceResults();
+
+        if (scroll) {
+          scrollToToolbar();
+        }
+      } catch (error) {
+        console.error(error);
+        window.location.search = search;
       } finally {
         busy = false;
         root.removeAttribute('aria-busy');
       }
     };
 
-    const currentParams = () => new URLSearchParams(window.location.search);
+    const validatePriceRange = (form) => {
+      const minInput = form.querySelector(
+        '[data-price-input="min"]'
+      );
+      const maxInput = form.querySelector(
+        '[data-price-input="max"]'
+      );
+      const error = form.querySelector('[data-price-error]');
 
-    const closeFilters = () => {
-      // The drawer controller in theme.js toggles the `expanded` class on the overlay.
-      const open = document.querySelector('.overlay[data-aside="filters"].expanded');
-      const close = open && open.querySelector('[data-aside-close]');
-      if (close) close.click();
+      if (!minInput && !maxInput) return true;
+
+      if (minInput) {
+        minInput.value = normaliseDecimal(minInput.value);
+      }
+
+      if (maxInput) {
+        maxInput.value = normaliseDecimal(maxInput.value);
+      }
+
+      const min =
+        minInput?.value !== ''
+          ? Number.parseFloat(minInput.value)
+          : null;
+
+      const max =
+        maxInput?.value !== ''
+          ? Number.parseFloat(maxInput.value)
+          : null;
+
+      const invalid =
+        min !== null &&
+        max !== null &&
+        Number.isFinite(min) &&
+        Number.isFinite(max) &&
+        min > max;
+
+      if (error) {
+        error.hidden = !invalid;
+      }
+
+      if (invalid) {
+        minInput?.focus();
+        return false;
+      }
+
+      return true;
     };
 
-    // Infinite scroll: append next page, swap sentinel
     const bindInfinite = () => {
-      if (infiniteObserver) { infiniteObserver.disconnect(); infiniteObserver = null; }
+      if (infiniteObserver) {
+        infiniteObserver.disconnect();
+        infiniteObserver = null;
+      }
+
       const sentinel = root.querySelector('[data-load-more]');
-      if (!sentinel) return;
-      const link = sentinel.querySelector('[data-load-more-link]');
-      if (!link) return;
+      const link = sentinel?.querySelector(
+        '[data-load-more-link]'
+      );
+
+      if (!sentinel || !link) return;
 
       const loadNext = async () => {
         if (busy) return;
+
         busy = true;
         sentinel.setAttribute('aria-busy', 'true');
-        const textEl = link.querySelector('[data-load-more-text]');
-        const loadingLabel = link.getAttribute('data-loading-label');
-        if (textEl && loadingLabel) textEl.textContent = loadingLabel;
+
+        const text = link.querySelector(
+          '[data-load-more-text]'
+        );
+
+        const loadingLabel = link.dataset.loadingLabel;
+
+        if (text && loadingLabel) {
+          text.textContent = loadingLabel;
+        }
+
         try {
           const href = link.getAttribute('href') || '';
-          const qs = (href.split('?')[1] || '') + '&section_id=' + encodeURIComponent(sectionId);
-          const res = await fetch(baseUrl + '?' + qs, { headers: { 'X-Requested-With': 'fetch' } });
-          if (!res.ok) throw new Error('load more failed: ' + res.status);
-          const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
-          const freshGrid = doc.querySelector('[data-product-grid]');
-          const grid = root.querySelector('[data-product-grid]');
-          if (freshGrid && grid) {
-            while (freshGrid.firstElementChild) grid.appendChild(freshGrid.firstElementChild);
+          const query =
+            `${href.split('?')[1] || ''}` +
+            `&section_id=${encodeURIComponent(sectionId)}`;
+
+          const response = await fetch(
+            `${baseUrl}?${query}`,
+            {
+              headers: {
+                'X-Requested-With': 'fetch'
+              }
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              `Load more failed: ${response.status}`
+            );
           }
-          const freshSentinel = doc.querySelector('[data-load-more]');
+
+          const documentFragment = new DOMParser()
+            .parseFromString(
+              await response.text(),
+              'text/html'
+            );
+
+          const freshGrid = documentFragment.querySelector(
+            '[data-product-grid]'
+          );
+
+          const grid = root.querySelector(
+            '[data-product-grid]'
+          );
+
+          if (freshGrid && grid) {
+            while (freshGrid.firstElementChild) {
+              grid.appendChild(freshGrid.firstElementChild);
+            }
+          }
+
+          const freshSentinel = documentFragment.querySelector(
+            '[data-load-more]'
+          );
+
           if (freshSentinel) {
             sentinel.replaceWith(freshSentinel);
           } else {
             sentinel.remove();
           }
+
           window.history.replaceState({}, '', href);
-        } catch (e) {
-          console.error(e);
-          if (textEl) textEl.textContent = link.getAttribute('data-retry-label') || 'Opnieuw proberen';
+        } catch (error) {
+          console.error(error);
+
+          if (text) {
+            text.textContent =
+              link.dataset.retryLabel ||
+              'Opnieuw proberen';
+          }
         } finally {
           busy = false;
-          bindInfinite(); // (re)observe the swapped-in sentinel
+          bindInfinite();
         }
       };
 
-      link.addEventListener('click', (e) => { e.preventDefault(); loadNext(); });
-      if ('IntersectionObserver' in window && !reduce) {
-        infiniteObserver = new IntersectionObserver((entries) => {
-          if (entries[0].isIntersecting) loadNext();
-        }, { rootMargin: '600px 0px 600px 0px' });
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        loadNext();
+      });
+
+      if (
+        'IntersectionObserver' in window &&
+        !reduceMotion
+      ) {
+        infiniteObserver = new IntersectionObserver(
+          (entries) => {
+            if (entries[0]?.isIntersecting) {
+              loadNext();
+            }
+          },
+          {
+            rootMargin: '600px 0px 600px 0px'
+          }
+        );
+
         infiniteObserver.observe(sentinel);
       }
     };
 
-    // (Re)attach listeners to controls inside the (possibly replaced) section
-    function bind() {
-      const sort = root.querySelector('[data-sort-select]');
-      if (sort) sort.addEventListener('change', () => {
-        const p = currentParams();
-        p.set('sort_by', sort.value);
-        replaceSection(p);
+    const bind = () => {
+      const sort = root.querySelector(
+        '[data-sort-select]'
+      );
+
+      sort?.addEventListener('change', () => {
+        const params = currentParams();
+        params.set('sort_by', sort.value);
+
+        replaceSection(params);
       });
 
-      const form = root.querySelector('[data-filter-form]');
-      if (form) form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const p = new URLSearchParams(new FormData(form));
-        const cur = currentParams();
-        if (!p.has('sort_by') && cur.get('sort_by')) p.set('sort_by', cur.get('sort_by'));
-        for (const [k, v] of Array.from(p.entries())) if (v === '') p.delete(k);
-        replaceSection(p);
+      const form = root.querySelector(
+        '[data-filter-form]'
+      );
+
+      form?.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        if (!validatePriceRange(form)) return;
+
+        const params = new URLSearchParams(
+          new FormData(form)
+        );
+
+        for (const [key, value] of Array.from(
+          params.entries()
+        )) {
+          if (value === '') {
+            params.delete(key);
+          }
+        }
+
+        replaceSection(params);
         closeFilters();
       });
 
-      root.querySelectorAll('[data-filter-clear]').forEach((a) => a.addEventListener('click', (e) => {
-        e.preventDefault();
-        const p = new URLSearchParams();
-        const cur = currentParams();
-        if (cur.get('sort_by')) p.set('sort_by', cur.get('sort_by'));
-        replaceSection(p);
-        closeFilters();
-      }));
+      root
+        .querySelectorAll('[data-filter-clear]')
+        .forEach((link) => {
+          link.addEventListener('click', (event) => {
+            event.preventDefault();
 
-      root.querySelectorAll('[data-filter-remove]').forEach((a) => a.addEventListener('click', (e) => {
-        e.preventDefault();
-        const qs = (a.getAttribute('href') || '').split('?')[1] || '';
-        replaceSection(new URLSearchParams(qs));
-      }));
+            const params = new URLSearchParams();
+            const current = currentParams();
+            const sortBy = current.get('sort_by');
+
+            if (sortBy) {
+              params.set('sort_by', sortBy);
+            }
+
+            replaceSection(params);
+            closeFilters();
+          });
+        });
+
+      root
+        .querySelectorAll('[data-filter-remove]')
+        .forEach((link) => {
+          link.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            const href =
+              link.getAttribute('href') || '';
+
+            const query =
+              href.split('?')[1] || '';
+
+            replaceSection(
+              new URLSearchParams(query)
+            );
+          });
+        });
 
       bindInfinite();
-    }
+    };
 
     bind();
   });
