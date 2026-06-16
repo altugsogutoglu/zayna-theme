@@ -26,52 +26,13 @@
     },
     "value-props": {
       "type": "value-props",
-      "blocks": {
-        "p1": {
-          "type": "prop",
-          "settings": {
-            "icon": "sparkles",
-            "label": "Zorgvuldig geselecteerd",
-            "body": "Elk product is gekozen op design, kwaliteit en functie. Geen rommel, alleen mooie stukken."
-          }
-        },
-        "p2": {
-          "type": "prop",
-          "settings": {
-            "icon": "shield-check",
-            "label": "Veilig verpakt",
-            "body": "Glaswerk wordt zorgvuldig ingepakt met beschermingsmateriaal, zodat alles heel aankomt."
-          }
-        },
-        "p3": {
-          "type": "prop",
-          "settings": {
-            "icon": "truck",
-            "label": "Verzonden vanuit NL",
-            "body": "Bestellingen worden binnen 1–3 werkdagen verzonden vanuit Nederland."
-          }
-        },
-        "p4": {
-          "type": "prop",
-          "settings": {
-            "icon": "file-text",
-            "label": "Eerlijke productinfo",
-            "body": "Materiaal, afmetingen en inhoud staan altijd duidelijk vermeld. Geen verrassingen."
-          }
-        }
-      },
-      "block_order": [
-        "p1",
-        "p2",
-        "p3",
-        "p4"
-      ],
       "settings": {}
     },
     "freshly-listed": {
       "type": "freshly-listed",
       "settings": {
         "collection": "",
+        "product_limit": 6,
         "eyebrow": "Net binnen",
         "heading": "Nieuw in de shop",
         "link_label": "Alles bekijken",
@@ -81,7 +42,17 @@
     "curated-edit": {
       "type": "curated-edit",
       "settings": {
-        "collection_list": [],
+        "collection_list": [
+          "drinkglazen-bekers",
+          "voorraadpotten-bewaren",
+          "thee-koffieservies",
+          "kruidenpotten-labels",
+          "bestek-lepels",
+          "keukenhulpen-dispensers",
+          "koken-hittebestendige-accessoires",
+          "keukentextiel-tafelaccessoires",
+          "glazen-rietjes"
+        ],
         "eyebrow": "Collecties",
         "heading": "Voor elke hoek van je huis.",
         "link_label": "Alle collecties",
@@ -92,10 +63,12 @@
       "type": "founder-note",
       "settings": {
         "image": "shopify://shop_images/IMG-20260520-WA0062_ba8a48e2-e788-4090-9be5-e6b826d41bc7.jpg",
-        "eyebrow": "Welkom",
-        "heading": "Mooi dat je er bent.",
-        "body": "<p>Zayna Home is een Nederlandse webshop voor stijlvolle keuken- en woonproducten, zorgvuldig gekozen op vorm, functie en rustige uitstraling.</p><p>Van glaswerk en voorraadpotten tot kruidenpotten met labels en praktische keukenitems. Producten die mooi staan in huis, prettig zijn in gebruik en met zorg worden verpakt en verzonden vanuit Nederland.</p><p>Fijn dat je er bent.</p>",
-        "signature": "Zayna Home"
+        "story_eyebrow": "Over Zayna Home",
+        "story_heading": "Rust zit in de kleine details.",
+        "story_body_final": "<p>Zayna Home is ontstaan uit liefde voor een huis dat rustig en verzorgd aanvoelt. We kiezen producten die mooi ogen, prettig zijn in gebruik en vanzelf hun plek vinden.</p><p>Geen overdaad, maar een zorgvuldig gekozen collectie waarin eenvoud, functie en aandacht voor detail samenkomen.</p>",
+        "story_link_label": "Lees ons verhaal",
+        "story_link_url": "",
+        "welcome_line": "Fijn dat je er bent."
       }
     },
     "journal-teaser": {
@@ -110,13 +83,15 @@
     "newsletter": {
       "type": "newsletter",
       "settings": {
-        "eyebrow": "Nieuwsbrief",
-        "heading": "Ontvang rustige inspiratie voor thuis.",
-        "body": "Schrijf je in voor updates over nieuwe collecties, en zorgvuldig gekozen items voor een warm en verzorgd interieur.",
-        "field_label": "E-mailadres",
-        "placeholder": "E-mailadres",
-        "submit_label": "Inschrijven",
-        "disclaimer": "Door je in te schrijven ontvang je e-mails van Zayna Home. Je kunt je op elk moment uitschrijven."
+        "eyebrow_v2": "Nieuwsbrief",
+        "heading_v2": "Ontvang rustige inspiratie voor thuis.",
+        "body_v2": "Blijf op de hoogte van nieuwe collecties, rustige woon- en keukeninspiratie en af en toe nieuws van Zayna Home.",
+        "field_label_v2": "E-mailadres",
+        "placeholder_v2": "jouw@email.nl",
+        "submit_label_v2": "Inschrijven",
+        "success_v2": "Bedankt voor je inschrijving. Vanaf nu ontvang je af en toe nieuws van Zayna Home.",
+        "disclaimer_v2": "Door je in te schrijven ontvang je e-mails van Zayna Home. Je kunt je op elk moment uitschrijven.",
+        "privacy_url": ""
       }
     }
   },
