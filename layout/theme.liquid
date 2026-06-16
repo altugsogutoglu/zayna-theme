@@ -78,6 +78,24 @@
     {%- endif -%}
 
     <link rel="stylesheet" href="{{ 'tailwind.css' | asset_url }}">
+
+    {% style %}
+      :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+        outline: 2px solid #a66a3f;
+        outline-offset: 3px;
+      }
+
+      :where([inert]) {
+        pointer-events: none;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html:focus-within {
+          scroll-behavior: auto;
+        }
+      }
+    {% endstyle %}
+
     <script src="{{ 'theme.js' | asset_url }}" defer></script>
   </head>
   <body class="min-h-dvh font-sans text-ink antialiased">
