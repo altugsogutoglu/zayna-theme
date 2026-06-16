@@ -105,6 +105,598 @@
     });
   }
 
+
+  const CATEGORY_DESKTOP_QUERY = '(min-width: 1024px)';
+
+  const setElementInert = (element, inert) => {
+    if (!element) return;
+
+    element.inert = inert;
+
+    if (inert) {
+      element.setAttribute('aria-hidden', 'true');
+    } else {
+      element.removeAttribute('aria-hidden');
+    }
+  };
+
+  const initialiseCategoryNavigation = (navigation) => {
+    if (
+      !navigation ||
+      navigation.dataset.categoryControllerReady === 'true'
+    ) {
+      return;
+    }
+
+    navigation.dataset.categoryControllerReady = 'true';
+
+    const mediaQuery = window.matchMedia(
+      CATEGORY_DESKTOP_QUERY
+    );
+
+    const mobileDetails = navigation.querySelector(
+      '[data-category-mobile]'
+    );
+
+    const mobileSummary = navigation.querySelector(
+      '[data-category-summary]'
+    );
+
+    const mobileMenu = navigation.querySelector(
+      '[data-category-menu]'
+    );
+
+    const mobileOptions = navigation.querySelector(
+      '[data-category-mobile-options]'
+    );
+
+    const mobileLinks = Array.from(
+      navigation.querySelectorAll(
+        '[data-category-mobile-link]'
+      )
+    );
+
+    const mobileClose = navigation.querySelector(
+      '[data-category-close]'
+    );
+
+    const mobileBackdrop = navigation.querySelector(
+      '[data-category-backdrop]'
+    );
+
+    const rail = navigation.querySelector(
+      '[data-category-rail]'
+    );
+
+    const viewport = navigation.querySelector(
+      '[data-category-viewport]'
+    );
+
+    const desktopLinks = Array.from(
+      navigation.querySelectorAll(
+        '[data-category-desktop-link]'
+      )
+    );
+
+    const previousButton = navigation.querySelector(
+      '[data-category-prev]'
+    );
+
+    const nextButton = navigation.querySelector(
+      '[data-category-next]'
+    );
+
+    let desktopIndex = Math.max(
+      0,
+      desktopLinks.findIndex((link) => {
+        return link.getAttribute('aria-current') === 'page';
+      })
+    );
+
+    let mobileIndex = Math.max(
+      0,
+      mobileLinks.findIndex((link) => {
+        return link.getAttribute('aria-current') === 'page';
+      })
+    );
+
+    const clamp = (value, minimum, maximum) => {
+      return Math.min(
+        Math.max(value, minimum),
+        maximum
+      );
+    };
+
+    const horizontalPositionFor = (link) => {
+      if (!viewport || !link) return 0;
+
+      const rawPosition =
+        link.offsetLeft -
+        (viewport.clientWidth - link.offsetWidth) / 2;
+
+      const maximum =
+        viewport.scrollWidth - viewport.clientWidth;
+
+      return clamp(rawPosition, 0, Math.max(0, maximum));
+    };
+
+    const revealDesktopLink = (
+      link,
+      behavior = 'smooth'
+    ) => {
+      if (!viewport || !link) return;
+
+      viewport.scrollTo({
+        left: horizontalPositionFor(link),
+        top: 0,
+        behavior
+      });
+    };
+
+    const setDesktopFocusIndex = (
+      index,
+      {
+        focus = false,
+        behavior = 'smooth'
+      } = {}
+    ) => {
+      desktopIndex = clamp(
+        index,
+        0,
+        Math.max(0, desktopLinks.length - 1)
+      );
+
+      desktopLinks.forEach((link, linkIndex) => {
+        link.tabIndex =
+          linkIndex === desktopIndex ? 0 : -1;
+      });
+
+      const target = desktopLinks[desktopIndex];
+
+      revealDesktopLink(target, behavior);
+
+      if (focus) {
+        target?.focus({
+          preventScroll: true
+        });
+      }
+    };
+
+    const nativeRailState = () => {
+      if (!viewport) {
+        return {
+          canScrollPrevious: false,
+          canScrollNext: false
+        };
+      }
+
+      const tolerance = 2;
+
+      return {
+        canScrollPrevious:
+          viewport.scrollLeft > tolerance,
+
+        canScrollNext:
+          viewport.scrollLeft +
+            viewport.clientWidth <
+          viewport.scrollWidth - tolerance
+      };
+    };
+
+    const updateRailState = () => {
+      if (!rail || !viewport) return;
+
+      const state = nativeRailState();
+
+      const hasOverflow =
+        state.canScrollPrevious ||
+        state.canScrollNext;
+
+      rail.classList.toggle(
+        'has-overflow',
+        hasOverflow
+      );
+
+      rail.classList.toggle(
+        'can-scroll-prev',
+        state.canScrollPrevious
+      );
+
+      rail.classList.toggle(
+        'can-scroll-next',
+        state.canScrollNext
+      );
+
+      if (previousButton) {
+        previousButton.disabled =
+          !state.canScrollPrevious;
+      }
+
+      if (nextButton) {
+        nextButton.disabled =
+          !state.canScrollNext;
+      }
+    };
+
+    const setMobileFocusIndex = (
+      index,
+      { focus = false } = {}
+    ) => {
+      mobileIndex = clamp(
+        index,
+        0,
+        Math.max(0, mobileLinks.length - 1)
+      );
+
+      mobileLinks.forEach((link, linkIndex) => {
+        link.tabIndex =
+          linkIndex === mobileIndex ? 0 : -1;
+      });
+
+      const target = mobileLinks[mobileIndex];
+
+      if (focus) {
+        target?.focus({
+          preventScroll: true
+        });
+
+        if (mobileOptions && target) {
+          const targetTop = target.offsetTop;
+          const targetBottom =
+            targetTop + target.offsetHeight;
+
+          const visibleTop = mobileOptions.scrollTop;
+          const visibleBottom =
+            visibleTop + mobileOptions.clientHeight;
+
+          if (targetTop < visibleTop) {
+            mobileOptions.scrollTo({
+              top: targetTop - 7,
+              behavior: 'smooth'
+            });
+          } else if (targetBottom > visibleBottom) {
+            mobileOptions.scrollTo({
+              top:
+                targetBottom -
+                mobileOptions.clientHeight +
+                7,
+              behavior: 'smooth'
+            });
+          }
+        }
+      }
+    };
+
+    const closeMobileMenu = ({
+      restoreFocus = true
+    } = {}) => {
+      if (!mobileDetails?.open) return;
+
+      mobileDetails.removeAttribute('open');
+
+      document.documentElement.classList.remove(
+        'zh-category-menu-open'
+      );
+
+      mobileLinks.forEach((link) => {
+        link.removeAttribute('tabindex');
+      });
+
+      if (restoreFocus) {
+        mobileSummary?.focus({
+          preventScroll: true
+        });
+      }
+    };
+
+    const openMobileMenu = () => {
+      if (
+        !mobileDetails?.open ||
+        mediaQuery.matches
+      ) {
+        return;
+      }
+
+      document.documentElement.classList.add(
+        'zh-category-menu-open'
+      );
+
+      mobileIndex = Math.max(
+        0,
+        mobileLinks.findIndex((link) => {
+          return link.getAttribute('aria-current') === 'page';
+        })
+      );
+
+      window.requestAnimationFrame(() => {
+        setMobileFocusIndex(mobileIndex, {
+          focus: true
+        });
+      });
+    };
+
+    const syncMode = () => {
+      const desktopMode = mediaQuery.matches;
+
+      if (desktopMode) {
+        closeMobileMenu({
+          restoreFocus: false
+        });
+
+        setElementInert(mobileDetails, true);
+        setElementInert(rail, false);
+
+        desktopIndex = Math.max(
+          0,
+          desktopLinks.findIndex((link) => {
+            return link.getAttribute('aria-current') === 'page';
+          })
+        );
+
+        setDesktopFocusIndex(desktopIndex, {
+          focus: false,
+          behavior: 'auto'
+        });
+
+        window.requestAnimationFrame(() => {
+          updateRailState();
+        });
+      } else {
+        setElementInert(rail, true);
+        setElementInert(mobileDetails, false);
+
+        desktopLinks.forEach((link) => {
+          link.tabIndex = -1;
+        });
+
+        mobileLinks.forEach((link) => {
+          link.removeAttribute('tabindex');
+        });
+      }
+    };
+
+    /*
+     * Desktop: horizontal keyboard model.
+     */
+    viewport?.addEventListener('keydown', (event) => {
+      if (!mediaQuery.matches) return;
+
+      const focusedLink = event.target.closest(
+        '[data-category-desktop-link]'
+      );
+
+      if (!focusedLink) return;
+
+      const focusedIndex =
+        desktopLinks.indexOf(focusedLink);
+
+      if (focusedIndex < 0) return;
+
+      let destination = null;
+
+      switch (event.key) {
+        case 'ArrowRight':
+        case 'Right':
+          destination = Math.min(
+            focusedIndex + 1,
+            desktopLinks.length - 1
+          );
+          break;
+
+        case 'ArrowLeft':
+        case 'Left':
+          destination = Math.max(
+            focusedIndex - 1,
+            0
+          );
+          break;
+
+        case 'Home':
+          destination = 0;
+          break;
+
+        case 'End':
+          destination = desktopLinks.length - 1;
+          break;
+
+        default:
+          return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      setDesktopFocusIndex(destination, {
+        focus: true
+      });
+    });
+
+    desktopLinks.forEach((link, index) => {
+      link.addEventListener('focus', () => {
+        if (!mediaQuery.matches) return;
+
+        setDesktopFocusIndex(index, {
+          focus: false
+        });
+      });
+    });
+
+    previousButton?.addEventListener('click', () => {
+      if (!viewport) return;
+
+      viewport.scrollBy({
+        left: -viewport.clientWidth * 0.72,
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    nextButton?.addEventListener('click', () => {
+      if (!viewport) return;
+
+      viewport.scrollBy({
+        left: viewport.clientWidth * 0.72,
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    viewport?.addEventListener(
+      'scroll',
+      updateRailState,
+      { passive: true }
+    );
+
+    /*
+     * Splitscreen/mobile: vertical listbox keyboard model.
+     */
+    mobileDetails?.addEventListener('toggle', () => {
+      if (mobileDetails.open) {
+        openMobileMenu();
+      } else {
+        document.documentElement.classList.remove(
+          'zh-category-menu-open'
+        );
+      }
+    });
+
+    mobileBackdrop?.addEventListener('click', () => {
+      closeMobileMenu();
+    });
+
+    mobileClose?.addEventListener('click', () => {
+      closeMobileMenu();
+    });
+
+    mobileMenu?.addEventListener('keydown', (event) => {
+      if (
+        mediaQuery.matches ||
+        !mobileDetails?.open
+      ) {
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeMobileMenu();
+        return;
+      }
+
+      if (event.key === 'Tab') {
+        const currentLink =
+          mobileLinks[mobileIndex];
+
+        if (event.shiftKey) {
+          if (document.activeElement === mobileClose) {
+            event.preventDefault();
+            currentLink?.focus({
+              preventScroll: true
+            });
+          }
+        } else if (
+          document.activeElement === currentLink
+        ) {
+          event.preventDefault();
+          mobileClose?.focus({
+            preventScroll: true
+          });
+        }
+
+        return;
+      }
+
+      const focusedLink = event.target.closest(
+        '[data-category-mobile-link]'
+      );
+
+      if (!focusedLink) return;
+
+      const focusedIndex =
+        mobileLinks.indexOf(focusedLink);
+
+      if (focusedIndex >= 0) {
+        mobileIndex = focusedIndex;
+      }
+
+      let destination = null;
+
+      switch (event.key) {
+        case 'ArrowDown':
+        case 'Down':
+          destination = Math.min(
+            mobileIndex + 1,
+            mobileLinks.length - 1
+          );
+          break;
+
+        case 'ArrowUp':
+        case 'Up':
+          destination = Math.max(
+            mobileIndex - 1,
+            0
+          );
+          break;
+
+        case 'Home':
+          destination = 0;
+          break;
+
+        case 'End':
+          destination = mobileLinks.length - 1;
+          break;
+
+        default:
+          return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      setMobileFocusIndex(destination, {
+        focus: true
+      });
+    });
+
+    /*
+     * No focus is moved during initial page load.
+     * Only horizontal scrollLeft is adjusted.
+     */
+    syncMode();
+
+    const handleModeChange = () => {
+      syncMode();
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener(
+        'change',
+        handleModeChange
+      );
+    } else {
+      mediaQuery.addListener(handleModeChange);
+    }
+
+    if ('ResizeObserver' in window && viewport) {
+      const observer = new ResizeObserver(() => {
+        updateRailState();
+      });
+
+      observer.observe(viewport);
+    }
+
+    window.addEventListener(
+      'resize',
+      updateRailState,
+      { passive: true }
+    );
+  };
+
+  const initialiseAllCategoryNavigations = () => {
+    document
+      .querySelectorAll('[data-category-navigation]')
+      .forEach(initialiseCategoryNavigation);
+  };
+
   const initialiseRoot = (root) => {
     if (!root || root.dataset.collectionStableReady === 'true') {
       return;
@@ -607,13 +1199,40 @@
     bindDynamicControls();
   };
 
-  document
-    .querySelectorAll('[data-collection]')
-    .forEach(initialiseRoot);
+  const initialisePageControllers = () => {
+    initialiseAllCategoryNavigations();
+
+    document
+      .querySelectorAll('[data-collection]')
+      .forEach(initialiseRoot);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener(
+      'DOMContentLoaded',
+      initialisePageControllers,
+      { once: true }
+    );
+  } else {
+    initialisePageControllers();
+  }
 
   document.addEventListener(
     'shopify:section:load',
     (event) => {
+      const categoryNavigation =
+        event.target?.matches?.(
+          '[data-category-navigation]'
+        )
+          ? event.target
+          : event.target?.querySelector?.(
+              '[data-category-navigation]'
+            );
+
+      initialiseCategoryNavigation(
+        categoryNavigation
+      );
+
       const root =
         event.target?.matches?.('[data-collection]')
           ? event.target
