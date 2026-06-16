@@ -44,11 +44,16 @@
         {%- assign panel_key = link.title | downcase | strip -%}
 
         {%- if link.links.size > 0 -%}
-          <div class="zayna-header-nav-item group/mega" data-mega-item>
-            <a
-              href="{{ link.url }}"
+          {%- capture panel_id -%}ZaynaMega-{{ section.id }}-{{ forloop.index }}{%- endcapture -%}
+          <div class="zayna-header-nav-item" data-mega-item>
+            <button
+              type="button"
               class="zayna-header-nav-link group relative inline-flex items-center"
               aria-haspopup="true"
+              aria-expanded="false"
+              aria-controls="{{ panel_id }}"
+              data-mega-trigger
+              data-nav-primary
             >
               <span class="zayna-header-nav-label text-[11px] uppercase tracking-[0.2em] text-ink-soft transition-colors group-hover:text-ink">
                 {{ link.title | escape }}
@@ -58,7 +63,7 @@
                 aria-hidden="true"
                 class="absolute inset-x-0 -bottom-0.5 block h-px origin-left bg-clay transition-transform duration-300 ease-out {% if link.active %}scale-x-100{% else %}scale-x-0{% endif %}"
               ></span>
-            </a>
+            </button>
 
             {%- assign panel_block = null -%}
 
@@ -72,10 +77,13 @@
 
             {%- if panel_block != null -%}
               <div
+                id="{{ panel_id }}"
                 role="region"
                 aria-label="{{ link.title | escape }}"
-                class="invisible absolute inset-x-0 top-full z-40 opacity-0 transition-[opacity,visibility] duration-200 group-hover/mega:visible group-hover/mega:opacity-100 group-focus-within/mega:visible group-focus-within/mega:opacity-100"
+                aria-hidden="true"
+                class="zayna-mega-panel invisible absolute inset-x-0 top-full z-40 opacity-0 transition-[opacity,visibility] duration-200"
                 data-mega-panel
+                inert
                 {{ panel_block.shopify_attributes }}
               >
                 <div class="zayna-mega-surface border-y border-border-soft shadow-[0_24px_60px_-30px_rgba(42,37,32,0.35)]">
@@ -282,6 +290,7 @@
           <a
             href="{{ link.url }}"
             class="zayna-header-nav-link group relative inline-flex items-center"
+            data-nav-primary
           >
             <span class="zayna-header-nav-label text-[11px] uppercase tracking-[0.2em] transition-colors {% if link.active %}text-ink{% else %}text-ink-soft group-hover:text-ink{% endif %}">
               {{ link.title | escape }}
@@ -370,10 +379,47 @@
       text-decoration: none;
     }
 
+    #shopify-section-{{ section.id }} button.zayna-header-nav-link {
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+    }
+
     #shopify-section-{{ section.id }} .zayna-header-nav-label {
       display: block;
       line-height: 1;
     }
+  }
+
+  #shopify-section-{{ section.id }} .zayna-mega-panel {
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-header-nav-item.is-open
+    .zayna-mega-panel {
+    visibility: visible;
+    pointer-events: auto;
+    opacity: 1;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-header-nav-item.is-open
+    .zayna-header-nav-label {
+    color: #2a2520;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-header-nav-item.is-open
+    .zayna-header-nav-link > span[aria-hidden="true"] {
+    scale: 1 1;
+  }
+
+  #shopify-section-{{ section.id }} .zayna-header-nav-link:focus-visible,
+  #shopify-section-{{ section.id }} .zayna-mega-service-link:focus-visible,
+  #shopify-section-{{ section.id }} .zayna-mega-link:focus-visible,
+  #shopify-section-{{ section.id }} .zayna-mega-cta:focus-visible,
+  #shopify-section-{{ section.id }} .zayna-mega-feature > a:focus-visible {
+    outline: 2px solid #a66a3f;
+    outline-offset: 3px;
   }
 
   #shopify-section-{{ section.id }} .zayna-header-actions {
