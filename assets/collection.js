@@ -9,11 +9,48 @@
     '(prefers-reduced-motion: reduce)'
   ).matches;
 
-  const normaliseDecimal = (value) => {
-    return String(value || '')
+  const dutchMoney = new Intl.NumberFormat('nl-NL', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+  const parseMoney = (rawValue) => {
+    let value = String(rawValue || '')
       .trim()
-      .replace(',', '.')
-      .replace(/[^\d.]/g, '');
+      .replace(/\s/g, '')
+      .replace(/[€]/g, '');
+
+    if (!value) return null;
+
+    if (value.includes(',')) {
+      value = value
+        .replace(/\./g, '')
+        .replace(',', '.');
+    } else {
+      const parts = value.split('.');
+
+      if (parts.length > 2) {
+        const decimal = parts.pop();
+        value = `${parts.join('')}.${decimal}`;
+      }
+    }
+
+    value = value.replace(/[^\d.-]/g, '');
+
+    const number = Number.parseFloat(value);
+
+    return Number.isFinite(number) ? number : null;
+  };
+
+  const formatVisibleMoney = (input) => {
+    const number = parseMoney(input.value);
+
+    if (number === null) {
+      input.value = '';
+      return;
+    }
+
+    input.value = dutchMoney.format(number);
   };
 
   document.querySelectorAll('[data-collection]').forEach((root) => {
@@ -25,8 +62,13 @@
     let busy = false;
     let infiniteObserver = null;
 
+    const currentParams = () => {
+      return new URLSearchParams(window.location.search);
+    };
+
     const fetchSection = async (search) => {
       const separator = search ? '&' : '';
+
       const url =
         `${baseUrl}?${search}${separator}` +
         `section_id=${encodeURIComponent(sectionId)}`;
@@ -46,10 +88,6 @@
       return response.text();
     };
 
-    const currentParams = () => {
-      return new URLSearchParams(window.location.search);
-    };
-
     const closeFilters = () => {
       const overlay = document.querySelector(
         '.overlay[data-aside="filters"].expanded'
@@ -62,29 +100,26 @@
       closeButton?.click();
     };
 
-    const announceResults = () => {
-      const count = root.querySelector('[data-result-count]');
-      if (!count) return;
+    const restoreScroll = (scrollY) => {
+      const restore = () => {
+        window.scrollTo({
+          top: scrollY,
+          left: 0,
+          behavior: 'auto'
+        });
+      };
 
-      count.setAttribute('aria-live', 'polite');
-    };
-
-    const scrollToToolbar = () => {
-      if (reduceMotion) return;
-
-      const toolbar = root.querySelector(
-        '[data-collection-toolbar]'
-      );
-
-      toolbar?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
+      restore();
+      window.requestAnimationFrame(restore);
+      window.setTimeout(restore, 80);
     };
 
     const replaceSection = async (
       params,
-      { scroll = true } = {}
+      {
+        preserveScroll = true,
+        closeDrawer = false
+      } = {}
     ) => {
       if (busy) return;
 
@@ -92,11 +127,14 @@
       params.delete('page');
 
       const search = params.toString();
+      const previousScrollY = window.scrollY;
 
       root.setAttribute('aria-busy', 'true');
+      root.classList.add('is-loading');
 
       try {
         const html = await fetchSection(search);
+
         const documentFragment = new DOMParser()
           .parseFromString(html, 'text/html');
 
@@ -105,7 +143,9 @@
         );
 
         if (!fresh) {
-          throw new Error('Updated collection markup was not found.');
+          throw new Error(
+            'Updated collection markup was not found.'
+          );
         }
 
         root.innerHTML = fresh.innerHTML;
@@ -117,10 +157,13 @@
         );
 
         bind();
-        announceResults();
 
-        if (scroll) {
-          scrollToToolbar();
+        if (closeDrawer) {
+          closeFilters();
+        }
+
+        if (preserveScroll) {
+          restoreScroll(previousScrollY);
         }
       } catch (error) {
         console.error(error);
@@ -128,43 +171,65 @@
       } finally {
         busy = false;
         root.removeAttribute('aria-busy');
+        root.classList.remove('is-loading');
       }
+    };
+
+    const buildFilterParams = (form) => {
+      const formData = new FormData(form);
+
+      form.querySelectorAll('[data-price-input]').forEach(
+        (input) => {
+          const value = parseMoney(input.value);
+
+          if (value === null) {
+            formData.delete(input.name);
+          } else {
+            formData.set(
+              input.name,
+              value.toFixed(2)
+            );
+          }
+        }
+      );
+
+      const params = new URLSearchParams(formData);
+
+      for (const [key, value] of Array.from(
+        params.entries()
+      )) {
+        if (value === '') {
+          params.delete(key);
+        }
+      }
+
+      return params;
     };
 
     const validatePriceRange = (form) => {
       const minInput = form.querySelector(
         '[data-price-input="min"]'
       );
+
       const maxInput = form.querySelector(
         '[data-price-input="max"]'
       );
-      const error = form.querySelector('[data-price-error]');
 
-      if (!minInput && !maxInput) return true;
+      const error = form.querySelector(
+        '[data-price-error]'
+      );
 
-      if (minInput) {
-        minInput.value = normaliseDecimal(minInput.value);
-      }
+      const min = minInput
+        ? parseMoney(minInput.value)
+        : null;
 
-      if (maxInput) {
-        maxInput.value = normaliseDecimal(maxInput.value);
-      }
-
-      const min =
-        minInput?.value !== ''
-          ? Number.parseFloat(minInput.value)
-          : null;
-
-      const max =
-        maxInput?.value !== ''
-          ? Number.parseFloat(maxInput.value)
-          : null;
+      const max = maxInput
+        ? parseMoney(maxInput.value)
+        : null;
 
       const invalid =
         min !== null &&
         max !== null &&
-        Number.isFinite(min) &&
-        Number.isFinite(max) &&
         min > max;
 
       if (error) {
@@ -179,13 +244,39 @@
       return true;
     };
 
+    const bindPriceFields = () => {
+      root
+        .querySelectorAll('[data-price-input]')
+        .forEach((input) => {
+          if (input.value) {
+            formatVisibleMoney(input);
+          }
+
+          input.addEventListener('focus', () => {
+            const number = parseMoney(input.value);
+
+            if (number !== null) {
+              input.value = String(number)
+                .replace('.', ',');
+            }
+          });
+
+          input.addEventListener('blur', () => {
+            formatVisibleMoney(input);
+          });
+        });
+    };
+
     const bindInfinite = () => {
       if (infiniteObserver) {
         infiniteObserver.disconnect();
         infiniteObserver = null;
       }
 
-      const sentinel = root.querySelector('[data-load-more]');
+      const sentinel = root.querySelector(
+        '[data-load-more]'
+      );
+
       const link = sentinel?.querySelector(
         '[data-load-more-link]'
       );
@@ -210,6 +301,7 @@
 
         try {
           const href = link.getAttribute('href') || '';
+
           const query =
             `${href.split('?')[1] || ''}` +
             `&section_id=${encodeURIComponent(sectionId)}`;
@@ -235,9 +327,10 @@
               'text/html'
             );
 
-          const freshGrid = documentFragment.querySelector(
-            '[data-product-grid]'
-          );
+          const freshGrid =
+            documentFragment.querySelector(
+              '[data-product-grid]'
+            );
 
           const grid = root.querySelector(
             '[data-product-grid]'
@@ -245,13 +338,16 @@
 
           if (freshGrid && grid) {
             while (freshGrid.firstElementChild) {
-              grid.appendChild(freshGrid.firstElementChild);
+              grid.appendChild(
+                freshGrid.firstElementChild
+              );
             }
           }
 
-          const freshSentinel = documentFragment.querySelector(
-            '[data-load-more]'
-          );
+          const freshSentinel =
+            documentFragment.querySelector(
+              '[data-load-more]'
+            );
 
           if (freshSentinel) {
             sentinel.replaceWith(freshSentinel);
@@ -307,7 +403,10 @@
         const params = currentParams();
         params.set('sort_by', sort.value);
 
-        replaceSection(params);
+        replaceSection(params, {
+          preserveScroll: true,
+          closeDrawer: false
+        });
       });
 
       const form = root.querySelector(
@@ -319,20 +418,12 @@
 
         if (!validatePriceRange(form)) return;
 
-        const params = new URLSearchParams(
-          new FormData(form)
-        );
+        const params = buildFilterParams(form);
 
-        for (const [key, value] of Array.from(
-          params.entries()
-        )) {
-          if (value === '') {
-            params.delete(key);
-          }
-        }
-
-        replaceSection(params);
-        closeFilters();
+        replaceSection(params, {
+          preserveScroll: true,
+          closeDrawer: true
+        });
       });
 
       root
@@ -349,8 +440,10 @@
               params.set('sort_by', sortBy);
             }
 
-            replaceSection(params);
-            closeFilters();
+            replaceSection(params, {
+              preserveScroll: true,
+              closeDrawer: true
+            });
           });
         });
 
@@ -367,11 +460,16 @@
               href.split('?')[1] || '';
 
             replaceSection(
-              new URLSearchParams(query)
+              new URLSearchParams(query),
+              {
+                preserveScroll: true,
+                closeDrawer: false
+              }
             );
           });
         });
 
+      bindPriceFields();
       bindInfinite();
     };
 
