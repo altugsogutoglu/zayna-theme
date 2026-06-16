@@ -19,7 +19,6 @@
         "info": {
           "type": "info",
           "settings": {
-            "show_collection": true,
             "in_stock_text": "Op voorraad",
             "delivery_text": "Indicatieve levering binnen 1–3 werkdagen",
             "sold_text": "Uitverkocht",
@@ -35,26 +34,12 @@
             "show_trust": true,
             "trust_1": "Veilig betalen",
             "trust_2": "Levering 1–3 werkdagen",
-            "trust_3": "Verzonden vanuit NL"
+            "trust_3": "Verzonden vanuit Nederland"
           }
-        },
-        "features": {
-          "type": "features",
-          "settings": {}
         },
         "description": {
           "type": "description",
           "settings": {}
-        },
-        "specs": {
-          "type": "specs",
-          "settings": {
-            "label_category": "Categorie",
-            "label_size": "Maat",
-            "label_material": "Materiaal",
-            "label_dimensions": "Afmetingen",
-            "label_sku": "Artikelnr."
-          }
         },
         "zayna_note": {
           "type": "zayna_note",
@@ -78,9 +63,7 @@
         "gallery",
         "info",
         "buy_buttons",
-        "features",
         "description",
-        "specs",
         "zayna_note",
         "care_shipping"
       ],
@@ -91,7 +74,7 @@
     "product-faq": {
       "type": "product-faq",
       "settings": {
-        "eyebrow": "Goed om te weten",
+        "eyebrow": "",
         "heading": "Veelgestelde vragen"
       }
     },
