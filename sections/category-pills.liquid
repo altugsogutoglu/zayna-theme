@@ -1,7 +1,21 @@
 {%- comment -%}
-  Zayna Home — collectie navigatie.
-  Mobiel: één compacte keuzeknop.
-  Vanaf tablet: sleepbare rail met dynamische fades, pijlen en toetsenbordbediening.
+  Zayna Home — collectie navigatie, stap 18F.
+
+  Desktop vanaf 1024 px:
+  - horizontale native scrollrail;
+  - één Tab-stop op de actieve collectie;
+  - links/rechts/Home/End verplaatsen alleen de focus;
+  - Enter opent de gekozen collectie.
+
+  Mobiel en splitscreen onder 1024 px:
+  - compacte knop;
+  - verticaal collectiemenu;
+  - omhoog/omlaag/Home/End verplaatsen de focus;
+  - Enter opent de gekozen collectie;
+  - Escape sluit en herstelt de focus.
+
+  De volgorde komt bij voorkeur uit één centraal Shopify-menu.
+  Zonder geselecteerd menu wordt de vaste Zayna Home-volgorde gebruikt.
 {%- endcomment -%}
 
 {%- liquid
@@ -17,22 +31,78 @@
     assign all_active = true
   endif
 
-  assign current_label = collection.title
-  if all_active
-    assign current_label = 'Alle producten'
+  assign preferred_titles_string = 'Drinkglazen & bekers|Voorraadpotten & bewaren|Koffie & thee|Kruidenpotten & labels|Bestek & lepels|Keukenhulpen & dispensers|Kookaccessoires|Keukentextiel & accessoires|Glazen rietjes'
+  assign preferred_titles = preferred_titles_string | split: '|'
+
+  assign current_in_navigation = false
+
+  if use_menu
+    for link in menu.links
+      if link.url == collection.url
+        assign current_in_navigation = true
+        break
+      endif
+    endfor
+  elsif all_active == false
+    for preferred_title in preferred_titles
+      for collection_item in collections
+        if collection_item.title == preferred_title and collection_item.handle == collection.handle
+          assign current_in_navigation = true
+          break
+        endif
+      endfor
+
+      if current_in_navigation
+        break
+      endif
+    endfor
+  endif
+
+  assign all_tabindex = '-1'
+  if all_active or current_in_navigation == false
+    assign all_tabindex = '0'
   endif
 -%}
+
+{%- comment -%}
+  Critical visibility rules are deliberately emitted before the markup.
+  This prevents both navigation variants from appearing during refresh.
+{%- endcomment -%}
+<style>
+  #ZaynaCategoryPills-{{ section.id }} .zh-category-mobile {
+    display: block;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }} .zh-category-rail {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    #ZaynaCategoryPills-{{ section.id }} .zh-category-mobile {
+      display: none;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }} .zh-category-rail {
+      display: grid;
+    }
+  }
+</style>
 
 <nav
   id="ZaynaCategoryPills-{{ section.id }}"
   class="zh-category-navigation"
+  data-category-navigation
   aria-label="Bladeren per collectie"
 >
-  <details class="zh-category-mobile" data-category-mobile>
-    <summary class="zh-category-mobile__summary">
-      <span class="zh-category-mobile__summary-label">
-        Andere collecties
-      </span>
+  <details
+    class="zh-category-mobile"
+    data-category-mobile
+  >
+    <summary
+      class="zh-category-mobile__summary"
+      data-category-summary
+    >
+      <span>Andere collecties</span>
 
       <span
         class="zh-category-mobile__chevron"
@@ -47,10 +117,12 @@
       class="zh-category-mobile__backdrop"
       data-category-backdrop
       aria-label="Collectiemenu sluiten"
+      tabindex="-1"
     ></button>
 
     <div
       class="zh-category-mobile__menu"
+      data-category-menu
       role="dialog"
       aria-modal="true"
       aria-label="Andere collecties"
@@ -67,67 +139,98 @@
           {% render 'icon', name: 'x', size: 20 %}
         </button>
       </div>
-      <a
-        href="{{ routes.all_products_collection_url }}"
-        class="zh-category-mobile__link{% if all_active %} is-active{% endif %}"
-        {% if all_active %}aria-current="page"{% endif %}
+
+      <div
+        class="zh-category-mobile__options"
+        data-category-mobile-options
+        role="listbox"
+        aria-label="Kies een collectie"
       >
-        <span>Alle producten</span>
-        {%- if all_active -%}
-          {% render 'icon', name: 'check', size: 14 %}
+        <a
+          href="{{ routes.all_products_collection_url }}"
+          class="zh-category-mobile__link{% if all_active %} is-active{% endif %}"
+          data-category-mobile-link
+          role="option"
+          aria-selected="{% if all_active %}true{% else %}false{% endif %}"
+          {% if all_active %}aria-current="page"{% endif %}
+        >
+          <span>Alle producten</span>
+
+          {%- if all_active -%}
+            {% render 'icon', name: 'check', size: 14 %}
+          {%- endif -%}
+        </a>
+
+        {%- if use_menu -%}
+          {%- for link in menu.links -%}
+            {%- assign is_active = false -%}
+
+            {%- if link.url == collection.url -%}
+              {%- assign is_active = true -%}
+            {%- endif -%}
+
+            <a
+              href="{{ link.url }}"
+              class="zh-category-mobile__link{% if is_active %} is-active{% endif %}"
+              data-category-mobile-link
+              role="option"
+              aria-selected="{% if is_active %}true{% else %}false{% endif %}"
+              {% if is_active %}aria-current="page"{% endif %}
+            >
+              <span>{{ link.title | escape }}</span>
+
+              {%- if is_active -%}
+                {% render 'icon', name: 'check', size: 14 %}
+              {%- endif -%}
+            </a>
+          {%- endfor -%}
+        {%- else -%}
+          {%- for preferred_title in preferred_titles -%}
+            {%- for collection_item in collections -%}
+              {%- if collection_item.title != preferred_title -%}
+                {%- continue -%}
+              {%- endif -%}
+
+              {%- assign is_active = false -%}
+
+              {%- if collection_item.handle == collection.handle -%}
+                {%- assign is_active = true -%}
+              {%- endif -%}
+
+              <a
+                href="{{ collection_item.url }}"
+                class="zh-category-mobile__link{% if is_active %} is-active{% endif %}"
+                data-category-mobile-link
+                role="option"
+                aria-selected="{% if is_active %}true{% else %}false{% endif %}"
+                {% if is_active %}aria-current="page"{% endif %}
+              >
+                <span>{{ collection_item.title | escape }}</span>
+
+                {%- if is_active -%}
+                  {% render 'icon', name: 'check', size: 14 %}
+                {%- endif -%}
+              </a>
+
+              {%- break -%}
+            {%- endfor -%}
+          {%- endfor -%}
         {%- endif -%}
-      </a>
-
-      {%- if use_menu -%}
-        {%- for link in menu.links -%}
-          {%- assign is_active = false -%}
-          {%- if link.url == collection.url -%}
-            {%- assign is_active = true -%}
-          {%- endif -%}
-
-          <a
-            href="{{ link.url }}"
-            class="zh-category-mobile__link{% if is_active %} is-active{% endif %}"
-            {% if is_active %}aria-current="page"{% endif %}
-          >
-            <span>{{ link.title | escape }}</span>
-            {%- if is_active -%}
-              {% render 'icon', name: 'check', size: 14 %}
-            {%- endif -%}
-          </a>
-        {%- endfor -%}
-      {%- else -%}
-        {%- for collection_item in collections -%}
-          {%- if collection_item.handle == 'all' or collection_item.handle == 'frontpage' -%}
-            {%- continue -%}
-          {%- endif -%}
-
-          {%- assign is_active = false -%}
-          {%- if collection_item.handle == collection.handle -%}
-            {%- assign is_active = true -%}
-          {%- endif -%}
-
-          <a
-            href="{{ collection_item.url }}"
-            class="zh-category-mobile__link{% if is_active %} is-active{% endif %}"
-            {% if is_active %}aria-current="page"{% endif %}
-          >
-            <span>{{ collection_item.title | escape }}</span>
-            {%- if is_active -%}
-              {% render 'icon', name: 'check', size: 14 %}
-            {%- endif -%}
-          </a>
-        {%- endfor -%}
-      {%- endif -%}
+      </div>
     </div>
   </details>
 
-  <div class="zh-category-rail" data-category-rail>
+  <div
+    class="zh-category-rail"
+    data-category-rail
+  >
     <button
       type="button"
       class="zh-category-rail__control zh-category-rail__control--prev"
-      data-pills-prev
+      data-category-prev
       aria-label="Vorige collecties"
+      aria-hidden="true"
+      tabindex="-1"
       disabled
     >
       <span aria-hidden="true">←</span>
@@ -135,16 +238,17 @@
 
     <div
       class="zh-category-rail__viewport"
-      data-pills-embla
+      data-category-viewport
       role="group"
-      aria-label="Collecties. Gebruik de linker- en rechterpijltjestoets om tussen collecties te navigeren."
-      tabindex="-1"
+      aria-label="Collecties. Gebruik links en rechts om een collectie te kiezen en Enter om deze te openen."
     >
       <ul class="zh-category-rail__list">
         <li class="zh-category-rail__item">
           <a
             href="{{ routes.all_products_collection_url }}"
             class="zh-category-pill{% if all_active %} is-active{% endif %}"
+            data-category-desktop-link
+            tabindex="{{ all_tabindex }}"
             {% if all_active %}aria-current="page"{% endif %}
           >
             Alle
@@ -154,14 +258,19 @@
         {%- if use_menu -%}
           {%- for link in menu.links -%}
             {%- assign is_active = false -%}
+            {%- assign link_tabindex = '-1' -%}
+
             {%- if link.url == collection.url -%}
               {%- assign is_active = true -%}
+              {%- assign link_tabindex = '0' -%}
             {%- endif -%}
 
             <li class="zh-category-rail__item">
               <a
                 href="{{ link.url }}"
                 class="zh-category-pill{% if is_active %} is-active{% endif %}"
+                data-category-desktop-link
+                tabindex="{{ link_tabindex }}"
                 {% if is_active %}aria-current="page"{% endif %}
               >
                 {{ link.title | escape }}
@@ -169,25 +278,34 @@
             </li>
           {%- endfor -%}
         {%- else -%}
-          {%- for collection_item in collections -%}
-            {%- if collection_item.handle == 'all' or collection_item.handle == 'frontpage' -%}
-              {%- continue -%}
-            {%- endif -%}
+          {%- for preferred_title in preferred_titles -%}
+            {%- for collection_item in collections -%}
+              {%- if collection_item.title != preferred_title -%}
+                {%- continue -%}
+              {%- endif -%}
 
-            {%- assign is_active = false -%}
-            {%- if collection_item.handle == collection.handle -%}
-              {%- assign is_active = true -%}
-            {%- endif -%}
+              {%- assign is_active = false -%}
+              {%- assign link_tabindex = '-1' -%}
 
-            <li class="zh-category-rail__item">
-              <a
-                href="{{ collection_item.url }}"
-                class="zh-category-pill{% if is_active %} is-active{% endif %}"
-                {% if is_active %}aria-current="page"{% endif %}
-              >
-                {{ collection_item.title | escape }}
-              </a>
-            </li>
+              {%- if collection_item.handle == collection.handle -%}
+                {%- assign is_active = true -%}
+                {%- assign link_tabindex = '0' -%}
+              {%- endif -%}
+
+              <li class="zh-category-rail__item">
+                <a
+                  href="{{ collection_item.url }}"
+                  class="zh-category-pill{% if is_active %} is-active{% endif %}"
+                  data-category-desktop-link
+                  tabindex="{{ link_tabindex }}"
+                  {% if is_active %}aria-current="page"{% endif %}
+                >
+                  {{ collection_item.title | escape }}
+                </a>
+              </li>
+
+              {%- break -%}
+            {%- endfor -%}
           {%- endfor -%}
         {%- endif -%}
       </ul>
@@ -196,8 +314,10 @@
     <button
       type="button"
       class="zh-category-rail__control zh-category-rail__control--next"
-      data-pills-next
+      data-category-next
       aria-label="Volgende collecties"
+      aria-hidden="true"
+      tabindex="-1"
       disabled
     >
       <span aria-hidden="true">→</span>
@@ -205,13 +325,13 @@
 
     <span
       class="zh-category-rail__fade zh-category-rail__fade--left"
-      data-pills-fade-left
+      data-category-fade-left
       aria-hidden="true"
     ></span>
 
     <span
       class="zh-category-rail__fade zh-category-rail__fade--right"
-      data-pills-fade-right
+      data-category-fade-right
       aria-hidden="true"
     ></span>
   </div>
@@ -226,14 +346,9 @@
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile {
-    position: relative;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
     .zh-category-mobile__summary {
     display: flex;
-    min-height: 38px;
+    min-height: 42px;
     align-items: center;
     justify-content: space-between;
     gap: 14px;
@@ -241,7 +356,12 @@
     border: 0;
     border-bottom: 1px solid rgba(42, 37, 32, 0.11);
     background: transparent;
-    color: #2a2520;
+    color: rgba(42, 37, 32, 0.72);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.075em;
+    text-transform: uppercase;
     cursor: pointer;
     list-style: none;
     -webkit-tap-highlight-color: transparent;
@@ -253,21 +373,10 @@
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__summary-label {
-    color: rgba(42, 37, 32, 0.70);
-    font-size: 11px;
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
     .zh-category-mobile__chevron {
     display: grid;
-    flex: 0 0 auto;
     place-items: center;
-    color: rgba(42, 37, 32, 0.58);
+    color: rgba(42, 37, 32, 0.62);
     transition: transform 180ms ease;
   }
 
@@ -284,7 +393,7 @@
     z-index: 48;
     display: none;
     border: 0;
-    background: rgba(56, 46, 40, 0.22);
+    background: rgba(56, 46, 40, 0.19);
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
   }
@@ -298,12 +407,10 @@
     z-index: 49;
     display: none;
     max-height: min(76dvh, 620px);
-    overflow-y: auto;
-    padding: 0 10px calc(12px + env(safe-area-inset-bottom));
+    overflow: hidden;
     border-top: 1px solid rgba(42, 37, 32, 0.10);
     background: #fffdfb;
     box-shadow: 0 -20px 56px -34px rgba(42, 37, 32, 0.48);
-    overscroll-behavior: contain;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -317,24 +424,21 @@
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-mobile__menu-header {
-    position: sticky;
-    top: 0;
-    z-index: 1;
     display: flex;
-    min-height: 58px;
+    min-height: 54px;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 0 4px 0 8px;
+    padding: 0 10px 0 18px;
     border-bottom: 1px solid rgba(42, 37, 32, 0.08);
-    background: rgba(255, 253, 251, 0.97);
+    background: #fffdfb;
     color: #2a2520;
     font-family:
       var(
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: 18px;
+    font-size: 17px;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -350,23 +454,27 @@
     cursor: pointer;
   }
 
-  html.zh-category-menu-open {
-    overflow: hidden;
-  }
-
-  html.zh-category-menu-open .marquee__track {
-    animation-play-state: paused !important;
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__options {
+    max-height: calc(min(76dvh, 620px) - 54px);
+    overflow-y: auto;
+    padding: 7px 10px calc(12px + env(safe-area-inset-bottom));
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color:
+      rgba(42, 37, 32, 0.24)
+      transparent;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-mobile__link {
     display: flex;
-    min-height: 42px;
+    min-height: 43px;
     align-items: center;
     justify-content: space-between;
     gap: 14px;
     padding: 0 11px;
-    color: rgba(42, 37, 32, 0.70);
+    color: rgba(42, 37, 32, 0.72);
     font-size: 13px;
     text-decoration: none;
   }
@@ -380,52 +488,57 @@
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-mobile__summary:focus-visible,
   #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__close:focus-visible,
+  #ZaynaCategoryPills-{{ section.id }}
     .zh-category-mobile__link:focus-visible,
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pill:focus-visible,
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__control:focus-visible {
+    .zh-category-pill:focus-visible {
     outline: 2px solid #a66a3f;
-    outline-offset: 3px;
+    outline-offset: 2px;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__link:focus-visible {
+    position: relative;
+    z-index: 1;
+  }
+
+  html.zh-category-menu-open {
+    overflow: hidden;
+  }
+
+  html.zh-category-menu-open .marquee__track {
+    animation-play-state: paused !important;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail {
     position: relative;
-    display: none;
     grid-template-columns: 34px minmax(0, 1fr) 34px;
     align-items: center;
-    gap: 7px;
+    gap: 6px;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail__viewport {
     min-width: 0;
-    overflow: hidden;
-    cursor: grab;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__viewport:active {
-    cursor: grabbing;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__viewport.is-native-scroll {
     overflow-x: auto;
+    overflow-y: hidden;
     scroll-behavior: smooth;
     scrollbar-width: none;
-    -ms-overflow-style: none;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__viewport.is-native-scroll::-webkit-scrollbar {
+    .zh-category-rail__viewport::-webkit-scrollbar {
     display: none;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail__list {
     display: flex;
+    width: max-content;
     align-items: center;
     gap: 7px;
     margin: 0;
@@ -441,29 +554,28 @@
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-pill {
     display: inline-flex;
-    min-height: 34px;
+    min-height: 35px;
     align-items: center;
     justify-content: center;
-    padding: 0 12px;
-    border: 1px solid rgba(42, 37, 32, 0.085);
+    padding: 0 13px;
+    border: 1px solid rgba(42, 37, 32, 0.09);
     border-radius: 999px;
-    background: rgba(255, 253, 251, 0.38);
-    color: rgba(42, 37, 32, 0.64);
-    font-size: 11px;
+    background: rgba(255, 253, 251, 0.40);
+    color: rgba(42, 37, 32, 0.66);
+    font-size: 11.5px;
     line-height: 1;
     text-decoration: none;
     white-space: nowrap;
     transition:
       border-color 180ms ease,
       background-color 180ms ease,
-      color 180ms ease,
-      transform 120ms ease;
+      color 180ms ease;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-pill.is-active {
-    border-color: rgba(166, 106, 63, 0.34);
-    background: rgba(242, 232, 223, 0.90);
+    border-color: rgba(166, 106, 63, 0.36);
+    background: rgba(242, 232, 223, 0.92);
     color: #825034;
   }
 
@@ -473,9 +585,9 @@
     width: 34px;
     height: 34px;
     place-items: center;
-    border: 1px solid rgba(42, 37, 32, 0.085);
+    border: 1px solid rgba(42, 37, 32, 0.09);
     border-radius: 999px;
-    background: rgba(255, 253, 251, 0.50);
+    background: rgba(255, 253, 251, 0.52);
     color: #655e58;
     font-size: 14px;
     cursor: pointer;
@@ -489,7 +601,7 @@
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail.has-overflow
-    .zh-category-rail__control {
+    .zh-category-rail__control:not(:disabled) {
     opacity: 1;
     pointer-events: auto;
   }
@@ -497,9 +609,8 @@
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail__control:disabled {
     visibility: hidden;
-    cursor: default;
-    opacity: 0 !important;
-    pointer-events: none !important;
+    opacity: 0;
+    pointer-events: none;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -516,7 +627,7 @@
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail__fade--left {
-    left: 41px;
+    left: 40px;
     background: linear-gradient(
       90deg,
       #faf5f2 12%,
@@ -526,7 +637,7 @@
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail__fade--right {
-    right: 41px;
+    right: 40px;
     background: linear-gradient(
       270deg,
       #faf5f2 12%,
@@ -545,19 +656,9 @@
 
   @media (min-width: 640px) {
     #ZaynaCategoryPills-{{ section.id }} {
-      margin-bottom: 17px;
+      margin-bottom: 16px;
       padding-right: 24px;
       padding-left: 24px;
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-mobile {
-      display: none;
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-rail {
-      display: grid;
     }
   }
 
@@ -570,8 +671,10 @@
 
   @media (hover: hover) and (pointer: fine) {
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-pill:hover {
-      border-color: rgba(166, 106, 63, 0.25);
+      .zh-category-pill:hover,
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-mobile__link:hover {
+      border-color: rgba(166, 106, 63, 0.26);
       background: rgba(242, 232, 223, 0.56);
       color: #955c39;
     }
@@ -581,357 +684,24 @@
       border-color: rgba(166, 106, 63, 0.30);
       color: #955c39;
     }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-rail__viewport {
+      scroll-behavior: auto;
+    }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-mobile__link:hover {
-      background: rgba(242, 232, 223, 0.48);
-      color: #955c39;
+      .zh-category-mobile__chevron,
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-pill,
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-rail__control {
+      transition: none;
     }
   }
 {% endstyle %}
-
-<script src="{{ 'embla-carousel.umd.js' | asset_url }}" defer="defer"></script>
-<script>
-  (() => {
-    const SECTION_ID = 'ZaynaCategoryPills-{{ section.id }}';
-
-    const initCategoryNavigation = (section) => {
-      if (
-        !section ||
-        section.dataset.categoryNavigationReady === 'true'
-      ) {
-        return;
-      }
-
-      section.dataset.categoryNavigationReady = 'true';
-
-      /*
-       * Mobile menu.
-       */
-      const mobileDetails = section.querySelector(
-        '[data-category-mobile]'
-      );
-
-      const closeMobileMenu = () => {
-        if (!mobileDetails?.open) return;
-
-        mobileDetails.removeAttribute('open');
-
-        document.documentElement.classList.remove(
-          'zh-category-menu-open'
-        );
-      };
-
-      mobileDetails?.addEventListener('toggle', () => {
-        document.documentElement.classList.toggle(
-          'zh-category-menu-open',
-          mobileDetails.open
-        );
-      });
-
-      section
-        .querySelector('[data-category-close]')
-        ?.addEventListener('click', closeMobileMenu);
-
-      section
-        .querySelector('[data-category-backdrop]')
-        ?.addEventListener('click', closeMobileMenu);
-
-      mobileDetails?.addEventListener('keydown', (event) => {
-        if (event.key !== 'Escape') return;
-
-        event.preventDefault();
-        closeMobileMenu();
-        mobileDetails.querySelector('summary')?.focus();
-      });
-
-      /*
-       * Desktop and split-screen rail.
-       *
-       * Every visible pill remains a normal link in the natural Tab
-       * order. JavaScript only adds ArrowLeft, ArrowRight, Home and End.
-       * If JavaScript fails, Tab and Enter still work normally.
-       */
-      const rail = section.querySelector(
-        '[data-category-rail]'
-      );
-
-      const viewport = section.querySelector(
-        '[data-pills-embla]'
-      );
-
-      const previousButton = section.querySelector(
-        '[data-pills-prev]'
-      );
-
-      const nextButton = section.querySelector(
-        '[data-pills-next]'
-      );
-
-      if (!rail || !viewport) return;
-
-      const links = Array.from(
-        viewport.querySelectorAll('.zh-category-pill')
-      );
-
-      if (!links.length) return;
-
-      /*
-       * Undo any tabindex values left behind by an older theme version.
-       */
-      links.forEach((link) => {
-        link.removeAttribute('tabindex');
-      });
-
-      const activeIndex = Math.max(
-        0,
-        links.findIndex((link) => {
-          return link.getAttribute('aria-current') === 'page';
-        })
-      );
-
-      let embla = null;
-
-      const revealLink = (link, index) => {
-        if (embla) {
-          embla.scrollTo(index, false);
-          return;
-        }
-
-        link.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center'
-        });
-      };
-
-      const focusLink = (index) => {
-        const safeIndex = Math.max(
-          0,
-          Math.min(index, links.length - 1)
-        );
-
-        const target = links[safeIndex];
-
-        target.focus({
-          preventScroll: true
-        });
-
-        revealLink(target, safeIndex);
-      };
-
-      const getNativeScrollState = () => {
-        const tolerance = 2;
-
-        return {
-          canScrollPrevious:
-            viewport.scrollLeft > tolerance,
-
-          canScrollNext:
-            viewport.scrollLeft +
-              viewport.clientWidth <
-            viewport.scrollWidth - tolerance
-        };
-      };
-
-      const updateRailState = () => {
-        const state = embla
-          ? {
-              canScrollPrevious: embla.canScrollPrev(),
-              canScrollNext: embla.canScrollNext()
-            }
-          : getNativeScrollState();
-
-        const hasOverflow =
-          state.canScrollPrevious ||
-          state.canScrollNext;
-
-        rail.classList.toggle(
-          'has-overflow',
-          hasOverflow
-        );
-
-        rail.classList.toggle(
-          'can-scroll-prev',
-          state.canScrollPrevious
-        );
-
-        rail.classList.toggle(
-          'can-scroll-next',
-          state.canScrollNext
-        );
-
-        if (previousButton) {
-          previousButton.disabled =
-            !state.canScrollPrevious;
-        }
-
-        if (nextButton) {
-          nextButton.disabled =
-            !state.canScrollNext;
-        }
-      };
-
-      viewport.addEventListener('keydown', (event) => {
-        const focusedLink = event.target.closest(
-          '.zh-category-pill'
-        );
-
-        if (!focusedLink) return;
-
-        const focusedIndex = links.indexOf(focusedLink);
-
-        if (focusedIndex < 0) return;
-
-        let destination = null;
-
-        switch (event.key) {
-          case 'ArrowRight':
-          case 'Right':
-            destination = Math.min(
-              focusedIndex + 1,
-              links.length - 1
-            );
-            break;
-
-          case 'ArrowLeft':
-          case 'Left':
-            destination = Math.max(
-              focusedIndex - 1,
-              0
-            );
-            break;
-
-          case 'Home':
-            destination = 0;
-            break;
-
-          case 'End':
-            destination = links.length - 1;
-            break;
-
-          default:
-            return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        focusLink(destination);
-      });
-
-      links.forEach((link, index) => {
-        link.addEventListener('focus', () => {
-          revealLink(link, index);
-        });
-      });
-
-      previousButton?.addEventListener('click', () => {
-        if (embla) {
-          embla.scrollPrev();
-          return;
-        }
-
-        viewport.scrollBy({
-          left: -viewport.clientWidth * 0.72,
-          behavior: 'smooth'
-        });
-      });
-
-      nextButton?.addEventListener('click', () => {
-        if (embla) {
-          embla.scrollNext();
-          return;
-        }
-
-        viewport.scrollBy({
-          left: viewport.clientWidth * 0.72,
-          behavior: 'smooth'
-        });
-      });
-
-      /*
-       * Embla improves dragging, but keyboard navigation does not
-       * depend on it.
-       */
-      if (window.EmblaCarousel) {
-        embla = window.EmblaCarousel(viewport, {
-          align: 'start',
-          dragFree: true,
-          containScroll: 'trimSnaps',
-          skipSnaps: true
-        });
-
-        embla.on('select', updateRailState);
-        embla.on('scroll', updateRailState);
-        embla.on('reInit', updateRailState);
-
-        embla.scrollTo(activeIndex, true);
-      } else {
-        viewport.classList.add('is-native-scroll');
-
-        links[activeIndex]?.scrollIntoView({
-          behavior: 'auto',
-          block: 'nearest',
-          inline: 'center'
-        });
-
-        viewport.addEventListener(
-          'scroll',
-          updateRailState,
-          { passive: true }
-        );
-      }
-
-      if ('ResizeObserver' in window) {
-        const observer = new ResizeObserver(() => {
-          embla?.reInit();
-          updateRailState();
-        });
-
-        observer.observe(viewport);
-      }
-
-      window.addEventListener(
-        'resize',
-        updateRailState,
-        { passive: true }
-      );
-
-      updateRailState();
-    };
-
-    const initialise = () => {
-      initCategoryNavigation(
-        document.getElementById(SECTION_ID)
-      );
-    };
-
-    if (document.readyState === 'loading') {
-      document.addEventListener(
-        'DOMContentLoaded',
-        initialise,
-        { once: true }
-      );
-    } else {
-      initialise();
-    }
-
-    document.addEventListener(
-      'shopify:section:load',
-      (event) => {
-        const section =
-          event.target?.id === SECTION_ID
-            ? event.target
-            : event.target?.querySelector?.(
-                `#${SECTION_ID}`
-              );
-
-        initCategoryNavigation(section);
-      }
-    );
-  })();
-</script>
 
 {% schema %}
 {
@@ -942,7 +712,7 @@
       "type": "link_list",
       "id": "menu",
       "label": "Collectiemenu",
-      "info": "Selecteer hier het centrale collectiemenu van Zayna Home. De volgorde van dit menu wordt exact overgenomen. Alleen wanneer dit leeg blijft, wordt teruggevallen op de automatische Shopify-volgorde."
+      "info": "Selecteer bij voorkeur één centraal Zayna Home-collectiemenu. De menuvolgorde wordt exact overgenomen. Zonder menu gebruikt de sectie automatisch de vaste Zayna Home-volgorde."
     }
   ],
   "presets": [
