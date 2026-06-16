@@ -1,8 +1,41 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
-    "collection-hero": { "type": "collection-hero", "settings": {} },
-    "category-pills": { "type": "category-pills", "settings": {} },
-    "main-collection": { "type": "main-collection", "settings": {} }
+    "collection-hero": {
+      "type": "collection-hero",
+      "settings": {
+        "eyebrow": "Collectie",
+        "intro_fallback": "Geselecteerd op design, kwaliteit en functie.",
+        "all_eyebrow": "De collectie",
+        "all_title": "Alle producten",
+        "all_intro": "Bekijk de complete collectie van Zayna Home, zorgvuldig geselecteerd op design, kwaliteit en functie."
+      }
+    },
+    "category-pills": {
+      "type": "category-pills",
+      "settings": {
+        "menu": "main-menu"
+      }
+    },
+    "main-collection": {
+      "type": "main-collection",
+      "settings": {
+        "empty_title": "Deze collectie wordt aangevuld.",
+        "empty_body": "Bekijk de andere collecties of kom snel terug."
+      }
+    }
   },
-  "order": ["collection-hero", "category-pills", "main-collection"]
+  "order": [
+    "collection-hero",
+    "category-pills",
+    "main-collection"
+  ]
 }
