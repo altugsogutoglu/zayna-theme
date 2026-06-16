@@ -44,6 +44,7 @@
   data-collection
   data-section-id="{{ section.id }}"
   data-collection-url="{{ collection.url }}"
+  data-current-count="{{ collection.products_count }}"
   class="zh-main-collection"
 >
   {%- paginate collection.products by per_page -%}
@@ -75,14 +76,16 @@
             {% render 'icon', name: 'sliders', size: 14 %}
             <span>Filteren</span>
 
-            {%- if active_count > 0 -%}
-              <span
-                class="zh-collection-toolbar__badge"
-                aria-label="{{ active_count }} actieve filters"
-              >
-                {{ active_count }}
-              </span>
-            {%- endif -%}
+            <span data-filter-count-slot>
+              {%- if active_count > 0 -%}
+                <span
+                  class="zh-collection-toolbar__badge"
+                  aria-label="{{ active_count }} actieve filters"
+                >
+                  {{ active_count }}
+                </span>
+              {%- endif -%}
+            </span>
           </button>
         {%- endif -%}
 
@@ -119,6 +122,7 @@
       </div>
     </div>
 
+    <div data-active-filters-region>
     {%- if any_active -%}
       <div
         class="zh-active-filters"
@@ -173,7 +177,13 @@
         </a>
       </div>
     {%- endif -%}
+    </div>
 
+    <div
+      class="zh-results-region"
+      data-results-region
+      data-result-total="{{ collection.products_count }}"
+    >
     {%- if collection.products_count == 0 -%}
       <div class="zh-collection-empty">
         {%- if any_active -%}
@@ -219,6 +229,7 @@
         {%- endfor -%}
       </div>
     {%- endif -%}
+    </div>
 
     {%- assign seo_text = collection.metafields.custom.seo_text.value -%}
 
@@ -296,7 +307,7 @@
                             value="{{ min_display }}"
                             inputmode="decimal"
                             autocomplete="off"
-                            placeholder="0,00"
+                            placeholder="Geen min."
                             data-price-input="min"
                           >
                         </span>
@@ -314,16 +325,12 @@
                             value="{{ max_display }}"
                             inputmode="decimal"
                             autocomplete="off"
-                            placeholder="{{ filter.range_max | money_without_currency }}"
+                            placeholder="Geen max."
                             data-price-input="max"
                           >
                         </span>
                       </label>
                     </div>
-
-                    <p class="zh-price-filter__maximum">
-                      Maximale prijs: {{ filter.range_max | money }}
-                    </p>
 
                     <p
                       class="zh-price-filter__error"
@@ -433,7 +440,8 @@
             <a
               href="{{ clear_url }}"
               data-filter-clear
-              class="zh-filter-form__clear"
+              class="zh-filter-form__clear{% unless any_active %} is-hidden{% endunless %}"
+              data-filter-clear-button
             >
               Wissen
             </a>
@@ -448,12 +456,14 @@
         </form>
       {%- endcapture -%}
 
-      {% render
-        'aside',
-        type: 'filters',
-        heading: 'Filteren',
-        aside_body: filter_body
-      %}
+      <div data-filter-container>
+        {% render
+          'aside',
+          type: 'filters',
+          heading: 'Filteren',
+          aside_body: filter_body
+        %}
+      </div>
     {%- endif -%}
 
   {%- endpaginate -%}
@@ -549,13 +559,16 @@
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__badge {
-    display: inline-grid;
-    min-width: 17px;
-    height: 17px;
-    place-items: center;
+    display: inline-flex;
+    min-width: 18px;
+    height: 18px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    border: 1px solid rgba(166, 106, 63, 0.18);
     border-radius: 999px;
-    background: #9b613d;
-    color: #fffdfb;
+    background: rgba(242, 232, 223, 0.72);
+    color: #875235;
     font-size: 9px;
     font-variant-numeric: tabular-nums;
   }
@@ -690,26 +703,6 @@
     font-size: 14px;
     line-height: 1.72;
     white-space: pre-line;
-  }
-
-  [data-aside="filters"] {
-    background: rgba(56, 46, 40, 0.22);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-  }
-
-  [data-aside="filters"] .zayna-aside-panel {
-    width: min(100vw, 400px);
-    max-width: 400px;
-    background: #faf7f3;
-  }
-
-  [data-aside="filters"] .zayna-aside-header {
-    background: #faf7f3;
-  }
-
-  [data-aside="filters"] .zayna-aside-scroll {
-    background: #faf7f3;
   }
 
   .zh-filter-form {
@@ -912,6 +905,11 @@
     text-decoration: none;
   }
 
+  .zh-filter-form__clear.is-hidden {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
   .zh-filter-form__submit {
     display: inline-flex;
     min-height: 44px;
@@ -943,7 +941,7 @@
     .zh-product-grid,
   #ZaynaCollectionGrid-{{ section.id }}.is-loading
     .zh-collection-empty {
-    opacity: 0.48;
+    opacity: 0.72;
     pointer-events: none;
   }
 
@@ -955,37 +953,7 @@
     background: rgba(255, 253, 251, 0.38);
   }
 
-  @media (min-width: 1024px) and (min-height: 680px) {
-    [data-aside="filters"] {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding: 20px;
-    }
-
-    [data-aside="filters"] .zayna-aside-panel {
-      position: relative;
-      top: auto;
-      right: auto;
-      width: min(400px, calc(100vw - 40px));
-      height: auto;
-      max-height: calc(100dvh - 40px);
-      border: 1px solid rgba(42, 37, 32, 0.08);
-      box-shadow: -12px 18px 56px -28px rgba(42, 37, 32, 0.44);
-    }
-
-    [data-aside="filters"] .zayna-aside-scroll {
-      flex: 0 1 auto;
-      max-height: calc(100dvh - 112px);
-    }
-  }
-
   @media (max-width: 639px) {
-    [data-aside="filters"] .zayna-aside-panel {
-      width: 100vw;
-      max-width: none;
-    }
-
     .zh-filter-form {
       min-height: 100%;
     }
@@ -1077,6 +1045,64 @@
       color: #955c39;
     }
   }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-results-region[data-result-total="1"]
+    .zh-product-grid {
+    grid-template-columns: calc((100% - 16px) / 2);
+    justify-content: center;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}[data-current-count="0"],
+  #ZaynaCollectionGrid-{{ section.id }}[data-current-count="1"],
+  #ZaynaCollectionGrid-{{ section.id }}[data-current-count="2"] {
+    padding-bottom: 48px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filter,
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filters__clear {
+    flex: 0 0 auto;
+  }
+
+  @media (min-width: 640px) {
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-results-region[data-result-total="1"]
+      .zh-product-grid {
+      grid-template-columns: calc((100% - 20px) / 2);
+    }
+  }
+
+  @media (min-width: 768px) {
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-results-region[data-result-total="1"]
+      .zh-product-grid {
+      grid-template-columns: calc((100% - 48px) / 3);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-results-region[data-result-total="1"]
+      .zh-product-grid {
+      grid-template-columns: calc((100% - 84px) / 4);
+    }
+  }
+
 {% endstyle %}
 
 {% schema %}
