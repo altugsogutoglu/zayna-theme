@@ -444,8 +444,8 @@
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-mobile__close {
     display: grid;
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     place-items: center;
     border: 0;
     border-radius: 50%;
@@ -469,7 +469,7 @@
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-mobile__link {
     display: flex;
-    min-height: 43px;
+    min-height: 45px;
     align-items: center;
     justify-content: space-between;
     gap: 14px;
@@ -483,6 +483,29 @@
     .zh-category-mobile__link.is-active {
     background: rgba(242, 232, 223, 0.72);
     color: #875235;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__link.is-keyboard-target {
+    position: relative;
+    z-index: 1;
+    outline: 2px solid #a66a3f;
+    outline-offset: -2px;
+    background: rgba(242, 232, 223, 0.20);
+    color: #7f5238;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__link.is-active.is-keyboard-target {
+    background: rgba(242, 232, 223, 0.72);
+    color: #875235;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__menu.is-keyboard-mode
+    .zh-category-mobile__link:hover:not(.is-active):not(.is-keyboard-target) {
+    background: transparent;
+    color: rgba(42, 37, 32, 0.72);
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -580,6 +603,32 @@
   }
 
   #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pill.is-keyboard-target {
+    position: relative;
+    z-index: 3;
+    outline: 2px solid #a66a3f;
+    outline-offset: 2px;
+    border-color: rgba(166, 106, 63, 0.24);
+    background: rgba(242, 232, 223, 0.18);
+    color: #7f5238;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pill.is-active.is-keyboard-target {
+    border-color: rgba(166, 106, 63, 0.36);
+    background: rgba(242, 232, 223, 0.92);
+    color: #825034;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-rail.is-keyboard-mode
+    .zh-category-pill:hover:not(.is-active):not(.is-keyboard-target) {
+    border-color: rgba(42, 37, 32, 0.09);
+    background: rgba(255, 253, 251, 0.40);
+    color: rgba(42, 37, 32, 0.66);
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail__control {
     display: grid;
     width: 34px;
@@ -671,12 +720,16 @@
 
   @media (hover: hover) and (pointer: fine) {
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-pill:hover,
+      .zh-category-pill:hover:not(.is-active):not(.is-keyboard-target) {
+      border-color: rgba(166, 106, 63, 0.16);
+      background: rgba(242, 232, 223, 0.20);
+      color: #8f5a39;
+    }
+
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-mobile__link:hover {
-      border-color: rgba(166, 106, 63, 0.26);
-      background: rgba(242, 232, 223, 0.56);
-      color: #955c39;
+      .zh-category-mobile__link:hover:not(.is-active):not(.is-keyboard-target) {
+      background: rgba(242, 232, 223, 0.20);
+      color: #8f5a39;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
