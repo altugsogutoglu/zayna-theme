@@ -1,18 +1,16 @@
 {%- comment -%}
-  Productgalerij voor de individuele productpagina.
+  Zayna Home productgalerij.
   Gedrag wordt aangestuurd door assets/product.js via data-* hooks.
   Vereist: product, is_sold.
 {%- endcomment -%}
 
+{%- assign imgs = product.images -%}
+
 {% style %}
   .zh-gallery {
-    position: relative;
-  }
-
-  .zh-gallery__frame {
-    position: relative;
-    overflow: hidden;
-    background: var(--color-cream, #f2ede6);
+    width: 100%;
+    max-width: 430px;
+    margin: 0 auto;
   }
 
   .zh-gallery__mobile {
@@ -21,6 +19,13 @@
 
   .zh-gallery__desktop {
     display: none;
+  }
+
+  .zh-gallery__frame,
+  .zh-gallery__main-frame {
+    position: relative;
+    overflow: hidden;
+    background: transparent;
   }
 
   .zh-gallery__track {
@@ -33,54 +38,75 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  .zh-gallery__track::-webkit-scrollbar {
+  .zh-gallery__track::-webkit-scrollbar,
+  .zh-gallery__lightbox-track::-webkit-scrollbar {
     display: none;
   }
 
-  .zh-gallery__slide {
+  .zh-gallery__slide,
+  .zh-gallery__main-button {
     position: relative;
-    display: grid;
-    flex: 0 0 100%;
-    place-items: center;
-    aspect-ratio: 4 / 5;
-    padding: clamp(.75rem, 3vw, 1.25rem);
+    display: block;
+    width: 100%;
+    padding: 0;
     border: 0;
     background: transparent;
-    scroll-snap-align: center;
     cursor: zoom-in;
   }
 
-  .zh-gallery__image {
+  .zh-gallery__slide {
+    flex: 0 0 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    scroll-snap-align: center;
+  }
+
+  .zh-gallery__image,
+  .zh-gallery__main-image,
+  .zh-gallery__thumb img {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     user-select: none;
     -webkit-user-drag: none;
+  }
+
+  .zh-gallery__main-frame {
+    aspect-ratio: 1;
+  }
+
+  .zh-gallery__main-image {
+    transition: transform 420ms ease;
+  }
+
+  .zh-gallery__main-button:hover .zh-gallery__main-image {
+    transform: scale(1.012);
   }
 
   .zh-gallery__slide:focus-visible,
   .zh-gallery__main-button:focus-visible,
   .zh-gallery__thumb:focus-visible,
   .zh-gallery__lightbox button:focus-visible {
-    outline: 2px solid var(--color-clay, #955c39);
-    outline-offset: -3px;
+    outline: 2px solid var(--color-clay, #a66a3f);
+    outline-offset: 3px;
   }
 
   .zh-gallery__meta {
     display: flex;
     align-items: center;
-    gap: .75rem;
-    margin-top: .75rem;
+    gap: .8rem;
+    min-height: 2rem;
+    margin-top: .65rem;
   }
 
   .zh-gallery__counter {
     flex: 0 0 auto;
-    min-width: 2.5rem;
-    color: rgb(42 37 32 / 68%);
-    font-size: .7rem;
+    min-width: 2.7rem;
+    color: rgb(42 37 32 / 66%);
+    font-size: .72rem;
     font-variant-numeric: tabular-nums;
-    letter-spacing: .1em;
+    letter-spacing: .08em;
     line-height: 1.3;
   }
 
@@ -89,7 +115,7 @@
     height: 1px;
     flex: 1 1 auto;
     overflow: hidden;
-    background: rgb(42 37 32 / 14%);
+    background: rgb(42 37 32 / 15%);
   }
 
   .zh-gallery__progress-fill {
@@ -97,7 +123,6 @@
     inset: 0 auto 0 0;
     width: 0;
     background: var(--color-ink, #2a2520);
-    transform-origin: left center;
     transition: width 180ms ease;
   }
 
@@ -112,139 +137,70 @@
     background: rgb(255 253 251 / 90%);
     color: var(--color-ink, #2a2520);
     pointer-events: none;
+    backdrop-filter: blur(6px);
   }
 
   .zh-gallery__sold-label {
     position: absolute;
     z-index: 2;
-    top: .75rem;
-    left: .75rem;
+    top: .7rem;
+    left: .7rem;
     display: inline-flex;
-    align-items: center;
     min-height: 1.75rem;
+    align-items: center;
     padding: .25rem .65rem;
     background: rgb(255 253 251 / 94%);
     color: var(--color-sold, #9b4c43);
     font-size: .7rem;
     font-weight: 600;
     letter-spacing: .08em;
-    line-height: 1.2;
     text-transform: uppercase;
-    backdrop-filter: blur(8px);
-  }
-
-  .zh-gallery__main-button {
-    display: block;
-    width: 100%;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    cursor: zoom-in;
-  }
-
-  .zh-gallery__main-frame {
-    position: relative;
-    display: grid;
-    place-items: center;
-    aspect-ratio: 4 / 5;
-    overflow: hidden;
-    padding: clamp(1rem, 2vw, 1.75rem);
-    background: var(--color-cream, #f2ede6);
-  }
-
-  .zh-gallery__main-image {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    transition: transform 420ms ease;
-  }
-
-  .zh-gallery__main-button:hover .zh-gallery__main-image {
-    transform: scale(1.012);
-  }
-
-  .zh-gallery__desktop-zoom {
-    position: absolute;
-    right: .85rem;
-    bottom: .85rem;
-    display: grid;
-    width: 2.35rem;
-    height: 2.35rem;
-    place-items: center;
-    background: rgb(255 253 251 / 92%);
-    color: var(--color-ink, #2a2520);
-    opacity: 0;
-    transition: opacity 160ms ease;
-  }
-
-  .zh-gallery__main-button:hover .zh-gallery__desktop-zoom,
-  .zh-gallery__main-button:focus-visible .zh-gallery__desktop-zoom {
-    opacity: 1;
+    backdrop-filter: blur(7px);
   }
 
   .zh-gallery__thumbs {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: .65rem;
-    margin-top: .75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .55rem;
+    margin-top: .8rem;
   }
 
   .zh-gallery__thumb {
     position: relative;
-    display: grid;
-    place-items: center;
-    aspect-ratio: 1;
+    width: 64px;
+    height: 64px;
+    flex: 0 0 64px;
     overflow: hidden;
-    padding: .25rem;
+    padding: 0;
     border: 1px solid transparent;
-    background: var(--color-cream, #f2ede6);
+    background: transparent;
+    opacity: .72;
     cursor: pointer;
-    opacity: .7;
     transition: border-color 160ms ease, opacity 160ms ease;
   }
 
-  .zh-gallery__thumb:hover {
+  .zh-gallery__thumb:hover,
+  .zh-gallery__thumb[aria-current='true'] {
     opacity: 1;
   }
 
   .zh-gallery__thumb[aria-current='true'] {
-    border-color: var(--color-clay, #955c39);
-    opacity: 1;
-  }
-
-  .zh-gallery__thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+    border-color: var(--color-clay, #a66a3f);
   }
 
   .zh-gallery__empty {
     display: grid;
+    aspect-ratio: 1;
     place-items: center;
-    aspect-ratio: 4 / 5;
     padding: 2rem;
-    background: var(--color-cream, #f2ede6);
-    color: rgb(42 37 32 / 68%);
+    border: 1px solid rgb(42 37 32 / 10%);
     text-align: center;
   }
 
-  .zh-gallery__empty-title {
+  .zh-gallery__empty p {
     margin: 0;
-    color: var(--color-ink, #2a2520);
-    font-size: 1.45rem;
-    line-height: 1.35;
-  }
-
-  .zh-gallery__empty-text {
-    max-width: 28rem;
-    margin: .65rem auto 0;
-    font-size: .88rem;
-    line-height: 1.65;
-  }
-
-  .zh-gallery__lightbox[hidden] {
-    display: none;
+    color: rgb(42 37 32 / 65%);
+    font-size: .95rem;
   }
 
   .zh-gallery__lightbox {
@@ -253,37 +209,51 @@
     inset: 0;
     display: flex;
     flex-direction: column;
-    background: rgb(28 25 22 / 97%);
+    background: rgb(42 37 32 / 97%);
     color: #fffdfb;
-    backdrop-filter: blur(8px);
   }
 
-  .zh-gallery__lightbox-bar {
+  .zh-gallery__lightbox[hidden] {
+    display: none !important;
+  }
+
+  .zh-gallery__lightbox-header {
     display: flex;
+    min-height: 3.75rem;
     align-items: center;
     justify-content: space-between;
-    min-height: 3.5rem;
-    padding: .45rem .8rem;
+    padding: .5rem 1rem;
   }
 
   .zh-gallery__lightbox-counter {
-    font-size: .72rem;
+    font-size: .75rem;
     font-variant-numeric: tabular-nums;
-    letter-spacing: .12em;
+    letter-spacing: .1em;
   }
 
-  .zh-gallery__icon-button {
+  .zh-gallery__lightbox-close,
+  .zh-gallery__lightbox-nav {
     display: grid;
     width: 2.75rem;
     height: 2.75rem;
     place-items: center;
     border: 0;
     background: transparent;
-    color: inherit;
+    color: #fffdfb;
     cursor: pointer;
   }
 
-  .zh-gallery__lightbox-stage {
+  .zh-gallery__lightbox-close:hover,
+  .zh-gallery__lightbox-nav:hover:not(:disabled) {
+    background: rgb(255 255 255 / 9%);
+  }
+
+  .zh-gallery__lightbox-nav:disabled {
+    opacity: .25;
+    cursor: default;
+  }
+
+  .zh-gallery__lightbox-body {
     position: relative;
     min-height: 0;
     flex: 1 1 auto;
@@ -297,42 +267,18 @@
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
-    overscroll-behavior: contain;
-  }
-
-  .zh-gallery__lightbox-track::-webkit-scrollbar {
-    display: none;
   }
 
   .zh-gallery__lightbox-slide {
     display: grid;
-    min-width: 100%;
     height: 100%;
+    flex: 0 0 100%;
     place-items: center;
-    padding: .5rem 3.4rem 1rem;
+    padding: 1rem;
     scroll-snap-align: center;
   }
 
-  .zh-gallery__zoom-wrapper {
-    display: grid;
-    width: 100%;
-    height: 100%;
-    place-items: center;
-    overflow: hidden;
-    touch-action: none;
-    cursor: zoom-in;
-  }
-
-  .zh-gallery__zoom-target {
-    display: grid;
-    width: 100%;
-    height: 100%;
-    place-items: center;
-    transform-origin: center center;
-    will-change: transform;
-  }
-
-  .zh-gallery__lightbox-image {
+  .zh-gallery__lightbox-slide img {
     display: block;
     width: 100%;
     height: 100%;
@@ -343,26 +289,27 @@
 
   .zh-gallery__lightbox-nav {
     position: absolute;
+    z-index: 2;
     top: 50%;
+    display: none;
+    background: rgb(255 255 255 / 7%);
     transform: translateY(-50%);
-    border: 1px solid rgb(255 253 251 / 25%);
-    background: rgb(255 253 251 / 8%);
   }
 
-  .zh-gallery__lightbox-nav:disabled {
-    cursor: default;
-    opacity: .2;
+  .zh-gallery__lightbox-nav--prev {
+    left: 1rem;
   }
 
-  .zh-gallery__lightbox-prev {
-    left: .55rem;
+  .zh-gallery__lightbox-nav--next {
+    right: 1rem;
   }
 
-  .zh-gallery__lightbox-next {
-    right: .55rem;
-  }
+  @media (min-width: 768px) {
+    .zh-gallery {
+      max-width: 500px;
+      margin: 0;
+    }
 
-  @media (min-width: 880px) {
     .zh-gallery__mobile {
       display: none;
     }
@@ -370,44 +317,49 @@
     .zh-gallery__desktop {
       display: block;
     }
+
+    .zh-gallery__lightbox-slide {
+      padding: 2rem 5rem;
+    }
+
+    .zh-gallery__lightbox-nav {
+      display: grid;
+    }
+  }
+
+  @media (min-width: 1180px) {
+    .zh-gallery {
+      max-width: 520px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .zh-gallery *,
-    .zh-gallery__lightbox * {
-      scroll-behavior: auto !important;
-      transition-duration: .01ms !important;
-      animation-duration: .01ms !important;
+    .zh-gallery__main-image,
+    .zh-gallery__progress-fill,
+    .zh-gallery__thumb {
+      transition: none;
     }
   }
 {% endstyle %}
 
-{%- liquid
-  assign imgs = product.images
--%}
-
 <div
-  data-gallery
   class="zh-gallery"
+  data-gallery
   data-images='[
     {%- for image in imgs -%}
-      {%- assign alt = image.alt | default: product.title -%}
+      {%- assign image_alt = image.alt | default: product.title -%}
       {
         "src": {{ image | image_url: width: 1800, format: 'webp' | json }},
-        "alt": {{ alt | json }},
-        "w": {{ image.width | default: 0 | json }},
-        "h": {{ image.height | default: 0 | json }}
+        "alt": {{ image_alt | json }},
+        "width": {{ image.width | default: 0 }},
+        "height": {{ image.height | default: 0 }}
       }{%- unless forloop.last -%},{%- endunless -%}
     {%- endfor -%}
   ]'
 >
   {%- if imgs.size == 0 -%}
     <div class="zh-gallery__empty">
-      <div>
-        <p class="zh-gallery__empty-title font-display">Productfoto volgt binnenkort.</p>
-        <p class="zh-gallery__empty-text">Bekijk ondertussen de productinformatie en specificaties op deze pagina.</p>
-      </div>
-      <span class="zh-gallery__sold-label" data-gallery-sold-label{% unless is_sold %} hidden{% endunless %}>Uitverkocht</span>
+      <p>Productfoto volgt binnenkort.</p>
     </div>
   {%- else -%}
     {%- assign first = imgs | first -%}
@@ -415,90 +367,142 @@
 
     <div class="zh-gallery__mobile">
       <div class="zh-gallery__frame">
-        <span class="zh-gallery__sold-label" data-gallery-sold-label{% unless is_sold %} hidden{% endunless %}>Uitverkocht</span>
         <div data-gallery-track class="zh-gallery__track">
           {%- for image in imgs -%}
-            {%- assign img_alt = image.alt | default: product.title -%}
-            {%- assign mob_loading = 'lazy' -%}
-            {%- assign mob_fetch = 'auto' -%}
+            {%- assign mobile_alt = image.alt | default: product.title -%}
+            {%- assign mobile_loading = 'lazy' -%}
+            {%- assign mobile_priority = 'auto' -%}
             {%- if forloop.first -%}
-              {%- assign mob_loading = 'eager' -%}
-              {%- assign mob_fetch = 'high' -%}
+              {%- assign mobile_loading = 'eager' -%}
+              {%- assign mobile_priority = 'high' -%}
             {%- endif -%}
             <button
               type="button"
-              data-gallery-open="{{ forloop.index0 }}"
+              class="zh-gallery__slide"
               data-gallery-slide
+              data-gallery-open="{{ forloop.index0 }}"
+              data-gallery-index="{{ forloop.index0 }}"
               aria-label="Vergroot afbeelding {{ forloop.index }} van {{ imgs.size }}"
               aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
               tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
-              class="zh-gallery__slide"
             >
-              {{ image | image_url: width: 1200, format: 'webp' | image_tag: loading: mob_loading, fetchpriority: mob_fetch, sizes: '100vw', widths: '400, 600, 800, 1000, 1200', alt: img_alt, class: 'zh-gallery__image' }}
+              {{ image | image_url: width: 1000, format: 'webp' | image_tag: loading: mobile_loading, fetchpriority: mobile_priority, sizes: '(max-width: 767px) min(100vw - 32px, 430px), 430px', widths: '360, 430, 600, 800, 1000', alt: mobile_alt, class: 'zh-gallery__image' }}
             </button>
           {%- endfor -%}
         </div>
-        <span class="zh-gallery__zoom-hint" aria-hidden="true">{% render 'icon', name: 'zoom-in', size: 15 %}</span>
+
+        {%- if is_sold -%}
+          <span data-gallery-sold-label class="zh-gallery__sold-label">Uitverkocht</span>
+        {%- endif -%}
+
+        <span aria-hidden="true" class="zh-gallery__zoom-hint">
+          {% render 'icon', name: 'zoom-in', size: 15 %}
+        </span>
       </div>
 
       {%- if imgs.size > 1 -%}
-        <div class="zh-gallery__meta" aria-hidden="true">
-          <span data-gallery-counter class="zh-gallery__counter">1 / {{ imgs.size }}</span>
-          <span class="zh-gallery__progress"><span data-gallery-progress class="zh-gallery__progress-fill" style="width: {{ 1.0 | divided_by: imgs.size | times: 100 }}%;"></span></span>
+        <div class="zh-gallery__meta">
+          <span data-gallery-counter class="zh-gallery__counter" aria-live="polite">1 / {{ imgs.size }}</span>
+          <span
+            class="zh-gallery__progress"
+            role="progressbar"
+            aria-label="Positie in productgalerij"
+            aria-valuemin="1"
+            aria-valuemax="{{ imgs.size }}"
+            aria-valuenow="1"
+            data-gallery-progressbar
+          >
+            <span data-gallery-progress class="zh-gallery__progress-fill" style="width: {{ 1.0 | divided_by: imgs.size | times: 100 }}%;"></span>
+          </span>
         </div>
       {%- endif -%}
     </div>
 
     <div class="zh-gallery__desktop">
-      <button type="button" data-gallery-main-btn aria-label="Vergroot productafbeelding" class="zh-gallery__main-button">
+      <button
+        type="button"
+        class="zh-gallery__main-button"
+        data-gallery-main-btn
+        data-gallery-open="0"
+        aria-label="Vergroot afbeelding 1 van {{ imgs.size }}"
+      >
         <span class="zh-gallery__main-frame">
-          <span class="zh-gallery__sold-label" data-gallery-sold-label{% unless is_sold %} hidden{% endunless %}>Uitverkocht</span>
-          {{ first | image_url: width: 1400, format: 'webp' | image_tag: loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 1180px) 52vw, (min-width: 880px) 44vw, 100vw', widths: '600, 900, 1200, 1400', alt: first_alt, class: 'zh-gallery__main-image' }}
-          <span class="zh-gallery__desktop-zoom" aria-hidden="true">{% render 'icon', name: 'zoom-in', size: 16 %}</span>
+          {{ first | image_url: width: 1400, format: 'webp' | image_tag: loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 1180px) 520px, 500px', widths: '500, 700, 900, 1200, 1400', alt: first_alt, class: 'zh-gallery__main-image' }}
+          {%- if is_sold -%}
+            <span data-gallery-sold-label class="zh-gallery__sold-label">Uitverkocht</span>
+          {%- endif -%}
+          <span aria-hidden="true" class="zh-gallery__zoom-hint">
+            {% render 'icon', name: 'zoom-in', size: 16 %}
+          </span>
         </span>
       </button>
 
       {%- if imgs.size > 1 -%}
+        <div class="zh-gallery__meta">
+          <span data-gallery-counter class="zh-gallery__counter" aria-live="polite">1 / {{ imgs.size }}</span>
+          <span
+            class="zh-gallery__progress"
+            role="progressbar"
+            aria-label="Positie in productgalerij"
+            aria-valuemin="1"
+            aria-valuemax="{{ imgs.size }}"
+            aria-valuenow="1"
+            data-gallery-progressbar
+          >
+            <span data-gallery-progress class="zh-gallery__progress-fill" style="width: {{ 1.0 | divided_by: imgs.size | times: 100 }}%;"></span>
+          </span>
+        </div>
+
         <div class="zh-gallery__thumbs" aria-label="Productafbeeldingen">
           {%- for image in imgs -%}
             {%- assign thumb_alt = image.alt | default: product.title -%}
             <button
               type="button"
+              class="zh-gallery__thumb"
               data-gallery-thumb="{{ forloop.index0 }}"
               aria-label="Toon afbeelding {{ forloop.index }} van {{ imgs.size }}"
               aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
-              class="zh-gallery__thumb"
+              tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
             >
-              {{ image | image_url: width: 260, format: 'webp' | image_tag: loading: 'lazy', sizes: '120px', alt: thumb_alt, class: '' }}
+              {{ image | image_url: width: 180, format: 'webp' | image_tag: loading: 'lazy', sizes: '64px', widths: '64, 96, 128, 180', alt: thumb_alt }}
             </button>
           {%- endfor -%}
         </div>
       {%- endif -%}
     </div>
 
-    <div data-gallery-lightbox class="zh-gallery__lightbox" role="dialog" aria-modal="true" aria-label="Productfoto's" hidden>
-      <div class="zh-gallery__lightbox-bar">
+    <div
+      data-gallery-lightbox
+      class="zh-gallery__lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Productfoto's"
+      hidden
+    >
+      <div class="zh-gallery__lightbox-header">
         <span data-lightbox-counter class="zh-gallery__lightbox-counter">1 / {{ imgs.size }}</span>
-        <button type="button" data-lightbox-close aria-label="Sluit productfoto's" class="zh-gallery__icon-button">{% render 'icon', name: 'x', size: 21 %}</button>
+        <button type="button" data-lightbox-close class="zh-gallery__lightbox-close" aria-label="Galerij sluiten">
+          {% render 'icon', name: 'x', size: 21 %}
+        </button>
       </div>
 
-      <div class="zh-gallery__lightbox-stage">
+      <div class="zh-gallery__lightbox-body">
         <div data-lightbox-track class="zh-gallery__lightbox-track">
           {%- for image in imgs -%}
-            {%- assign lb_alt = image.alt | default: product.title -%}
-            <div class="zh-gallery__lightbox-slide" data-lightbox-slide data-zoom-meta='{"w": {{ image.width | default: 0 }}, "h": {{ image.height | default: 0 }}}'>
-              <div data-zoom-wrapper class="zh-gallery__zoom-wrapper">
-                <div data-zoom-target class="zh-gallery__zoom-target">
-                  {{ image | image_url: width: 2000, format: 'webp' | image_tag: loading: 'lazy', sizes: '100vw', widths: '800, 1200, 1600, 2000', alt: lb_alt, class: 'zh-gallery__lightbox-image' }}
-                </div>
-              </div>
+            {%- assign lightbox_alt = image.alt | default: product.title -%}
+            <div data-lightbox-slide class="zh-gallery__lightbox-slide">
+              {{ image | image_url: width: 2000, format: 'webp' | image_tag: loading: 'lazy', sizes: '100vw', widths: '800, 1200, 1600, 2000', alt: lightbox_alt }}
             </div>
           {%- endfor -%}
         </div>
 
         {%- if imgs.size > 1 -%}
-          <button type="button" data-lightbox-prev aria-label="Vorige afbeelding" class="zh-gallery__icon-button zh-gallery__lightbox-nav zh-gallery__lightbox-prev">{% render 'icon', name: 'chevron-left', size: 22 %}</button>
-          <button type="button" data-lightbox-next aria-label="Volgende afbeelding" class="zh-gallery__icon-button zh-gallery__lightbox-nav zh-gallery__lightbox-next">{% render 'icon', name: 'chevron-right', size: 22 %}</button>
+          <button type="button" data-lightbox-prev class="zh-gallery__lightbox-nav zh-gallery__lightbox-nav--prev" aria-label="Vorige afbeelding">
+            {% render 'icon', name: 'chevron-left', size: 22 %}
+          </button>
+          <button type="button" data-lightbox-next class="zh-gallery__lightbox-nav zh-gallery__lightbox-nav--next" aria-label="Volgende afbeelding">
+            {% render 'icon', name: 'chevron-right', size: 22 %}
+          </button>
         {%- endif -%}
       </div>
     </div>
