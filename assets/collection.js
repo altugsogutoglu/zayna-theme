@@ -1,9 +1,9 @@
-// Zayna Home — collection page controllers.
+// Zayna Home — stable collection page controllers.
 (() => {
   'use strict';
 
-  if (window.__zhCollectionInit) return;
-  window.__zhCollectionInit = true;
+  if (window.__zhCollectionStableInit) return;
+  window.__zhCollectionStableInit = true;
 
   const reduceMotion = window.matchMedia(
     '(prefers-reduced-motion: reduce)'
@@ -78,7 +78,7 @@
 
     document.documentElement.style.setProperty(
       '--zh-keyboard-offset',
-      `${offset}px`
+      `${offset + 7}px`
     );
   };
 
@@ -105,7 +105,13 @@
     });
   }
 
-  document.querySelectorAll('[data-collection]').forEach((root) => {
+  const initialiseRoot = (root) => {
+    if (!root || root.dataset.collectionStableReady === 'true') {
+      return;
+    }
+
+    root.dataset.collectionStableReady = 'true';
+
     const sectionId = root.dataset.sectionId;
     const baseUrl = root.dataset.collectionUrl;
 
@@ -113,6 +119,7 @@
 
     let busy = false;
     let infiniteObserver = null;
+    let loadingTimer = null;
 
     const currentParams = () => {
       return new URLSearchParams(window.location.search);
@@ -140,49 +147,70 @@
       return response.text();
     };
 
+    const startLoading = () => {
+      window.clearTimeout(loadingTimer);
+
+      loadingTimer = window.setTimeout(() => {
+        root.classList.add('is-loading');
+      }, 120);
+    };
+
+    const stopLoading = () => {
+      window.clearTimeout(loadingTimer);
+      root.classList.remove('is-loading');
+    };
+
     const closeFilters = () => {
-      const overlay = document.querySelector(
-        '.overlay[data-aside="filters"].expanded'
+      document
+        .querySelector(
+          '.overlay[data-aside="filters"].expanded [data-aside-close]'
+        )
+        ?.click();
+    };
+
+    const replaceInner = (selector, freshRoot) => {
+      const current = root.querySelector(selector);
+      const fresh = freshRoot.querySelector(selector);
+
+      if (current && fresh) {
+        current.innerHTML = fresh.innerHTML;
+      }
+    };
+
+    const patchCollection = (freshRoot) => {
+      const freshCount = freshRoot.querySelector(
+        '[data-result-count]'
       );
 
-      const closeButton = overlay?.querySelector(
-        '[data-aside-close]'
+      const currentCount = root.querySelector(
+        '[data-result-count]'
       );
 
-      closeButton?.click();
+      if (freshCount && currentCount) {
+        currentCount.innerHTML = freshCount.innerHTML;
+      }
+
+      replaceInner('[data-filter-count-slot]', freshRoot);
+      replaceInner('[data-active-filters-region]', freshRoot);
+      replaceInner('[data-results-region]', freshRoot);
+      replaceInner('[data-filter-container]', freshRoot);
+
+      const total = freshRoot.dataset.currentCount || '0';
+
+      root.dataset.currentCount = total;
+
+      const results = root.querySelector(
+        '[data-results-region]'
+      );
+
+      if (results) {
+        results.dataset.resultTotal = total;
+      }
     };
 
-    const restoreScroll = (scrollY) => {
-      const restore = () => {
-        window.scrollTo({
-          top: scrollY,
-          left: 0,
-          behavior: 'auto'
-        });
-      };
-
-      restore();
-      window.requestAnimationFrame(restore);
-      window.setTimeout(restore, 70);
-    };
-
-    const restoreFocus = (selector) => {
-      if (!selector) return;
-
-      window.requestAnimationFrame(() => {
-        root.querySelector(selector)?.focus({
-          preventScroll: true
-        });
-      });
-    };
-
-    const replaceSection = async (
+    const replaceCollection = async (
       params,
-      {
-        preserveScroll = true,
-        closeDrawer = false,
-        focusAfter = null
-      } = {}
+      { closeDrawer = false } = {}
     ) => {
       if (busy) return;
 
@@ -190,34 +218,24 @@
       params.delete('page');
 
       const search = params.toString();
-      const previousScrollY = window.scrollY;
-      const previousHeight = root.offsetHeight;
 
-      root.style.minHeight = `${previousHeight}px`;
       root.setAttribute('aria-busy', 'true');
-      root.classList.add('is-loading');
-
-      if (closeDrawer) {
-        closeFilters();
-      }
+      startLoading();
 
       try {
         const html = await fetchSection(search);
 
-        const documentFragment = new DOMParser()
-          .parseFromString(html, 'text/html');
+        const freshRoot = new DOMParser()
+          .parseFromString(html, 'text/html')
+          .querySelector('[data-collection]');
 
-        const fresh = documentFragment.querySelector(
-          '[data-collection]'
-        );
-
-        if (!fresh) {
+        if (!freshRoot) {
           throw new Error(
             'Updated collection markup was not found.'
           );
         }
 
-        root.innerHTML = fresh.innerHTML;
+        patchCollection(freshRoot);
 
         window.history.pushState(
           {},
@@ -225,27 +243,18 @@
           baseUrl + (search ? `?${search}` : '')
         );
 
-        bind();
+        bindDynamicControls();
 
-        if (preserveScroll) {
-          restoreScroll(previousScrollY);
+        if (closeDrawer) {
+          closeFilters();
         }
-
-        restoreFocus(focusAfter);
       } catch (error) {
         console.error(error);
         window.location.search = search;
       } finally {
         busy = false;
-
-        window.requestAnimationFrame(() => {
-          root.removeAttribute('aria-busy');
-          root.classList.remove('is-loading');
-
-          window.setTimeout(() => {
-            root.style.minHeight = '';
-          }, 190);
-        });
+        root.removeAttribute('aria-busy');
+        stopLoading();
       }
     };
 
@@ -259,10 +268,7 @@
           if (value === null) {
             formData.delete(input.name);
           } else {
-            formData.set(
-              input.name,
-              value.toFixed(2)
-            );
+            formData.set(input.name, value.toFixed(2));
           }
         }
       );
@@ -318,52 +324,68 @@
       return true;
     };
 
-    const bindPriceFields = () => {
-      root
+    const bindPriceFields = (scope) => {
+      scope
         .querySelectorAll('[data-price-input]')
         .forEach((input) => {
+          if (input.dataset.priceReady === 'true') return;
+
+          input.dataset.priceReady = 'true';
+
           if (input.value) {
             formatVisibleMoney(input);
           }
-
-          let preserveSelection = false;
 
           input.addEventListener('focus', () => {
             if (input.value) {
               formatVisibleMoney(input);
             }
 
-            preserveSelection = true;
-
             window.requestAnimationFrame(() => {
               input.select();
               updateKeyboardOffset();
             });
-
-            window.setTimeout(() => {
-              input.scrollIntoView({
-                block: 'center',
-                behavior: reduceMotion
-                  ? 'auto'
-                  : 'smooth'
-              });
-            }, 220);
           });
 
           input.addEventListener('pointerup', (event) => {
-            if (!preserveSelection) return;
-
             event.preventDefault();
-            preserveSelection = false;
             input.select();
           });
 
           input.addEventListener('blur', () => {
-            preserveSelection = false;
             formatVisibleMoney(input);
             updateKeyboardOffset();
           });
         });
+    };
+
+    const bindFilterDirtyState = (form) => {
+      if (!form || form.dataset.dirtyReady === 'true') return;
+
+      form.dataset.dirtyReady = 'true';
+
+      const clearButton = form.querySelector(
+        '[data-filter-clear-button]'
+      );
+
+      const update = () => {
+        const params = buildFilterParams(form);
+
+        const hasSelection = Array.from(
+          params.entries()
+        ).some(([key, value]) => {
+          return key !== 'sort_by' && value !== '';
+        });
+
+        clearButton?.classList.toggle(
+          'is-hidden',
+          !hasSelection
+        );
+      };
+
+      form.addEventListener('input', update);
+      form.addEventListener('change', update);
+      update();
     };
 
     const bindInfinite = () => {
@@ -388,19 +410,8 @@
         busy = true;
         sentinel.setAttribute('aria-busy', 'true');
 
-        const text = link.querySelector(
-          '[data-load-more-text]'
-        );
-
-        const loadingLabel = link.dataset.loadingLabel;
-
-        if (text && loadingLabel) {
-          text.textContent = loadingLabel;
-        }
-
         try {
           const href = link.getAttribute('href') || '';
-
           const query =
             `${href.split('?')[1] || ''}` +
             `&section_id=${encodeURIComponent(sectionId)}`;
@@ -457,12 +468,6 @@
           window.history.replaceState({}, '', href);
         } catch (error) {
           console.error(error);
-
-          if (text) {
-            text.textContent =
-              link.dataset.retryLabel ||
-              'Opnieuw proberen';
-          }
         } finally {
           busy = false;
           bindInfinite();
@@ -493,58 +498,49 @@
       }
     };
 
-    const bind = () => {
-      const sort = root.querySelector(
-        '[data-sort-select]'
-      );
-
-      sort?.addEventListener('change', () => {
-        const params = currentParams();
-        params.set('sort_by', sort.value);
-
-        replaceSection(params, {
-          preserveScroll: true,
-          closeDrawer: false,
-          focusAfter: '[data-sort-select]'
-        });
-      });
-
+    const bindDynamicControls = () => {
       const form = root.querySelector(
         '[data-filter-form]'
       );
 
-      form?.addEventListener('submit', (event) => {
-        event.preventDefault();
+      if (
+        form &&
+        form.dataset.filterSubmitReady !== 'true'
+      ) {
+        form.dataset.filterSubmitReady = 'true';
 
-        if (!validatePriceRange(form)) return;
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
 
-        const params = buildFilterParams(form);
+          if (!validatePriceRange(form)) return;
 
-        replaceSection(params, {
-          preserveScroll: true,
-          closeDrawer: true,
-          focusAfter: '[data-aside-open="filters"]'
+          replaceCollection(
+            buildFilterParams(form),
+            { closeDrawer: true }
+          );
         });
-      });
+      }
 
       root
         .querySelectorAll('[data-filter-clear]')
         .forEach((link) => {
+          if (link.dataset.clearReady === 'true') return;
+
+          link.dataset.clearReady = 'true';
+
           link.addEventListener('click', (event) => {
             event.preventDefault();
 
             const params = new URLSearchParams();
-            const current = currentParams();
-            const sortBy = current.get('sort_by');
+            const sortBy =
+              currentParams().get('sort_by');
 
             if (sortBy) {
               params.set('sort_by', sortBy);
             }
 
-            replaceSection(params, {
-              preserveScroll: true,
-              closeDrawer: true,
-              focusAfter: '[data-aside-open="filters"]'
+            replaceCollection(params, {
+              closeDrawer: true
             });
           });
         });
@@ -552,30 +548,61 @@
       root
         .querySelectorAll('[data-filter-remove]')
         .forEach((link) => {
+          if (link.dataset.removeReady === 'true') return;
+
+          link.dataset.removeReady = 'true';
+
           link.addEventListener('click', (event) => {
             event.preventDefault();
 
             const href =
               link.getAttribute('href') || '';
 
-            const query =
-              href.split('?')[1] || '';
-
-            replaceSection(
-              new URLSearchParams(query),
-              {
-                preserveScroll: true,
-                closeDrawer: false,
-                focusAfter: '[data-aside-open="filters"]'
-              }
+            replaceCollection(
+              new URLSearchParams(
+                href.split('?')[1] || ''
+              )
             );
           });
         });
 
-      bindPriceFields();
+      bindPriceFields(root);
+      bindFilterDirtyState(form);
       bindInfinite();
     };
 
-    bind();
-  });
+    /*
+     * The toolbar and select remain in the DOM.
+     * Therefore sorting no longer recreates focus or scroll position.
+     */
+    const sort = root.querySelector(
+      '[data-sort-select]'
+    );
+
+    sort?.addEventListener('change', () => {
+      const params = currentParams();
+      params.set('sort_by', sort.value);
+      replaceCollection(params);
+    });
+
+    bindDynamicControls();
+  };
+
+  document
+    .querySelectorAll('[data-collection]')
+    .forEach(initialiseRoot);
+
+  document.addEventListener(
+    'shopify:section:load',
+    (event) => {
+      const root =
+        event.target?.matches?.('[data-collection]')
+          ? event.target
+          : event.target?.querySelector?.(
+              '[data-collection]'
+            );
+
+      initialiseRoot(root);
+    }
+  );
 })();
