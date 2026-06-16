@@ -19,14 +19,28 @@
         "info": {
           "type": "info",
           "settings": {
-            "show_vendor": true,
-            "in_stock_text": "Op voorraad — verzending binnen 1–3 werkdagen",
+            "in_stock_text": "Op voorraad",
             "sold_text": "Uitverkocht",
             "price_on_request": "Prijs op aanvraag"
           }
         },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "add_label": "In winkelmand",
+            "sold_label": "Uitverkocht",
+            "show_trust": true,
+            "trust_1": "Veilig betalen",
+            "trust_2": "Levering 1–3 werkdagen",
+            "trust_3": "Verzonden vanuit NL"
+          }
+        },
         "features": {
           "type": "features",
+          "settings": {}
+        },
+        "description": {
+          "type": "description",
           "settings": {}
         },
         "specs": {
@@ -39,22 +53,6 @@
             "label_sku": "Artikelnr."
           }
         },
-        "buy_buttons": {
-          "type": "buy_buttons",
-          "settings": {
-            "add_label": "In winkelmand",
-            "sold_label": "Uitverkocht",
-            "show_wishlist": true,
-            "show_trust": true,
-            "trust_1": "Veilig betalen",
-            "trust_2": "Verzending 1–3 werkdagen",
-            "trust_3": "Zorgvuldig verpakt vanuit NL"
-          }
-        },
-        "description": {
-          "type": "description",
-          "settings": {}
-        },
         "zayna_note": {
           "type": "zayna_note",
           "settings": {
@@ -64,23 +62,22 @@
         "care_shipping": {
           "type": "care_shipping",
           "settings": {
-            "default_open": 1,
-            "row1_title": "Onderhoud",
-            "row1_body": "<p>Glaswerk en keukentools zijn vaatwasserbestendig tenzij anders vermeld. Was textiel volgens de instructies op de productpagina. Handwas wordt aanbevolen voor het beste resultaat op de lange termijn.</p>",
+            "row1_title": "",
+            "row1_body": "",
             "row2_title": "Verzending",
-            "row2_body": "<p>Wij verzenden binnen 1–3 werkdagen vanuit Nederland. Levering in NL 1–2 werkdagen, België 2–3 werkdagen, EU 3–5 werkdagen. Glaswerk wordt zorgvuldig verpakt met beschermingsmateriaal.</p>",
+            "row2_body": "<p>Nederland: thuisbezorging €7,95 of een servicepunt voor €6,95. Gratis verzending vanaf €100. De indicatieve levertijd is 1–3 werkdagen en je ontvangt track & trace.</p>",
             "row3_title": "Retourneren",
-            "row3_body": "<p>Niet tevreden? Je kunt je bestelling binnen 14 dagen na ontvangst retourneren, mits het product ongebruikt en in originele verpakking is. Beschadigd ontvangen? Stuur binnen 48 uur een foto naar info@zaynahome.nl.</p>"
+            "row3_body": "<p>Je hebt 14 dagen na ontvangst om je retour aan te melden. Daarna heb je nog 14 dagen om het product terug te sturen. Retourkosten zijn voor eigen rekening, tenzij wettelijk anders.</p>"
           }
         }
       },
       "block_order": [
         "gallery",
         "info",
-        "features",
-        "specs",
         "buy_buttons",
+        "features",
         "description",
+        "specs",
         "zayna_note",
         "care_shipping"
       ],
