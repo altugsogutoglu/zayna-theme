@@ -192,10 +192,6 @@
       </div>
     </div>
 
-    <span
-      aria-hidden="true"
-      class="zh-product-card__underline"
-    ></span>
   </a>
 
   <span class="sr-only" aria-live="polite" data-cart-add-status></span>
@@ -353,10 +349,10 @@
     border-bottom: 1px solid rgba(231, 221, 210, 0.76);
     background: rgba(250, 245, 242, 0.78);
     color: #2a2520;
-    font-size: 8.5px;
+    font-size: 9px;
     font-weight: 500;
     line-height: 1;
-    letter-spacing: 0.145em;
+    letter-spacing: 0.125em;
     text-transform: uppercase;
     transition:
       background-color 200ms ease,
@@ -396,7 +392,7 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 400;
     line-height: 1.25;
     transition: color 220ms ease;
@@ -423,16 +419,6 @@
     font-style: italic;
   }
 
-  .zh-product-card__underline {
-    display: block;
-    width: 22px;
-    height: 1px;
-    margin-top: 7px;
-    background: #e7ddd2;
-    transition:
-      width 340ms ease,
-      background-color 340ms ease;
-  }
 
   .zh-product-card__quick-button:focus-visible,
   .zh-product-card__media-link:focus-visible,
@@ -485,6 +471,23 @@
     }
   }
 
+
+  @media (min-width: 900px) {
+    .zh-product-card__quick-button {
+      font-size: 9.5px;
+      letter-spacing: 0.115em;
+    }
+
+    .zh-product-card__title {
+      font-size: 15px;
+      line-height: 1.27;
+    }
+
+    .zh-product-card__price {
+      font-size: 15.5px;
+    }
+  }
+
   @media (hover: hover) and (pointer: fine) {
     .zh-product-card:hover .zh-product-card__primary {
       transform: scale(1.012);
@@ -498,11 +501,6 @@
 
     .zh-product-card:hover .zh-product-card__title {
       color: #9a6039;
-    }
-
-    .zh-product-card:hover .zh-product-card__underline {
-      width: 48px;
-      background: rgba(166, 106, 63, 0.62);
     }
 
     .zh-product-card__quick-button:hover {
@@ -522,7 +520,6 @@
   @media (prefers-reduced-motion: reduce) {
     .zh-product-card__image,
     .zh-product-card__title,
-    .zh-product-card__underline,
     .zh-product-card__quick-button {
       transition: none;
     }
