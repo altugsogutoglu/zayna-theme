@@ -9,8 +9,14 @@
 {% style %}
   .zh-gallery {
     width: 100%;
-    max-width: 430px;
+    max-width: 370px;
     margin: 0 auto;
+    color: var(--color-ink, #2a2520);
+  }
+
+  .zh-gallery:focus-visible {
+    outline: 2px solid #9b5f35;
+    outline-offset: 5px;
   }
 
   .zh-gallery__mobile {
@@ -25,7 +31,7 @@
   .zh-gallery__main-frame {
     position: relative;
     overflow: hidden;
-    background: transparent;
+    background: #fcfaf7;
   }
 
   .zh-gallery__track {
@@ -39,35 +45,27 @@
   }
 
   .zh-gallery__track::-webkit-scrollbar,
-  .zh-gallery__lightbox-track::-webkit-scrollbar {
+  .zh-gallery__viewer-media::-webkit-scrollbar {
     display: none;
   }
 
-  .zh-gallery__slide,
-  .zh-gallery__main-button {
-    position: relative;
-    display: block;
-    width: 100%;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    cursor: zoom-in;
-  }
-
   .zh-gallery__slide {
+    position: relative;
     flex: 0 0 100%;
     aspect-ratio: 1;
     overflow: hidden;
     scroll-snap-align: center;
+    background: #fcfaf7;
   }
 
   .zh-gallery__image,
   .zh-gallery__main-image,
-  .zh-gallery__thumb img {
+  .zh-gallery__thumb img,
+  .zh-gallery__viewer-image {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     user-select: none;
     -webkit-user-drag: none;
   }
@@ -77,104 +75,177 @@
   }
 
   .zh-gallery__main-image {
-    transition: transform 420ms ease;
+    transition: opacity 160ms ease;
   }
 
-  .zh-gallery__main-button:hover .zh-gallery__main-image {
-    transform: scale(1.012);
-  }
-
-  .zh-gallery__slide:focus-visible,
-  .zh-gallery__main-button:focus-visible,
-  .zh-gallery__thumb:focus-visible,
-  .zh-gallery__lightbox button:focus-visible {
-    outline: 2px solid var(--color-clay, #a66a3f);
-    outline-offset: 3px;
-  }
-
-  .zh-gallery__meta {
-    display: flex;
-    align-items: center;
-    gap: .8rem;
-    min-height: 2rem;
-    margin-top: .65rem;
-  }
-
-  .zh-gallery__counter {
-    flex: 0 0 auto;
-    min-width: 2.7rem;
-    color: rgb(42 37 32 / 66%);
-    font-size: .72rem;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: .08em;
-    line-height: 1.3;
-  }
-
-  .zh-gallery__progress {
-    position: relative;
-    height: 1px;
-    flex: 1 1 auto;
-    overflow: hidden;
-    background: rgb(42 37 32 / 15%);
-  }
-
-  .zh-gallery__progress-fill {
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 0;
-    background: var(--color-ink, #2a2520);
-    transition: width 180ms ease;
-  }
-
-  .zh-gallery__zoom-hint {
-    position: absolute;
-    right: .75rem;
-    bottom: .75rem;
+  .zh-gallery__nav,
+  .zh-gallery__viewer-nav {
     display: grid;
-    width: 2.15rem;
-    height: 2.15rem;
     place-items: center;
-    background: rgb(255 253 251 / 90%);
-    color: var(--color-ink, #2a2520);
-    pointer-events: none;
+    border: 1px solid rgb(42 37 32 / 10%);
+    background: rgb(252 250 247 / 92%);
+    color: #2a2520;
+    cursor: pointer;
     backdrop-filter: blur(6px);
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      opacity 160ms ease,
+      border-color 160ms ease;
+  }
+
+  .zh-gallery__nav {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    width: 2.45rem;
+    height: 2.45rem;
+    transform: translateY(-50%);
+  }
+
+  .zh-gallery__nav--prev {
+    left: .55rem;
+  }
+
+  .zh-gallery__nav--next {
+    right: .55rem;
+  }
+
+  .zh-gallery__nav:hover:not(:disabled),
+  .zh-gallery__viewer-nav:hover:not(:disabled) {
+    border-color: #2a2520;
+    background: #2a2520;
+    color: #fff;
+  }
+
+  .zh-gallery__nav:disabled,
+  .zh-gallery__viewer-nav:disabled {
+    opacity: .28;
+    cursor: default;
+  }
+
+  .zh-gallery__open {
+    position: absolute;
+    z-index: 3;
+    right: .65rem;
+    bottom: .65rem;
+    display: inline-flex;
+    min-height: 2.35rem;
+    align-items: center;
+    gap: .45rem;
+    padding: .45rem .7rem;
+    border: 1px solid rgb(42 37 32 / 10%);
+    background: rgb(252 250 247 / 92%);
+    color: #2a2520;
+    font-size: .72rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      border-color 160ms ease;
+  }
+
+  .zh-gallery__open:hover {
+    border-color: #2a2520;
+    background: #2a2520;
+    color: #fff;
   }
 
   .zh-gallery__sold-label {
     position: absolute;
-    z-index: 2;
-    top: .7rem;
-    left: .7rem;
+    z-index: 3;
+    top: .65rem;
+    left: .65rem;
     display: inline-flex;
     min-height: 1.75rem;
     align-items: center;
     padding: .25rem .65rem;
-    background: rgb(255 253 251 / 94%);
+    border: 1px solid rgb(155 76 67 / 16%);
+    background: rgb(252 250 247 / 94%);
     color: var(--color-sold, #9b4c43);
-    font-size: .7rem;
+    font-size: .69rem;
     font-weight: 600;
     letter-spacing: .08em;
     text-transform: uppercase;
     backdrop-filter: blur(7px);
   }
 
+  .zh-gallery__meta {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    min-height: 2.3rem;
+    margin-top: .55rem;
+  }
+
+  .zh-gallery__counter {
+    flex: 0 0 auto;
+    min-width: 2.8rem;
+    color: #625a53;
+    font-size: .74rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .06em;
+    line-height: 1.3;
+  }
+
+  .zh-gallery__segments {
+    display: grid;
+    grid-template-columns: repeat(var(--zh-gallery-count, 1), minmax(0, 1fr));
+    flex: 1 1 auto;
+    gap: .28rem;
+  }
+
+  .zh-gallery__segment {
+    position: relative;
+    min-width: 0;
+    height: 1.65rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .zh-gallery__segment::before {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 2px;
+    background: #ded5cc;
+    content: '';
+    transform: translateY(-50%);
+    transition: background-color 150ms ease, height 150ms ease;
+  }
+
+  .zh-gallery__segment:hover::before,
+  .zh-gallery__segment[aria-current='true']::before {
+    background: #2a2520;
+  }
+
+  .zh-gallery__segment[aria-current='true']::before {
+    height: 3px;
+  }
+
   .zh-gallery__thumbs {
     display: flex;
     flex-wrap: wrap;
-    gap: .55rem;
-    margin-top: .8rem;
+    gap: .5rem;
+    margin-top: .7rem;
   }
 
   .zh-gallery__thumb {
     position: relative;
-    width: 64px;
-    height: 64px;
-    flex: 0 0 64px;
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
     overflow: hidden;
     padding: 0;
     border: 1px solid transparent;
-    background: transparent;
-    opacity: .72;
+    background: #fcfaf7;
+    opacity: .7;
     cursor: pointer;
     transition: border-color 160ms ease, opacity 160ms ease;
   }
@@ -185,7 +256,16 @@
   }
 
   .zh-gallery__thumb[aria-current='true'] {
-    border-color: var(--color-clay, #a66a3f);
+    border-color: #9b5f35;
+  }
+
+  .zh-gallery__nav:focus-visible,
+  .zh-gallery__open:focus-visible,
+  .zh-gallery__segment:focus-visible,
+  .zh-gallery__thumb:focus-visible,
+  .zh-gallery__viewer button:focus-visible {
+    outline: 2px solid #9b5f35;
+    outline-offset: 3px;
   }
 
   .zh-gallery__empty {
@@ -193,120 +273,203 @@
     aspect-ratio: 1;
     place-items: center;
     padding: 2rem;
-    border: 1px solid rgb(42 37 32 / 10%);
+    border: 1px solid #ded5cc;
     text-align: center;
   }
 
   .zh-gallery__empty p {
     margin: 0;
-    color: rgb(42 37 32 / 65%);
+    color: #625a53;
     font-size: .95rem;
   }
 
-  .zh-gallery__lightbox {
+  .zh-gallery__viewer {
     position: fixed;
-    z-index: 100;
+    z-index: 120;
     inset: 0;
-    display: flex;
-    flex-direction: column;
-    background: rgb(42 37 32 / 97%);
-    color: #fffdfb;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
   }
 
-  .zh-gallery__lightbox[hidden] {
+  .zh-gallery__viewer[hidden] {
     display: none !important;
   }
 
-  .zh-gallery__lightbox-header {
+  .zh-gallery__viewer-backdrop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: rgb(42 37 32 / 44%);
+    cursor: default;
+    backdrop-filter: blur(3px);
+  }
+
+  .zh-gallery__viewer-panel {
+    position: relative;
+    z-index: 1;
     display: flex;
-    min-height: 3.75rem;
+    width: min(920px, calc(100vw - 2rem));
+    max-height: calc(100dvh - 2rem);
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgb(42 37 32 / 10%);
+    background: #fcfaf7;
+    box-shadow: 0 28px 80px rgb(42 37 32 / 25%);
+  }
+
+  .zh-gallery__viewer-header {
+    display: flex;
+    min-height: 3.5rem;
     align-items: center;
-    justify-content: space-between;
-    padding: .5rem 1rem;
+    gap: .75rem;
+    padding: .55rem .7rem .55rem 1rem;
+    border-bottom: 1px solid #ded5cc;
   }
 
-  .zh-gallery__lightbox-counter {
-    font-size: .75rem;
+  .zh-gallery__viewer-title {
+    margin: 0;
+    color: #2a2520;
+    font-family: var(--font-display, Georgia, serif);
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .zh-gallery__viewer-counter {
+    margin-left: auto;
+    color: #625a53;
+    font-size: .72rem;
     font-variant-numeric: tabular-nums;
-    letter-spacing: .1em;
+    letter-spacing: .06em;
   }
 
-  .zh-gallery__lightbox-close,
-  .zh-gallery__lightbox-nav {
-    display: grid;
-    width: 2.75rem;
-    height: 2.75rem;
-    place-items: center;
+  .zh-gallery__viewer-zoom,
+  .zh-gallery__viewer-close {
+    display: inline-flex;
+    min-height: 2.45rem;
+    align-items: center;
+    justify-content: center;
+    gap: .38rem;
+    padding: .4rem .65rem;
     border: 0;
     background: transparent;
-    color: #fffdfb;
+    color: #2a2520;
+    font-size: .72rem;
+    font-weight: 600;
     cursor: pointer;
   }
 
-  .zh-gallery__lightbox-close:hover,
-  .zh-gallery__lightbox-nav:hover:not(:disabled) {
-    background: rgb(255 255 255 / 9%);
+  .zh-gallery__viewer-zoom:hover,
+  .zh-gallery__viewer-close:hover {
+    background: rgb(42 37 32 / 6%);
   }
 
-  .zh-gallery__lightbox-nav:disabled {
-    opacity: .25;
-    cursor: default;
+  .zh-gallery__viewer-close {
+    width: 2.45rem;
+    padding: 0;
   }
 
-  .zh-gallery__lightbox-body {
+  .zh-gallery__viewer-body {
     position: relative;
+    display: grid;
     min-height: 0;
     flex: 1 1 auto;
-  }
-
-  .zh-gallery__lightbox-track {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-
-  .zh-gallery__lightbox-slide {
-    display: grid;
-    height: 100%;
-    flex: 0 0 100%;
     place-items: center;
-    padding: 1rem;
-    scroll-snap-align: center;
+    padding: 1rem 3.4rem 1.2rem;
   }
 
-  .zh-gallery__lightbox-slide img {
-    display: block;
+  .zh-gallery__viewer-media {
+    display: grid;
     width: 100%;
-    height: 100%;
-    object-fit: contain;
-    user-select: none;
-    -webkit-user-drag: none;
+    max-height: min(70dvh, 700px);
+    min-height: 260px;
+    overflow: auto;
+    place-items: center;
+    scrollbar-width: thin;
+    scrollbar-color: #c8b7a8 transparent;
   }
 
-  .zh-gallery__lightbox-nav {
+  .zh-gallery__viewer-image {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: min(68dvh, 680px);
+    object-fit: contain;
+    transition: width 180ms ease, max-width 180ms ease, max-height 180ms ease;
+  }
+
+  .zh-gallery__viewer.is-zoomed .zh-gallery__viewer-image {
+    width: 125%;
+    max-width: none;
+    max-height: none;
+  }
+
+  .zh-gallery__viewer-nav {
     position: absolute;
     z-index: 2;
     top: 50%;
-    display: none;
-    background: rgb(255 255 255 / 7%);
+    width: 2.65rem;
+    height: 2.65rem;
     transform: translateY(-50%);
   }
 
-  .zh-gallery__lightbox-nav--prev {
-    left: 1rem;
+  .zh-gallery__viewer-nav--prev {
+    left: .45rem;
   }
 
-  .zh-gallery__lightbox-nav--next {
-    right: 1rem;
+  .zh-gallery__viewer-nav--next {
+    right: .45rem;
+  }
+
+  @media (max-width: 479px) {
+    .zh-gallery__nav {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+
+    .zh-gallery__open span:last-child {
+      display: none;
+    }
+
+    .zh-gallery__open {
+      width: 2.35rem;
+      padding: 0;
+      justify-content: center;
+    }
+
+    .zh-gallery__viewer-panel {
+      width: calc(100vw - 1rem);
+      max-height: calc(100dvh - 1rem);
+    }
+
+    .zh-gallery__viewer-header {
+      padding-left: .8rem;
+    }
+
+    .zh-gallery__viewer-zoom span {
+      display: none;
+    }
+
+    .zh-gallery__viewer-body {
+      padding: .75rem 2.75rem 1rem;
+    }
+
+    .zh-gallery__viewer-media {
+      max-height: 62dvh;
+      min-height: 220px;
+    }
+
+    .zh-gallery__viewer-image {
+      max-height: 60dvh;
+    }
   }
 
   @media (min-width: 768px) {
     .zh-gallery {
-      max-width: 500px;
+      max-width: 400px;
       margin: 0;
     }
 
@@ -317,26 +480,21 @@
     .zh-gallery__desktop {
       display: block;
     }
-
-    .zh-gallery__lightbox-slide {
-      padding: 2rem 5rem;
-    }
-
-    .zh-gallery__lightbox-nav {
-      display: grid;
-    }
   }
 
-  @media (min-width: 1180px) {
+  @media (min-width: 1100px) {
     .zh-gallery {
-      max-width: 520px;
+      max-width: 460px;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .zh-gallery__main-image,
-    .zh-gallery__progress-fill,
-    .zh-gallery__thumb {
+    .zh-gallery__nav,
+    .zh-gallery__open,
+    .zh-gallery__segment::before,
+    .zh-gallery__thumb,
+    .zh-gallery__viewer-image {
       transition: none;
     }
   }
@@ -356,6 +514,9 @@
       }{%- unless forloop.last -%},{%- endunless -%}
     {%- endfor -%}
   ]'
+  tabindex="0"
+  role="region"
+  aria-label="Productgalerij. Gebruik de pijltjestoetsen om door de afbeeldingen te bladeren."
 >
   {%- if imgs.size == 0 -%}
     <div class="zh-gallery__empty">
@@ -376,81 +537,93 @@
               {%- assign mobile_loading = 'eager' -%}
               {%- assign mobile_priority = 'high' -%}
             {%- endif -%}
-            <button
-              type="button"
+            <div
               class="zh-gallery__slide"
               data-gallery-slide
-              data-gallery-open="{{ forloop.index0 }}"
               data-gallery-index="{{ forloop.index0 }}"
-              aria-label="Vergroot afbeelding {{ forloop.index }} van {{ imgs.size }}"
-              aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
-              tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+              aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}"
             >
-              {{ image | image_url: width: 1000, format: 'webp' | image_tag: loading: mobile_loading, fetchpriority: mobile_priority, sizes: '(max-width: 767px) min(100vw - 32px, 430px), 430px', widths: '360, 430, 600, 800, 1000', alt: mobile_alt, class: 'zh-gallery__image' }}
-            </button>
+              {{ image | image_url: width: 1000, format: 'webp' | image_tag: loading: mobile_loading, fetchpriority: mobile_priority, sizes: '(max-width: 767px) min(100vw - 32px, 370px), 370px', widths: '320, 370, 500, 700, 1000', alt: mobile_alt, class: 'zh-gallery__image' }}
+            </div>
           {%- endfor -%}
         </div>
+
+        {%- if imgs.size > 1 -%}
+          <button type="button" data-gallery-prev class="zh-gallery__nav zh-gallery__nav--prev" aria-label="Vorige afbeelding" disabled>
+            {% render 'icon', name: 'chevron-left', size: 19 %}
+          </button>
+          <button type="button" data-gallery-next class="zh-gallery__nav zh-gallery__nav--next" aria-label="Volgende afbeelding">
+            {% render 'icon', name: 'chevron-right', size: 19 %}
+          </button>
+        {%- endif -%}
 
         {%- if is_sold -%}
           <span data-gallery-sold-label class="zh-gallery__sold-label">Uitverkocht</span>
         {%- endif -%}
 
-        <span aria-hidden="true" class="zh-gallery__zoom-hint">
+        <button type="button" data-gallery-viewer-open class="zh-gallery__open" aria-label="Bekijk de actieve productfoto groter">
           {% render 'icon', name: 'zoom-in', size: 15 %}
-        </span>
+          <span>Bekijk groter</span>
+        </button>
       </div>
 
       {%- if imgs.size > 1 -%}
         <div class="zh-gallery__meta">
           <span data-gallery-counter class="zh-gallery__counter" aria-live="polite">1 / {{ imgs.size }}</span>
-          <span
-            class="zh-gallery__progress"
-            role="progressbar"
-            aria-label="Positie in productgalerij"
-            aria-valuemin="1"
-            aria-valuemax="{{ imgs.size }}"
-            aria-valuenow="1"
-            data-gallery-progressbar
-          >
-            <span data-gallery-progress class="zh-gallery__progress-fill" style="width: {{ 1.0 | divided_by: imgs.size | times: 100 }}%;"></span>
-          </span>
+          <div class="zh-gallery__segments" style="--zh-gallery-count: {{ imgs.size }};" role="group" aria-label="Kies een productafbeelding">
+            {%- for image in imgs -%}
+              <button
+                type="button"
+                data-gallery-segment="{{ forloop.index0 }}"
+                class="zh-gallery__segment"
+                aria-label="Toon afbeelding {{ forloop.index }} van {{ imgs.size }}"
+                aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+                tabindex="-1"
+              ></button>
+            {%- endfor -%}
+          </div>
         </div>
       {%- endif -%}
     </div>
 
     <div class="zh-gallery__desktop">
-      <button
-        type="button"
-        class="zh-gallery__main-button"
-        data-gallery-main-btn
-        data-gallery-open="0"
-        aria-label="Vergroot afbeelding 1 van {{ imgs.size }}"
-      >
-        <span class="zh-gallery__main-frame">
-          {{ first | image_url: width: 1400, format: 'webp' | image_tag: loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 1180px) 520px, 500px', widths: '500, 700, 900, 1200, 1400', alt: first_alt, class: 'zh-gallery__main-image' }}
-          {%- if is_sold -%}
-            <span data-gallery-sold-label class="zh-gallery__sold-label">Uitverkocht</span>
-          {%- endif -%}
-          <span aria-hidden="true" class="zh-gallery__zoom-hint">
-            {% render 'icon', name: 'zoom-in', size: 16 %}
-          </span>
-        </span>
-      </button>
+      <div class="zh-gallery__main-frame">
+        {{ first | image_url: width: 1400, format: 'webp' | image_tag: loading: 'eager', fetchpriority: 'high', sizes: '(min-width: 1100px) 460px, 400px', widths: '400, 500, 700, 900, 1200, 1400', alt: first_alt, class: 'zh-gallery__main-image' }}
+
+        {%- if imgs.size > 1 -%}
+          <button type="button" data-gallery-prev class="zh-gallery__nav zh-gallery__nav--prev" aria-label="Vorige afbeelding" disabled>
+            {% render 'icon', name: 'chevron-left', size: 19 %}
+          </button>
+          <button type="button" data-gallery-next class="zh-gallery__nav zh-gallery__nav--next" aria-label="Volgende afbeelding">
+            {% render 'icon', name: 'chevron-right', size: 19 %}
+          </button>
+        {%- endif -%}
+
+        {%- if is_sold -%}
+          <span data-gallery-sold-label class="zh-gallery__sold-label">Uitverkocht</span>
+        {%- endif -%}
+
+        <button type="button" data-gallery-viewer-open class="zh-gallery__open" aria-label="Bekijk de actieve productfoto groter">
+          {% render 'icon', name: 'zoom-in', size: 15 %}
+          <span>Bekijk groter</span>
+        </button>
+      </div>
 
       {%- if imgs.size > 1 -%}
         <div class="zh-gallery__meta">
           <span data-gallery-counter class="zh-gallery__counter" aria-live="polite">1 / {{ imgs.size }}</span>
-          <span
-            class="zh-gallery__progress"
-            role="progressbar"
-            aria-label="Positie in productgalerij"
-            aria-valuemin="1"
-            aria-valuemax="{{ imgs.size }}"
-            aria-valuenow="1"
-            data-gallery-progressbar
-          >
-            <span data-gallery-progress class="zh-gallery__progress-fill" style="width: {{ 1.0 | divided_by: imgs.size | times: 100 }}%;"></span>
-          </span>
+          <div class="zh-gallery__segments" style="--zh-gallery-count: {{ imgs.size }};" role="group" aria-label="Kies een productafbeelding">
+            {%- for image in imgs -%}
+              <button
+                type="button"
+                data-gallery-segment="{{ forloop.index0 }}"
+                class="zh-gallery__segment"
+                aria-label="Toon afbeelding {{ forloop.index }} van {{ imgs.size }}"
+                aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+                tabindex="-1"
+              ></button>
+            {%- endfor -%}
+          </div>
         </div>
 
         <div class="zh-gallery__thumbs" aria-label="Productafbeeldingen">
@@ -464,7 +637,7 @@
               aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
               tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
             >
-              {{ image | image_url: width: 180, format: 'webp' | image_tag: loading: 'lazy', sizes: '64px', widths: '64, 96, 128, 180', alt: thumb_alt }}
+              {{ image | image_url: width: 180, format: 'webp' | image_tag: loading: 'lazy', sizes: '56px', widths: '56, 84, 112, 180', alt: thumb_alt }}
             </button>
           {%- endfor -%}
         </div>
@@ -472,38 +645,50 @@
     </div>
 
     <div
-      data-gallery-lightbox
-      class="zh-gallery__lightbox"
+      data-gallery-viewer
+      class="zh-gallery__viewer"
       role="dialog"
       aria-modal="true"
-      aria-label="Productfoto's"
+      aria-labelledby="zh-gallery-viewer-title-{{ product.id }}"
       hidden
     >
-      <div class="zh-gallery__lightbox-header">
-        <span data-lightbox-counter class="zh-gallery__lightbox-counter">1 / {{ imgs.size }}</span>
-        <button type="button" data-lightbox-close class="zh-gallery__lightbox-close" aria-label="Galerij sluiten">
-          {% render 'icon', name: 'x', size: 21 %}
-        </button>
-      </div>
+      <button type="button" tabindex="-1" data-gallery-viewer-backdrop class="zh-gallery__viewer-backdrop" aria-label="Fotovenster sluiten"></button>
 
-      <div class="zh-gallery__lightbox-body">
-        <div data-lightbox-track class="zh-gallery__lightbox-track">
-          {%- for image in imgs -%}
-            {%- assign lightbox_alt = image.alt | default: product.title -%}
-            <div data-lightbox-slide class="zh-gallery__lightbox-slide">
-              {{ image | image_url: width: 2000, format: 'webp' | image_tag: loading: 'lazy', sizes: '100vw', widths: '800, 1200, 1600, 2000', alt: lightbox_alt }}
-            </div>
-          {%- endfor -%}
+      <div class="zh-gallery__viewer-panel" role="document">
+        <div class="zh-gallery__viewer-header">
+          <h2 id="zh-gallery-viewer-title-{{ product.id }}" class="zh-gallery__viewer-title">Productfoto</h2>
+          <span data-gallery-viewer-counter class="zh-gallery__viewer-counter">1 / {{ imgs.size }}</span>
+          <button type="button" data-gallery-viewer-zoom class="zh-gallery__viewer-zoom" aria-pressed="false">
+            {% render 'icon', name: 'zoom-in', size: 16 %}
+            <span data-gallery-viewer-zoom-label>Vergroot</span>
+          </button>
+          <button type="button" data-gallery-viewer-close class="zh-gallery__viewer-close" aria-label="Fotovenster sluiten">
+            {% render 'icon', name: 'x', size: 20 %}
+          </button>
         </div>
 
-        {%- if imgs.size > 1 -%}
-          <button type="button" data-lightbox-prev class="zh-gallery__lightbox-nav zh-gallery__lightbox-nav--prev" aria-label="Vorige afbeelding">
-            {% render 'icon', name: 'chevron-left', size: 22 %}
-          </button>
-          <button type="button" data-lightbox-next class="zh-gallery__lightbox-nav zh-gallery__lightbox-nav--next" aria-label="Volgende afbeelding">
-            {% render 'icon', name: 'chevron-right', size: 22 %}
-          </button>
-        {%- endif -%}
+        <div class="zh-gallery__viewer-body">
+          <div class="zh-gallery__viewer-media" data-gallery-viewer-media>
+            <img
+              data-gallery-viewer-image
+              class="zh-gallery__viewer-image"
+              src="{{ first | image_url: width: 1800, format: 'webp' }}"
+              alt="{{ first_alt | escape }}"
+              width="{{ first.width }}"
+              height="{{ first.height }}"
+              loading="eager"
+            >
+          </div>
+
+          {%- if imgs.size > 1 -%}
+            <button type="button" data-gallery-viewer-prev class="zh-gallery__viewer-nav zh-gallery__viewer-nav--prev" aria-label="Vorige afbeelding" disabled>
+              {% render 'icon', name: 'chevron-left', size: 21 %}
+            </button>
+            <button type="button" data-gallery-viewer-next class="zh-gallery__viewer-nav zh-gallery__viewer-nav--next" aria-label="Volgende afbeelding">
+              {% render 'icon', name: 'chevron-right', size: 21 %}
+            </button>
+          {%- endif -%}
+        </div>
       </div>
     </div>
   {%- endif -%}
