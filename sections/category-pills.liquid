@@ -496,8 +496,10 @@
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail__control:disabled {
+    visibility: hidden;
     cursor: default;
-    opacity: 0.28;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -603,6 +605,9 @@
 
       section.dataset.categoryNavigationReady = 'true';
 
+      /*
+       * Mobile menu.
+       */
       const mobileDetails = section.querySelector(
         '[data-category-mobile]'
       );
@@ -611,6 +616,7 @@
         if (!mobileDetails?.open) return;
 
         mobileDetails.removeAttribute('open');
+
         document.documentElement.classList.remove(
           'zh-category-menu-open'
         );
@@ -639,6 +645,13 @@
         mobileDetails.querySelector('summary')?.focus();
       });
 
+      /*
+       * Desktop and split-screen rail.
+       *
+       * Every visible pill remains a normal link in the natural Tab
+       * order. JavaScript only adds ArrowLeft, ArrowRight, Home and End.
+       * If JavaScript fails, Tab and Enter still work normally.
+       */
       const rail = section.querySelector(
         '[data-category-rail]'
       );
@@ -663,6 +676,13 @@
 
       if (!links.length) return;
 
+      /*
+       * Undo any tabindex values left behind by an older theme version.
+       */
+      links.forEach((link) => {
+        link.removeAttribute('tabindex');
+      });
+
       const activeIndex = Math.max(
         0,
         links.findIndex((link) => {
@@ -670,39 +690,34 @@
         })
       );
 
-      let currentIndex = activeIndex;
       let embla = null;
 
-      const setTabStop = (index) => {
-        currentIndex = Math.max(
-          0,
-          Math.min(index, links.length - 1)
-        );
+      const revealLink = (link, index) => {
+        if (embla) {
+          embla.scrollTo(index, false);
+          return;
+        }
 
-        links.forEach((link, linkIndex) => {
-          link.tabIndex =
-            linkIndex === currentIndex ? 0 : -1;
+        link.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center'
         });
       };
 
       const focusLink = (index) => {
-        setTabStop(index);
+        const safeIndex = Math.max(
+          0,
+          Math.min(index, links.length - 1)
+        );
 
-        const target = links[currentIndex];
+        const target = links[safeIndex];
 
         target.focus({
           preventScroll: true
         });
 
-        if (embla) {
-          embla.scrollTo(currentIndex, false);
-        } else {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-            inline: 'center'
-          });
-        }
+        revealLink(target, safeIndex);
       };
 
       const getNativeScrollState = () => {
@@ -711,6 +726,7 @@
         return {
           canScrollPrevious:
             viewport.scrollLeft > tolerance,
+
           canScrollNext:
             viewport.scrollLeft +
               viewport.clientWidth <
@@ -756,10 +772,6 @@
         }
       };
 
-      /*
-       * Delegation makes keyboard handling independent of Embla.
-       * Arrow keys only act when a category pill itself has focus.
-       */
       viewport.addEventListener('keydown', (event) => {
         const focusedLink = event.target.closest(
           '.zh-category-pill'
@@ -769,9 +781,7 @@
 
         const focusedIndex = links.indexOf(focusedLink);
 
-        if (focusedIndex >= 0) {
-          currentIndex = focusedIndex;
-        }
+        if (focusedIndex < 0) return;
 
         let destination = null;
 
@@ -779,7 +789,7 @@
           case 'ArrowRight':
           case 'Right':
             destination = Math.min(
-              currentIndex + 1,
+              focusedIndex + 1,
               links.length - 1
             );
             break;
@@ -787,7 +797,7 @@
           case 'ArrowLeft':
           case 'Left':
             destination = Math.max(
-              currentIndex - 1,
+              focusedIndex - 1,
               0
             );
             break;
@@ -806,43 +816,44 @@
 
         event.preventDefault();
         event.stopPropagation();
+
         focusLink(destination);
       });
 
       links.forEach((link, index) => {
         link.addEventListener('focus', () => {
-          setTabStop(index);
-
-          if (embla) {
-            embla.scrollTo(index, false);
-          }
+          revealLink(link, index);
         });
       });
 
       previousButton?.addEventListener('click', () => {
         if (embla) {
           embla.scrollPrev();
-        } else {
-          viewport.scrollBy({
-            left: -viewport.clientWidth * 0.72,
-            behavior: 'smooth'
-          });
+          return;
         }
+
+        viewport.scrollBy({
+          left: -viewport.clientWidth * 0.72,
+          behavior: 'smooth'
+        });
       });
 
       nextButton?.addEventListener('click', () => {
         if (embla) {
           embla.scrollNext();
-        } else {
-          viewport.scrollBy({
-            left: viewport.clientWidth * 0.72,
-            behavior: 'smooth'
-          });
+          return;
         }
+
+        viewport.scrollBy({
+          left: viewport.clientWidth * 0.72,
+          behavior: 'smooth'
+        });
       });
 
-      setTabStop(activeIndex);
-
+      /*
+       * Embla improves dragging, but keyboard navigation does not
+       * depend on it.
+       */
       if (window.EmblaCarousel) {
         embla = window.EmblaCarousel(viewport, {
           align: 'start',
@@ -854,6 +865,7 @@
         embla.on('select', updateRailState);
         embla.on('scroll', updateRailState);
         embla.on('reInit', updateRailState);
+
         embla.scrollTo(activeIndex, true);
       } else {
         viewport.classList.add('is-native-scroll');
@@ -872,12 +884,12 @@
       }
 
       if ('ResizeObserver' in window) {
-        const resizeObserver = new ResizeObserver(() => {
+        const observer = new ResizeObserver(() => {
           embla?.reInit();
           updateRailState();
         });
 
-        resizeObserver.observe(viewport);
+        observer.observe(viewport);
       }
 
       window.addEventListener(
@@ -930,7 +942,7 @@
       "type": "link_list",
       "id": "menu",
       "label": "Collectiemenu",
-      "info": "Optioneel. Wanneer dit leeg blijft, worden de collecties automatisch getoond."
+      "info": "Selecteer hier het centrale collectiemenu van Zayna Home. De volgorde van dit menu wordt exact overgenomen. Alleen wanneer dit leeg blijft, wordt teruggevallen op de automatische Shopify-volgorde."
     }
   ],
   "presets": [
