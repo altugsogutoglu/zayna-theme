@@ -1,0 +1,1301 @@
+{%- liquid
+  assign cv = product.selected_or_first_available_variant
+  assign coll = product.collections.first
+  assign is_sold = true
+  if cv.available
+    assign is_sold = false
+  endif
+
+  assign cond_raw = product.metafields.custom.condition.value | downcase | strip
+  assign cond_label = ''
+  assign cond_style = ''
+  case cond_raw
+    when 'new'
+      assign cond_label = 'Nieuw'
+      assign cond_style = 'is-positive'
+    when 'new without tags', 'nieuw zonder prijskaartje'
+      assign cond_label = 'Nieuw zonder prijskaartje'
+      assign cond_style = 'is-positive'
+    when 'very good', 'heel goed'
+      assign cond_label = 'Zeer goede staat'
+      assign cond_style = 'is-neutral'
+    when 'good', 'goed'
+      assign cond_label = 'Goede staat'
+      assign cond_style = 'is-neutral'
+  endcase
+
+  assign lbl_add = 'In winkelmand'
+  assign lbl_sold = 'Uitverkocht'
+  assign lbl_in_stock = 'Op voorraad'
+  assign lbl_delivery = 'Indicatieve levering binnen 1–3 werkdagen'
+  assign lbl_unavailable = 'Deze combinatie is niet beschikbaar'
+  assign lbl_price_on_request = section.settings.price_on_request | default: 'Prijs op aanvraag'
+
+  for b in section.blocks
+    if b.type == 'buy_buttons'
+      assign lbl_add = b.settings.add_label
+      assign lbl_sold = b.settings.sold_label
+    endif
+    if b.type == 'info'
+      assign lbl_in_stock = b.settings.in_stock_text
+      assign lbl_delivery = b.settings.delivery_text
+      assign lbl_sold = b.settings.sold_text
+      assign lbl_unavailable = b.settings.unavailable_text
+      assign lbl_price_on_request = b.settings.price_on_request
+    endif
+  endfor
+
+  assign compare_visible = false
+  if cv.compare_at_price and cv.compare_at_price > cv.price
+    assign compare_visible = true
+  endif
+
+  assign selected_min = cv.quantity_rule.min | default: 1
+  assign selected_increment = cv.quantity_rule.increment | default: 1
+  assign selected_max = cv.quantity_rule.max
+  if selected_max == blank and cv.inventory_management != blank and cv.inventory_policy == 'deny'
+    assign selected_max = cv.inventory_quantity
+  endif
+  if selected_max != blank and selected_max < selected_min
+    assign selected_max = selected_min
+  endif
+
+  assign similar_url = routes.all_products_collection_url
+  if coll
+    assign similar_url = coll.url
+  endif
+
+  assign size_note = product.metafields.custom.size_note.value
+  assign size_label = product.metafields.custom.size_label.value | default: ''
+  assign materials = product.metafields.custom.materials.value
+  assign dimensions = product.metafields.custom.dimensions.value
+  assign set_contents = product.metafields.custom.set_contents.value
+  assign included_parts = product.metafields.custom.included_parts.value
+  assign finish = product.metafields.custom.finish.value
+  assign closure = product.metafields.custom.closure.value
+  assign usage = product.metafields.custom.usage.value
+  assign care_summary = product.metafields.custom.care_summary.value
+  assign zayna_note = product.metafields.custom.zayna_note.value
+
+  if size_label == blank and size_note != blank
+    assign size_note_lower = size_note | downcase
+    assign size_label = 'Formaat'
+    if size_note_lower contains 'ml' or size_note_lower contains 'liter'
+      assign size_label = 'Inhoud'
+    elsif size_note_lower contains 'stuks' or size_note_lower contains 'set van'
+      assign size_label = 'Aantal'
+    endif
+  endif
+
+  assign material_feature_labels = ''
+  assign use_feature_labels = ''
+  assign function_feature_labels = ''
+  assign maintenance_feature_labels = ''
+
+  assign feature_values = product.metafields.custom.features.value
+  if feature_values.first == blank
+    assign feature_string = product.metafields.custom.features.value | remove: '[' | remove: ']' | remove: '"'
+    assign feature_values = feature_string | split: ','
+  endif
+
+  for feature in feature_values
+    assign feature_key = feature | strip | downcase
+    assign feature_label = ''
+    assign feature_group = ''
+
+    case feature_key
+      when 'borosilicate'
+        assign feature_label = 'Borosilicaatglas'
+        assign feature_group = 'material'
+      when 'stainless_steel'
+        assign feature_label = 'Roestvrij staal'
+        assign feature_group = 'material'
+      when 'stainless_steel_304'
+        assign feature_label = '304 roestvrij staal'
+        assign feature_group = 'material'
+      when 'induction'
+        assign feature_label = 'Geschikt voor inductie'
+        assign feature_group = 'use'
+      when 'oven_safe'
+        assign feature_label = 'Ovenbestendig'
+        assign feature_group = 'use'
+      when 'freezer_safe'
+        assign feature_label = 'Vriezerbestendig'
+        assign feature_group = 'use'
+      when 'microwave_safe'
+        assign feature_label = 'Magnetronbestendig'
+        assign feature_group = 'use'
+      when 'heat_resistant'
+        assign feature_label = 'Hittebestendig'
+        assign feature_group = 'use'
+      when 'dishwasher_safe'
+        assign feature_label = 'Vaatwasserbestendig'
+        assign feature_group = 'maintenance'
+      when 'handwash_recommended'
+        assign feature_label = 'Handwas aanbevolen'
+        assign feature_group = 'maintenance'
+      when 'non_stick'
+        assign feature_label = 'Antiaanbaklaag'
+        assign feature_group = 'function'
+      when 'utensil_safe'
+        assign feature_label = 'Geschikt voor keukengerei'
+        assign feature_group = 'function'
+      when 'stay_cool'
+        assign feature_label = 'Koelblijvend handvat'
+        assign feature_group = 'function'
+      when 'bpa_free'
+        assign feature_label = 'BPA-vrij'
+        assign feature_group = 'function'
+      when 'airtight'
+        assign feature_label = 'Luchtdicht'
+        assign feature_group = 'function'
+      when 'reusable'
+        assign feature_label = 'Herbruikbaar'
+        assign feature_group = 'function'
+      when 'leak_proof'
+        assign feature_label = 'Lekvrij'
+        assign feature_group = 'function'
+      when 'scratch_resistant'
+        assign feature_label = 'Krasbestendig'
+        assign feature_group = 'function'
+      when 'stackable'
+        assign feature_label = 'Stapelbaar'
+        assign feature_group = 'function'
+    endcase
+
+    if feature_label != blank
+      case feature_group
+        when 'material'
+          if material_feature_labels != blank
+            assign material_feature_labels = material_feature_labels | append: ', '
+          endif
+          assign material_feature_labels = material_feature_labels | append: feature_label
+        when 'use'
+          if use_feature_labels != blank
+            assign use_feature_labels = use_feature_labels | append: ', '
+          endif
+          assign use_feature_labels = use_feature_labels | append: feature_label
+        when 'function'
+          if function_feature_labels != blank
+            assign function_feature_labels = function_feature_labels | append: ', '
+          endif
+          assign function_feature_labels = function_feature_labels | append: feature_label
+        when 'maintenance'
+          if maintenance_feature_labels != blank
+            assign maintenance_feature_labels = maintenance_feature_labels | append: ', '
+          endif
+          assign maintenance_feature_labels = maintenance_feature_labels | append: feature_label
+      endcase
+    endif
+  endfor
+
+  assign displayed_material = materials
+  if displayed_material == blank
+    assign displayed_material = material_feature_labels
+  endif
+
+  assign displayed_usage = usage
+  if displayed_usage == blank
+    assign displayed_usage = use_feature_labels
+  endif
+
+  assign displayed_care = care_summary
+  if displayed_care == blank
+    assign displayed_care = maintenance_feature_labels
+  endif
+
+  assign description_intro_html = product.description
+  assign product_care_html = ''
+
+  if product.description contains '<h3>Gebruik en onderhoud</h3>'
+    assign care_parts = product.description | split: '<h3>Gebruik en onderhoud</h3>'
+    assign product_care_html = care_parts | last
+    assign description_intro_html = care_parts | first
+  endif
+
+  if description_intro_html contains '<h3>Details</h3>'
+    assign description_parts = description_intro_html | split: '<h3>Details</h3>'
+    assign description_intro_html = description_parts | first
+  endif
+
+  assign has_specs = false
+  if size_note != blank or dimensions != blank or displayed_material != blank or set_contents != blank or included_parts != blank or finish != blank or closure != blank or displayed_usage != blank or function_feature_labels != blank or displayed_care != blank
+    assign has_specs = true
+  endif
+-%}
+
+{% style %}
+  .zh-product-page,
+  .zh-product {
+    background: #fcfaf7;
+  }
+
+  .zh-product {
+    --zh-border: #ded5cc;
+    --zh-muted: #625a53;
+    position: relative;
+  }
+
+  .zh-product__breadcrumb {
+    padding-top: .9rem;
+  }
+
+  .zh-product__breadcrumb-mobile {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    color: var(--zh-muted);
+    font-size: .82rem;
+    line-height: 1.4;
+    text-decoration: none;
+  }
+
+  .zh-product__breadcrumb-desktop {
+    display: none;
+    align-items: center;
+    gap: .5rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--zh-muted);
+    font-size: .76rem;
+    line-height: 1.4;
+  }
+
+  .zh-product__breadcrumb a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .zh-product__breadcrumb a:hover,
+  .zh-product__breadcrumb a:focus-visible {
+    color: var(--color-clay, #a66a3f);
+  }
+
+  .zh-product__purchase {
+    display: grid;
+    gap: 1.75rem;
+    padding-top: 1rem;
+    padding-bottom: 2.75rem;
+  }
+
+  .zh-product__gallery-column,
+  .zh-product__buy-column {
+    min-width: 0;
+  }
+
+  .zh-product__buy-column {
+    align-self: start;
+  }
+
+  .zh-product__title {
+    max-width: 25ch;
+    margin: 0;
+    color: var(--color-ink, #2a2520);
+    font-size: clamp(1.8rem, 7vw, 2.25rem);
+    font-weight: 400;
+    letter-spacing: -.02em;
+    line-height: 1.1;
+  }
+
+  .zh-product__price-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .7rem;
+    margin-top: .9rem;
+  }
+
+  .zh-product__price {
+    color: var(--color-ink, #2a2520);
+    font-size: 1.48rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .zh-product__compare-price {
+    color: var(--zh-muted);
+    font-size: .86rem;
+    text-decoration: line-through;
+  }
+
+  .zh-product__status-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .6rem 1rem;
+    margin-top: 1rem;
+  }
+
+  .zh-product__condition {
+    display: inline-flex;
+    min-height: 1.7rem;
+    align-items: center;
+    padding: .22rem .62rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .zh-product__condition.is-positive {
+    background: rgb(111 132 104 / 12%);
+    color: #61745b;
+  }
+
+  .zh-product__condition.is-neutral {
+    background: rgb(118 110 103 / 10%);
+    color: #6d655f;
+  }
+
+  .zh-product__availability {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .42rem;
+    min-width: 0;
+    color: var(--zh-muted);
+    font-size: .86rem;
+    line-height: 1.5;
+  }
+
+  .zh-product__availability.is-sold {
+    color: var(--color-sold, #9b4c43);
+  }
+
+  .zh-product__availability-dot {
+    width: .45rem;
+    height: .45rem;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: var(--color-sage, #71826d);
+  }
+
+  .zh-product__availability.is-sold .zh-product__availability-dot {
+    background: var(--color-sold, #9b4c43);
+  }
+
+  .zh-product__availability-main {
+    color: var(--color-ink, #2a2520);
+    font-weight: 600;
+  }
+
+  .zh-product__availability.is-sold .zh-product__availability-main {
+    color: inherit;
+  }
+
+  .zh-product__availability-separator {
+    opacity: .45;
+  }
+
+  .zh-product__intro {
+    max-width: 58ch;
+    margin: 1.1rem 0 0;
+    color: var(--zh-muted);
+    font-size: .96rem;
+    line-height: 1.72;
+  }
+
+  .zh-product__form-wrap {
+    margin-top: 1.35rem;
+    padding-top: 1.35rem;
+    border-top: 1px solid var(--zh-border);
+  }
+
+  .zh-product__options {
+    display: grid;
+    gap: 1.2rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .zh-product__option-fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .zh-product__option-legend {
+    margin-bottom: .6rem;
+    color: var(--zh-muted);
+    font-size: .76rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .zh-product__option-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .55rem;
+  }
+
+  .zh-product__option-button {
+    display: inline-flex;
+    min-height: 2.65rem;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    padding: .55rem .9rem;
+    border: 1px solid var(--zh-border);
+    background: transparent;
+    color: var(--zh-muted);
+    font: inherit;
+    font-size: .86rem;
+    cursor: pointer;
+  }
+
+  .zh-product__option-button:hover:not(:disabled),
+  .zh-product__option-button[aria-checked='true'] {
+    border-color: var(--color-clay, #a66a3f);
+    color: var(--color-ink, #2a2520);
+  }
+
+  .zh-product__option-button[aria-checked='true'] {
+    background: rgb(166 106 63 / 7%);
+  }
+
+  .zh-product__option-button:disabled {
+    cursor: not-allowed;
+    opacity: .38;
+    text-decoration: line-through;
+  }
+
+  .zh-product__swatch {
+    width: 1rem;
+    height: 1rem;
+    overflow: hidden;
+    border: 1px solid var(--zh-border);
+    border-radius: 999px;
+  }
+
+  .zh-product__actions {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: .7rem;
+    align-items: stretch;
+  }
+
+  .zh-product__qty {
+    display: inline-grid;
+    grid-template-columns: 2.45rem 2.55rem 2.45rem;
+    height: 3.35rem;
+    border: 1px solid var(--zh-border);
+  }
+
+  .zh-product__qty-button,
+  .zh-product__qty-value {
+    display: grid;
+    place-items: center;
+  }
+
+  .zh-product__qty-button {
+    border: 0;
+    background: transparent;
+    color: var(--zh-muted);
+    cursor: pointer;
+  }
+
+  .zh-product__qty-button:hover:not(:disabled) {
+    color: var(--color-clay, #a66a3f);
+  }
+
+  .zh-product__qty-button:disabled {
+    cursor: default;
+    opacity: .28;
+  }
+
+  .zh-product__qty-value {
+    color: var(--color-ink, #2a2520);
+    font-size: .95rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .zh-product__add-button {
+    display: inline-flex;
+    width: 100%;
+    min-height: 3.35rem;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    padding: .8rem 1rem;
+    border: 1px solid var(--color-ink, #2a2520);
+    background: var(--color-ink, #2a2520);
+    color: #fff;
+    font: inherit;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .zh-product__add-button:hover:not(:disabled) {
+    border-color: var(--color-clay, #a66a3f);
+    background: var(--color-clay, #a66a3f);
+  }
+
+  .zh-product__add-button:disabled {
+    cursor: not-allowed;
+    opacity: .55;
+  }
+
+  .zh-product__option-button:focus-visible,
+  .zh-product__qty-button:focus-visible,
+  .zh-product__add-button:focus-visible,
+  .zh-product__sold-link:focus-visible,
+  .zh-product__accordion summary:focus-visible {
+    outline: 2px solid var(--color-clay, #a66a3f);
+    outline-offset: 3px;
+  }
+
+  .zh-product__sold-state {
+    display: grid;
+    gap: .8rem;
+  }
+
+  .zh-product__sold-message {
+    margin: 0;
+    color: var(--color-sold, #9b4c43);
+    font-size: .9rem;
+  }
+
+  .zh-product__sold-link {
+    display: inline-flex;
+    min-height: 3.2rem;
+    align-items: center;
+    justify-content: center;
+    gap: .65rem;
+    padding: .75rem 1rem;
+    border: 1px solid #2a2520;
+    background: transparent;
+    color: #2a2520;
+    font-size: .78rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: background-color 170ms ease, color 170ms ease, border-color 170ms ease;
+  }
+
+  .zh-product__sold-link-arrow {
+    transition: transform 170ms ease;
+  }
+
+  .zh-product__sold-link:hover {
+    border-color: #2a2520;
+    background: #2a2520;
+    color: #fff;
+  }
+
+  .zh-product__sold-link:hover .zh-product__sold-link-arrow {
+    transform: translateX(3px);
+  }
+
+  .zh-product__trust {
+    margin-top: 1rem;
+    padding-top: .95rem;
+    border-top: 1px solid var(--zh-border);
+  }
+
+  .zh-product__trust-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem .7rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--zh-muted);
+    font-size: .78rem;
+    line-height: 1.5;
+  }
+
+  .zh-product__trust-item:not(:last-child)::after {
+    margin-left: .7rem;
+    content: '·';
+    opacity: .45;
+  }
+
+  .zh-product__spec-overview,
+  .zh-product__content,
+  .zh-product__logistics {
+    border-top: 1px solid var(--zh-border);
+  }
+
+  .zh-product__spec-overview {
+    padding-top: 2.4rem;
+    padding-bottom: 2.4rem;
+  }
+
+  .zh-product__spec-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .zh-product__section-title {
+    margin: 0;
+    color: var(--color-ink, #2a2520);
+    font-size: clamp(1.45rem, 4vw, 1.9rem);
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  .zh-product__specs {
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--zh-border);
+  }
+
+  .zh-product__spec-row {
+    display: grid;
+    grid-template-columns: minmax(7rem, .75fr) minmax(0, 1.4fr);
+    gap: 1rem;
+    padding: .78rem 0;
+    border-bottom: 1px solid var(--zh-border);
+    font-size: .88rem;
+    line-height: 1.55;
+  }
+
+  .zh-product__spec-row dt {
+    color: var(--zh-muted);
+  }
+
+  .zh-product__spec-row dd {
+    margin: 0;
+    color: var(--color-ink, #2a2520);
+  }
+
+  .zh-product__content {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .zh-product__content-grid {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .zh-product__description {
+    max-width: 68ch;
+    margin-top: 1rem;
+    color: var(--zh-muted);
+    font-size: .95rem;
+    line-height: 1.78;
+  }
+
+  .zh-product__description > :first-child {
+    margin-top: 0;
+  }
+
+  .zh-product__description > :last-child {
+    margin-bottom: 0;
+  }
+
+  .zh-product__description h2,
+  .zh-product__description h3,
+  .zh-product__description h4 {
+    margin: 1.45rem 0 .65rem;
+    color: var(--color-ink, #2a2520);
+    font-size: 1.15rem;
+    font-weight: 400;
+    line-height: 1.3;
+  }
+
+  .zh-product__description ul,
+  .zh-product__description ol {
+    padding-left: 1.15rem;
+  }
+
+  .zh-product__note {
+    max-width: 48rem;
+    padding-left: 1rem;
+    border-left: 2px solid rgb(166 106 63 / 50%);
+  }
+
+  .zh-product__note blockquote {
+    margin: 0;
+    color: var(--zh-muted);
+    font-size: 1.15rem;
+    font-style: italic;
+    line-height: 1.55;
+  }
+
+  .zh-product__note figcaption {
+    margin-top: .6rem;
+    color: var(--color-ink, #2a2520);
+    font-size: .8rem;
+  }
+
+  .zh-product__logistics {
+    padding-top: 1.25rem;
+    padding-bottom: 2.75rem;
+  }
+
+  .zh-product__accordions {
+    max-width: 58rem;
+  }
+
+  .zh-product__accordion {
+    border-bottom: 1px solid var(--zh-border);
+  }
+
+  .zh-product__accordion:first-child {
+    border-top: 1px solid var(--zh-border);
+  }
+
+  .zh-product__accordion summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    color: var(--color-ink, #2a2520);
+    font-size: 1.03rem;
+    line-height: 1.4;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .zh-product__accordion summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .zh-product__accordion-icon {
+    flex: 0 0 auto;
+    color: var(--zh-muted);
+    transition: transform 180ms ease;
+  }
+
+  .zh-product__accordion[open] .zh-product__accordion-icon {
+    transform: rotate(180deg);
+  }
+
+  .zh-product__accordion-body {
+    max-width: 68ch;
+    padding: 0 2.2rem 1.15rem 0;
+    color: var(--zh-muted);
+    font-size: .89rem;
+    line-height: 1.75;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  @media (max-width: 479px) {
+    .zh-product__availability-separator {
+      display: none;
+    }
+
+    .zh-product__availability [data-delivery-text] {
+      flex-basis: 100%;
+      padding-left: .87rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .zh-product__breadcrumb {
+      padding-top: 1.2rem;
+    }
+
+    .zh-product__breadcrumb-mobile {
+      display: none;
+    }
+
+    .zh-product__breadcrumb-desktop {
+      display: flex;
+    }
+
+    .zh-product__purchase {
+      grid-template-columns: minmax(300px, 42%) minmax(0, 1fr);
+      gap: clamp(2rem, 4.5vw, 4.25rem);
+      padding-top: 1.4rem;
+      padding-bottom: 3.5rem;
+    }
+
+    .zh-product__gallery-column {
+      position: sticky;
+      top: 6.25rem;
+      align-self: start;
+    }
+
+    .zh-product__buy-column {
+      padding-top: .2rem;
+    }
+
+    .zh-product__title {
+      max-width: 22ch;
+      font-size: clamp(2rem, 3.2vw, 2.55rem);
+    }
+
+    .zh-product__spec-grid {
+      grid-template-columns: minmax(14rem, .55fr) minmax(0, 1.45fr);
+      gap: clamp(2rem, 6vw, 5rem);
+      align-items: start;
+    }
+
+    .zh-product__content-grid.has-note {
+      grid-template-columns: minmax(0, 1.35fr) minmax(16rem, .65fr);
+      gap: clamp(2.5rem, 7vw, 6rem);
+      align-items: start;
+    }
+
+    .zh-product__spec-overview,
+    .zh-product__content {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+
+    .zh-product__logistics {
+      padding-top: 1.5rem;
+      padding-bottom: 3.5rem;
+    }
+  }
+
+  @media (min-width: 1180px) {
+    .zh-product__purchase {
+      grid-template-columns: minmax(0, 460px) minmax(28rem, 1fr);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .zh-product * {
+      transition-duration: .01ms !important;
+      animation-duration: .01ms !important;
+    }
+  }
+{% endstyle %}
+
+<div class="zh-product-page">
+  <section
+    data-product-root
+    data-current-available="{% if cv.available %}true{% else %}false{% endif %}"
+    class="zh-product"
+  >
+    <nav aria-label="Kruimelpad" class="zh-product__breadcrumb mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+      <a href="{% if coll %}{{ coll.url }}{% else %}{{ routes.all_products_collection_url }}{% endif %}" class="zh-product__breadcrumb-mobile">
+        <span aria-hidden="true">←</span>
+        <span>{% if coll %}{{ coll.title }}{% else %}Alle producten{% endif %}</span>
+      </a>
+
+      <ol class="zh-product__breadcrumb-desktop">
+        <li><a href="{{ routes.root_url }}">Home</a></li>
+        {%- if coll -%}
+          <li aria-hidden="true">/</li>
+          <li><a href="{{ coll.url }}">{{ coll.title }}</a></li>
+        {%- endif -%}
+      </ol>
+    </nav>
+
+    <div class="zh-product__purchase mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+      <div class="zh-product__gallery-column">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'gallery' -%}
+            <div {{ block.shopify_attributes }}>
+              {% render 'product-gallery', product: product, is_sold: is_sold %}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      <div class="zh-product__buy-column">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'info' -%}
+            <div {{ block.shopify_attributes }}>
+              <h1 class="zh-product__title font-display">{{ product.title }}</h1>
+
+              <div class="zh-product__price-row">
+                <span data-price class="zh-product__price font-display">
+                  {%- if cv.price and cv.price > 0 -%}
+                    {{ cv.price | money }}
+                  {%- else -%}
+                    {{ block.settings.price_on_request }}
+                  {%- endif -%}
+                </span>
+                <span data-compare-price class="zh-product__compare-price"{% unless compare_visible %} hidden{% endunless %}>
+                  {%- if compare_visible -%}{{ cv.compare_at_price | money }}{%- endif -%}
+                </span>
+              </div>
+
+              <div class="zh-product__status-row">
+                {%- if cond_label != blank -%}
+                  <span class="zh-product__condition {{ cond_style }}">{{ cond_label }}</span>
+                {%- endif -%}
+
+                <span data-availability class="zh-product__availability{% if is_sold %} is-sold{% endif %}" aria-live="polite">
+                  <span aria-hidden="true" class="zh-product__availability-dot"></span>
+                  <span data-availability-text class="zh-product__availability-main">{% if is_sold %}{{ block.settings.sold_text }}{% else %}{{ block.settings.in_stock_text }}{% endif %}</span>
+                  <span data-delivery-separator class="zh-product__availability-separator"{% if is_sold or block.settings.delivery_text == blank %} hidden{% endif %}>·</span>
+                  <span data-delivery-text{% if is_sold or block.settings.delivery_text == blank %} hidden{% endif %}>{{ block.settings.delivery_text }}</span>
+                </span>
+              </div>
+
+              {%- assign intro = product.metafields.custom.intro.value -%}
+              {%- if intro != blank -%}
+                <p class="zh-product__intro">{{ intro }}</p>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'buy_buttons' -%}
+            <div {{ block.shopify_attributes }} class="zh-product__form-wrap">
+              <div data-product-form>
+                {%- form 'product', product, class: 'zh-product__form', novalidate: 'novalidate' -%}
+                  <input type="hidden" name="id" value="{{ cv.id }}" data-variant-id>
+
+                  {%- unless product.has_only_default_variant -%}
+                    <div class="zh-product__options">
+                      {%- for option in product.options_with_values -%}
+                        {%- if option.values.size > 1 -%}
+                          <fieldset class="zh-product__option-fieldset" data-option-group data-option-position="{{ option.position }}">
+                            <legend class="zh-product__option-legend">{{ option.name }}</legend>
+                            <div class="zh-product__option-list" role="radiogroup" aria-label="{{ option.name | escape }}">
+                              {%- assign option_index = option.position | minus: 1 -%}
+                              {%- for value in option.values -%}
+                                {%- assign selected_value = false -%}
+                                {%- if option.selected_value == value -%}
+                                  {%- assign selected_value = true -%}
+                                {%- endif -%}
+                                {%- assign value_available = false -%}
+                                {%- for product_variant in product.variants -%}
+                                  {%- if product_variant.available and product_variant.options[option_index] == value -%}
+                                    {%- assign value_available = true -%}
+                                    {%- break -%}
+                                  {%- endif -%}
+                                {%- endfor -%}
+                                <button
+                                  type="button"
+                                  role="radio"
+                                  aria-checked="{% if selected_value %}true{% else %}false{% endif %}"
+                                  data-option-button
+                                  data-option-position="{{ option.position }}"
+                                  data-value="{{ value | escape }}"
+                                  data-selected="{% if selected_value %}true{% else %}false{% endif %}"
+                                  data-available="{{ value_available }}"
+                                  class="zh-product__option-button"
+                                  tabindex="{% if selected_value %}0{% else %}-1{% endif %}"
+                                  {% unless value_available or selected_value %}disabled{% endunless %}
+                                >
+                                  {%- if value.swatch.color or value.swatch.image -%}
+                                    <span aria-hidden="true" class="zh-product__swatch" style="background-color: {{ value.swatch.color | default: 'transparent' }};">
+                                      {%- if value.swatch.image -%}
+                                        {{ value.swatch.image | image_url: width: 32 | image_tag: alt: '', class: 'h-full w-full object-cover' }}
+                                      {%- endif -%}
+                                    </span>
+                                  {%- endif -%}
+                                  <span>{{ value }}</span>
+                                </button>
+                              {%- endfor -%}
+                            </div>
+                          </fieldset>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </div>
+                  {%- endunless -%}
+
+                  <div data-buy-available{% if is_sold %} hidden{% endif %}>
+                    <div class="zh-product__actions">
+                      <div class="zh-product__qty" role="group" aria-label="Aantal">
+                        <button type="button" data-qty-dec class="zh-product__qty-button" aria-label="Aantal verlagen" disabled>
+                          {% render 'icon', name: 'minus', size: 15 %}
+                        </button>
+                        <span aria-live="polite" data-qty-value class="zh-product__qty-value font-display">{{ selected_min }}</span>
+                        <input
+                          type="hidden"
+                          name="quantity"
+                          value="{{ selected_min }}"
+                          data-qty-input
+                          data-qty-min="{{ selected_min }}"
+                          data-qty-step="{{ selected_increment }}"
+                          {% if selected_max != blank %}data-qty-max="{{ selected_max }}"{% endif %}
+                        >
+                        <button type="button" data-qty-inc class="zh-product__qty-button" aria-label="Aantal verhogen"{% if selected_max != blank and selected_min >= selected_max %} disabled{% endif %}>
+                          {% render 'icon', name: 'plus', size: 15 %}
+                        </button>
+                      </div>
+
+                      <button
+                        id="product-add-to-cart"
+                        type="submit"
+                        data-add-button
+                        data-cart-add-button
+                        class="zh-product__add-button"
+                      >
+                        <span data-cart-add-label aria-live="polite">{{ block.settings.add_label }}</span>
+                        <span data-cart-add-icon aria-hidden="true">+</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div data-buy-sold class="zh-product__sold-state"{% unless is_sold %} hidden{% endunless %}>
+                    <p data-sold-message class="zh-product__sold-message">{{ block.settings.sold_label }}</p>
+                    <a href="{{ similar_url }}" class="zh-product__sold-link">
+                      <span>Bekijk vergelijkbare producten</span>
+                      <span class="zh-product__sold-link-arrow" aria-hidden="true">→</span>
+                    </a>
+                  </div>
+                {%- endform -%}
+              </div>
+
+              {%- if block.settings.show_trust -%}
+                <div class="zh-product__trust">
+                  <ul class="zh-product__trust-list" aria-label="Bestelinformatie">
+                    {%- if block.settings.trust_1 != blank -%}<li class="zh-product__trust-item">{{ block.settings.trust_1 }}</li>{%- endif -%}
+                    {%- if block.settings.trust_2 != blank -%}<li class="zh-product__trust-item">{{ block.settings.trust_2 }}</li>{%- endif -%}
+                    {%- if block.settings.trust_3 != blank -%}<li class="zh-product__trust-item">{{ block.settings.trust_3 }}</li>{%- endif -%}
+                  </ul>
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+
+    {%- if has_specs -%}
+      <section class="zh-product__spec-overview mx-auto max-w-7xl px-4 sm:px-6 lg:px-10" aria-labelledby="zh-specs-heading-{{ section.id }}">
+        <div class="zh-product__spec-grid">
+          <h2 id="zh-specs-heading-{{ section.id }}" class="zh-product__section-title font-display">Belangrijkste details</h2>
+          <dl class="zh-product__specs">
+            {%- assign detail_count = 0 -%}
+
+            {%- if size_note != blank and detail_count < 6 -%}
+              <div class="zh-product__spec-row"><dt>{{ size_label | default: 'Formaat' }}</dt><dd>{{ size_note }}</dd></div>
+              {%- assign detail_count = detail_count | plus: 1 -%}
+            {%- endif -%}
+
+            {%- if dimensions != blank and detail_count < 6 -%}
+              <div class="zh-product__spec-row"><dt>Afmetingen</dt><dd>{{ dimensions }}</dd></div>
+              {%- assign detail_count = detail_count | plus: 1 -%}
+            {%- endif -%}
+
+            {%- if displayed_material != blank and detail_count < 6 -%}
+              <div class="zh-product__spec-row"><dt>Materiaal</dt><dd>{{ displayed_material }}</dd></div>
+              {%- assign detail_count = detail_count | plus: 1 -%}
+            {%- endif -%}
+
+            {%- if set_contents != blank and detail_count < 6 -%}
+              <div class="zh-product__spec-row"><dt>Setinhoud</dt><dd>{{ set_contents }}</dd></div>
+              {%- assign detail_count = detail_count | plus: 1 -%}
+            {%- endif -%}
+
+            {%- if included_parts != blank and detail_count < 6 -%}
+              <div class="zh-product__spec-row"><dt>Meegeleverd</dt><dd>{{ included_parts }}</dd></div>
+              {%- assign detail_count = detail_count | plus: 1 -%}
+            {%- endif -%}
+
+            {%- if finish != blank and detail_count < 6 -%}
+              <div class="zh-product__spec-row"><dt>Uitvoering</dt><dd>{{ finish }}</dd></div>
+              {%- assign detail_count = detail_count | plus: 1 -%}
+            {%- endif -%}
+
+            {%- if closure != blank and detail_count < 6 -%}
+              <div class="zh-product__spec-row"><dt>Sluiting</dt><dd>{{ closure }}</dd></div>
+              {%- assign detail_count = detail_count | plus: 1 -%}
+            {%- endif -%}
+
+            {%- if displayed_usage != blank and detail_count < 6 -%}
+              <div class="zh-product__spec-row"><dt>Gebruik</dt><dd>{{ displayed_usage }}</dd></div>
+              {%- assign detail_count = detail_count | plus: 1 -%}
+            {%- endif -%}
+
+            {%- if function_feature_labels != blank and detail_count < 6 -%}
+              <div class="zh-product__spec-row"><dt>Eigenschappen</dt><dd>{{ function_feature_labels }}</dd></div>
+              {%- assign detail_count = detail_count | plus: 1 -%}
+            {%- endif -%}
+
+            {%- if displayed_care != blank and detail_count < 6 -%}
+              <div class="zh-product__spec-row"><dt>Onderhoud</dt><dd>{{ displayed_care }}</dd></div>
+            {%- endif -%}
+          </dl>
+        </div>
+      </section>
+    {%- endif -%}
+
+    <section class="zh-product__content mx-auto max-w-7xl px-4 sm:px-6 lg:px-10" aria-labelledby="zh-description-heading-{{ section.id }}">
+      <div class="zh-product__content-grid{% if zayna_note != blank %} has-note{% endif %}">
+        <div>
+          <h2 id="zh-description-heading-{{ section.id }}" class="zh-product__section-title font-display">Over dit product</h2>
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'description' and description_intro_html != blank -%}
+              <div {{ block.shopify_attributes }} class="zh-product__description rich-text">
+                {{ description_intro_html }}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if zayna_note != blank -%}
+          <div>
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'zayna_note' -%}
+                <figure {{ block.shopify_attributes }} class="zh-product__note">
+                  <blockquote class="font-display">“{{ zayna_note }}”</blockquote>
+                  <figcaption>— {{ block.settings.signature }}</figcaption>
+                </figure>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </section>
+
+    <section class="zh-product__logistics mx-auto max-w-7xl px-4 sm:px-6 lg:px-10" aria-label="Verzending en retourneren">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'care_shipping' -%}
+          <div {{ block.shopify_attributes }} class="zh-product__accordions">
+            {%- if product_care_html != blank -%}
+              <details class="zh-product__accordion">
+                <summary class="font-display">
+                  <span>Gebruik en onderhoud</span>
+                  {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
+                </summary>
+                <div class="zh-product__accordion-body rich-text">{{ product_care_html }}</div>
+              </details>
+            {%- endif -%}
+
+            {%- for i in (1..3) -%}
+              {%- assign title_key = 'row' | append: i | append: '_title' -%}
+              {%- assign body_key = 'row' | append: i | append: '_body' -%}
+              {%- assign row_title = block.settings[title_key] -%}
+              {%- assign row_body = block.settings[body_key] -%}
+              {%- assign row_title_key = row_title | downcase | strip -%}
+              {%- assign skip_generic_care = false -%}
+              {%- if row_title_key == 'onderhoud' or row_title_key == 'gebruik en onderhoud' -%}
+                {%- assign skip_generic_care = true -%}
+              {%- endif -%}
+              {%- if row_title != blank and row_body != blank and skip_generic_care == false -%}
+                <details class="zh-product__accordion">
+                  <summary class="font-display">
+                    <span>{{ row_title }}</span>
+                    {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
+                  </summary>
+                  <div class="zh-product__accordion-body rich-text">{{ row_body }}</div>
+                </details>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </section>
+
+    <script type="application/json" data-product-json>
+      {
+        "selected_variant_id": {{ cv.id | json }},
+        "labels": {
+          "add": {{ lbl_add | json }},
+          "sold": {{ lbl_sold | json }},
+          "in_stock": {{ lbl_in_stock | json }},
+          "delivery": {{ lbl_delivery | json }},
+          "unavailable": {{ lbl_unavailable | json }},
+          "price_on_request": {{ lbl_price_on_request | json }}
+        },
+        "variants": [
+          {%- for variant in product.variants -%}
+            {%- liquid
+              assign featured_image_index = nil
+              if variant.featured_image
+                for image in product.images
+                  if image.id == variant.featured_image.id
+                    assign featured_image_index = forloop.index0
+                    break
+                  endif
+                endfor
+              endif
+
+              assign variant_min = variant.quantity_rule.min | default: 1
+              assign variant_increment = variant.quantity_rule.increment | default: 1
+              assign variant_max = variant.quantity_rule.max
+              if variant_max == blank and variant.inventory_management != blank and variant.inventory_policy == 'deny'
+                assign variant_max = variant.inventory_quantity
+              endif
+              if variant_max != blank and variant_max < variant_min
+                assign variant_max = variant_min
+              endif
+            -%}
+            {
+              "id": {{ variant.id | json }},
+              "available": {{ variant.available | json }},
+              "price": {{ variant.price | json }},
+              "price_formatted": {{ variant.price | money | json }},
+              "compare_at_price": {{ variant.compare_at_price | default: 0 | json }},
+              "compare_at_formatted": {% if variant.compare_at_price and variant.compare_at_price > 0 %}{{ variant.compare_at_price | money | json }}{% else %}null{% endif %},
+              "options": {{ variant.options | json }},
+              "featured_image_index": {% if featured_image_index != nil %}{{ featured_image_index }}{% else %}null{% endif %},
+              "quantity_min": {{ variant_min | json }},
+              "quantity_increment": {{ variant_increment | json }},
+              "quantity_max": {% if variant_max != blank %}{{ variant_max | json }}{% else %}null{% endif %}
+            }{%- unless forloop.last -%},{%- endunless -%}
+          {%- endfor -%}
+        ]
+      }
+    </script>
+
+    <script src="{{ 'product.js' | asset_url }}" defer></script>
+    {% render 'product-structured-data', product: product %}
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Product",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "price_on_request", "label": "Tekst voor prijs op aanvraag", "default": "Prijs op aanvraag" }
+  ],
+  "blocks": [
+    { "type": "gallery", "name": "Galerij", "limit": 1, "settings": [] },
+    {
+      "type": "info",
+      "name": "Titel, prijs en intro",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "in_stock_text", "label": "Tekst op voorraad", "default": "Op voorraad" },
+        { "type": "text", "id": "delivery_text", "label": "Levertijdtekst", "default": "Indicatieve levering binnen 1–3 werkdagen" },
+        { "type": "text", "id": "sold_text", "label": "Tekst uitverkocht", "default": "Uitverkocht" },
+        { "type": "text", "id": "unavailable_text", "label": "Tekst onbeschikbare combinatie", "default": "Deze combinatie is niet beschikbaar" },
+        { "type": "text", "id": "price_on_request", "label": "Tekst prijs op aanvraag", "default": "Prijs op aanvraag" }
+      ]
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Koopknop en vertrouwen",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "add_label", "label": "Tekst winkelmandknop", "default": "In winkelmand" },
+        { "type": "text", "id": "sold_label", "label": "Tekst uitverkocht", "default": "Uitverkocht" },
+        { "type": "checkbox", "id": "show_trust", "label": "Vertrouwensinformatie tonen", "default": true },
+        { "type": "text", "id": "trust_1", "label": "Punt 1", "default": "Veilig betalen" },
+        { "type": "text", "id": "trust_2", "label": "Punt 2", "default": "Levering 1–3 werkdagen" },
+        { "type": "text", "id": "trust_3", "label": "Punt 3", "default": "Verzonden vanuit Nederland" }
+      ]
+    },
+    { "type": "description", "name": "Productomschrijving", "limit": 1, "settings": [] },
+    {
+      "type": "zayna_note",
+      "name": "Zayna-notitie",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "signature", "label": "Ondertekening", "default": "Zayna" }
+      ]
+    },
+    {
+      "type": "care_shipping",
+      "name": "Verzending en retourneren",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "row1_title", "label": "Rij 1 titel" },
+        { "type": "richtext", "id": "row1_body", "label": "Rij 1 tekst" },
+        { "type": "text", "id": "row2_title", "label": "Rij 2 titel", "default": "Verzending" },
+        { "type": "richtext", "id": "row2_body", "label": "Rij 2 tekst", "default": "<p>Nederland: thuisbezorging €7,95 of een servicepunt voor €6,95. Gratis verzending vanaf €100. De indicatieve levertijd is 1–3 werkdagen en je ontvangt track & trace.</p>" },
+        { "type": "text", "id": "row3_title", "label": "Rij 3 titel", "default": "Retourneren" },
+        { "type": "richtext", "id": "row3_body", "label": "Rij 3 tekst", "default": "<p>Je hebt 14 dagen na ontvangst om je retour aan te melden. Daarna heb je nog 14 dagen om het product terug te sturen. Retourkosten zijn voor eigen rekening, tenzij wettelijk anders.</p>" }
+      ]
+    }
+  ]
+}
+{% endschema %}
