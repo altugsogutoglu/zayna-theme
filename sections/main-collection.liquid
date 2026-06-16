@@ -1,30 +1,32 @@
 {%- comment -%}
-  Faceted collection grid. Sort (port of FilterBar.tsx) + native Shopify storefront
-  filters (collection.filters) + infinite scroll (port of InfiniteResourceSection.tsx).
-  Behavior wired by assets/collection.js via the data-* hooks. Used for named
-  collections and /collections/all. Filters only render when enabled in
-  Search & Discovery; otherwise the page is sort-only.
+  Zayna Home — collectieproductgrid.
+  Compacte toolbar, gesynchroniseerde filters en rustige filterdrawer.
 {%- endcomment -%}
+
 <script src="{{ 'collection.js' | asset_url }}" defer="defer"></script>
+
 {%- liquid
   assign per_page = 250
   assign sort_now = collection.sort_by | default: collection.default_sort_by
 
   assign has_filters = false
-  for f in collection.filters
+  for filter in collection.filters
     assign has_filters = true
     break
   endfor
 
   assign active_count = 0
   assign any_active = false
-  for f in collection.filters
-    assign active_count = active_count | plus: f.active_values.size
-    if f.active_values.size > 0
+
+  for filter in collection.filters
+    assign active_count = active_count | plus: filter.active_values.size
+
+    if filter.active_values.size > 0
       assign any_active = true
     endif
-    if f.type == 'price_range'
-      if f.min_value.value != blank or f.max_value.value != blank
+
+    if filter.type == 'price_range'
+      if filter.min_value.value != blank or filter.max_value.value != blank
         assign active_count = active_count | plus: 1
         assign any_active = true
       endif
@@ -36,164 +38,918 @@
     assign clear_url = collection.url | append: '?sort_by=' | append: sort_now
   endif
 -%}
-<div data-collection data-section-id="{{ section.id }}" data-collection-url="{{ collection.url }}" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 pb-24">
-  <nav aria-label="Kruimelpad" class="pt-8">
-    <ol class="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-stone">
-      <li><a href="{{ routes.root_url }}" class="transition-colors hover:text-ink">Home</a></li>
-      <li aria-hidden="true" class="text-stone-soft">/</li>
-      <li class="text-ink-soft" aria-current="page">{{ collection.title }}</li>
-    </ol>
-  </nav>
+
+<div
+  id="ZaynaCollectionGrid-{{ section.id }}"
+  data-collection
+  data-section-id="{{ section.id }}"
+  data-collection-url="{{ collection.url }}"
+  class="zh-main-collection"
+>
   {%- paginate collection.products by per_page -%}
 
-  {%- comment -%} FilterBar (sticky) {%- endcomment -%}
-  <div class="sticky top-[var(--header-height)] z-20 -mx-4 sm:-mx-6 lg:-mx-10 mb-8 border-y border-border-soft bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-      <div class="flex flex-wrap items-center justify-between gap-4 py-4">
-        <div class="flex items-baseline gap-4">
-          <p class="text-[11px] uppercase tracking-[0.22em] text-stone"><span class="tabular-nums text-ink">{{ collection.products_count }}</span> {% if collection.products_count == 1 %}product{% else %}producten{% endif %}</p>
+    <div
+      class="zh-collection-toolbar"
+      data-collection-toolbar
+    >
+      <div class="zh-collection-toolbar__inner">
+        <p
+          class="zh-collection-toolbar__count"
+          aria-live="polite"
+          data-result-count
+        >
+          <span>{{ collection.products_count }}</span>
+          {% if collection.products_count == 1 %}
+            product
+          {% else %}
+            producten
+          {% endif %}
+        </p>
+
+        <div class="zh-collection-toolbar__actions">
           {%- if has_filters -%}
-            <button type="button" data-aside-open="filters" class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-stone hover:text-ink transition-colors">
-              {% render 'icon', name: 'sliders', size: 14 %} Filteren
-              {%- if active_count > 0 -%}<span class="inline-grid h-4 min-w-4 place-items-center rounded-full bg-ink px-1 text-[10px] text-surface tabular-nums">{{ active_count }}</span>{%- endif -%}
+            <button
+              type="button"
+              data-aside-open="filters"
+              class="zh-collection-toolbar__button"
+            >
+              {% render 'icon', name: 'sliders', size: 15 %}
+              <span>Filteren</span>
+
+              {%- if active_count > 0 -%}
+                <span
+                  class="zh-collection-toolbar__badge"
+                  aria-label="{{ active_count }} actieve filters"
+                >
+                  {{ active_count }}
+                </span>
+              {%- endif -%}
             </button>
           {%- endif -%}
-        </div>
-        <label class="relative flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-stone">
-          <span class="hidden sm:inline-block">Sorteer op</span>
-          <span class="relative inline-flex items-center">
-            <select data-sort-select form="CollectionFilterForm-{{ section.id }}" name="sort_by" aria-label="Producten sorteren" class="appearance-none bg-transparent border-0 border-b border-border-soft text-ink font-display normal-case tracking-normal text-[15px] pr-8 pl-1 py-1 focus:outline-none focus:border-clay cursor-pointer">
-              <option value="created-descending"{% if sort_now == 'created-descending' %} selected{% endif %}>Nieuwste eerst</option>
-              <option value="price-ascending"{% if sort_now == 'price-ascending' %} selected{% endif %}>Prijs · laag naar hoog</option>
-              <option value="price-descending"{% if sort_now == 'price-descending' %} selected{% endif %}>Prijs · hoog naar laag</option>
+
+          <label class="zh-collection-sort">
+            <span class="sr-only">Producten sorteren</span>
+
+            <select
+              data-sort-select
+              name="sort_by"
+              aria-label="Producten sorteren"
+            >
+              <option value="manual"{% if sort_now == 'manual' %} selected{% endif %}>
+                Aanbevolen
+              </option>
+              <option value="best-selling"{% if sort_now == 'best-selling' %} selected{% endif %}>
+                Best verkocht
+              </option>
+              <option value="created-descending"{% if sort_now == 'created-descending' %} selected{% endif %}>
+                Nieuwste eerst
+              </option>
+              <option value="price-ascending"{% if sort_now == 'price-ascending' %} selected{% endif %}>
+                Prijs · laag naar hoog
+              </option>
+              <option value="price-descending"{% if sort_now == 'price-descending' %} selected{% endif %}>
+                Prijs · hoog naar laag
+              </option>
             </select>
-            <span class="pointer-events-none absolute right-1 text-ink-soft">{% render 'icon', name: 'chevron-down', size: 14 %}</span>
-          </span>
-        </label>
+
+            <span aria-hidden="true">
+              {% render 'icon', name: 'chevron-down', size: 14 %}
+            </span>
+          </label>
+        </div>
       </div>
     </div>
-  </div>
 
-  {%- comment -%} Active filter pills {%- endcomment -%}
-  {%- if any_active -%}
-    <div class="mb-8 flex flex-wrap items-center gap-2">
-      {%- for f in collection.filters -%}
-        {%- for v in f.active_values -%}
-          <a href="{{ v.url_to_remove }}" data-filter-remove class="inline-flex items-center gap-1.5 rounded-full border border-border-soft px-3 py-1.5 text-[11px] text-ink-soft hover:border-ink hover:text-ink transition-colors">{{ v.label }} {% render 'icon', name: 'x', size: 12 %}</a>
-        {%- endfor -%}
-        {%- if f.type == 'price_range' -%}
-          {%- if f.min_value.value != blank or f.max_value.value != blank -%}
-            <a href="{{ f.url_to_remove }}" data-filter-remove class="inline-flex items-center gap-1.5 rounded-full border border-border-soft px-3 py-1.5 text-[11px] text-ink-soft hover:border-ink hover:text-ink transition-colors">{{ f.label }} {% render 'icon', name: 'x', size: 12 %}</a>
-          {%- endif -%}
-        {%- endif -%}
-      {%- endfor -%}
-      <a href="{{ clear_url }}" data-filter-clear class="ml-1 text-[11px] uppercase tracking-[0.18em] text-stone hover:text-ink transition-colors">Wis alles</a>
-    </div>
-  {%- endif -%}
-
-  {%- comment -%} Grid / empty states {%- endcomment -%}
-  {%- if collection.products_count == 0 -%}
     {%- if any_active -%}
-      <div class="border-t border-border-soft py-24 text-center">
-        <p class="font-display italic text-2xl text-stone">Geen producten gevonden met deze filters.</p>
-        <p class="mt-3 text-sm text-ink-soft">Pas de filters aan of <a href="{{ clear_url }}" data-filter-clear class="underline hover:text-ink">wis alles</a>.</p>
-      </div>
-    {%- else -%}
-      <div class="border-t border-border-soft py-24 text-center">
-        <p class="font-display italic text-2xl text-stone">{{ section.settings.empty_title | default: 'Deze collectie wordt aangevuld.' }}</p>
-        <p class="mt-3 text-sm text-ink-soft">{{ section.settings.empty_body | default: 'Bekijk de complete collectie of kom snel terug.' }}</p>
+      <div
+        class="zh-active-filters"
+        aria-label="Actieve filters"
+      >
+        {%- for filter in collection.filters -%}
+          {%- for value in filter.active_values -%}
+            <a
+              href="{{ value.url_to_remove }}"
+              data-filter-remove
+              class="zh-active-filter"
+            >
+              <span>{{ value.label | escape }}</span>
+              {% render 'icon', name: 'x', size: 12 %}
+            </a>
+          {%- endfor -%}
+
+          {%- if filter.type == 'price_range' -%}
+            {%- if filter.min_value.value != blank or filter.max_value.value != blank -%}
+              {%- liquid
+                assign active_min = filter.min_value.value | default: 0
+                assign active_max = filter.max_value.value | default: filter.range_max
+              -%}
+
+              <a
+                href="{{ filter.url_to_remove }}"
+                data-filter-remove
+                class="zh-active-filter"
+              >
+                <span>
+                  {{ active_min | money_without_trailing_zeros }}
+                  –
+                  {{ active_max | money_without_trailing_zeros }}
+                </span>
+                {% render 'icon', name: 'x', size: 12 %}
+              </a>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        <a
+          href="{{ clear_url }}"
+          data-filter-clear
+          class="zh-active-filters__clear"
+        >
+          Alle filters wissen
+        </a>
       </div>
     {%- endif -%}
-  {%- else -%}
-    <div data-product-grid role="region" aria-label="{{ collection.title | escape }}" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 gap-y-12 md:gap-x-7 md:gap-y-14 lg:gap-x-8 lg:gap-y-16">
-      {%- for product in collection.products -%}
-        {%- assign p_loading = 'lazy' -%}
-        {%- if forloop.index <= 8 -%}{%- assign p_loading = 'eager' -%}{%- endif -%}
-        {% render 'product-card', product: product, loading: p_loading %}
-      {%- endfor -%}
-    </div>
 
-  {%- endif -%}
+    {%- if collection.products_count == 0 -%}
+      <div class="zh-collection-empty">
+        {%- if any_active -%}
+          <p>Geen producten gevonden met deze filters.</p>
+          <span>Pas je prijs of beschikbaarheid aan.</span>
 
-  {%- comment -%} SEO band {%- endcomment -%}
-  {%- assign seo_text = collection.metafields.custom.seo_text.value -%}
-  {%- if seo_text != blank -%}
-    <section aria-label="Over deze collectie" class="mt-20 border-t border-border-soft pt-12">
-      <div class="max-w-2xl text-sm leading-relaxed text-ink-soft whitespace-pre-line">{{ seo_text }}</div>
-    </section>
-  {%- endif -%}
+          <a
+            href="{{ clear_url }}"
+            data-filter-clear
+            class="zh-collection-empty__button"
+          >
+            Filters wissen
+          </a>
+        {%- else -%}
+          <p>
+            {{ section.settings.empty_title | default: 'Deze collectie wordt aangevuld.' }}
+          </p>
+          <span>
+            {{ section.settings.empty_body | default: 'Bekijk de andere collecties of kom snel terug.' }}
+          </span>
+        {%- endif -%}
+      </div>
+    {%- else -%}
+      <div
+        data-product-grid
+        role="region"
+        aria-label="{{ collection.title | escape }}"
+        class="zh-product-grid grid grid-cols-2 items-stretch gap-x-4 gap-y-10 sm:gap-x-5 sm:gap-y-12 md:grid-cols-3 md:gap-x-6 lg:grid-cols-4 lg:gap-x-7 lg:gap-y-14"
+      >
+        {%- for product in collection.products -%}
+          {%- assign product_loading = 'lazy' -%}
 
-  {%- comment -%} Filter drawer (reuses snippets/aside.liquid; section-local overlay) {%- endcomment -%}
-  {%- if has_filters -%}
-    {%- capture filter_body -%}
-      <form id="CollectionFilterForm-{{ section.id }}" data-filter-form action="{{ collection.url }}" method="get" class="flex h-full flex-col">
-        <div class="flex-1 space-y-8 px-5 md:px-6 py-6">
-          {%- for f in collection.filters -%}
-            <fieldset class="m-0 border-0 p-0">
-              <legend class="text-label text-ink mb-4">{{ f.label }}</legend>
-              {%- case f.type -%}
-                {%- when 'price_range' -%}
-                  <div class="flex items-center gap-3">
-                    <label class="flex-1">
-                      <span class="sr-only">Van</span>
-                      <input type="number" name="{{ f.min_value.param_name }}" value="{{ f.min_value.value }}" placeholder="Van" min="0" inputmode="numeric" class="w-full border border-border-soft bg-surface px-3 py-2 text-sm text-ink focus:border-clay focus:outline-none">
-                    </label>
-                    <span class="text-stone-soft">–</span>
-                    <label class="flex-1">
-                      <span class="sr-only">Tot</span>
-                      <input type="number" name="{{ f.max_value.param_name }}" value="{{ f.max_value.value }}" placeholder="Tot" min="0" inputmode="numeric" class="w-full border border-border-soft bg-surface px-3 py-2 text-sm text-ink focus:border-clay focus:outline-none">
-                    </label>
-                  </div>
-                {%- else -%}
-                  <ul class="space-y-2.5">
-                    {%- for v in f.values -%}
-                      <li>
-                        <label class="flex cursor-pointer items-center gap-3 text-sm {% if v.count == 0 and v.active == false %}opacity-40{% endif %}">
-                          <input type="checkbox" name="{{ v.param_name }}" value="{{ v.value }}"{% if v.active %} checked{% endif %} class="peer sr-only">
-                          <span class="grid h-4 w-4 place-items-center border border-border-soft text-transparent transition-colors peer-checked:border-ink peer-checked:bg-ink peer-checked:text-surface">{% render 'icon', name: 'check', size: 11 %}</span>
-                          <span class="text-ink-soft">{{ v.label }}</span>
-                          <span class="ml-auto text-[11px] tabular-nums text-stone-soft">{{ v.count }}</span>
-                        </label>
-                      </li>
-                    {%- endfor -%}
-                  </ul>
-              {%- endcase -%}
-            </fieldset>
-          {%- endfor -%}
-        </div>
-        <div class="flex shrink-0 items-center gap-3 border-t border-border-soft p-5 md:px-6">
-          <a href="{{ clear_url }}" data-filter-clear class="text-[11px] uppercase tracking-[0.18em] text-stone hover:text-ink transition-colors">Wis alles</a>
-          <button type="submit" class="ml-auto inline-flex h-12 items-center justify-center bg-ink px-8 text-[12px] uppercase tracking-[0.18em] text-surface hover:bg-clay transition-colors">Toepassen</button>
-        </div>
-      </form>
-    {%- endcapture -%}
-    {% render 'aside', type: 'filters', heading: 'Filteren', aside_body: filter_body %}
-  {%- endif -%}
+          {%- if forloop.index <= 8 -%}
+            {%- assign product_loading = 'eager' -%}
+          {%- endif -%}
+
+          {% render
+            'product-card',
+            product: product,
+            loading: product_loading,
+            card_context: 'collection'
+          %}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    {%- assign seo_text = collection.metafields.custom.seo_text.value -%}
+
+    {%- if seo_text != blank -%}
+      <section
+        aria-label="Over deze collectie"
+        class="zh-collection-seo"
+      >
+        {{ seo_text }}
+      </section>
+    {%- endif -%}
+
+    {%- if has_filters -%}
+      {%- capture filter_body -%}
+        <form
+          id="CollectionFilterForm-{{ section.id }}"
+          data-filter-form
+          action="{{ collection.url }}"
+          method="get"
+          class="zh-filter-form"
+          novalidate
+        >
+          <input
+            type="hidden"
+            name="sort_by"
+            value="{{ sort_now }}"
+          >
+
+          <div class="zh-filter-form__body">
+            {%- for filter in collection.filters -%}
+              <fieldset class="zh-filter-group">
+                <legend>{{ filter.label }}</legend>
+
+                {%- case filter.type -%}
+                  {%- when 'price_range' -%}
+                    {%- liquid
+                      assign min_input = ''
+                      assign max_input = ''
+                      assign range_max_input = filter.range_max | divided_by: 100.0
+
+                      if filter.min_value.value != blank
+                        assign min_input = filter.min_value.value | divided_by: 100.0
+                      endif
+
+                      if filter.max_value.value != blank
+                        assign max_input = filter.max_value.value | divided_by: 100.0
+                      endif
+                    -%}
+
+                    <div
+                      class="zh-price-filter"
+                      data-price-filter
+                    >
+                      <label>
+                        <span>Van</span>
+
+                        <span class="zh-price-input">
+                          <span aria-hidden="true">€</span>
+
+                          <input
+                            type="number"
+                            name="{{ filter.min_value.param_name }}"
+                            value="{{ min_input }}"
+                            min="0"
+                            max="{{ range_max_input }}"
+                            step="0.01"
+                            inputmode="decimal"
+                            autocomplete="off"
+                            placeholder="0"
+                            data-price-input="min"
+                          >
+                        </span>
+                      </label>
+
+                      <span
+                        class="zh-price-filter__separator"
+                        aria-hidden="true"
+                      >
+                        –
+                      </span>
+
+                      <label>
+                        <span>Tot</span>
+
+                        <span class="zh-price-input">
+                          <span aria-hidden="true">€</span>
+
+                          <input
+                            type="number"
+                            name="{{ filter.max_value.param_name }}"
+                            value="{{ max_input }}"
+                            min="0"
+                            max="{{ range_max_input }}"
+                            step="0.01"
+                            inputmode="decimal"
+                            autocomplete="off"
+                            placeholder="{{ range_max_input }}"
+                            data-price-input="max"
+                          >
+                        </span>
+                      </label>
+                    </div>
+
+                    <p class="zh-price-filter__maximum">
+                      Maximaal {{ filter.range_max | money_without_trailing_zeros }}
+                    </p>
+
+                    <p
+                      class="zh-price-filter__error"
+                      data-price-error
+                      hidden
+                    >
+                      De minimale prijs mag niet hoger zijn dan de maximale prijs.
+                    </p>
+
+                  {%- else -%}
+                    <ul class="zh-filter-values">
+                      {%- for value in filter.values -%}
+                        <li>
+                          <label
+                            class="zh-filter-value{% if value.count == 0 and value.active == false %} is-disabled{% endif %}"
+                          >
+                            <input
+                              type="checkbox"
+                              name="{{ value.param_name }}"
+                              value="{{ value.value }}"
+                              {% if value.active %}checked{% endif %}
+                              {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                            >
+
+                            <span
+                              class="zh-filter-value__box"
+                              aria-hidden="true"
+                            >
+                              {% render 'icon', name: 'check', size: 12 %}
+                            </span>
+
+                            <span class="zh-filter-value__label">
+                              {{ value.label }}
+                            </span>
+
+                            <span class="zh-filter-value__count">
+                              {{ value.count }}
+                            </span>
+                          </label>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                {%- endcase -%}
+              </fieldset>
+            {%- endfor -%}
+          </div>
+
+          <div class="zh-filter-form__footer">
+            <a
+              href="{{ clear_url }}"
+              data-filter-clear
+              class="zh-filter-form__clear"
+            >
+              Wissen
+            </a>
+
+            <button
+              type="submit"
+              class="zh-filter-form__submit"
+            >
+              Filters toepassen
+            </button>
+          </div>
+        </form>
+      {%- endcapture -%}
+
+      {% render
+        'aside',
+        type: 'filters',
+        heading: 'Filteren',
+        aside_body: filter_body
+      %}
+    {%- endif -%}
 
   {%- endpaginate -%}
 
-  {%- comment -%} SEO: BreadcrumbList JSON-LD {%- endcomment -%}
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org/",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": {{ shop.url | json }} },
-      { "@type": "ListItem", "position": 2, "name": {{ collection.title | json }}, "item": {{ canonical_url | json }} }
-    ]
-  }
+    {
+      "@context": "https://schema.org/",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": {{ shop.url | json }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ collection.title | json }},
+          "item": {{ canonical_url | json }}
+        }
+      ]
+    }
   </script>
 </div>
+
+{% style %}
+  #ZaynaCollectionGrid-{{ section.id }} {
+    width: min(100%, 1280px);
+    margin: 0 auto;
+    padding: 0 16px 76px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar {
+    position: sticky;
+    top: var(--header-height);
+    z-index: 20;
+    margin-bottom: 24px;
+    border-top: 1px solid rgba(42, 37, 32, 0.08);
+    border-bottom: 1px solid rgba(42, 37, 32, 0.08);
+    background: rgba(250, 245, 242, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__inner {
+    display: flex;
+    min-height: 52px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__count {
+    margin: 0;
+    color: rgba(42, 37, 32, 0.62);
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__count > span {
+    color: #2a2520;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__button,
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid rgba(42, 37, 32, 0.10);
+    background: rgba(255, 253, 251, 0.72);
+    color: rgba(42, 37, 32, 0.74);
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__button {
+    padding: 0 11px;
+    cursor: pointer;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__button > span:not(.zh-collection-toolbar__badge) {
+    display: none;
+    font-size: 11px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__badge {
+    display: inline-grid;
+    min-width: 18px;
+    height: 18px;
+    place-items: center;
+    border-radius: 999px;
+    background: #a66a3f;
+    color: #fffdfb;
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort {
+    position: relative;
+    padding: 0 8px 0 10px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort select {
+    max-width: 142px;
+    padding: 0 22px 0 0;
+    border: 0;
+    outline: 0;
+    appearance: none;
+    background: transparent;
+    color: #2a2520;
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort > span {
+    position: absolute;
+    right: 7px;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filter {
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    gap: 7px;
+    padding: 0 11px;
+    border: 1px solid rgba(166, 106, 63, 0.20);
+    border-radius: 999px;
+    background: rgba(242, 232, 223, 0.62);
+    color: #6f4a33;
+    font-size: 11px;
+    text-decoration: none;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filters__clear {
+    margin-left: 2px;
+    color: rgba(42, 37, 32, 0.62);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-transform: uppercase;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-product-grid > * {
+    min-width: 0;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-empty {
+    padding: 72px 20px;
+    border-top: 1px solid rgba(42, 37, 32, 0.08);
+    text-align: center;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-empty > p {
+    margin: 0;
+    color: rgba(42, 37, 32, 0.66);
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 24px;
+    font-style: italic;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-empty > span {
+    display: block;
+    margin-top: 9px;
+    color: rgba(42, 37, 32, 0.62);
+    font-size: 14px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-empty__button {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 22px;
+    padding: 0 20px;
+    border: 1px solid rgba(166, 106, 63, 0.32);
+    background: rgba(242, 232, 223, 0.72);
+    color: #8f5837;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-seo {
+    max-width: 680px;
+    margin-top: 72px;
+    padding-top: 36px;
+    border-top: 1px solid rgba(42, 37, 32, 0.08);
+    color: rgba(42, 37, 32, 0.66);
+    font-size: 14px;
+    line-height: 1.75;
+    white-space: pre-line;
+  }
+
+  .zh-filter-form {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+  }
+
+  .zh-filter-form__body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 24px 20px 30px;
+  }
+
+  .zh-filter-group {
+    margin: 0;
+    padding: 0 0 26px;
+    border: 0;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.08);
+  }
+
+  .zh-filter-group + .zh-filter-group {
+    padding-top: 26px;
+  }
+
+  .zh-filter-group legend {
+    margin-bottom: 16px;
+    color: #2a2520;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .zh-price-filter {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: end;
+    gap: 10px;
+  }
+
+  .zh-price-filter label > span:first-child {
+    display: block;
+    margin-bottom: 7px;
+    color: rgba(42, 37, 32, 0.58);
+    font-size: 11px;
+  }
+
+  .zh-price-input {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    border: 1px solid rgba(42, 37, 32, 0.12);
+    background: #fffdfb;
+  }
+
+  .zh-price-input > span {
+    padding-left: 12px;
+    color: rgba(42, 37, 32, 0.52);
+    font-size: 13px;
+  }
+
+  .zh-price-input input {
+    width: 100%;
+    min-width: 0;
+    padding: 0 10px 0 5px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #2a2520;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .zh-price-input input::-webkit-outer-spin-button,
+  .zh-price-input input::-webkit-inner-spin-button {
+    margin: 0;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .zh-price-filter__separator {
+    padding-bottom: 13px;
+    color: rgba(42, 37, 32, 0.36);
+  }
+
+  .zh-price-filter__maximum {
+    margin: 9px 0 0;
+    color: rgba(42, 37, 32, 0.48);
+    font-size: 11px;
+  }
+
+  .zh-price-filter__error {
+    margin: 9px 0 0;
+    color: #8b4c42;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .zh-filter-values {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .zh-filter-value {
+    display: flex;
+    min-height: 42px;
+    align-items: center;
+    gap: 11px;
+    cursor: pointer;
+  }
+
+  .zh-filter-value.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.38;
+  }
+
+  .zh-filter-value input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .zh-filter-value__box {
+    display: grid;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    place-items: center;
+    border: 1px solid rgba(42, 37, 32, 0.16);
+    background: #fffdfb;
+    color: transparent;
+    transition:
+      border-color 160ms ease,
+      background-color 160ms ease,
+      color 160ms ease;
+  }
+
+  .zh-filter-value input:checked + .zh-filter-value__box {
+    border-color: #a66a3f;
+    background: #a66a3f;
+    color: #fffdfb;
+  }
+
+  .zh-filter-value input:focus-visible + .zh-filter-value__box {
+    outline: 2px solid #a66a3f;
+    outline-offset: 3px;
+  }
+
+  .zh-filter-value__label {
+    color: rgba(42, 37, 32, 0.72);
+    font-size: 14px;
+  }
+
+  .zh-filter-value__count {
+    margin-left: auto;
+    color: rgba(42, 37, 32, 0.46);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .zh-filter-form__footer {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    border-top: 1px solid rgba(42, 37, 32, 0.08);
+    background: #fffdfb;
+  }
+
+  .zh-filter-form__clear {
+    color: rgba(42, 37, 32, 0.62);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-transform: uppercase;
+  }
+
+  .zh-filter-form__submit {
+    display: inline-flex;
+    min-height: 46px;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #2a2520;
+    background: #2a2520;
+    color: #fffdfb;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  @media (min-width: 480px) {
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-toolbar__button > span:not(.zh-collection-toolbar__badge) {
+      display: inline;
+    }
+  }
+
+  @media (min-width: 640px) {
+    #ZaynaCollectionGrid-{{ section.id }} {
+      padding-right: 24px;
+      padding-bottom: 88px;
+      padding-left: 24px;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-toolbar__inner {
+      min-height: 58px;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-toolbar__count {
+      font-size: 11px;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-toolbar__actions {
+      gap: 10px;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-sort select {
+      max-width: 190px;
+      font-size: 14px;
+    }
+
+    .zh-filter-form__body {
+      padding-right: 24px;
+      padding-left: 24px;
+    }
+
+    .zh-filter-form__footer {
+      padding-right: 24px;
+      padding-left: 24px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #ZaynaCollectionGrid-{{ section.id }} {
+      padding-right: 40px;
+      padding-bottom: 96px;
+      padding-left: 40px;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-toolbar__button:hover,
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-sort:hover {
+      border-color: rgba(166, 106, 63, 0.28);
+      color: #a66a3f;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-active-filter:hover,
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-empty__button:hover {
+      border-color: rgba(166, 106, 63, 0.40);
+      background: rgba(242, 232, 223, 0.96);
+    }
+
+    .zh-filter-value:hover .zh-filter-value__label {
+      color: #a66a3f;
+    }
+
+    .zh-filter-form__submit:hover {
+      border-color: #a66a3f;
+      background: #a66a3f;
+    }
+  }
+{% endstyle %}
 
 {% schema %}
 {
   "name": "Collection grid",
   "tag": "section",
   "settings": [
-    { "type": "header", "content": "Empty state (no filters)" },
-    { "type": "text", "id": "empty_title", "label": "Empty title", "default": "Deze collectie wordt aangevuld." },
-    { "type": "textarea", "id": "empty_body", "label": "Empty body", "default": "Bekijk de complete collectie of kom snel terug." }
+    {
+      "type": "header",
+      "content": "Lege collectie"
+    },
+    {
+      "type": "text",
+      "id": "empty_title",
+      "label": "Titel",
+      "default": "Deze collectie wordt aangevuld."
+    },
+    {
+      "type": "textarea",
+      "id": "empty_body",
+      "label": "Tekst",
+      "default": "Bekijk de andere collecties of kom snel terug."
+    }
   ],
-  "presets": [{ "name": "Collection grid" }]
+  "presets": [
+    {
+      "name": "Collection grid"
+    }
+  ]
 }
 {% endschema %}
