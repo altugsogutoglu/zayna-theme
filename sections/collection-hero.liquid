@@ -1,7 +1,6 @@
 {%- comment -%}
   Zayna Home — compacte collectieheader.
-  De titel en korte beschrijving ondersteunen het productgrid,
-  zonder zich als een tweede homepage-hero te gedragen.
+  De collectie blijft herkenbaar, terwijl het productgrid sneller in beeld komt.
 {%- endcomment -%}
 
 {%- liquid
@@ -10,11 +9,7 @@
     assign is_all = true
   endif
 
-  assign eyebrow = section.settings.eyebrow
-  if eyebrow == blank
-    assign eyebrow = 'Collectie'
-  endif
-
+  assign eyebrow = section.settings.eyebrow | default: 'Collectie'
   if is_all and section.settings.all_eyebrow != blank
     assign eyebrow = section.settings.all_eyebrow
   endif
@@ -33,16 +28,6 @@
     assign intro = section.settings.all_intro
   endif
 
-  assign last_char = hero_title | slice: -1
-  assign title_main = hero_title
-  assign trailing = ''
-
-  if last_char == '.'
-    assign cut = hero_title.size | minus: 1
-    assign title_main = hero_title | slice: 0, cut
-    assign trailing = '.'
-  endif
-
   assign heading_id = 'ZaynaCollectionTitle-' | append: section.id
 -%}
 
@@ -52,20 +37,19 @@
   aria-labelledby="{{ heading_id }}"
 >
   <div class="zh-collection-hero__inner">
-    <p class="zh-collection-hero__eyebrow">
-      <span aria-hidden="true"></span>
-      {{ eyebrow | escape }}
-    </p>
+    <div class="zh-collection-hero__heading">
+      <p class="zh-collection-hero__eyebrow">
+        <span aria-hidden="true"></span>
+        {{ eyebrow | escape }}
+      </p>
 
-    <h1
-      id="{{ heading_id }}"
-      class="zh-collection-hero__title"
-    >
-      {{ title_main | escape }}
-      {%- if trailing != blank -%}
-        <span>{{ trailing }}</span>
-      {%- endif -%}
-    </h1>
+      <h1
+        id="{{ heading_id }}"
+        class="zh-collection-hero__title"
+      >
+        {{ hero_title | escape }}
+      </h1>
+    </div>
 
     {%- if intro != blank -%}
       <p class="zh-collection-hero__intro">
@@ -84,106 +68,102 @@
     .zh-collection-hero__inner {
     width: min(100%, 1280px);
     margin: 0 auto;
-    padding: 18px 16px 24px;
+    padding: 17px 16px 18px;
   }
 
   #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__eyebrow {
     display: flex;
     align-items: center;
-    gap: 9px;
-    margin: 0 0 9px;
-    color: var(--color-clay, #a66a3f);
+    gap: 8px;
+    margin: 0 0 7px;
+    color: #9a6039;
     font-size: 9px;
     font-weight: 500;
     line-height: 1;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.19em;
     text-transform: uppercase;
   }
 
   #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__eyebrow > span {
-    width: 28px;
+    width: 25px;
     height: 1px;
-    background: rgba(166, 106, 63, 0.58);
+    background: rgba(166, 106, 63, 0.54);
   }
 
   #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__title {
-    max-width: 18ch;
+    max-width: 17ch;
     margin: 0;
-    color: var(--color-ink, #2a2520);
+    color: #2a2520;
     font-family:
       var(
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: clamp(2.15rem, 8vw, 2.55rem);
+    font-size: clamp(2rem, 8.4vw, 2.2rem);
     font-weight: 400;
-    line-height: 1.04;
-    letter-spacing: -0.025em;
-  }
-
-  #ZaynaCollectionHero-{{ section.id }}
-    .zh-collection-hero__title > span {
-    color: rgba(166, 106, 63, 0.82);
+    line-height: 1.045;
+    letter-spacing: -0.026em;
+    text-wrap: balance;
   }
 
   #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__intro {
     display: -webkit-box;
-    max-width: 58ch;
-    margin: 12px 0 0;
+    max-width: 52ch;
+    margin: 10px 0 0;
     overflow: hidden;
-    color: var(--color-ink-soft, #564e47);
-    font-size: 14px;
-    line-height: 1.62;
+    color: #625a53;
+    font-size: 13px;
+    line-height: 1.52;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
   }
 
   @media (min-width: 640px) {
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__inner {
-      padding: 24px 24px 28px;
+      padding: 22px 24px 22px;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__title {
-      font-size: clamp(2.5rem, 5vw, 3rem);
+      max-width: 18ch;
+      font-size: clamp(2.25rem, 5vw, 2.65rem);
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__intro {
-      max-width: 64ch;
-      margin-top: 13px;
-      font-size: 14.5px;
-      -webkit-line-clamp: 2;
+      max-width: 58ch;
+      margin-top: 11px;
+      font-size: 13.5px;
     }
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 900px) {
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__inner {
-      padding: 28px 40px 30px;
-    }
-
-    #ZaynaCollectionHero-{{ section.id }}
-      .zh-collection-hero__eyebrow {
-      margin-bottom: 11px;
-      font-size: 10px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
+      align-items: end;
+      gap: 48px;
+      padding: 25px 40px 26px;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__title {
-      max-width: none;
-      font-size: clamp(2.75rem, 3.7vw, 3.35rem);
+      max-width: 19ch;
+      font-size: clamp(2.55rem, 3.4vw, 2.95rem);
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__intro {
-      margin-top: 14px;
-      font-size: 15px;
+      max-width: 42ch;
+      margin: 0 0 3px;
+      font-size: 14px;
+      line-height: 1.58;
     }
   }
 {% endstyle %}
@@ -203,7 +183,6 @@
       "type": "textarea",
       "id": "intro_fallback",
       "label": "Intro fallback",
-      "info": "Wordt gebruikt wanneer de collectie geen beschrijving heeft.",
       "default": "Geselecteerd op design, kwaliteit en functie."
     },
     {
@@ -220,13 +199,13 @@
       "type": "text",
       "id": "all_title",
       "label": "Titel",
-      "default": "Alle producten."
+      "default": "Alle producten"
     },
     {
       "type": "textarea",
       "id": "all_intro",
       "label": "Intro",
-      "default": "Bekijk de complete collectie van Zayna Home — zorgvuldig geselecteerd op design, kwaliteit en functie."
+      "default": "Bekijk de complete collectie van Zayna Home, zorgvuldig geselecteerd op design, kwaliteit en functie."
     }
   ],
   "presets": [
