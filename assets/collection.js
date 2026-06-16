@@ -193,6 +193,10 @@
       })
     );
 
+    let desktopHoverIndex = null;
+    let desktopPointerInside = false;
+    let desktopKeyboardMode = false;
+
     let mobileIndex = Math.max(
       0,
       mobileLinks.findIndex((link) => {
@@ -200,10 +204,41 @@
       })
     );
 
+    let mobileHoverIndex = null;
+    let mobilePointerEligible = false;
+    let mobileKeyboardMode = false;
+    let mobileOpenedWithKeyboard = false;
+
     const clamp = (value, minimum, maximum) => {
       return Math.min(
         Math.max(value, minimum),
         maximum
+      );
+    };
+
+    const isTypingTarget = (target) => {
+      return Boolean(
+        target?.closest?.(
+          'input, textarea, select, [contenteditable="true"]'
+        )
+      );
+    };
+
+    const activeDesktopIndex = () => {
+      return Math.max(
+        0,
+        desktopLinks.findIndex((link) => {
+          return link.getAttribute('aria-current') === 'page';
+        })
+      );
+    };
+
+    const activeMobileIndex = () => {
+      return Math.max(
+        0,
+        mobileLinks.findIndex((link) => {
+          return link.getAttribute('aria-current') === 'page';
+        })
       );
     };
 
@@ -217,7 +252,11 @@
       const maximum =
         viewport.scrollWidth - viewport.clientWidth;
 
-      return clamp(rawPosition, 0, Math.max(0, maximum));
+      return clamp(
+        rawPosition,
+        0,
+        Math.max(0, maximum)
+      );
     };
 
     const revealDesktopLink = (
@@ -233,10 +272,19 @@
       });
     };
 
-    const setDesktopFocusIndex = (
+    const clearDesktopKeyboardTarget = () => {
+      desktopKeyboardMode = false;
+      rail?.classList.remove('is-keyboard-mode');
+
+      desktopLinks.forEach((link) => {
+        link.classList.remove('is-keyboard-target');
+      });
+    };
+
+    const setDesktopTarget = (
       index,
       {
-        focus = false,
+        focus = true,
         behavior = 'smooth'
       } = {}
     ) => {
@@ -246,9 +294,17 @@
         Math.max(0, desktopLinks.length - 1)
       );
 
+      desktopKeyboardMode = true;
+      rail?.classList.add('is-keyboard-mode');
+
       desktopLinks.forEach((link, linkIndex) => {
-        link.tabIndex =
-          linkIndex === desktopIndex ? 0 : -1;
+        const isTarget = linkIndex === desktopIndex;
+
+        link.tabIndex = isTarget ? 0 : -1;
+        link.classList.toggle(
+          'is-keyboard-target',
+          isTarget
+        );
       });
 
       const target = desktopLinks[desktopIndex];
@@ -260,6 +316,20 @@
           preventScroll: true
         });
       }
+    };
+
+    const resetDesktopTabStop = () => {
+      desktopIndex = activeDesktopIndex();
+
+      desktopLinks.forEach((link, linkIndex) => {
+        link.tabIndex =
+          linkIndex === desktopIndex ? 0 : -1;
+
+        link.classList.remove('is-keyboard-target');
+      });
+
+      rail?.classList.remove('is-keyboard-mode');
+      desktopKeyboardMode = false;
     };
 
     const nativeRailState = () => {
@@ -318,9 +388,45 @@
       }
     };
 
-    const setMobileFocusIndex = (
+    const clearMobileKeyboardTarget = () => {
+      mobileKeyboardMode = false;
+      mobileMenu?.classList.remove('is-keyboard-mode');
+
+      mobileLinks.forEach((link) => {
+        link.classList.remove('is-keyboard-target');
+      });
+    };
+
+    const revealMobileLink = (link) => {
+      if (!mobileOptions || !link) return;
+
+      const targetTop = link.offsetTop;
+      const targetBottom =
+        targetTop + link.offsetHeight;
+
+      const visibleTop = mobileOptions.scrollTop;
+      const visibleBottom =
+        visibleTop + mobileOptions.clientHeight;
+
+      if (targetTop < visibleTop) {
+        mobileOptions.scrollTo({
+          top: targetTop - 7,
+          behavior: 'smooth'
+        });
+      } else if (targetBottom > visibleBottom) {
+        mobileOptions.scrollTo({
+          top:
+            targetBottom -
+            mobileOptions.clientHeight +
+            7,
+          behavior: 'smooth'
+        });
+      }
+    };
+
+    const setMobileTarget = (
       index,
-      { focus = false } = {}
+      { focus = true } = {}
     ) => {
       mobileIndex = clamp(
         index,
@@ -328,42 +434,28 @@
         Math.max(0, mobileLinks.length - 1)
       );
 
+      mobileKeyboardMode = true;
+      mobilePointerEligible = false;
+      mobileMenu?.classList.add('is-keyboard-mode');
+
       mobileLinks.forEach((link, linkIndex) => {
-        link.tabIndex =
-          linkIndex === mobileIndex ? 0 : -1;
+        const isTarget = linkIndex === mobileIndex;
+
+        link.tabIndex = isTarget ? 0 : -1;
+        link.classList.toggle(
+          'is-keyboard-target',
+          isTarget
+        );
       });
 
       const target = mobileLinks[mobileIndex];
+
+      revealMobileLink(target);
 
       if (focus) {
         target?.focus({
           preventScroll: true
         });
-
-        if (mobileOptions && target) {
-          const targetTop = target.offsetTop;
-          const targetBottom =
-            targetTop + target.offsetHeight;
-
-          const visibleTop = mobileOptions.scrollTop;
-          const visibleBottom =
-            visibleTop + mobileOptions.clientHeight;
-
-          if (targetTop < visibleTop) {
-            mobileOptions.scrollTo({
-              top: targetTop - 7,
-              behavior: 'smooth'
-            });
-          } else if (targetBottom > visibleBottom) {
-            mobileOptions.scrollTo({
-              top:
-                targetBottom -
-                mobileOptions.clientHeight +
-                7,
-              behavior: 'smooth'
-            });
-          }
-        }
       }
     };
 
@@ -378,8 +470,10 @@
         'zh-category-menu-open'
       );
 
+      clearMobileKeyboardTarget();
+
       mobileLinks.forEach((link) => {
-        link.removeAttribute('tabindex');
+        link.tabIndex = -1;
       });
 
       if (restoreFocus) {
@@ -401,24 +495,27 @@
         'zh-category-menu-open'
       );
 
-      mobileIndex = Math.max(
-        0,
-        mobileLinks.findIndex((link) => {
-          return link.getAttribute('aria-current') === 'page';
-        })
-      );
+      mobileIndex = activeMobileIndex();
 
-      window.requestAnimationFrame(() => {
-        setMobileFocusIndex(mobileIndex, {
-          focus: true
-        });
+      mobileLinks.forEach((link) => {
+        link.tabIndex = -1;
       });
+
+      if (mobileOpenedWithKeyboard) {
+        window.requestAnimationFrame(() => {
+          setMobileTarget(mobileIndex, {
+            focus: true
+          });
+        });
+      } else {
+        clearMobileKeyboardTarget();
+      }
+
+      mobileOpenedWithKeyboard = false;
     };
 
     const syncMode = () => {
-      const desktopMode = mediaQuery.matches;
-
-      if (desktopMode) {
+      if (mediaQuery.matches) {
         closeMobileMenu({
           restoreFocus: false
         });
@@ -426,17 +523,12 @@
         setElementInert(mobileDetails, true);
         setElementInert(rail, false);
 
-        desktopIndex = Math.max(
-          0,
-          desktopLinks.findIndex((link) => {
-            return link.getAttribute('aria-current') === 'page';
-          })
-        );
+        resetDesktopTabStop();
 
-        setDesktopFocusIndex(desktopIndex, {
-          focus: false,
-          behavior: 'auto'
-        });
+        revealDesktopLink(
+          desktopLinks[desktopIndex],
+          'auto'
+        );
 
         window.requestAnimationFrame(() => {
           updateRailState();
@@ -445,32 +537,99 @@
         setElementInert(rail, true);
         setElementInert(mobileDetails, false);
 
+        clearDesktopKeyboardTarget();
+
         desktopLinks.forEach((link) => {
           link.tabIndex = -1;
         });
 
         mobileLinks.forEach((link) => {
-          link.removeAttribute('tabindex');
+          link.tabIndex = -1;
         });
       }
     };
 
     /*
-     * Desktop: horizontal keyboard model.
+     * Desktop pointer state.
      */
-    viewport?.addEventListener('keydown', (event) => {
-      if (!mediaQuery.matches) return;
+    rail?.addEventListener('pointerenter', () => {
+      desktopPointerInside = true;
+    });
 
-      const focusedLink = event.target.closest(
-        '[data-category-desktop-link]'
-      );
+    rail?.addEventListener('pointerleave', () => {
+      desktopPointerInside = false;
+      desktopHoverIndex = null;
 
-      if (!focusedLink) return;
+      if (
+        desktopKeyboardMode &&
+        !rail.contains(document.activeElement)
+      ) {
+        clearDesktopKeyboardTarget();
+        resetDesktopTabStop();
+      }
+    });
+
+    desktopLinks.forEach((link, index) => {
+      link.addEventListener('pointerenter', () => {
+        desktopHoverIndex = index;
+      });
+
+      link.addEventListener('focus', () => {
+        if (!mediaQuery.matches) return;
+
+        desktopIndex = index;
+      });
+    });
+
+    rail?.addEventListener('pointermove', () => {
+      if (!desktopKeyboardMode) return;
+
+      clearDesktopKeyboardTarget();
+    });
+
+    /*
+     * Desktop keyboard controller works from either:
+     * - the focused pill; or
+     * - the pill currently under the mouse.
+     */
+    document.addEventListener('keydown', (event) => {
+      if (
+        !mediaQuery.matches ||
+        isTypingTarget(event.target)
+      ) {
+        return;
+      }
 
       const focusedIndex =
-        desktopLinks.indexOf(focusedLink);
+        desktopLinks.indexOf(document.activeElement);
 
-      if (focusedIndex < 0) return;
+      const railIsActive =
+        focusedIndex >= 0 ||
+        desktopPointerInside;
+
+      if (!railIsActive) return;
+
+      if (
+        event.key === 'Enter' &&
+        desktopKeyboardMode
+      ) {
+        const target = desktopLinks[desktopIndex];
+
+        if (!target) return;
+
+        event.preventDefault();
+        window.location.assign(target.href);
+        return;
+      }
+
+      let baseIndex =
+        focusedIndex >= 0
+          ? focusedIndex
+          : (
+              desktopHoverIndex !== null
+                ? desktopHoverIndex
+                : desktopIndex
+            );
 
       let destination = null;
 
@@ -478,7 +637,7 @@
         case 'ArrowRight':
         case 'Right':
           destination = Math.min(
-            focusedIndex + 1,
+            baseIndex + 1,
             desktopLinks.length - 1
           );
           break;
@@ -486,7 +645,7 @@
         case 'ArrowLeft':
         case 'Left':
           destination = Math.max(
-            focusedIndex - 1,
+            baseIndex - 1,
             0
           );
           break;
@@ -506,18 +665,8 @@
       event.preventDefault();
       event.stopPropagation();
 
-      setDesktopFocusIndex(destination, {
+      setDesktopTarget(destination, {
         focus: true
-      });
-    });
-
-    desktopLinks.forEach((link, index) => {
-      link.addEventListener('focus', () => {
-        if (!mediaQuery.matches) return;
-
-        setDesktopFocusIndex(index, {
-          focus: false
-        });
       });
     });
 
@@ -548,8 +697,41 @@
     );
 
     /*
-     * Splitscreen/mobile: vertical listbox keyboard model.
+     * Split-screen/mobile pointer state.
      */
+    mobileLinks.forEach((link, index) => {
+      link.addEventListener('pointerenter', () => {
+        mobileHoverIndex = index;
+        mobilePointerEligible = true;
+      });
+    });
+
+    mobileMenu?.addEventListener('pointermove', () => {
+      if (!mobileKeyboardMode) return;
+
+      clearMobileKeyboardTarget();
+      mobilePointerEligible = true;
+    });
+
+    mobileSummary?.addEventListener(
+      'keydown',
+      (event) => {
+        if (
+          event.key === 'Enter' ||
+          event.key === ' '
+        ) {
+          mobileOpenedWithKeyboard = true;
+        }
+      }
+    );
+
+    mobileSummary?.addEventListener(
+      'pointerdown',
+      () => {
+        mobileOpenedWithKeyboard = false;
+      }
+    );
+
     mobileDetails?.addEventListener('toggle', () => {
       if (mobileDetails.open) {
         openMobileMenu();
@@ -557,6 +739,8 @@
         document.documentElement.classList.remove(
           'zh-category-menu-open'
         );
+
+        clearMobileKeyboardTarget();
       }
     });
 
@@ -568,10 +752,11 @@
       closeMobileMenu();
     });
 
-    mobileMenu?.addEventListener('keydown', (event) => {
+    document.addEventListener('keydown', (event) => {
       if (
         mediaQuery.matches ||
-        !mobileDetails?.open
+        !mobileDetails?.open ||
+        isTypingTarget(event.target)
       ) {
         return;
       }
@@ -583,40 +768,62 @@
       }
 
       if (event.key === 'Tab') {
-        const currentLink =
+        const currentTarget =
           mobileLinks[mobileIndex];
 
-        if (event.shiftKey) {
-          if (document.activeElement === mobileClose) {
-            event.preventDefault();
-            currentLink?.focus({
-              preventScroll: true
-            });
-          }
-        } else if (
-          document.activeElement === currentLink
+        if (
+          !event.shiftKey &&
+          document.activeElement === currentTarget
         ) {
           event.preventDefault();
           mobileClose?.focus({
             preventScroll: true
           });
+        } else if (
+          event.shiftKey &&
+          document.activeElement === mobileClose
+        ) {
+          event.preventDefault();
+
+          if (mobileKeyboardMode) {
+            currentTarget?.focus({
+              preventScroll: true
+            });
+          } else {
+            mobileSummary?.focus({
+              preventScroll: true
+            });
+          }
         }
 
         return;
       }
 
-      const focusedLink = event.target.closest(
-        '[data-category-mobile-link]'
-      );
+      if (
+        event.key === 'Enter' &&
+        mobileKeyboardMode
+      ) {
+        const target = mobileLinks[mobileIndex];
 
-      if (!focusedLink) return;
+        if (!target) return;
+
+        event.preventDefault();
+        window.location.assign(target.href);
+        return;
+      }
 
       const focusedIndex =
-        mobileLinks.indexOf(focusedLink);
+        mobileLinks.indexOf(document.activeElement);
 
-      if (focusedIndex >= 0) {
-        mobileIndex = focusedIndex;
-      }
+      const baseIndex =
+        mobilePointerEligible &&
+        mobileHoverIndex !== null
+          ? mobileHoverIndex
+          : (
+              focusedIndex >= 0
+                ? focusedIndex
+                : mobileIndex
+            );
 
       let destination = null;
 
@@ -624,7 +831,7 @@
         case 'ArrowDown':
         case 'Down':
           destination = Math.min(
-            mobileIndex + 1,
+            baseIndex + 1,
             mobileLinks.length - 1
           );
           break;
@@ -632,7 +839,7 @@
         case 'ArrowUp':
         case 'Up':
           destination = Math.max(
-            mobileIndex - 1,
+            baseIndex - 1,
             0
           );
           break;
@@ -652,15 +859,11 @@
       event.preventDefault();
       event.stopPropagation();
 
-      setMobileFocusIndex(destination, {
+      setMobileTarget(destination, {
         focus: true
       });
     });
 
-    /*
-     * No focus is moved during initial page load.
-     * Only horizontal scrollLeft is adjusted.
-     */
     syncMode();
 
     const handleModeChange = () => {
