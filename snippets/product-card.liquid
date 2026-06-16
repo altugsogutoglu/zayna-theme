@@ -60,7 +60,7 @@
   endif
 -%}
 
-<div class="zh-product-card group relative">
+<div class="zh-product-card{% if card_context == 'collection' %} zh-product-card--collection{% endif %}{% if is_sold %} zh-product-card--sold{% endif %} group relative">
   <div class="zh-product-card__media-wrap relative overflow-hidden">
     <a
       href="{{ product.url }}"
@@ -112,7 +112,11 @@
         {%- endif -%}
 
         <div class="zh-product-card__badges">
-          {%- if is_sold == false and status_badge != blank -%}
+          {%- if is_sold -%}
+            <span class="zh-product-card__sold-badge">
+              Uitverkocht
+            </span>
+          {%- elsif status_badge != blank -%}
             <span class="zh-product-card__status-badge">
               <span
                 class="zh-product-card__status-dot"
@@ -128,58 +132,53 @@
             </span>
           {%- endif -%}
         </div>
-
-        {%- if is_sold -%}
-          <div
-            class="absolute inset-0 z-10 grid place-items-center bg-white/60 pointer-events-none"
-            aria-hidden="true"
-          >
-            <span class="font-display italic text-sold -rotate-12 text-2xl">
-              Uitverkocht
-            </span>
-          </div>
-        {%- endif -%}
       </div>
     </a>
   </div>
 
-  {%- unless is_sold -%}
-    <div class="zh-product-card__quick-action">
-        {%- if can_quick_add -%}
-          <form
-            method="post"
-            action="{{ routes.cart_add_url }}"
-            data-cart-add-form
-            data-quick-add
-            data-cart-add-behavior="silent"
-            data-product-title="{{ product.title | escape }}"
-            class="zh-product-card__quick-form"
-          >
-            <input type="hidden" name="id" value="{{ quick_variant.id }}">
-            <input type="hidden" name="quantity" value="1">
+  <div class="zh-product-card__quick-action">
+    {%- if is_sold -%}
+      <span
+        class="zh-product-card__sold-action"
+        aria-label="{{ product.title | escape }} is tijdelijk uitverkocht"
+      >
+        <span>Tijdelijk uitverkocht</span>
+        <span aria-hidden="true">—</span>
+      </span>
+    {%- elsif can_quick_add -%}
+      <form
+        method="post"
+        action="{{ routes.cart_add_url }}"
+        data-cart-add-form
+        data-quick-add
+        data-cart-add-behavior="silent"
+        data-product-title="{{ product.title | escape }}"
+        class="zh-product-card__quick-form"
+      >
+        <input type="hidden" name="id" value="{{ quick_variant.id }}">
+        <input type="hidden" name="quantity" value="1">
 
-            <button
-              type="submit"
-              class="zh-product-card__quick-button"
-              data-cart-add-button
-              aria-label="Voeg {{ product.title | escape }} toe aan je winkelmand"
-            >
-              <span data-cart-add-label>Toevoegen</span>
-              <span data-cart-add-icon aria-hidden="true">+</span>
-            </button>
-          </form>
-        {%- else -%}
-          <a
-            href="{{ product.url }}"
-            class="zh-product-card__quick-button"
-            aria-label="Kies opties voor {{ product.title | escape }}"
-          >
-            <span>Kies opties</span>
-            <span aria-hidden="true">→</span>
-          </a>
-        {%- endif -%}
-    </div>
-  {%- endunless -%}
+        <button
+          type="submit"
+          class="zh-product-card__quick-button"
+          data-cart-add-button
+          aria-label="Voeg {{ product.title | escape }} toe aan je winkelmand"
+        >
+          <span data-cart-add-label>Toevoegen</span>
+          <span data-cart-add-icon aria-hidden="true">+</span>
+        </button>
+      </form>
+    {%- else -%}
+      <a
+        href="{{ product.url }}"
+        class="zh-product-card__quick-button"
+        aria-label="Kies opties voor {{ product.title | escape }}"
+      >
+        <span>Kies opties</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    {%- endif -%}
+  </div>
 
   <a
     href="{{ product.url }}"
@@ -293,6 +292,66 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     white-space: nowrap;
+  }
+
+
+  .zh-product-card__sold-badge {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    padding: 5px 8px;
+    border: 1px solid rgba(118, 110, 103, 0.16);
+    background: rgba(250, 245, 242, 0.94);
+    color: #665f59;
+    font-size: 8px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .zh-product-card__sold-action {
+    display: flex;
+    width: 100%;
+    min-height: 38px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 12px;
+    border-top: 1px solid rgba(231, 221, 210, 0.95);
+    border-bottom: 1px solid rgba(231, 221, 210, 0.82);
+    background: rgba(239, 234, 229, 0.68);
+    color: #766e67;
+    font-size: 9px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .zh-product-card--collection {
+    display: flex;
+    height: 100%;
+    min-width: 0;
+    flex-direction: column;
+  }
+
+  .zh-product-card--collection .zh-product-card__details-link {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
+
+  .zh-product-card--collection .zh-product-card__content {
+    min-height: 66px;
+    flex: 1 1 auto;
+  }
+
+  .zh-product-card--collection .zh-product-card__price {
+    margin-top: auto;
   }
 
   .zh-product-card__quick-action {
@@ -473,6 +532,17 @@
       font-size: 10px;
     }
 
+    .zh-product-card__sold-badge {
+      padding: 6px 9px;
+      font-size: 9px;
+    }
+
+    .zh-product-card__sold-action {
+      min-height: 40px;
+      padding: 0 14px;
+      font-size: 10px;
+    }
+
     .zh-product-card__content {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -491,6 +561,23 @@
       font-size: 16px;
       text-align: right;
       white-space: nowrap;
+    }
+
+    .zh-product-card--collection .zh-product-card__content {
+      display: flex;
+      min-height: 72px;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .zh-product-card--collection .zh-product-card__title {
+      min-height: 2.5em;
+    }
+
+    .zh-product-card--collection .zh-product-card__price {
+      margin-top: auto;
+      padding-top: 0;
+      text-align: left;
     }
   }
 
