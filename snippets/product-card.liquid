@@ -4,9 +4,9 @@
   assign primary_alt = primary.alt | default: product.title
   assign secondary = null
 
-  for img in product.images
-    unless img.id == primary.id
-      assign secondary = img
+  for image in product.images
+    unless image.id == primary.id
+      assign secondary = image
       break
     endunless
   endfor
@@ -16,11 +16,11 @@
 
   case cond_raw
     when 'new', 'new without tags', 'nieuw zonder prijskaartje'
-      assign cond_label = 'New without tags'
+      assign cond_label = 'Nieuw zonder prijskaartje'
     when 'very good', 'heel goed'
-      assign cond_label = 'Very good'
+      assign cond_label = 'Zeer goed'
     when 'good', 'goed'
-      assign cond_label = 'Good'
+      assign cond_label = 'Goed'
   endcase
 
   assign is_sold = false
@@ -38,9 +38,9 @@
   endif
 
   assign is_bestseller = false
-  assign bs = product.metafields.custom.bestseller.value
+  assign bestseller = product.metafields.custom.bestseller.value
 
-  if bs == true or bs == 'true' or bs == '1'
+  if bestseller == true or bestseller == 'true' or bestseller == '1'
     assign is_bestseller = true
   endif
 
@@ -60,14 +60,16 @@
   endif
 -%}
 
-<div class="zh-product-card{% if card_context == 'collection' %} zh-product-card--collection{% endif %}{% if is_sold %} zh-product-card--sold{% endif %} group relative">
-  <div class="zh-product-card__media-wrap relative overflow-hidden">
+<article
+  class="zh-product-card{% if card_context == 'collection' %} zh-product-card--collection{% endif %}{% if is_sold %} zh-product-card--sold{% endif %}"
+>
+  <div class="zh-product-card__media-wrap">
     <a
       href="{{ product.url }}"
-      class="zh-product-card__media-link block focus-visible:outline-none"
+      class="zh-product-card__media-link"
       aria-label="Bekijk {{ product.title | escape }}"
     >
-      <div class="zh-product-card__media zh-frame relative overflow-hidden">
+      <div class="zh-product-card__media zh-frame">
         {%- if primary -%}
           {{
             primary
@@ -77,7 +79,7 @@
               sizes: '(min-width: 1024px) 25vw, 50vw',
               widths: '300, 400, 600, 800',
               alt: primary_alt,
-              class: 'zh-product-card__image zh-product-card__primary absolute inset-0 h-full w-full object-contain'
+              class: 'zh-product-card__image zh-product-card__primary'
           }}
 
           {%- if secondary -%}
@@ -89,25 +91,14 @@
                 sizes: '(min-width: 1024px) 25vw, 50vw',
                 widths: '300, 400, 600, 800',
                 alt: '',
-                class: 'zh-product-card__image zh-product-card__secondary absolute inset-0 h-full w-full object-contain'
+                class: 'zh-product-card__image zh-product-card__secondary'
             }}
           {%- endif -%}
         {%- else -%}
-          <div class="absolute inset-0 grid place-items-center px-6 text-center">
-            <div>
-              <span
-                aria-hidden="true"
-                class="mx-auto mb-3 block h-px w-10 bg-stone-soft"
-              ></span>
-
-              <span class="font-display italic text-sm text-stone block leading-snug">
-                Afbeelding volgt
-              </span>
-
-              <span class="mt-1 block text-[11px] uppercase tracking-[0.18em] text-stone-soft line-clamp-2">
-                {{ product.title }}
-              </span>
-            </div>
+          <div class="zh-product-card__placeholder">
+            <span aria-hidden="true"></span>
+            <strong>Afbeelding volgt</strong>
+            <small>{{ product.title }}</small>
           </div>
         {%- endif -%}
 
@@ -138,13 +129,14 @@
 
   <div class="zh-product-card__quick-action">
     {%- if is_sold -%}
-      <span
-        class="zh-product-card__sold-action"
-        aria-label="{{ product.title | escape }} is tijdelijk uitverkocht"
+      <a
+        href="{{ product.url }}"
+        class="zh-product-card__quick-button zh-product-card__quick-button--sold"
+        aria-label="Bekijk {{ product.title | escape }}"
       >
-        <span>Tijdelijk uitverkocht</span>
-        <span aria-hidden="true">—</span>
-      </span>
+        <span>Bekijk product</span>
+        <span aria-hidden="true">→</span>
+      </a>
     {%- elsif can_quick_add -%}
       <form
         method="post"
@@ -182,7 +174,7 @@
 
   <a
     href="{{ product.url }}"
-    class="zh-product-card__details-link block focus-visible:outline-none"
+    class="zh-product-card__details-link"
   >
     <div class="zh-product-card__content">
       <h3 class="zh-product-card__title">
@@ -194,7 +186,7 @@
           <span>{{ product.price | money }}</span>
         {%- else -%}
           <span class="zh-product-card__price-request">
-            prijs op aanvraag
+            Prijs op aanvraag
           </span>
         {%- endif -%}
       </div>
@@ -207,12 +199,30 @@
   </a>
 
   <span class="sr-only" aria-live="polite" data-cart-add-status></span>
-</div>
+</article>
 
 <style>
+  .zh-product-card {
+    position: relative;
+    min-width: 0;
+  }
+
+  .zh-product-card--collection {
+    height: 100%;
+  }
+
+  .zh-product-card__media-wrap,
+  .zh-product-card__media {
+    position: relative;
+    overflow: hidden;
+  }
+
   .zh-product-card__media-link,
   .zh-product-card__details-link,
   .zh-product-card__quick-button {
+    display: block;
+    color: inherit;
+    text-decoration: none;
     touch-action: manipulation;
   }
 
@@ -220,8 +230,15 @@
     aspect-ratio: 1 / 1;
   }
 
-  .zh-product-card__media,
-  .zh-product-card__media img {
+  .zh-product-card__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition:
+      opacity 560ms ease,
+      transform 620ms cubic-bezier(0.22, 0.61, 0.24, 1);
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
@@ -230,14 +247,53 @@
 
   .zh-product-card__secondary {
     opacity: 0;
-    transition: opacity 700ms ease;
+  }
+
+  .zh-product-card__placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .zh-product-card__placeholder > span {
+    width: 38px;
+    height: 1px;
+    margin: 0 auto 10px;
+    background: #a8a29e;
+  }
+
+  .zh-product-card__placeholder strong {
+    color: #78716c;
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 14px;
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .zh-product-card__placeholder small {
+    display: -webkit-box;
+    margin-top: 5px;
+    overflow: hidden;
+    color: #a8a29e;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 
   .zh-product-card__badges {
     position: absolute;
     top: 9px;
     left: 9px;
-    z-index: 12;
+    z-index: 2;
     display: flex;
     max-width: calc(100% - 18px);
     flex-direction: column;
@@ -246,31 +302,33 @@
     pointer-events: none;
   }
 
-  .zh-product-card__badges:empty {
-    display: none;
-  }
-
-  .zh-product-card__status-badge {
+  .zh-product-card__status-badge,
+  .zh-product-card__sold-badge,
+  .zh-product-card__condition-badge {
     display: inline-flex;
-    align-items: center;
-    gap: 5px;
     max-width: 100%;
+    align-items: center;
     padding: 5px 8px;
-    border: 1px solid rgba(166, 106, 63, 0.12);
-    background: rgba(250, 245, 242, 0.92);
-    color: #2a2520;
+    border: 1px solid rgba(118, 110, 103, 0.12);
+    background: rgba(250, 245, 242, 0.93);
+    color: #625a53;
     font-size: 8px;
     font-weight: 500;
     line-height: 1;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.13em;
     text-transform: uppercase;
     white-space: nowrap;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
   }
 
+  .zh-product-card__status-badge {
+    gap: 5px;
+    border-color: rgba(166, 106, 63, 0.12);
+    color: #2a2520;
+  }
+
   .zh-product-card__status-dot {
-    display: block;
     width: 4px;
     height: 4px;
     flex: 0 0 4px;
@@ -278,88 +336,7 @@
     background: #b66a2c;
   }
 
-  .zh-product-card__condition-badge {
-    display: inline-flex;
-    max-width: 100%;
-    align-items: center;
-    padding: 5px 7px;
-    border: 1px solid rgba(118, 110, 103, 0.1);
-    background: rgba(250, 245, 242, 0.9);
-    color: #766e67;
-    font-size: 8px;
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
-
-  .zh-product-card__sold-badge {
-    display: inline-flex;
-    align-items: center;
-    max-width: 100%;
-    padding: 5px 8px;
-    border: 1px solid rgba(118, 110, 103, 0.16);
-    background: rgba(250, 245, 242, 0.94);
-    color: #665f59;
-    font-size: 8px;
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
-
-  .zh-product-card__sold-action {
-    display: flex;
-    width: 100%;
-    min-height: 38px;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 0 12px;
-    border-top: 1px solid rgba(231, 221, 210, 0.95);
-    border-bottom: 1px solid rgba(231, 221, 210, 0.82);
-    background: rgba(239, 234, 229, 0.68);
-    color: #766e67;
-    font-size: 9px;
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-
-  .zh-product-card--collection {
-    display: flex;
-    height: 100%;
-    min-width: 0;
-    flex-direction: column;
-  }
-
-  .zh-product-card--collection .zh-product-card__details-link {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-  }
-
-  .zh-product-card--collection .zh-product-card__content {
-    min-height: 66px;
-    flex: 1 1 auto;
-  }
-
-  .zh-product-card--collection .zh-product-card__price {
-    margin-top: auto;
-  }
-
-  .zh-product-card__quick-action {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-  }
-
+  .zh-product-card__quick-action,
   .zh-product-card__quick-form {
     width: 100%;
   }
@@ -367,66 +344,44 @@
   .zh-product-card__quick-button {
     display: flex;
     width: 100%;
-    min-height: 38px;
+    min-height: 37px;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 0 12px;
-    border-top: 1px solid rgba(231, 221, 210, 0.95);
-    border-bottom: 1px solid rgba(231, 221, 210, 0.82);
-    background: rgba(250, 245, 242, 0.82);
+    gap: 10px;
+    padding: 0 11px;
+    border-top: 1px solid rgba(231, 221, 210, 0.92);
+    border-bottom: 1px solid rgba(231, 221, 210, 0.76);
+    background: rgba(250, 245, 242, 0.78);
     color: #2a2520;
-    font-size: 9px;
+    font-size: 8.5px;
     font-weight: 500;
     line-height: 1;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.145em;
     text-transform: uppercase;
     transition:
-      background-color 220ms ease,
-      border-color 220ms ease,
-      color 220ms ease,
-      opacity 220ms ease,
-      transform 180ms ease;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+      background-color 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease,
+      transform 160ms ease;
   }
 
   button.zh-product-card__quick-button {
+    border-right: 0;
+    border-left: 0;
     cursor: pointer;
   }
 
-  .zh-product-card__quick-button:hover {
-    border-color: rgba(166, 106, 63, 0.28);
-    background: #f1e8e0;
-    color: #a66a3f;
+  .zh-product-card__quick-button--sold {
+    background: rgba(239, 234, 229, 0.58);
+    color: #6c645e;
   }
 
   .zh-product-card__quick-button:active {
     transform: translateY(1px);
   }
 
-  .zh-product-card__quick-button:focus-visible,
-  .zh-product-card__media-link:focus-visible,
-  .zh-product-card__details-link:focus-visible {
-    outline: 2px solid #a66a3f;
-    outline-offset: 3px;
-  }
-
-  .zh-product-card__quick-button[aria-busy='true'] {
-    cursor: wait;
-  }
-
-  .zh-product-card__quick-button.is-added {
-    border-color: rgba(138, 154, 123, 0.32);
-    background: rgba(138, 154, 123, 0.14);
-    color: #485242;
-  }
-
   .zh-product-card__content {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    margin-top: 12px;
+    margin-top: 9px;
   }
 
   .zh-product-card__title {
@@ -441,20 +396,19 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 400;
     line-height: 1.25;
-    text-decoration: none;
-    transition: color 250ms ease;
+    transition: color 220ms ease;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
 
   .zh-product-card__price {
+    margin-top: 7px;
     color: #2a2520;
-    font-size: 16px;
-    line-height: 1.2;
-    text-align: left;
+    font-size: 14px;
+    line-height: 1.15;
     font-variant-numeric: tabular-nums;
   }
 
@@ -465,38 +419,96 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: 13px;
+    font-size: 12px;
     font-style: italic;
   }
 
   .zh-product-card__underline {
     display: block;
-    width: 24px;
+    width: 22px;
     height: 1px;
-    margin-top: 9px;
+    margin-top: 7px;
     background: #e7ddd2;
     transition:
-      width 400ms ease,
-      background-color 400ms ease;
+      width 340ms ease,
+      background-color 340ms ease;
   }
 
-  .zh-product-card:focus-within .zh-product-card__secondary {
-    opacity: 1;
+  .zh-product-card__quick-button:focus-visible,
+  .zh-product-card__media-link:focus-visible,
+  .zh-product-card__details-link:focus-visible {
+    outline: 2px solid #a66a3f;
+    outline-offset: 3px;
+  }
+
+  .zh-product-card__quick-button[aria-busy='true'] {
+    cursor: wait;
+  }
+
+  .zh-product-card__quick-button.is-added {
+    border-color: rgba(138, 154, 123, 0.30);
+    background: rgba(138, 154, 123, 0.13);
+    color: #485242;
+  }
+
+  @media (min-width: 640px) {
+    .zh-product-card__badges {
+      top: 11px;
+      left: 11px;
+      max-width: calc(100% - 22px);
+    }
+
+    .zh-product-card__status-badge,
+    .zh-product-card__sold-badge,
+    .zh-product-card__condition-badge {
+      padding: 6px 9px;
+      font-size: 8.5px;
+    }
+
+    .zh-product-card__quick-button {
+      min-height: 39px;
+      padding: 0 13px;
+      font-size: 9px;
+    }
+
+    .zh-product-card__content {
+      margin-top: 10px;
+    }
+
+    .zh-product-card__title {
+      font-size: 14px;
+    }
+
+    .zh-product-card__price {
+      margin-top: 8px;
+      font-size: 15px;
+    }
   }
 
   @media (hover: hover) and (pointer: fine) {
+    .zh-product-card:hover .zh-product-card__primary {
+      transform: scale(1.012);
+    }
+
     .zh-product-card:hover .zh-product-card__secondary,
     .zh-product-card:focus-within .zh-product-card__secondary {
       opacity: 1;
+      transform: scale(1.012);
     }
 
     .zh-product-card:hover .zh-product-card__title {
-      color: #a66a3f;
+      color: #9a6039;
     }
 
     .zh-product-card:hover .zh-product-card__underline {
-      width: 56px;
-      background: rgba(166, 106, 63, 0.7);
+      width: 48px;
+      background: rgba(166, 106, 63, 0.62);
+    }
+
+    .zh-product-card__quick-button:hover {
+      border-color: rgba(166, 106, 63, 0.24);
+      background: #f1e8e0;
+      color: #955c39;
     }
   }
 
@@ -507,85 +519,10 @@
     }
   }
 
-  @media (min-width: 640px) {
-    .zh-product-card__badges {
-      top: 12px;
-      left: 12px;
-      max-width: calc(100% - 24px);
-      gap: 6px;
-    }
-
-    .zh-product-card__status-badge {
-      padding: 6px 9px;
-      font-size: 9px;
-      letter-spacing: 0.15em;
-    }
-
-    .zh-product-card__condition-badge {
-      padding: 6px 8px;
-      font-size: 9px;
-    }
-
-    .zh-product-card__quick-button {
-      min-height: 40px;
-      padding: 0 14px;
-      font-size: 10px;
-    }
-
-    .zh-product-card__sold-badge {
-      padding: 6px 9px;
-      font-size: 9px;
-    }
-
-    .zh-product-card__sold-action {
-      min-height: 40px;
-      padding: 0 14px;
-      font-size: 10px;
-    }
-
-    .zh-product-card__content {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: start;
-      gap: 20px;
-      margin-top: 14px;
-    }
-
-    .zh-product-card__title {
-      min-height: 0;
-      font-size: 16px;
-    }
-
-    .zh-product-card__price {
-      padding-top: 1px;
-      font-size: 16px;
-      text-align: right;
-      white-space: nowrap;
-    }
-
-    .zh-product-card--collection .zh-product-card__content {
-      display: flex;
-      min-height: 72px;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .zh-product-card--collection .zh-product-card__title {
-      min-height: 2.5em;
-    }
-
-    .zh-product-card--collection .zh-product-card__price {
-      margin-top: auto;
-      padding-top: 0;
-      text-align: left;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .zh-product-card__secondary,
+    .zh-product-card__image,
     .zh-product-card__title,
     .zh-product-card__underline,
-    .zh-product-card__quick-action,
     .zh-product-card__quick-button {
       transition: none;
     }
@@ -613,7 +550,10 @@
       (event) => {
         if (event.target.closest('[data-cart-add-form]')) return;
 
-        const link = event.target.closest('.zh-product-card__media-link');
+        const link = event.target.closest(
+          '.zh-product-card__media-link'
+        );
+
         if (!link) return;
 
         activeLink = link;
@@ -629,8 +569,13 @@
       (event) => {
         if (!activeLink) return;
 
-        const deltaX = Math.abs(event.touches[0].clientX - startX);
-        const deltaY = Math.abs(event.touches[0].clientY - startY);
+        const deltaX = Math.abs(
+          event.touches[0].clientX - startX
+        );
+
+        const deltaY = Math.abs(
+          event.touches[0].clientY - startY
+        );
 
         if (deltaX > 8 || deltaY > 8) {
           clearPreview();
@@ -639,8 +584,17 @@
       { passive: true }
     );
 
-    document.addEventListener('touchend', clearPreview, { passive: true });
-    document.addEventListener('touchcancel', clearPreview, { passive: true });
+    document.addEventListener(
+      'touchend',
+      clearPreview,
+      { passive: true }
+    );
+
+    document.addEventListener(
+      'touchcancel',
+      clearPreview,
+      { passive: true }
+    );
 
     document.addEventListener('contextmenu', (event) => {
       if (event.target.closest('.zh-product-card__media')) {
