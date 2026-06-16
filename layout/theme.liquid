@@ -121,6 +121,8 @@
           role="search"
           class="zayna-search-form"
           data-predictive-form
+          data-predictive-url="{{ routes.predictive_search_url }}"
+          data-min-chars="2"
         >
           <label class="sr-only" for="ZaynaSearchInput">
             {{ 'general.search.title' | t }}
@@ -139,10 +141,17 @@
               type="search"
               name="q"
               data-predictive-input
+              data-aside-autofocus
               placeholder="{{ 'general.search.placeholder' | t }}"
               autocomplete="off"
               autocorrect="off"
+              autocapitalize="off"
               spellcheck="false"
+              enterkeyhint="search"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-controls="ZaynaPredictiveResults"
+              aria-expanded="false"
               class="zayna-search-input"
             >
           </div>
@@ -158,9 +167,11 @@
         </form>
 
         <div
+          id="ZaynaPredictiveResults"
           class="zayna-search-results"
           data-predictive-results
           aria-live="polite"
+          aria-atomic="false"
         >
           <p class="text-sm text-ink-soft">
             {{ 'general.search.start_typing' | t }}
@@ -261,6 +272,15 @@
 
       [data-aside="search"] .zayna-search-results {
         margin-top: 24px;
+      }
+
+      [data-aside="search"] .zayna-search-results a {
+        cursor: pointer;
+      }
+
+      [data-aside="search"] .zayna-search-results a:focus-visible {
+        outline: 2px solid #9b5f35;
+        outline-offset: 3px;
       }
 
       @media (min-width: 480px) {
