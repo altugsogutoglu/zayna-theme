@@ -36,7 +36,7 @@
     data-aside-close
   ></button>
 
-  <aside class="zayna-aside-panel flex h-full flex-col">
+  <aside class="zayna-aside-panel zayna-aside-panel--{{ type }} flex h-full flex-col">
     <header class="zayna-aside-header">
       {%- if type == 'mobile' -%}
         <a
@@ -236,4 +236,68 @@
       transition: none;
     }
   }
+
+  [data-aside="filters"] {
+    background: rgba(56, 46, 40, 0.22);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  [data-aside="filters"] .zayna-aside-panel--filters {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    max-height: min(78dvh, 680px);
+    border-top: 1px solid rgba(42, 37, 32, 0.09);
+    background: #faf7f3;
+    box-shadow: 0 -20px 60px -34px rgba(42, 37, 32, 0.48);
+    transform: translateY(105%);
+  }
+
+  [data-aside="filters"].expanded
+    .zayna-aside-panel--filters {
+    transform: translateY(0);
+  }
+
+  [data-aside="filters"] .zayna-aside-header {
+    height: 58px;
+    padding-right: 18px;
+    padding-left: 20px;
+    background: #faf7f3;
+  }
+
+  [data-aside="filters"] .zayna-aside-scroll {
+    flex: 0 1 auto;
+    max-height: calc(min(78dvh, 680px) - 58px);
+    background: #faf7f3;
+  }
+
+  @media (min-width: 700px) {
+    [data-aside="filters"] .zayna-aside-panel--filters {
+      top: 50%;
+      right: 24px;
+      bottom: auto;
+      left: auto;
+      width: min(400px, calc(100vw - 48px));
+      max-width: 400px;
+      max-height: calc(100dvh - 48px);
+      border: 1px solid rgba(42, 37, 32, 0.09);
+      box-shadow: -14px 20px 62px -34px rgba(42, 37, 32, 0.50);
+      transform: translate(110%, -50%);
+    }
+
+    [data-aside="filters"].expanded
+      .zayna-aside-panel--filters {
+      transform: translate(0, -50%);
+    }
+
+    [data-aside="filters"] .zayna-aside-scroll {
+      max-height: calc(100dvh - 106px);
+    }
+  }
+
 {% endstyle %}
