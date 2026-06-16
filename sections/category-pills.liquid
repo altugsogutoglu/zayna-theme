@@ -1,7 +1,5 @@
 {%- comment -%}
-  Zayna Home — rustige, horizontaal sleepbare collectienavigatie.
-  De actieve collectie gebruikt een lichte beige achtergrond en clay-accent,
-  in plaats van een zware zwarte capsule.
+  Zayna Home — compacte, horizontaal sleepbare collectienavigatie.
 {%- endcomment -%}
 
 {%- liquid
@@ -17,254 +15,259 @@
     assign all_active = true
   endif
 
-  assign has_pills = use_menu
-  unless use_menu
-    for collection_item in collections
-      unless collection_item.handle == 'all' or collection_item.handle == 'frontpage'
-        assign has_pills = true
-        break
-      endunless
-    endfor
-  endunless
-
   assign active_index = 0
   assign item_index = 0
-
-  if use_menu
-    for link in menu.links
-      assign item_index = item_index | plus: 1
-      if link.url == collection.url
-        assign active_index = item_index
-      endif
-    endfor
-  else
-    for collection_item in collections
-      if collection_item.handle == 'all' or collection_item.handle == 'frontpage'
-        continue
-      endif
-
-      assign item_index = item_index | plus: 1
-
-      if collection_item.handle == collection.handle
-        assign active_index = item_index
-      endif
-    endfor
-  endif
 -%}
 
-{%- if has_pills -%}
-  <nav
-    id="ZaynaCategoryPills-{{ section.id }}"
-    class="zh-category-pills"
-    aria-label="Bladeren per collectie"
+<nav
+  id="ZaynaCategoryPills-{{ section.id }}"
+  class="zh-category-pills"
+  aria-label="Andere collecties"
+>
+  <div class="zh-category-pills__fade zh-category-pills__fade--left" aria-hidden="true"></div>
+
+  <div
+    class="zh-category-pills__viewport"
+    data-pills-embla
+    data-start="{{ active_index }}"
   >
-    <div
-      class="zh-category-pills__viewport"
-      data-pills-embla
-      data-start="{{ active_index }}"
-    >
-      <ul class="zh-category-pills__list">
-        <li class="zh-category-pills__item">
-          <a
-            href="{{ routes.all_products_collection_url }}"
-            class="zh-category-pill{% if all_active %} is-active{% endif %}"
-            {% if all_active %}aria-current="page"{% endif %}
-          >
-            Alle
-          </a>
-        </li>
+    <ul class="zh-category-pills__list">
+      <li class="zh-category-pills__item">
+        <a
+          href="{{ routes.all_products_collection_url }}"
+          class="zh-category-pill{% if all_active %} is-active{% endif %}"
+          {% if all_active %}aria-current="page"{% endif %}
+        >
+          Alle
+        </a>
+      </li>
 
-        {%- if use_menu -%}
-          {%- for link in menu.links -%}
-            {%- assign is_active = false -%}
-            {%- if link.url == collection.url -%}
-              {%- assign is_active = true -%}
-            {%- endif -%}
+      {%- if use_menu -%}
+        {%- for link in menu.links -%}
+          {%- assign item_index = item_index | plus: 1 -%}
+          {%- assign is_active = false -%}
 
-            <li class="zh-category-pills__item">
-              <a
-                href="{{ link.url }}"
-                class="zh-category-pill{% if is_active %} is-active{% endif %}"
-                {% if is_active %}aria-current="page"{% endif %}
-              >
-                {{ link.title | escape }}
-              </a>
-            </li>
-          {%- endfor -%}
-        {%- else -%}
-          {%- for collection_item in collections -%}
-            {%- if collection_item.handle == 'all' or collection_item.handle == 'frontpage' -%}
-              {%- continue -%}
-            {%- endif -%}
+          {%- if link.url == collection.url -%}
+            {%- assign is_active = true -%}
+            {%- assign active_index = item_index -%}
+          {%- endif -%}
 
-            {%- assign is_active = false -%}
-            {%- if collection_item.handle == collection.handle -%}
-              {%- assign is_active = true -%}
-            {%- endif -%}
+          <li class="zh-category-pills__item">
+            <a
+              href="{{ link.url }}"
+              class="zh-category-pill{% if is_active %} is-active{% endif %}"
+              {% if is_active %}aria-current="page"{% endif %}
+            >
+              {{ link.title | escape }}
+            </a>
+          </li>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for collection_item in collections -%}
+          {%- if collection_item.handle == 'all' or collection_item.handle == 'frontpage' -%}
+            {%- continue -%}
+          {%- endif -%}
 
-            <li class="zh-category-pills__item">
-              <a
-                href="{{ collection_item.url }}"
-                class="zh-category-pill{% if is_active %} is-active{% endif %}"
-                {% if is_active %}aria-current="page"{% endif %}
-              >
-                {{ collection_item.title | escape }}
-              </a>
-            </li>
-          {%- endfor -%}
-        {%- endif -%}
-      </ul>
-    </div>
-  </nav>
+          {%- assign item_index = item_index | plus: 1 -%}
+          {%- assign is_active = false -%}
 
-  {% style %}
+          {%- if collection_item.handle == collection.handle -%}
+            {%- assign is_active = true -%}
+            {%- assign active_index = item_index -%}
+          {%- endif -%}
+
+          <li class="zh-category-pills__item">
+            <a
+              href="{{ collection_item.url }}"
+              class="zh-category-pill{% if is_active %} is-active{% endif %}"
+              {% if is_active %}aria-current="page"{% endif %}
+            >
+              {{ collection_item.title | escape }}
+            </a>
+          </li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+  </div>
+
+  <div class="zh-category-pills__fade zh-category-pills__fade--right" aria-hidden="true"></div>
+</nav>
+
+{% style %}
+  #ZaynaCategoryPills-{{ section.id }} {
+    position: relative;
+    width: min(100%, 1280px);
+    margin: 0 auto 14px;
+    padding: 0 16px;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pills__viewport {
+    overflow: hidden;
+    cursor: grab;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pills__viewport:active {
+    cursor: grabbing;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pills__list {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    padding: 1px 0;
+    list-style: none;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pills__item {
+    flex: 0 0 auto;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pill {
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    border: 1px solid rgba(42, 37, 32, 0.09);
+    border-radius: 999px;
+    background: rgba(255, 253, 251, 0.40);
+    color: rgba(42, 37, 32, 0.66);
+    font-size: 11px;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease,
+      color 180ms ease,
+      transform 120ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pill.is-active {
+    border-color: rgba(166, 106, 63, 0.28);
+    background: rgba(242, 232, 223, 0.82);
+    color: #875235;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pills__fade {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 2;
+    width: 18px;
+    pointer-events: none;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pills__fade--left {
+    left: 15px;
+    background: linear-gradient(
+      90deg,
+      #faf5f2 10%,
+      rgba(250, 245, 242, 0)
+    );
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pills__fade--right {
+    right: 15px;
+    background: linear-gradient(
+      270deg,
+      #faf5f2 10%,
+      rgba(250, 245, 242, 0)
+    );
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pill:focus-visible {
+    outline: 2px solid #a66a3f;
+    outline-offset: 3px;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-pill:active {
+    transform: scale(0.985);
+  }
+
+  @media (min-width: 640px) {
     #ZaynaCategoryPills-{{ section.id }} {
-      width: min(100%, 1280px);
-      margin: 0 auto 18px;
-      padding: 0 16px;
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-pills__viewport {
-      overflow: hidden;
-      cursor: grab;
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-pills__viewport:active {
-      cursor: grabbing;
+      margin-bottom: 18px;
+      padding-right: 24px;
+      padding-left: 24px;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
       .zh-category-pills__list {
-      display: flex;
-      align-items: center;
       gap: 8px;
-      margin: 0;
-      padding: 1px 0;
-      list-style: none;
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-pills__item {
-      min-width: 0;
-      flex: 0 0 auto;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
       .zh-category-pill {
-      display: inline-flex;
-      min-height: 36px;
-      align-items: center;
-      justify-content: center;
-      padding: 0 14px;
-      border: 1px solid rgba(42, 37, 32, 0.10);
-      border-radius: 999px;
-      background: rgba(250, 245, 242, 0.45);
-      color: rgba(42, 37, 32, 0.72);
-      font-size: 12px;
-      line-height: 1;
-      text-decoration: none;
-      white-space: nowrap;
-      transition:
-        border-color 180ms ease,
-        background-color 180ms ease,
-        color 180ms ease,
-        transform 120ms ease;
-      -webkit-tap-highlight-color: transparent;
+      min-height: 35px;
+      padding-right: 13px;
+      padding-left: 13px;
+      font-size: 11.5px;
     }
+  }
 
+  @media (min-width: 1024px) {
+    #ZaynaCategoryPills-{{ section.id }} {
+      padding-right: 40px;
+      padding-left: 40px;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-pill.is-active {
-      border-color: rgba(166, 106, 63, 0.34);
-      background: rgba(242, 232, 223, 0.92);
-      color: #8f5837;
+      .zh-category-pill:hover {
+      border-color: rgba(166, 106, 63, 0.24);
+      background: rgba(242, 232, 223, 0.54);
+      color: #955c39;
     }
+  }
+{% endstyle %}
 
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-pill:focus-visible {
-      outline: 2px solid #a66a3f;
-      outline-offset: 3px;
-    }
+<script src="{{ 'embla-carousel.umd.js' | asset_url }}" defer="defer"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const section = document.getElementById(
+      'ZaynaCategoryPills-{{ section.id }}'
+    );
 
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-pill:active {
-      transform: scale(0.985);
-    }
+    const viewport = section?.querySelector('[data-pills-embla]');
 
-    @media (min-width: 640px) {
-      #ZaynaCategoryPills-{{ section.id }} {
-        margin-bottom: 22px;
-        padding-right: 24px;
-        padding-left: 24px;
-      }
+    if (!viewport || !window.EmblaCarousel) return;
 
-      #ZaynaCategoryPills-{{ section.id }}
-        .zh-category-pills__list {
-        gap: 10px;
-      }
-
-      #ZaynaCategoryPills-{{ section.id }}
-        .zh-category-pill {
-        min-height: 38px;
-        padding-right: 16px;
-        padding-left: 16px;
-        font-size: 12.5px;
-      }
-    }
-
-    @media (min-width: 1024px) {
-      #ZaynaCategoryPills-{{ section.id }} {
-        padding-right: 40px;
-        padding-left: 40px;
-      }
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      #ZaynaCategoryPills-{{ section.id }}
-        .zh-category-pill:hover {
-        border-color: rgba(166, 106, 63, 0.28);
-        background: rgba(242, 232, 223, 0.60);
-        color: #a66a3f;
-      }
-
-      #ZaynaCategoryPills-{{ section.id }}
-        .zh-category-pill.is-active:hover {
-        border-color: rgba(166, 106, 63, 0.42);
-        background: rgba(242, 232, 223, 1);
-      }
-    }
-  {% endstyle %}
-
-  <script src="{{ 'embla-carousel.umd.js' | asset_url }}" defer="defer"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const section = document.getElementById(
-        'ZaynaCategoryPills-{{ section.id }}'
-      );
-
-      const viewport = section?.querySelector('[data-pills-embla]');
-
-      if (!viewport || !window.EmblaCarousel) return;
-
-      const embla = window.EmblaCarousel(viewport, {
-        align: 'start',
-        dragFree: true,
-        containScroll: 'trimSnaps',
-        skipSnaps: true
-      });
-
-      const start = Number.parseInt(
-        viewport.dataset.start || '0',
-        10
-      );
-
-      if (start > 0) {
-        embla.scrollTo(start, true);
-      }
+    const embla = window.EmblaCarousel(viewport, {
+      align: 'start',
+      dragFree: true,
+      containScroll: 'trimSnaps',
+      skipSnaps: true
     });
-  </script>
-{%- endif -%}
+
+    const active = viewport.querySelector('[aria-current="page"]');
+    const slides = Array.from(
+      viewport.querySelectorAll('.zh-category-pills__item')
+    );
+
+    const activeIndex = slides.findIndex((slide) => {
+      return slide.contains(active);
+    });
+
+    if (activeIndex > 0) {
+      embla.scrollTo(activeIndex, true);
+    }
+  });
+</script>
 
 {% schema %}
 {
