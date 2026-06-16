@@ -30,9 +30,8 @@
 >
   <details class="zh-category-mobile" data-category-mobile>
     <summary class="zh-category-mobile__summary">
-      <span class="zh-category-mobile__summary-text">
-        <small>Andere collecties</small>
-        <strong>{{ current_label | escape }}</strong>
+      <span class="zh-category-mobile__summary-label">
+        Andere collecties
       </span>
 
       <span
@@ -43,7 +42,31 @@
       </span>
     </summary>
 
-    <div class="zh-category-mobile__menu">
+    <button
+      type="button"
+      class="zh-category-mobile__backdrop"
+      data-category-backdrop
+      aria-label="Collectiemenu sluiten"
+    ></button>
+
+    <div
+      class="zh-category-mobile__menu"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Andere collecties"
+    >
+      <div class="zh-category-mobile__menu-header">
+        <span>Andere collecties</span>
+
+        <button
+          type="button"
+          class="zh-category-mobile__close"
+          data-category-close
+          aria-label="Collectiemenu sluiten"
+        >
+          {% render 'icon', name: 'x', size: 20 %}
+        </button>
+      </div>
       <a
         href="{{ routes.all_products_collection_url }}"
         class="zh-category-mobile__link{% if all_active %} is-active{% endif %}"
@@ -113,6 +136,8 @@
     <div
       class="zh-category-rail__viewport"
       data-pills-embla
+      role="group"
+      aria-label="Collecties. Gebruik de linker- en rechterpijltjestoets om tussen collecties te navigeren."
       tabindex="-1"
     >
       <ul class="zh-category-rail__list">
@@ -208,13 +233,14 @@
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-mobile__summary {
     display: flex;
-    min-height: 42px;
+    min-height: 38px;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    padding: 7px 12px;
-    border: 1px solid rgba(42, 37, 32, 0.09);
-    background: rgba(255, 253, 251, 0.48);
+    gap: 14px;
+    padding: 0 11px;
+    border: 0;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.11);
+    background: transparent;
     color: #2a2520;
     cursor: pointer;
     list-style: none;
@@ -227,36 +253,13 @@
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__summary-text {
-    display: grid;
-    min-width: 0;
-    gap: 2px;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__summary-text small {
-    color: rgba(42, 37, 32, 0.48);
-    font-size: 8px;
+    .zh-category-mobile__summary-label {
+    color: rgba(42, 37, 32, 0.70);
+    font-size: 11px;
     font-weight: 500;
     line-height: 1;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__summary-text strong {
-    overflow: hidden;
-    color: #2a2520;
-    font-family:
-      var(
-        --font-display,
-        var(--font-heading-family, Georgia, serif)
-      );
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.2;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -275,19 +278,84 @@
   }
 
   #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 48;
+    display: none;
+    border: 0;
+    background: rgba(56, 46, 40, 0.22);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
     .zh-category-mobile__menu {
-    position: absolute;
-    top: calc(100% + 7px);
+    position: fixed;
     right: 0;
+    bottom: 0;
     left: 0;
-    z-index: 35;
-    max-height: min(56vh, 390px);
+    z-index: 49;
+    display: none;
+    max-height: min(76dvh, 620px);
     overflow-y: auto;
-    padding: 7px;
-    border: 1px solid rgba(42, 37, 32, 0.10);
+    padding: 0 10px calc(12px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(42, 37, 32, 0.10);
     background: #fffdfb;
-    box-shadow: 0 18px 42px -24px rgba(42, 37, 32, 0.42);
+    box-shadow: 0 -20px 56px -34px rgba(42, 37, 32, 0.48);
     overscroll-behavior: contain;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile[open]
+    .zh-category-mobile__backdrop,
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile[open]
+    .zh-category-mobile__menu {
+    display: block;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__menu-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    min-height: 58px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 4px 0 8px;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.08);
+    background: rgba(255, 253, 251, 0.97);
+    color: #2a2520;
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 18px;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__close {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #2a2520;
+    cursor: pointer;
+  }
+
+  html.zh-category-menu-open {
+    overflow: hidden;
+  }
+
+  html.zh-category-menu-open .marquee__track {
+    animation-play-state: paused !important;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -340,6 +408,19 @@
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail__viewport:active {
     cursor: grabbing;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-rail__viewport.is-native-scroll {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-rail__viewport.is-native-scroll::-webkit-scrollbar {
+    display: none;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -509,145 +590,335 @@
 
 <script src="{{ 'embla-carousel.umd.js' | asset_url }}" defer="defer"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const section = document.getElementById(
-      'ZaynaCategoryPills-{{ section.id }}'
-    );
+  (() => {
+    const SECTION_ID = 'ZaynaCategoryPills-{{ section.id }}';
 
-    if (!section) return;
-
-    const mobileDetails = section.querySelector(
-      '[data-category-mobile]'
-    );
-
-    document.addEventListener('click', (event) => {
+    const initCategoryNavigation = (section) => {
       if (
-        mobileDetails?.open &&
-        !mobileDetails.contains(event.target)
+        !section ||
+        section.dataset.categoryNavigationReady === 'true'
       ) {
-        mobileDetails.removeAttribute('open');
+        return;
       }
-    });
 
-    mobileDetails?.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && mobileDetails.open) {
-        mobileDetails.removeAttribute('open');
-        mobileDetails.querySelector('summary')?.focus();
-      }
-    });
+      section.dataset.categoryNavigationReady = 'true';
 
-    const rail = section.querySelector('[data-category-rail]');
-    const viewport = section.querySelector('[data-pills-embla]');
-    const prev = section.querySelector('[data-pills-prev]');
-    const next = section.querySelector('[data-pills-next]');
-
-    if (!rail || !viewport || !window.EmblaCarousel) return;
-
-    const links = Array.from(
-      viewport.querySelectorAll('.zh-category-pill')
-    );
-
-    const embla = window.EmblaCarousel(viewport, {
-      align: 'start',
-      dragFree: true,
-      containScroll: 'trimSnaps',
-      skipSnaps: true
-    });
-
-    const activeIndex = Math.max(
-      0,
-      links.findIndex((link) => {
-        return link.getAttribute('aria-current') === 'page';
-      })
-    );
-
-    let keyboardIndex = activeIndex;
-
-    const setRovingIndex = (index, focus = false) => {
-      keyboardIndex = Math.max(
-        0,
-        Math.min(index, links.length - 1)
+      const mobileDetails = section.querySelector(
+        '[data-category-mobile]'
       );
 
-      links.forEach((link, linkIndex) => {
-        link.tabIndex = linkIndex === keyboardIndex ? 0 : -1;
+      const closeMobileMenu = () => {
+        if (!mobileDetails?.open) return;
+
+        mobileDetails.removeAttribute('open');
+        document.documentElement.classList.remove(
+          'zh-category-menu-open'
+        );
+      };
+
+      mobileDetails?.addEventListener('toggle', () => {
+        document.documentElement.classList.toggle(
+          'zh-category-menu-open',
+          mobileDetails.open
+        );
       });
 
-      embla.scrollTo(keyboardIndex, false);
+      section
+        .querySelector('[data-category-close]')
+        ?.addEventListener('click', closeMobileMenu);
 
-      if (focus) {
-        links[keyboardIndex]?.focus({
-          preventScroll: true
-        });
-      }
-    };
+      section
+        .querySelector('[data-category-backdrop]')
+        ?.addEventListener('click', closeMobileMenu);
 
-    const updateRailState = () => {
-      const canPrev = embla.canScrollPrev();
-      const canNext = embla.canScrollNext();
-      const hasOverflow = canPrev || canNext;
-
-      rail.classList.toggle('has-overflow', hasOverflow);
-      rail.classList.toggle('can-scroll-prev', canPrev);
-      rail.classList.toggle('can-scroll-next', canNext);
-
-      if (prev) prev.disabled = !canPrev;
-      if (next) next.disabled = !canNext;
-    };
-
-    links.forEach((link, index) => {
-      link.addEventListener('focus', () => {
-        setRovingIndex(index, false);
-      });
-
-      link.addEventListener('keydown', (event) => {
-        let nextIndex = null;
-
-        if (event.key === 'ArrowRight') {
-          nextIndex = Math.min(
-            keyboardIndex + 1,
-            links.length - 1
-          );
-        }
-
-        if (event.key === 'ArrowLeft') {
-          nextIndex = Math.max(
-            keyboardIndex - 1,
-            0
-          );
-        }
-
-        if (event.key === 'Home') {
-          nextIndex = 0;
-        }
-
-        if (event.key === 'End') {
-          nextIndex = links.length - 1;
-        }
-
-        if (nextIndex === null) return;
+      mobileDetails?.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
 
         event.preventDefault();
-        setRovingIndex(nextIndex, true);
+        closeMobileMenu();
+        mobileDetails.querySelector('summary')?.focus();
       });
-    });
 
-    prev?.addEventListener('click', () => {
-      embla.scrollPrev();
-    });
+      const rail = section.querySelector(
+        '[data-category-rail]'
+      );
 
-    next?.addEventListener('click', () => {
-      embla.scrollNext();
-    });
+      const viewport = section.querySelector(
+        '[data-pills-embla]'
+      );
 
-    embla.on('select', updateRailState);
-    embla.on('scroll', updateRailState);
-    embla.on('reInit', updateRailState);
+      const previousButton = section.querySelector(
+        '[data-pills-prev]'
+      );
 
-    setRovingIndex(activeIndex, false);
-    embla.scrollTo(activeIndex, true);
-    updateRailState();
-  });
+      const nextButton = section.querySelector(
+        '[data-pills-next]'
+      );
+
+      if (!rail || !viewport) return;
+
+      const links = Array.from(
+        viewport.querySelectorAll('.zh-category-pill')
+      );
+
+      if (!links.length) return;
+
+      const activeIndex = Math.max(
+        0,
+        links.findIndex((link) => {
+          return link.getAttribute('aria-current') === 'page';
+        })
+      );
+
+      let currentIndex = activeIndex;
+      let embla = null;
+
+      const setTabStop = (index) => {
+        currentIndex = Math.max(
+          0,
+          Math.min(index, links.length - 1)
+        );
+
+        links.forEach((link, linkIndex) => {
+          link.tabIndex =
+            linkIndex === currentIndex ? 0 : -1;
+        });
+      };
+
+      const focusLink = (index) => {
+        setTabStop(index);
+
+        const target = links[currentIndex];
+
+        target.focus({
+          preventScroll: true
+        });
+
+        if (embla) {
+          embla.scrollTo(currentIndex, false);
+        } else {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'center'
+          });
+        }
+      };
+
+      const getNativeScrollState = () => {
+        const tolerance = 2;
+
+        return {
+          canScrollPrevious:
+            viewport.scrollLeft > tolerance,
+          canScrollNext:
+            viewport.scrollLeft +
+              viewport.clientWidth <
+            viewport.scrollWidth - tolerance
+        };
+      };
+
+      const updateRailState = () => {
+        const state = embla
+          ? {
+              canScrollPrevious: embla.canScrollPrev(),
+              canScrollNext: embla.canScrollNext()
+            }
+          : getNativeScrollState();
+
+        const hasOverflow =
+          state.canScrollPrevious ||
+          state.canScrollNext;
+
+        rail.classList.toggle(
+          'has-overflow',
+          hasOverflow
+        );
+
+        rail.classList.toggle(
+          'can-scroll-prev',
+          state.canScrollPrevious
+        );
+
+        rail.classList.toggle(
+          'can-scroll-next',
+          state.canScrollNext
+        );
+
+        if (previousButton) {
+          previousButton.disabled =
+            !state.canScrollPrevious;
+        }
+
+        if (nextButton) {
+          nextButton.disabled =
+            !state.canScrollNext;
+        }
+      };
+
+      /*
+       * Delegation makes keyboard handling independent of Embla.
+       * Arrow keys only act when a category pill itself has focus.
+       */
+      viewport.addEventListener('keydown', (event) => {
+        const focusedLink = event.target.closest(
+          '.zh-category-pill'
+        );
+
+        if (!focusedLink) return;
+
+        const focusedIndex = links.indexOf(focusedLink);
+
+        if (focusedIndex >= 0) {
+          currentIndex = focusedIndex;
+        }
+
+        let destination = null;
+
+        switch (event.key) {
+          case 'ArrowRight':
+          case 'Right':
+            destination = Math.min(
+              currentIndex + 1,
+              links.length - 1
+            );
+            break;
+
+          case 'ArrowLeft':
+          case 'Left':
+            destination = Math.max(
+              currentIndex - 1,
+              0
+            );
+            break;
+
+          case 'Home':
+            destination = 0;
+            break;
+
+          case 'End':
+            destination = links.length - 1;
+            break;
+
+          default:
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        focusLink(destination);
+      });
+
+      links.forEach((link, index) => {
+        link.addEventListener('focus', () => {
+          setTabStop(index);
+
+          if (embla) {
+            embla.scrollTo(index, false);
+          }
+        });
+      });
+
+      previousButton?.addEventListener('click', () => {
+        if (embla) {
+          embla.scrollPrev();
+        } else {
+          viewport.scrollBy({
+            left: -viewport.clientWidth * 0.72,
+            behavior: 'smooth'
+          });
+        }
+      });
+
+      nextButton?.addEventListener('click', () => {
+        if (embla) {
+          embla.scrollNext();
+        } else {
+          viewport.scrollBy({
+            left: viewport.clientWidth * 0.72,
+            behavior: 'smooth'
+          });
+        }
+      });
+
+      setTabStop(activeIndex);
+
+      if (window.EmblaCarousel) {
+        embla = window.EmblaCarousel(viewport, {
+          align: 'start',
+          dragFree: true,
+          containScroll: 'trimSnaps',
+          skipSnaps: true
+        });
+
+        embla.on('select', updateRailState);
+        embla.on('scroll', updateRailState);
+        embla.on('reInit', updateRailState);
+        embla.scrollTo(activeIndex, true);
+      } else {
+        viewport.classList.add('is-native-scroll');
+
+        links[activeIndex]?.scrollIntoView({
+          behavior: 'auto',
+          block: 'nearest',
+          inline: 'center'
+        });
+
+        viewport.addEventListener(
+          'scroll',
+          updateRailState,
+          { passive: true }
+        );
+      }
+
+      if ('ResizeObserver' in window) {
+        const resizeObserver = new ResizeObserver(() => {
+          embla?.reInit();
+          updateRailState();
+        });
+
+        resizeObserver.observe(viewport);
+      }
+
+      window.addEventListener(
+        'resize',
+        updateRailState,
+        { passive: true }
+      );
+
+      updateRailState();
+    };
+
+    const initialise = () => {
+      initCategoryNavigation(
+        document.getElementById(SECTION_ID)
+      );
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener(
+        'DOMContentLoaded',
+        initialise,
+        { once: true }
+      );
+    } else {
+      initialise();
+    }
+
+    document.addEventListener(
+      'shopify:section:load',
+      (event) => {
+        const section =
+          event.target?.id === SECTION_ID
+            ? event.target
+            : event.target?.querySelector?.(
+                `#${SECTION_ID}`
+              );
+
+        initCategoryNavigation(section);
+      }
+    );
+  })();
 </script>
 
 {% schema %}
