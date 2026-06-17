@@ -1,8 +1,13 @@
 {%- liquid
   assign faqs = product.metafields.custom.faqs.value
   assign visible_faq_count = 0
+  assign suppress_product_faq = false
 
-  if faqs != blank
+  if product.handle == 'set-van-12-vierkante-kruidenpotten-120-ml-incl-labels-trechter-borosilicaat-glas'
+    assign suppress_product_faq = true
+  endif
+
+  if suppress_product_faq == false and faqs != blank
     for faq in faqs
       assign faq_question = faq.question | downcase | strip
       assign skip_faq = false
