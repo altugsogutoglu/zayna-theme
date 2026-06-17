@@ -89,8 +89,7 @@
 
 {%- if is_editorial_details_prototype -%}
   {%- capture description_intro_html -%}
-    <p>Het transparante glas houdt de inhoud goed zichtbaar, terwijl de warme bamboe deksels een rustige uitstraling aan de keuken geven. De vierkante vorm maakt het eenvoudig om de potten netjes naast elkaar te plaatsen in een lade, kast of op een plank.</p>
-    <p>De meegeleverde strooidoppen helpen bij het gedoseerd gebruiken van kruiden. Met de labels, trechter, stift en reinigingsborstel kun je de set direct overzichtelijk inrichten.</p>
+    <p>Het transparante glas houdt kruiden overzichtelijk in beeld, terwijl de bamboe deksels warmte en rust toevoegen. Dankzij de vierkante vorm staan de potten netjes naast elkaar in een lade, kast of op een plank.</p>
   {%- endcapture -%}
 {%- endif -%}
 
@@ -616,19 +615,40 @@
   }
 
   .zh-product__accordion-body--editorial {
-    max-width: 60ch;
-    padding-right: 0;
-    color: var(--zh-muted);
-    font-size: clamp(.95rem, 1.15vw, 1rem);
-    line-height: 1.72;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 0 1.2rem;
+    color: #554e48;
+    font-size: .9375rem;
+    line-height: 1.65;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
   }
 
   .zh-product__accordion-body--editorial p {
     margin: 0;
+    text-wrap: pretty;
   }
 
   .zh-product__accordion-body--editorial p + p {
-    margin-top: .85rem;
+    margin-top: .625rem;
+  }
+
+  .zh-product__accordion-body--editorial .zh-nowrap {
+    white-space: nowrap;
+  }
+
+  @media (min-width: 640px) {
+    .zh-product__accordion-body--editorial {
+      max-width: 60ch;
+    }
+  }
+
+  @media (min-width: 1180px) {
+    .zh-product__accordion-body--editorial {
+      max-width: 64ch;
+    }
   }
 
   .zh-product__care-lines {
@@ -727,6 +747,46 @@
     }
   }
 
+  .zh-product--editorial-prototype .zh-product__description-panel {
+    max-width: 52ch;
+    margin-top: 1.65rem;
+  }
+
+  .zh-product--editorial-prototype .zh-product__section-title {
+    font-size: 1.25rem;
+    line-height: 1.28;
+  }
+
+  .zh-product--editorial-prototype .zh-product__description {
+    max-width: 52ch;
+    margin-top: .5rem;
+    color: #554e48;
+    font-size: .9375rem;
+    line-height: 1.65;
+  }
+
+  .zh-product--editorial-prototype .zh-product__accordion summary {
+    min-height: 3.55rem;
+    padding: .75rem 0;
+    font-size: 1.04rem;
+  }
+
+  .zh-product--editorial-prototype .zh-product__accordion-icon {
+    width: 1rem;
+    height: 1rem;
+    opacity: .82;
+  }
+
+  @media (min-width: 768px) {
+    .zh-product--editorial-prototype .zh-product__description-panel {
+      margin-top: 1.8rem;
+    }
+
+    .zh-product--editorial-prototype .zh-product__section-title {
+      font-size: 1.375rem;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .zh-product * {
       transition-duration: .01ms !important;
@@ -739,7 +799,7 @@
   <section
     data-product-root
     data-current-available="{% if cv.available %}true{% else %}false{% endif %}"
-    class="zh-product"
+    class="zh-product{% if is_editorial_details_prototype %} zh-product--editorial-prototype{% endif %}"
   >
     <nav aria-label="Kruimelpad" class="zh-product__breadcrumb mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
       <a href="{% if coll %}{{ coll.url }}{% else %}{{ routes.all_products_collection_url }}{% endif %}" class="zh-product__breadcrumb-mobile">
@@ -807,7 +867,7 @@
 
               {%- if is_editorial_details_prototype -%}
                 <p class="zh-product__intro">
-                  Een set van twaalf glazen kruidenpotten van 120 ml, afgewerkt met bamboe draaideksels. Met strooidoppen, beschrijfbare labels en praktische accessoires om kruiden rustig en overzichtelijk te bewaren.
+                  Een set van 12 glazen kruidenpotten van 120 ml met bamboe draaideksels, strooidoppen en beschrijfbare labels.
                 </p>
               {%- else -%}
                 {%- assign intro = product.metafields.custom.intro.value -%}
@@ -956,7 +1016,13 @@
     <section class="zh-product__logistics mx-auto max-w-7xl px-4 sm:px-6 lg:px-10" aria-label="Productinformatie, gebruik, verzending en retourneren">
       {%- for block in section.blocks -%}
         {%- if block.type == 'care_shipping' -%}
-          <div {{ block.shopify_attributes }} class="zh-product__accordions">
+          <div
+            {{ block.shopify_attributes }}
+            class="zh-product__accordions"
+            {% if is_editorial_details_prototype %}
+              data-single-accordion="{{ section.id }}"
+            {% endif %}
+          >
             {% render 'product-details', product: product %}
 
             {%- if is_editorial_details_prototype -%}
@@ -967,19 +1033,19 @@
                 </summary>
 
                 <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
-                  <p>De glazen potten zijn vaatwasserbestendig. Was de bamboe draaideksels uitsluitend met de hand.</p>
+                  <p>De glazen potten kunnen in de vaatwasser. Was de bamboe deksels uitsluitend met de hand.</p>
                 </div>
               </details>
 
               <details class="zh-product__accordion">
                 <summary class="font-display">
-                  <span>Verzending &amp; retour</span>
+                  <span>Verzending en retour</span>
                   {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
                 </summary>
 
                 <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
-                  <p>De indicatieve levertijd is 1–3 werkdagen. In Nederland kost thuisbezorging €7,95 en levering aan een servicepunt €6,95. Vanaf €100 is verzending gratis.</p>
-                  <p>Je hebt 14 dagen na ontvangst om een retour aan te melden. Daarna heb je nog 14 dagen om het product terug te sturen. Retourkosten zijn voor eigen rekening, tenzij wettelijk anders.</p>
+                  <p>Je bestelling wordt zorgvuldig verpakt en heeft een verwachte levertijd van <span class="zh-nowrap">1–3 werkdagen</span>. Binnen Nederland kost thuisbezorging €7,95 en levering aan een servicepunt €6,95. <span class="zh-nowrap">Vanaf €100</span> verzenden we gratis.</p>
+                  <p>Een retour meld je binnen <span class="zh-nowrap">14 dagen</span> na ontvangst aan. Daarna heb je nog <span class="zh-nowrap">14 dagen</span> om het product terug te sturen. De retourkosten zijn voor eigen rekening.</p>
                 </div>
               </details>
             {%- else -%}
@@ -1084,6 +1150,30 @@
         ]
       }
     </script>
+
+    {%- if is_editorial_details_prototype -%}
+      <script>
+        (() => {
+          const group = document.querySelector('[data-single-accordion="{{ section.id }}"]');
+          if (!group || group.dataset.singleAccordionReady === 'true') return;
+
+          group.dataset.singleAccordionReady = 'true';
+          const rows = Array.from(group.querySelectorAll(':scope > details'));
+
+          rows.forEach((row) => {
+            row.addEventListener('toggle', () => {
+              if (!row.open) return;
+
+              rows.forEach((otherRow) => {
+                if (otherRow !== row && otherRow.open) {
+                  otherRow.open = false;
+                }
+              });
+            });
+          });
+        })();
+      </script>
+    {%- endif -%}
 
     <script src="{{ 'product.js' | asset_url | append: '?zh=7' }}" defer></script>
     {% render 'product-structured-data', product: product %}
