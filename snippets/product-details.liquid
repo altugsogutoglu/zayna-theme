@@ -1,4 +1,28 @@
 {%- comment -%}
+  Zayna Home — redactionele Details-proef.
+
+  Alleen het testproduct gebruikt tijdelijk deze goedgekeurde redactionele tekst.
+  Alle andere producten behouden tijdens deze proef de bestaande v3-weergave.
+
+  Testhandle:
+  set-van-12-vierkante-kruidenpotten-120-ml-incl-labels-trechter-borosilicaat-glas
+{%- endcomment -%}
+
+{%- if product.handle == 'set-van-12-vierkante-kruidenpotten-120-ml-incl-labels-trechter-borosilicaat-glas' -%}
+  <details class="zh-product__accordion zh-product-details">
+    <summary class="font-display">
+      <span>Details</span>
+      {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
+    </summary>
+
+    <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
+      <p>Elke pot heeft een inhoud van 120 ml en meet 10,5 cm hoog bij 4,5 cm breed. De set bestaat uit 12 potten van hoog borosilicaatglas met bamboe draaideksels.</p>
+      <p>Daarnaast ontvang je 12 strooidoppen, 40 beschrijfbare vinyllabels, een trechter, stift en reinigingsborstel.</p>
+    </div>
+  </details>
+{%- else -%}
+
+{%- comment -%}
   Zayna Home — ingeklapte accordion "Productdetails".
 
   Doel:
@@ -281,4 +305,7 @@
       </dl>
     </div>
   </details>
+{%- endif -%}
+
+
 {%- endif -%}
