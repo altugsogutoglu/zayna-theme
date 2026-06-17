@@ -66,6 +66,11 @@
 
   assign zayna_note = product.metafields.custom.zayna_note.value
 
+  assign is_editorial_details_prototype = false
+  if product.handle == 'set-van-12-vierkante-kruidenpotten-120-ml-incl-labels-trechter-borosilicaat-glas'
+    assign is_editorial_details_prototype = true
+  endif
+
   assign description_intro_html = product.description
   assign product_care_html = ''
   assign detail_onderhoud = product.metafields.custom.detail_onderhoud.value
@@ -81,6 +86,13 @@
     assign description_intro_html = description_parts | first
   endif
 -%}
+
+{%- if is_editorial_details_prototype -%}
+  {%- capture description_intro_html -%}
+    <p>Het transparante glas houdt de inhoud goed zichtbaar, terwijl de warme bamboe deksels een rustige uitstraling aan de keuken geven. De vierkante vorm maakt het eenvoudig om de potten netjes naast elkaar te plaatsen in een lade, kast of op een plank.</p>
+    <p>De meegeleverde strooidoppen helpen bij het gedoseerd gebruiken van kruiden. Met de labels, trechter, stift en reinigingsborstel kun je de set direct overzichtelijk inrichten.</p>
+  {%- endcapture -%}
+{%- endif -%}
 
 {% style %}
   .zh-product-page,
@@ -603,6 +615,22 @@
     line-height: 1.7;
   }
 
+  .zh-product__accordion-body--editorial {
+    max-width: 60ch;
+    padding-right: 0;
+    color: var(--zh-muted);
+    font-size: clamp(.95rem, 1.15vw, 1rem);
+    line-height: 1.72;
+  }
+
+  .zh-product__accordion-body--editorial p {
+    margin: 0;
+  }
+
+  .zh-product__accordion-body--editorial p + p {
+    margin-top: .85rem;
+  }
+
   .zh-product__care-lines {
     display: grid;
     gap: .28rem;
@@ -743,7 +771,13 @@
         {%- for block in section.blocks -%}
           {%- if block.type == 'info' -%}
             <div {{ block.shopify_attributes }}>
-              <h1 class="zh-product__title font-display">{{ product.title }}</h1>
+              <h1 class="zh-product__title font-display">
+                {%- if is_editorial_details_prototype -%}
+                  Vierkante kruidenpotten met bamboe deksel – set van 12
+                {%- else -%}
+                  {{ product.title }}
+                {%- endif -%}
+              </h1>
 
               <div class="zh-product__price-row">
                 <span data-price class="zh-product__price">
@@ -771,9 +805,15 @@
                 </span>
               </div>
 
-              {%- assign intro = product.metafields.custom.intro.value -%}
-              {%- if intro != blank -%}
-                <p class="zh-product__intro">{{ intro }}</p>
+              {%- if is_editorial_details_prototype -%}
+                <p class="zh-product__intro">
+                  Een set van twaalf glazen kruidenpotten van 120 ml, afgewerkt met bamboe draaideksels. Met strooidoppen, beschrijfbare labels en praktische accessoires om kruiden rustig en overzichtelijk te bewaren.
+                </p>
+              {%- else -%}
+                {%- assign intro = product.metafields.custom.intro.value -%}
+                {%- if intro != blank -%}
+                  <p class="zh-product__intro">{{ intro }}</p>
+                {%- endif -%}
               {%- endif -%}
             </div>
           {%- endif -%}
@@ -919,51 +959,76 @@
           <div {{ block.shopify_attributes }} class="zh-product__accordions">
             {% render 'product-details', product: product %}
 
-            {%- if detail_onderhoud != blank or product_care_html != blank -%}
+            {%- if is_editorial_details_prototype -%}
               <details class="zh-product__accordion">
                 <summary class="font-display">
-                  <span>Gebruik en onderhoud</span>
+                  <span>Onderhoud</span>
                   {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
                 </summary>
 
-                <div class="zh-product__accordion-body">
-                  {%- if detail_onderhoud != blank -%}
-                    {%- assign care_lines = detail_onderhoud | newline_to_br | split: '<br />' -%}
-                    <ul class="zh-product__care-lines" role="list">
-                      {%- for line in care_lines -%}
-                        {%- assign clean_line = line | strip -%}
-                        {%- if clean_line != blank -%}
-                          <li>{{ clean_line | escape }}</li>
-                        {%- endif -%}
-                      {%- endfor -%}
-                    </ul>
-                  {%- else -%}
-                    <div class="rich-text">{{ product_care_html }}</div>
-                  {%- endif -%}
+                <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
+                  <p>De glazen potten zijn vaatwasserbestendig. Was de bamboe draaideksels uitsluitend met de hand.</p>
                 </div>
               </details>
-            {%- endif -%}
 
-            {%- for i in (1..3) -%}
-              {%- assign title_key = 'row' | append: i | append: '_title' -%}
-              {%- assign body_key = 'row' | append: i | append: '_body' -%}
-              {%- assign row_title = block.settings[title_key] -%}
-              {%- assign row_body = block.settings[body_key] -%}
-              {%- assign row_title_key = row_title | downcase | strip -%}
-              {%- assign skip_generic_care = false -%}
-              {%- if row_title_key == 'onderhoud' or row_title_key == 'gebruik en onderhoud' -%}
-                {%- assign skip_generic_care = true -%}
-              {%- endif -%}
-              {%- if row_title != blank and row_body != blank and skip_generic_care == false -%}
+              <details class="zh-product__accordion">
+                <summary class="font-display">
+                  <span>Verzending &amp; retour</span>
+                  {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
+                </summary>
+
+                <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
+                  <p>De indicatieve levertijd is 1–3 werkdagen. In Nederland kost thuisbezorging €7,95 en levering aan een servicepunt €6,95. Vanaf €100 is verzending gratis.</p>
+                  <p>Je hebt 14 dagen na ontvangst om een retour aan te melden. Daarna heb je nog 14 dagen om het product terug te sturen. Retourkosten zijn voor eigen rekening, tenzij wettelijk anders.</p>
+                </div>
+              </details>
+            {%- else -%}
+              {%- if detail_onderhoud != blank or product_care_html != blank -%}
                 <details class="zh-product__accordion">
                   <summary class="font-display">
-                    <span>{{ row_title }}</span>
+                    <span>Gebruik en onderhoud</span>
                     {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
                   </summary>
-                  <div class="zh-product__accordion-body rich-text">{{ row_body }}</div>
+
+                  <div class="zh-product__accordion-body">
+                    {%- if detail_onderhoud != blank -%}
+                      {%- assign care_lines = detail_onderhoud | newline_to_br | split: '<br />' -%}
+                      <ul class="zh-product__care-lines" role="list">
+                        {%- for line in care_lines -%}
+                          {%- assign clean_line = line | strip -%}
+                          {%- if clean_line != blank -%}
+                            <li>{{ clean_line | escape }}</li>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      </ul>
+                    {%- else -%}
+                      <div class="rich-text">{{ product_care_html }}</div>
+                    {%- endif -%}
+                  </div>
                 </details>
               {%- endif -%}
-            {%- endfor -%}
+
+              {%- for i in (1..3) -%}
+                {%- assign title_key = 'row' | append: i | append: '_title' -%}
+                {%- assign body_key = 'row' | append: i | append: '_body' -%}
+                {%- assign row_title = block.settings[title_key] -%}
+                {%- assign row_body = block.settings[body_key] -%}
+                {%- assign row_title_key = row_title | downcase | strip -%}
+                {%- assign skip_generic_care = false -%}
+                {%- if row_title_key == 'onderhoud' or row_title_key == 'gebruik en onderhoud' -%}
+                  {%- assign skip_generic_care = true -%}
+                {%- endif -%}
+                {%- if row_title != blank and row_body != blank and skip_generic_care == false -%}
+                  <details class="zh-product__accordion">
+                    <summary class="font-display">
+                      <span>{{ row_title }}</span>
+                      {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
+                    </summary>
+                    <div class="zh-product__accordion-body rich-text">{{ row_body }}</div>
+                  </details>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
           </div>
         {%- endif -%}
       {%- endfor -%}
