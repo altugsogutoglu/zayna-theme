@@ -131,7 +131,7 @@
     display: grid;
     gap: 1.75rem;
     padding-top: 1rem;
-    padding-bottom: 2.75rem;
+    padding-bottom: 2.25rem;
   }
 
   .zh-product__gallery-column,
@@ -147,23 +147,25 @@
     max-width: 25ch;
     margin: 0;
     color: var(--color-ink, #2a2520);
-    font-size: clamp(1.8rem, 7vw, 2.25rem);
+    font-size: clamp(1.75rem, 7vw, 1.95rem);
     font-weight: 400;
     letter-spacing: -.02em;
-    line-height: 1.1;
+    line-height: 1.14;
   }
 
   .zh-product__price-row {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: .7rem;
-    margin-top: .9rem;
+    gap: .8rem;
+    margin-top: .65rem;
   }
 
   .zh-product__price {
     color: var(--color-ink, #2a2520);
-    font-size: 1.48rem;
+    font-family: var(--font-sans, sans-serif);
+    font-size: 1.3rem;
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
     line-height: 1;
   }
@@ -179,7 +181,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: .6rem 1rem;
-    margin-top: 1rem;
+    margin-top: .85rem;
   }
 
   .zh-product__condition {
@@ -252,15 +254,15 @@
 
   .zh-product__intro {
     max-width: 58ch;
-    margin: 1.1rem 0 0;
+    margin: 1rem 0 0;
     color: var(--zh-muted);
     font-size: .96rem;
     line-height: 1.72;
   }
 
   .zh-product__form-wrap {
-    margin-top: 1.35rem;
-    padding-top: 1.35rem;
+    margin-top: 1.15rem;
+    padding-top: 1.15rem;
     border-top: 1px solid var(--zh-border);
   }
 
@@ -335,13 +337,13 @@
   .zh-product__actions {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: .7rem;
+    gap: .8rem;
     align-items: stretch;
   }
 
   .zh-product__qty {
     display: inline-grid;
-    grid-template-columns: 2.35rem 2.5rem 2.35rem;
+    grid-template-columns: 2.25rem 2.25rem 2.25rem;
     height: 3.35rem;
     border: 1px solid var(--zh-border);
   }
@@ -365,7 +367,7 @@
 
   .zh-product__qty-button:disabled {
     cursor: default;
-    opacity: .28;
+    opacity: .42;
   }
 
   .zh-product__qty-value {
@@ -401,6 +403,28 @@
   .zh-product__add-button:disabled {
     cursor: not-allowed;
     opacity: .55;
+  }
+
+  .zh-product__add-button[aria-busy='true'] {
+    border-color: var(--color-ink, #2a2520);
+    background: var(--color-ink, #2a2520);
+    color: #fff;
+    cursor: wait;
+    opacity: 1;
+  }
+
+  .zh-product__add-button.is-added {
+    border-color: #71826d;
+    background: #71826d;
+    color: #fff;
+    opacity: 1;
+  }
+
+  .zh-product__add-button.is-error {
+    border-color: var(--color-danger, #b23a48);
+    background: var(--color-danger, #b23a48);
+    color: #fff;
+    opacity: 1;
   }
 
   .zh-product__option-button:focus-visible,
@@ -463,8 +487,17 @@
 
 
   .zh-product__content {
-    padding-top: 2.5rem;
-    padding-bottom: 2.5rem;
+    padding-top: 2rem;
+    padding-bottom: 2.25rem;
+  }
+
+  .zh-product__section-title {
+    margin: 0;
+    color: var(--color-ink, #2a2520);
+    font-size: 1.375rem;
+    font-weight: 400;
+    letter-spacing: -.01em;
+    line-height: 1.25;
   }
 
   .zh-product__content-grid {
@@ -473,11 +506,11 @@
   }
 
   .zh-product__description {
-    max-width: 68ch;
-    margin-top: 1rem;
+    max-width: 60ch;
+    margin-top: .7rem;
     color: var(--zh-muted);
-    font-size: .95rem;
-    line-height: 1.78;
+    font-size: 1rem;
+    line-height: 1.68;
   }
 
   .zh-product__description > :first-child {
@@ -491,9 +524,9 @@
   .zh-product__description h2,
   .zh-product__description h3,
   .zh-product__description h4 {
-    margin: 1.45rem 0 .65rem;
+    margin: 1.55rem 0 .5rem;
     color: var(--color-ink, #2a2520);
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 400;
     line-height: 1.3;
   }
@@ -501,6 +534,10 @@
   .zh-product__description ul,
   .zh-product__description ol {
     padding-left: 1.15rem;
+  }
+
+  .zh-product__description li {
+    margin-top: .35rem;
   }
 
   .zh-product__note {
@@ -524,8 +561,8 @@
   }
 
   .zh-product__logistics {
-    padding-top: 1.25rem;
-    padding-bottom: 2.75rem;
+    padding-top: 1rem;
+    padding-bottom: 2.5rem;
   }
 
   .zh-product__accordions {
@@ -547,7 +584,7 @@
     gap: 1rem;
     padding: 1rem 0;
     color: var(--color-ink, #2a2520);
-    font-size: 1.03rem;
+    font-size: 1.075rem;
     line-height: 1.4;
     list-style: none;
     cursor: pointer;
@@ -585,7 +622,7 @@
       grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
       gap: clamp(1.4rem, 3.5vw, 2.5rem);
       padding-top: 1.25rem;
-      padding-bottom: 3rem;
+      padding-bottom: 2.5rem;
     }
 
     .zh-product__gallery-column,
@@ -599,7 +636,7 @@
 
     .zh-product__title {
       max-width: 22ch;
-      font-size: clamp(1.8rem, 3.5vw, 2.2rem);
+      font-size: clamp(1.875rem, 3.4vw, 2rem);
     }
 
     .zh-product__content-grid.has-note {
@@ -609,8 +646,8 @@
     }
 
     .zh-product__content {
-      padding-top: 3rem;
-      padding-bottom: 3rem;
+      padding-top: 2.25rem;
+      padding-bottom: 2.5rem;
     }
   }
 
@@ -631,7 +668,7 @@
       grid-template-columns: minmax(300px, 38%) minmax(0, 1fr);
       gap: clamp(2rem, 4vw, 3.75rem);
       padding-top: 1.4rem;
-      padding-bottom: 3.5rem;
+      padding-bottom: 3rem;
     }
 
     .zh-product__gallery-column {
@@ -640,12 +677,20 @@
     }
 
     .zh-product__title {
-      font-size: clamp(2rem, 3.1vw, 2.5rem);
+      font-size: clamp(2.1rem, 2.6vw, 2.375rem);
+    }
+
+    .zh-product__price {
+      font-size: 1.375rem;
+    }
+
+    .zh-product__section-title {
+      font-size: 1.5rem;
     }
 
     .zh-product__logistics {
-      padding-top: 1.5rem;
-      padding-bottom: 3.5rem;
+      padding-top: 1.25rem;
+      padding-bottom: 3rem;
     }
   }
 
@@ -702,7 +747,7 @@
               <h1 class="zh-product__title font-display">{{ product.title }}</h1>
 
               <div class="zh-product__price-row">
-                <span data-price class="zh-product__price font-display">
+                <span data-price class="zh-product__price">
                   {%- if cv.price and cv.price > 0 -%}
                     {{ cv.price | money }}
                   {%- else -%}
@@ -799,7 +844,7 @@
                         <button type="button" data-qty-dec class="zh-product__qty-button" aria-label="Aantal verlagen" disabled>
                           {% render 'icon', name: 'minus', size: 15 %}
                         </button>
-                        <span aria-live="polite" data-qty-value class="zh-product__qty-value font-display">{{ selected_min }}</span>
+                        <span aria-live="polite" data-qty-value class="zh-product__qty-value">{{ selected_min }}</span>
                         <input
                           type="hidden"
                           name="quantity"
@@ -822,7 +867,7 @@
                         class="zh-product__add-button"
                       >
                         <span data-cart-add-label aria-live="polite">{{ block.settings.add_label }}</span>
-                        <span data-cart-add-icon aria-hidden="true">+</span>
+                        <span data-cart-add-icon aria-hidden="true"></span>
                       </button>
                     </div>
 
@@ -964,7 +1009,7 @@
       }
     </script>
 
-    <script src="{{ 'product.js' | asset_url | append: '?zh=6' }}" defer></script>
+    <script src="{{ 'product.js' | asset_url | append: '?zh=7' }}" defer></script>
     {% render 'product-structured-data', product: product %}
   </section>
 </div>
