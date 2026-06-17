@@ -75,6 +75,11 @@
     assign product_care_html = care_parts | last
     assign description_intro_html = care_parts | first
   endif
+
+  if description_intro_html contains '<h3>Details</h3>'
+    assign description_parts = description_intro_html | split: '<h3>Details</h3>'
+    assign description_intro_html = description_parts | first
+  endif
 -%}
 
 {% style %}
@@ -880,8 +885,6 @@
           {%- endif -%}
         {%- endfor -%}
 
-        {% render 'product-details', product: product %}
-
         {%- if description_intro_html != blank or zayna_note != blank -%}
           <section class="zh-product__description-panel"{% if description_intro_html != blank %} aria-labelledby="zh-description-heading-{{ section.id }}"{% else %} aria-label="Productnotitie"{% endif %}>
             {%- if description_intro_html != blank -%}
@@ -910,10 +913,12 @@
       </div>
     </div>
 
-    <section class="zh-product__logistics mx-auto max-w-7xl px-4 sm:px-6 lg:px-10" aria-label="Verzending en retourneren">
+    <section class="zh-product__logistics mx-auto max-w-7xl px-4 sm:px-6 lg:px-10" aria-label="Productinformatie, gebruik, verzending en retourneren">
       {%- for block in section.blocks -%}
         {%- if block.type == 'care_shipping' -%}
           <div {{ block.shopify_attributes }} class="zh-product__accordions">
+            {% render 'product-details', product: product %}
+
             {%- if detail_onderhoud != blank or product_care_html != blank -%}
               <details class="zh-product__accordion">
                 <summary class="font-display">
