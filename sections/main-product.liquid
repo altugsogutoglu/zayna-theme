@@ -68,6 +68,7 @@
 
   assign description_intro_html = product.description
   assign product_care_html = ''
+  assign detail_onderhoud = product.metafields.custom.detail_onderhoud.value
 
   if product.description contains '<h3>Gebruik en onderhoud</h3>'
     assign care_parts = product.description | split: '<h3>Gebruik en onderhoud</h3>'
@@ -597,6 +598,18 @@
     line-height: 1.7;
   }
 
+  .zh-product__care-lines {
+    display: grid;
+    gap: .28rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .zh-product__care-lines li {
+    margin: 0;
+  }
+
   [hidden] {
     display: none !important;
   }
@@ -867,6 +880,8 @@
           {%- endif -%}
         {%- endfor -%}
 
+        {% render 'product-details', product: product %}
+
         {%- if description_intro_html != blank or zayna_note != blank -%}
           <section class="zh-product__description-panel"{% if description_intro_html != blank %} aria-labelledby="zh-description-heading-{{ section.id }}"{% else %} aria-label="Productnotitie"{% endif %}>
             {%- if description_intro_html != blank -%}
@@ -899,13 +914,28 @@
       {%- for block in section.blocks -%}
         {%- if block.type == 'care_shipping' -%}
           <div {{ block.shopify_attributes }} class="zh-product__accordions">
-            {%- if product_care_html != blank -%}
+            {%- if detail_onderhoud != blank or product_care_html != blank -%}
               <details class="zh-product__accordion">
                 <summary class="font-display">
                   <span>Gebruik en onderhoud</span>
                   {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
                 </summary>
-                <div class="zh-product__accordion-body rich-text">{{ product_care_html }}</div>
+
+                <div class="zh-product__accordion-body">
+                  {%- if detail_onderhoud != blank -%}
+                    {%- assign care_lines = detail_onderhoud | newline_to_br | split: '<br />' -%}
+                    <ul class="zh-product__care-lines" role="list">
+                      {%- for line in care_lines -%}
+                        {%- assign clean_line = line | strip -%}
+                        {%- if clean_line != blank -%}
+                          <li>{{ clean_line | escape }}</li>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </ul>
+                  {%- else -%}
+                    <div class="rich-text">{{ product_care_html }}</div>
+                  {%- endif -%}
+                </div>
               </details>
             {%- endif -%}
 
