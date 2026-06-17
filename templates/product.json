@@ -20,7 +20,6 @@
           "type": "info",
           "settings": {
             "in_stock_text": "Op voorraad",
-            "delivery_text": "Indicatieve levering binnen 1–3 werkdagen",
             "sold_text": "Uitverkocht",
             "unavailable_text": "Deze combinatie is niet beschikbaar",
             "price_on_request": "Prijs op aanvraag"
