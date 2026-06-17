@@ -1,9 +1,18 @@
 {%- comment -%}
-  Zayna Home — Belangrijkste details.
+  Zayna Home — ingeklapte accordion "Productdetails".
 
-  Gebruikt uitsluitend de gecontroleerde detail-metafields.
-  Onderhoud wordt bewust niet hier getoond, maar in de bestaande
-  accordion "Gebruik en onderhoud" in sections/main-product.liquid.
+  Doel:
+  - alleen gecontroleerde detail-metafields gebruiken;
+  - de productpagina gesloten rustig houden;
+  - gegevens compact en zonder kaarten, iconen of technische subsecties tonen;
+  - onderhoud bewust niet hier tonen, maar in "Gebruik en onderhoud".
+
+  Bewust niet zichtbaar in deze compacte interface:
+  - custom.detail_kleur_afwerking
+  - custom.detail_gebruik
+
+  Deze velden blijven in Shopify bestaan, maar zijn meestal al duidelijk uit
+  producttitel, fotografie, korte intro of productomschrijving.
 
   Vereist:
   - product
@@ -39,9 +48,7 @@
 
   assign detail_afmetingen_overig = product.metafields.custom.detail_afmetingen_overig.value
   assign detail_materialen = product.metafields.custom.detail_materialen.value
-  assign detail_kleur_afwerking = product.metafields.custom.detail_kleur_afwerking.value
   assign detail_meegeleverd = product.metafields.custom.detail_meegeleverd.value
-  assign detail_gebruik = product.metafields.custom.detail_gebruik.value
   assign detail_bediening = product.metafields.custom.detail_bediening.value
 
   assign has_dimensions = false
@@ -49,76 +56,47 @@
     assign has_dimensions = true
   endif
 
-  assign has_summary = false
-  if detail_inhoud != blank or detail_inhoud_per_stuk != blank or detail_setinhoud != blank or detail_formaat != blank or has_dimensions
-    assign has_summary = true
-  endif
-
-  assign has_groups = false
-  if detail_materialen != blank or detail_kleur_afwerking != blank or detail_meegeleverd != blank or detail_gebruik != blank or detail_bediening != blank
-    assign has_groups = true
-  endif
-
   assign has_details = false
-  if has_summary or has_groups
+  if detail_inhoud != blank or detail_inhoud_per_stuk != blank or detail_setinhoud != blank or detail_formaat != blank or has_dimensions or detail_materialen != blank or detail_meegeleverd != blank or detail_bediening != blank
     assign has_details = true
   endif
-
-  assign heading_id = 'zh-product-details-heading-' | append: section.id
 -%}
 
 {%- if has_details -%}
   {% style %}
-    .zh-product-details {
-      container-type: inline-size;
-      container-name: zh-product-details;
-      max-width: 60ch;
-      margin-top: 1.9rem;
-      color: var(--color-ink, #2a2520);
+    .zh-product-details__body {
+      padding-right: 0;
     }
 
-    .zh-product-details__heading {
-      margin: 0;
-      color: var(--color-ink, #2a2520);
-      font-size: 1.375rem;
-      font-weight: 400;
-      letter-spacing: -.01em;
-      line-height: 1.25;
-    }
-
-    .zh-product-details__summary {
+    .zh-product-details__list {
       display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 1rem 1.75rem;
-      margin: .85rem 0 0;
-      padding: 1rem 0 1.05rem;
-      border-top: 1px solid var(--zh-border, #ded5cc);
-      border-bottom: 1px solid var(--zh-border, #ded5cc);
+      gap: .9rem;
+      max-width: 52rem;
+      margin: 0;
+      padding: .05rem 0 .1rem;
     }
 
-    .zh-product-details__summary-item {
+    .zh-product-details__item {
+      display: grid;
       min-width: 0;
       margin: 0;
-    }
-
-    .zh-product-details__summary-item--dimensions {
-      grid-column: 1 / -1;
+      gap: .18rem;
     }
 
     .zh-product-details__term {
       margin: 0;
-      color: var(--zh-muted, #625a53);
-      font-size: .78rem;
+      color: var(--color-ink, #2a2520);
+      font-size: .84rem;
       font-weight: 600;
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
     .zh-product-details__description {
       min-width: 0;
-      margin: .18rem 0 0;
-      color: var(--color-ink, #2a2520);
-      font-size: .97rem;
-      line-height: 1.55;
+      margin: 0;
+      color: var(--zh-muted, #625a53);
+      font-size: .9rem;
+      line-height: 1.65;
       overflow-wrap: anywhere;
     }
 
@@ -128,113 +106,57 @@
       font: inherit;
     }
 
-    .zh-product-details__measurements,
-    .zh-product-details__lines {
+    .zh-product-details__lines,
+    .zh-product-details__measurements {
+      display: grid;
+      gap: .15rem;
       margin: 0;
       padding: 0;
       list-style: none;
     }
 
-    .zh-product-details__measurements {
-      display: grid;
-      gap: .36rem;
-    }
-
-    .zh-product-details__measurement {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 1rem;
-      align-items: baseline;
+    .zh-product-details__lines li,
+    .zh-product-details__measurements li {
       min-width: 0;
+      margin: 0;
     }
 
-    .zh-product-details__measurement-name {
-      min-width: 0;
-      color: var(--zh-muted, #625a53);
+    .zh-product-details__included {
+      display: inline;
     }
 
-    .zh-product-details__measurement-value {
-      min-width: 0;
-      color: var(--color-ink, #2a2520);
-      text-align: right;
-      white-space: nowrap;
+    .zh-product-details__included-item:not(:last-child)::after {
+      content: ', ';
     }
 
-    .zh-product-details__measurement-value .metafield-dimension {
-      color: inherit;
-      font: inherit;
-    }
-
-    .zh-product-details__measurement--text {
-      display: block;
-    }
-
-    .zh-product-details__measurement--text + .zh-product-details__measurement--text {
-      margin-top: .28rem;
-    }
-
-    .zh-product-details__groups {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 1.3rem 2rem;
-      margin-top: 1.3rem;
-    }
-
-    .zh-product-details__group {
-      min-width: 0;
-    }
-
-    .zh-product-details__group-title {
-      margin: 0 0 .38rem;
-      color: var(--color-ink, #2a2520);
-      font-size: 1.02rem;
-      font-weight: 400;
-      line-height: 1.35;
-    }
-
-    .zh-product-details__lines {
-      display: grid;
-      gap: .26rem;
-    }
-
-    .zh-product-details__lines li {
-      min-width: 0;
-      color: var(--zh-muted, #625a53);
-      font-size: .92rem;
-      line-height: 1.62;
-      overflow-wrap: anywhere;
-    }
-
-    @container zh-product-details (min-width: 36rem) {
-      .zh-product-details__summary {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+    @media (min-width: 1200px) {
+      .zh-product-details__list {
+        gap: .7rem;
       }
 
-      .zh-product-details__groups {
-        grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+      .zh-product-details__item {
+        grid-template-columns: minmax(9rem, 11rem) minmax(0, 1fr);
+        gap: 1.5rem;
+        align-items: start;
       }
 
-      .zh-product-details__group--wide {
-        grid-column: 1 / -1;
-      }
-    }
-
-    @media (min-width: 768px) {
-      .zh-product-details__heading {
-        font-size: 1.5rem;
+      .zh-product-details__term,
+      .zh-product-details__description {
+        line-height: 1.6;
       }
     }
   {% endstyle %}
 
-  <section class="zh-product-details" aria-labelledby="{{ heading_id }}">
-    <h2 id="{{ heading_id }}" class="zh-product-details__heading font-display">
-      Belangrijkste details
-    </h2>
+  <details class="zh-product__accordion zh-product-details">
+    <summary class="font-display">
+      <span>Productdetails</span>
+      {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
+    </summary>
 
-    {%- if has_summary -%}
-      <dl class="zh-product-details__summary">
+    <div class="zh-product__accordion-body zh-product-details__body">
+      <dl class="zh-product-details__list">
         {%- if detail_inhoud != blank -%}
-          <div class="zh-product-details__summary-item">
+          <div class="zh-product-details__item">
             <dt class="zh-product-details__term">Inhoud</dt>
             <dd class="zh-product-details__description">
               {{ detail_inhoud_field | metafield_tag }}
@@ -243,7 +165,7 @@
         {%- endif -%}
 
         {%- if detail_inhoud_per_stuk != blank -%}
-          <div class="zh-product-details__summary-item">
+          <div class="zh-product-details__item">
             <dt class="zh-product-details__term">Inhoud per stuk</dt>
             <dd class="zh-product-details__description">
               {{ detail_inhoud_per_stuk_field | metafield_tag }}
@@ -252,74 +174,54 @@
         {%- endif -%}
 
         {%- if detail_setinhoud != blank -%}
-          <div class="zh-product-details__summary-item">
-            <dt class="zh-product-details__term">Setinhoud</dt>
+          <div class="zh-product-details__item">
+            <dt class="zh-product-details__term">Set</dt>
             <dd class="zh-product-details__description">{{ detail_setinhoud | escape }}</dd>
           </div>
         {%- endif -%}
 
         {%- if detail_formaat != blank -%}
-          <div class="zh-product-details__summary-item">
+          <div class="zh-product-details__item">
             <dt class="zh-product-details__term">Formaat</dt>
             <dd class="zh-product-details__description">{{ detail_formaat | escape }}</dd>
           </div>
         {%- endif -%}
 
         {%- if has_dimensions -%}
-          <div class="zh-product-details__summary-item zh-product-details__summary-item--dimensions">
+          <div class="zh-product-details__item">
             <dt class="zh-product-details__term">Afmetingen</dt>
             <dd class="zh-product-details__description">
               <ul class="zh-product-details__measurements" role="list">
                 {%- if detail_hoogte != blank -%}
-                  <li class="zh-product-details__measurement">
-                    <span class="zh-product-details__measurement-name">Hoogte</span>
-                    <span class="zh-product-details__measurement-value">{{ detail_hoogte_field | metafield_tag }}</span>
-                  </li>
+                  <li>Hoogte — {{ detail_hoogte_field | metafield_tag }}</li>
                 {%- endif -%}
 
                 {%- if detail_breedte != blank -%}
-                  <li class="zh-product-details__measurement">
-                    <span class="zh-product-details__measurement-name">Breedte</span>
-                    <span class="zh-product-details__measurement-value">{{ detail_breedte_field | metafield_tag }}</span>
-                  </li>
+                  <li>Breedte — {{ detail_breedte_field | metafield_tag }}</li>
                 {%- endif -%}
 
                 {%- if detail_lengte != blank -%}
-                  <li class="zh-product-details__measurement">
-                    <span class="zh-product-details__measurement-name">Lengte</span>
-                    <span class="zh-product-details__measurement-value">{{ detail_lengte_field | metafield_tag }}</span>
-                  </li>
+                  <li>Lengte — {{ detail_lengte_field | metafield_tag }}</li>
                 {%- endif -%}
 
                 {%- if detail_diameter != blank -%}
-                  <li class="zh-product-details__measurement">
-                    <span class="zh-product-details__measurement-name">Diameter</span>
-                    <span class="zh-product-details__measurement-value">{{ detail_diameter_field | metafield_tag }}</span>
-                  </li>
+                  <li>Diameter — {{ detail_diameter_field | metafield_tag }}</li>
                 {%- endif -%}
 
                 {%- if detail_bovenste_diameter != blank -%}
-                  <li class="zh-product-details__measurement">
-                    <span class="zh-product-details__measurement-name">Bovenste diameter</span>
-                    <span class="zh-product-details__measurement-value">{{ detail_bovenste_diameter_field | metafield_tag }}</span>
-                  </li>
+                  <li>Bovenste diameter — {{ detail_bovenste_diameter_field | metafield_tag }}</li>
                 {%- endif -%}
 
                 {%- if detail_bodemdiameter != blank -%}
-                  <li class="zh-product-details__measurement">
-                    <span class="zh-product-details__measurement-name">Bodemdiameter</span>
-                    <span class="zh-product-details__measurement-value">{{ detail_bodemdiameter_field | metafield_tag }}</span>
-                  </li>
+                  <li>Bodemdiameter — {{ detail_bodemdiameter_field | metafield_tag }}</li>
                 {%- endif -%}
 
                 {%- if detail_afmetingen_overig != blank -%}
-                  {%- assign detail_lines = detail_afmetingen_overig | newline_to_br | split: '<br />' -%}
-                  {%- for line in detail_lines -%}
+                  {%- assign dimension_lines = detail_afmetingen_overig | newline_to_br | split: '<br />' -%}
+                  {%- for line in dimension_lines -%}
                     {%- assign clean_line = line | strip -%}
                     {%- if clean_line != blank -%}
-                      <li class="zh-product-details__measurement zh-product-details__measurement--text">
-                        {{ clean_line | escape }}
-                      </li>
+                      <li>{{ clean_line | escape }}</li>
                     {%- endif -%}
                   {%- endfor -%}
                 {%- endif -%}
@@ -327,86 +229,56 @@
             </dd>
           </div>
         {%- endif -%}
-      </dl>
-    {%- endif -%}
 
-    {%- if has_groups -%}
-      <div class="zh-product-details__groups">
         {%- if detail_materialen != blank -%}
-          {%- assign detail_lines = detail_materialen | newline_to_br | split: '<br />' -%}
-          <section class="zh-product-details__group" aria-labelledby="{{ heading_id }}-materials">
-            <h3 id="{{ heading_id }}-materials" class="zh-product-details__group-title font-display">Materialen</h3>
-            <ul class="zh-product-details__lines" role="list">
-              {%- for line in detail_lines -%}
-                {%- assign clean_line = line | strip -%}
-                {%- if clean_line != blank -%}
-                  <li>{{ clean_line | escape }}</li>
-                {%- endif -%}
-              {%- endfor -%}
-            </ul>
-          </section>
-        {%- endif -%}
-
-        {%- if detail_kleur_afwerking != blank -%}
-          {%- assign detail_lines = detail_kleur_afwerking | newline_to_br | split: '<br />' -%}
-          <section class="zh-product-details__group" aria-labelledby="{{ heading_id }}-finish">
-            <h3 id="{{ heading_id }}-finish" class="zh-product-details__group-title font-display">Uitvoering</h3>
-            <ul class="zh-product-details__lines" role="list">
-              {%- for line in detail_lines -%}
-                {%- assign clean_line = line | strip -%}
-                {%- if clean_line != blank -%}
-                  <li>{{ clean_line | escape }}</li>
-                {%- endif -%}
-              {%- endfor -%}
-            </ul>
-          </section>
+          {%- assign material_lines = detail_materialen | newline_to_br | split: '<br />' -%}
+          <div class="zh-product-details__item">
+            <dt class="zh-product-details__term">Materialen</dt>
+            <dd class="zh-product-details__description">
+              <ul class="zh-product-details__lines" role="list">
+                {%- for line in material_lines -%}
+                  {%- assign clean_line = line | strip -%}
+                  {%- if clean_line != blank -%}
+                    <li>{{ clean_line | escape }}</li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            </dd>
+          </div>
         {%- endif -%}
 
         {%- if detail_meegeleverd != blank -%}
-          {%- assign detail_lines = detail_meegeleverd | newline_to_br | split: '<br />' -%}
-          <section class="zh-product-details__group zh-product-details__group--wide" aria-labelledby="{{ heading_id }}-included">
-            <h3 id="{{ heading_id }}-included" class="zh-product-details__group-title font-display">Meegeleverd</h3>
-            <ul class="zh-product-details__lines" role="list">
-              {%- for line in detail_lines -%}
+          {%- assign included_lines = detail_meegeleverd | newline_to_br | split: '<br />' -%}
+          <div class="zh-product-details__item">
+            <dt class="zh-product-details__term">Inbegrepen</dt>
+            <dd class="zh-product-details__description zh-product-details__included">
+              {%- for line in included_lines -%}
                 {%- assign clean_line = line | strip -%}
                 {%- if clean_line != blank -%}
-                  <li>{{ clean_line | escape }}</li>
+                  <span class="zh-product-details__included-item">{{ clean_line | escape }}</span>
                 {%- endif -%}
               {%- endfor -%}
-            </ul>
-          </section>
-        {%- endif -%}
-
-        {%- if detail_gebruik != blank -%}
-          {%- assign detail_lines = detail_gebruik | newline_to_br | split: '<br />' -%}
-          <section class="zh-product-details__group zh-product-details__group--wide" aria-labelledby="{{ heading_id }}-use">
-            <h3 id="{{ heading_id }}-use" class="zh-product-details__group-title font-display">Gebruik</h3>
-            <ul class="zh-product-details__lines" role="list">
-              {%- for line in detail_lines -%}
-                {%- assign clean_line = line | strip -%}
-                {%- if clean_line != blank -%}
-                  <li>{{ clean_line | escape }}</li>
-                {%- endif -%}
-              {%- endfor -%}
-            </ul>
-          </section>
+            </dd>
+          </div>
         {%- endif -%}
 
         {%- if detail_bediening != blank -%}
-          {%- assign detail_lines = detail_bediening | newline_to_br | split: '<br />' -%}
-          <section class="zh-product-details__group zh-product-details__group--wide" aria-labelledby="{{ heading_id }}-operation">
-            <h3 id="{{ heading_id }}-operation" class="zh-product-details__group-title font-display">Werking en toepassing</h3>
-            <ul class="zh-product-details__lines" role="list">
-              {%- for line in detail_lines -%}
-                {%- assign clean_line = line | strip -%}
-                {%- if clean_line != blank -%}
-                  <li>{{ clean_line | escape }}</li>
-                {%- endif -%}
-              {%- endfor -%}
-            </ul>
-          </section>
+          {%- assign operation_lines = detail_bediening | newline_to_br | split: '<br />' -%}
+          <div class="zh-product-details__item">
+            <dt class="zh-product-details__term">Werking en toepassing</dt>
+            <dd class="zh-product-details__description">
+              <ul class="zh-product-details__lines" role="list">
+                {%- for line in operation_lines -%}
+                  {%- assign clean_line = line | strip -%}
+                  {%- if clean_line != blank -%}
+                    <li>{{ clean_line | escape }}</li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            </dd>
+          </div>
         {%- endif -%}
-      </div>
-    {%- endif -%}
-  </section>
+      </dl>
+    </div>
+  </details>
 {%- endif -%}
