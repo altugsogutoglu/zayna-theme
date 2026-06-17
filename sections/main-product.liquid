@@ -27,7 +27,6 @@
   assign lbl_add = 'In winkelmand'
   assign lbl_sold = 'Uitverkocht'
   assign lbl_in_stock = 'Op voorraad'
-  assign lbl_delivery = 'Indicatieve levering binnen 1–3 werkdagen'
   assign lbl_unavailable = 'Deze combinatie is niet beschikbaar'
   assign lbl_price_on_request = section.settings.price_on_request | default: 'Prijs op aanvraag'
 
@@ -38,7 +37,6 @@
     endif
     if b.type == 'info'
       assign lbl_in_stock = b.settings.in_stock_text
-      assign lbl_delivery = b.settings.delivery_text
       assign lbl_sold = b.settings.sold_text
       assign lbl_unavailable = b.settings.unavailable_text
       assign lbl_price_on_request = b.settings.price_on_request
@@ -247,10 +245,6 @@
     color: inherit;
   }
 
-  .zh-product__availability [data-delivery-text] {
-    color: var(--zh-muted);
-    font-size: .82rem;
-  }
 
   .zh-product__intro {
     max-width: 58ch;
@@ -550,12 +544,13 @@
 
   .zh-product__logistics {
     padding-top: 0;
-    padding-bottom: 1.5rem;
+    padding-bottom: 0;
   }
 
   .zh-product__accordions {
     max-width: 58rem;
     border-top: 1px solid var(--zh-border);
+    border-bottom: 1px solid var(--zh-border);
   }
 
   .zh-product__accordion {
@@ -571,7 +566,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: .95rem 0;
+    min-height: 3.75rem;
+    padding: .85rem 0;
     color: var(--color-ink, #2a2520);
     font-size: 1.075rem;
     line-height: 1.4;
@@ -595,7 +591,7 @@
 
   .zh-product__accordion-body {
     max-width: 68ch;
-    padding: 0 2.2rem 1rem 0;
+    padding: 0 2.2rem 1.05rem 0;
     color: var(--zh-muted);
     font-size: .89rem;
     line-height: 1.7;
@@ -753,7 +749,6 @@
                   <span aria-hidden="true" class="zh-product__availability-dot"></span>
                   <span class="zh-product__availability-copy">
                     <span data-availability-text class="zh-product__availability-main">{% if is_sold %}{{ block.settings.sold_text }}{% else %}{{ block.settings.in_stock_text }}{% endif %}</span>
-                    <span data-delivery-text{% if is_sold or block.settings.delivery_text == blank %} hidden{% endif %}>{{ block.settings.delivery_text }}</span>
                   </span>
                 </span>
               </div>
@@ -946,7 +941,6 @@
           "add": {{ lbl_add | json }},
           "sold": {{ lbl_sold | json }},
           "in_stock": {{ lbl_in_stock | json }},
-          "delivery": {{ lbl_delivery | json }},
           "unavailable": {{ lbl_unavailable | json }},
           "price_on_request": {{ lbl_price_on_request | json }}
         },
@@ -1011,7 +1005,6 @@
       "limit": 1,
       "settings": [
         { "type": "text", "id": "in_stock_text", "label": "Tekst op voorraad", "default": "Op voorraad" },
-        { "type": "text", "id": "delivery_text", "label": "Levertijdtekst", "default": "Indicatieve levering binnen 1–3 werkdagen" },
         { "type": "text", "id": "sold_text", "label": "Tekst uitverkocht", "default": "Uitverkocht" },
         { "type": "text", "id": "unavailable_text", "label": "Tekst onbeschikbare combinatie", "default": "Deze combinatie is niet beschikbaar" },
         { "type": "text", "id": "price_on_request", "label": "Tekst prijs op aanvraag", "default": "Prijs op aanvraag" }
