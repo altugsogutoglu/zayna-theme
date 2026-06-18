@@ -238,22 +238,35 @@
 
   .zh-gallery__thumbs {
     display: flex;
-    flex-wrap: wrap;
-    gap: .45rem;
-    margin-top: .35rem;
+    flex-wrap: nowrap;
+    gap: .4rem;
+    margin: .35rem -3px 0;
+    padding: 3px 3px .35rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: 3px;
+    scroll-snap-type: inline proximity;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .zh-gallery__thumbs::-webkit-scrollbar {
+    display: none;
   }
 
   .zh-gallery__thumb {
     position: relative;
-    width: 54px;
-    height: 54px;
-    flex: 0 0 54px;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
     overflow: hidden;
     padding: 0;
     border: 1px solid transparent;
     background: transparent;
     opacity: .66;
     cursor: pointer;
+    scroll-snap-align: start;
     transition: border-color 160ms ease, opacity 160ms ease;
   }
 
@@ -620,7 +633,7 @@
               aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
               tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
             >
-              {{ image | image_url: width: 180, format: 'webp' | image_tag: loading: 'lazy', sizes: '54px', widths: '54, 81, 108, 180', alt: thumb_alt }}
+              {{ image | image_url: width: 160, format: 'webp' | image_tag: loading: 'lazy', sizes: '48px', widths: '48, 72, 96, 160', alt: thumb_alt }}
             </button>
           {%- endfor -%}
         </div>
