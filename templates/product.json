@@ -32,25 +32,13 @@
             "sold_label": "Uitverkocht"
           }
         },
-        "description": {
-          "type": "description",
-          "settings": {}
-        },
-        "zayna_note": {
-          "type": "zayna_note",
-          "settings": {
-            "signature": "Zayna"
-          }
-        },
         "care_shipping": {
           "type": "care_shipping",
           "settings": {
-            "row1_title": "",
-            "row1_body": "",
             "row2_title": "Verzending",
-            "row2_body": "<p>Nederland: thuisbezorging €7,95 of een servicepunt voor €6,95. Gratis verzending vanaf €100. De indicatieve levertijd is 1–3 werkdagen en je ontvangt track & trace.</p>",
+            "row2_body": "<p>Je bestelling wordt zorgvuldig verpakt en heeft een verwachte levertijd van 1–3 werkdagen. Binnen Nederland kost thuisbezorging €7,95 en levering aan een servicepunt €6,95. Vanaf €100 verzenden we gratis.</p>",
             "row3_title": "Retourneren",
-            "row3_body": "<p>Je hebt 14 dagen na ontvangst om je retour aan te melden. Daarna heb je nog 14 dagen om het product terug te sturen. Retourkosten zijn voor eigen rekening, tenzij wettelijk anders.</p>"
+            "row3_body": "<p>Meld je retour binnen 14 dagen na ontvangst aan. Daarna heb je nog 14 dagen om het product terug te sturen. De retourkosten zijn voor eigen rekening.</p>"
           }
         }
       },
@@ -58,8 +46,6 @@
         "gallery",
         "info",
         "buy_buttons",
-        "description",
-        "zayna_note",
         "care_shipping"
       ],
       "settings": {
