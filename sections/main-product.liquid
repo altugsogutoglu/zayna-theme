@@ -407,6 +407,10 @@
     background: #3a3028;
   }
 
+  .zh-product__add-button:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
   .zh-product__add-button:disabled {
     cursor: not-allowed;
     opacity: .55;
@@ -692,12 +696,12 @@
 
   @media (min-width: 750px) and (max-width: 1180px) {
     .zh-product--ux-prototype-v3 .zh-product__accordion summary {
-      min-height: 50px;
+      min-height: 52px;
       padding-block: 0;
     }
 
     .zh-product--ux-prototype-v3 .zh-product__accordion-body--editorial {
-      padding-top: .1rem;
+      padding-top: .12rem;
     }
   }
 
@@ -816,7 +820,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v12 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v13 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -974,6 +978,35 @@
     font-weight: 500;
   }
 
+
+  /* v13: stable accordion cursor + no accidental text selection inside product accordions */
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary {
+    cursor: pointer;
+    position: relative;
+    transform: none !important;
+    will-change: auto !important;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary > * {
+    pointer-events: none;
+  }
+
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary,
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary:hover,
+  .zh-product--ux-prototype-v3 .zh-product__accordion[open] summary {
+    font-weight: 500;
+    padding-inline: 0;
+    border: 0;
+  }
+
+  .zh-product--ux-prototype-v3 .zh-product__accordion-body {
+    cursor: default;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
   .zh-product__delivery-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -988,19 +1021,19 @@
   .zh-product__delivery-label {
     display: block;
     margin: 0 0 .12rem;
-    color: #8a7768;
+    color: #85776b;
     font-size: .64rem;
     font-weight: 500;
-    letter-spacing: .004em;
+    letter-spacing: .002em;
     line-height: 1.35;
     text-transform: none;
   }
 
   .zh-product__delivery-value {
     display: block;
-    color: #2f2a25;
-    font-size: .83rem;
-    line-height: 1.42;
+    color: #34302b;
+    font-size: .82rem;
+    line-height: 1.43;
   }
 
   .zh-product__return-block {

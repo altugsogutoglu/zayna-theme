@@ -11,20 +11,12 @@
             {%- for repetition in (1..2) -%}
               {%- for block in section.blocks -%}
                 {%- liquid
-                  assign announcement_text = block.settings.text
-          assign announcement_text = announcement_text | replace: 'Indicatieve levertijd: 1–3 werkdagen', 'Verwachte levertijd 1–3 werkdagen'
-                  assign announcement_text = announcement_text | replace: 'Indicatieve levertijd: 1–3 werkdagen', 'Verwachte levertijd 1–3 werkdagen'
-          assign announcement_text = announcement_text | replace: 'Indicatieve levertijd: 1-3 werkdagen', 'Verwachte levertijd 1–3 werkdagen'
-                  assign announcement_text = announcement_text | replace: 'Indicatieve levertijd: 1-3 werkdagen', 'Verwachte levertijd 1–3 werkdagen'
-          assign announcement_text = announcement_text | replace: 'indicatieve levertijd 1–3 werkdagen', 'verwachte levertijd 1–3 werkdagen'
-                  assign announcement_text = announcement_text | replace: 'indicatieve levertijd 1–3 werkdagen', 'verwachte levertijd 1–3 werkdagen'
-          assign announcement_text = announcement_text | replace: 'indicatieve levertijd 1-3 werkdagen', 'verwachte levertijd 1–3 werkdagen'
-                  assign announcement_text = announcement_text | replace: 'indicatieve levertijd 1-3 werkdagen', 'verwachte levertijd 1–3 werkdagen'
-                  assign announcement_text = announcement_text | replace: 'Verwachte levertijd 1–3 werkdagen', 'Verwachte levertijd 1–3 werkdagen'
-                  assign announcement_text = announcement_text | replace: 'Verwachte levertijd 1–3 werkdagen', 'Verwachte levertijd 1–3 werkdagen'
-                  assign announcement_text = announcement_text | replace: 'VERWACHTE LEVERTIJD 1–3 WERKDAGEN', 'VERWACHTE LEVERTIJD 1–3 WERKDAGEN'
-                  assign announcement_text = announcement_text | replace: 'VERWACHTE LEVERTIJD 1–3 WERKDAGEN', 'VERWACHTE LEVERTIJD 1–3 WERKDAGEN'
-                -%}
+          assign announcement_text = block.settings.text
+          assign announcement_text_normalized = announcement_text | downcase
+          if announcement_text_normalized contains 'levertijd'
+            assign announcement_text = 'Verwachte levertijd 1–3 werkdagen'
+          endif
+        -%}
                 <span
                   class="zayna-announcement__item"
                   {% if group == 1 and repetition == 1 %}
