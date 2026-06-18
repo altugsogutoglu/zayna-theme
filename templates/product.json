@@ -38,7 +38,13 @@
             "row2_title": "Verzending",
             "row2_body": "<p><strong>Verwachte levertijd:</strong> 1–3 werkdagen</p><p><strong>Thuisbezorging:</strong> €7,95</p><p><strong>Servicepunt:</strong> €6,95</p><p><strong>Gratis verzending:</strong> vanaf €100</p>",
             "row3_title": "Retourneren",
-            "row3_body": "<p>Meld je retour binnen 14 dagen na ontvangst aan. Daarna heb je nog 14 dagen om het product terug te sturen.</p><p>Retourkosten zijn voor eigen rekening, tenzij wettelijk anders is bepaald.</p>"
+            "row3_body": "<p>Meld je retour binnen 14 dagen na ontvangst aan. Daarna heb je nog 14 dagen om het product terug te sturen.</p><p>Retourkosten zijn voor eigen rekening, tenzij wettelijk anders is bepaald.</p>",
+            "shipping_time": "1–3 werkdagen",
+            "shipping_home": "€7,95",
+            "shipping_point": "€6,95",
+            "shipping_free": "Vanaf €100",
+            "return_window": "Meld je retour binnen 14 dagen aan. Daarna heb je nog 14 dagen om het product terug te sturen.",
+            "return_cost": "Retourkosten zijn voor eigen rekening, tenzij wettelijk anders is bepaald."
           }
         }
       },
