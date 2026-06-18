@@ -1,9 +1,15 @@
 {%- liquid
   assign faqs = product.metafields.custom.faqs.value
   assign visible_faq_count = 0
+  assign suppress_product_faq = false
+
+  if product.handle == 'voorraadpot-600ml-borosilicaatglas' or product.handle == 'digitale-weeglepel-500g-0-1g'
+    assign suppress_product_faq = true
+  endif
+
   assign faq_filter_terms = 'materiaal|waarvan is|inhoud|hoeveel ml|hoeveel liter|afmeting|afmetingen|hoe groot|vaatwasser|magnetron|vriezer|warme en koude|warme dranken|koude dranken|hoeveel stuks|wat wordt meegeleverd|wat zit erbij|meegeleverd|onderhoud|schoonmaken|schoonmaak|reinigen|handwas|afwassen|nauwkeurig|nauwkeurigheid|weeggewicht|maximaal gewicht|maximaal wegen|batterij|knoopcel|tarra|hold|waarvoor|geschikt voor|bevestigen|bevestiging|ophangen|plakken|draagvermogen|luchtdicht|hoe werkt|functies|filter|deksel' | split: '|'
 
-  if faqs != blank
+  if suppress_product_faq == false and faqs != blank
     for faq in faqs
       assign faq_question = faq.question | downcase | strip
       assign skip_faq = false
