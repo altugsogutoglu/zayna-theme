@@ -64,27 +64,7 @@
   endif
 
 
-  assign zayna_note = product.metafields.custom.zayna_note.value
-
-  assign is_editorial_details_prototype = false
-  if product.handle == 'set-van-12-vierkante-kruidenpotten-120-ml-incl-labels-trechter-borosilicaat-glas'
-    assign is_editorial_details_prototype = true
-  endif
-
-  assign description_intro_html = product.description
-  assign product_care_html = ''
-  assign detail_onderhoud = product.metafields.custom.detail_onderhoud.value
-
-  if product.description contains '<h3>Gebruik en onderhoud</h3>'
-    assign care_parts = product.description | split: '<h3>Gebruik en onderhoud</h3>'
-    assign product_care_html = care_parts | last
-    assign description_intro_html = care_parts | first
-  endif
-
-  if description_intro_html contains '<h3>Details</h3>'
-    assign description_parts = description_intro_html | split: '<h3>Details</h3>'
-    assign description_intro_html = description_parts | first
-  endif
+  assign care_display_text = product.metafields.custom.onderhoud_weergavetekst.value | strip
 -%}
 
 {% style %}
@@ -559,7 +539,8 @@
   }
 
   .zh-product__accordions {
-    max-width: 58rem;
+    width: 100%;
+    max-width: none;
     border-top: 1px solid var(--zh-border);
     border-bottom: 1px solid var(--zh-border);
   }
@@ -610,11 +591,6 @@
 
   .zh-product__inline-logistics {
     margin-top: 1.75rem;
-  }
-
-  .zh-product--editorial-prototype .zh-product__accordions {
-    width: 100%;
-    max-width: none;
   }
 
   .zh-product__accordion-body--editorial {
@@ -707,11 +683,6 @@
     }
 
     .zh-product__gallery-column {
-      position: sticky;
-      top: 6.25rem;
-    }
-
-    .zh-product--editorial-prototype .zh-product__gallery-column {
       position: static;
       top: auto;
     }
@@ -743,35 +714,35 @@
     }
   }
 
-  .zh-product--editorial-prototype .zh-product__purchase {
+  .zh-product__purchase {
     padding-bottom: 1.125rem;
   }
 
   @media (min-width: 640px) {
-    .zh-product--editorial-prototype .zh-product__purchase {
+    .zh-product__purchase {
       padding-bottom: .875rem;
     }
   }
 
   @media (min-width: 768px) {
-    .zh-product--editorial-prototype .zh-product__purchase {
+    .zh-product__purchase {
       padding-bottom: .75rem;
     }
   }
 
   @media (min-width: 1180px) {
-    .zh-product--editorial-prototype .zh-product__accordion-body--editorial {
+    .zh-product__accordion-body--editorial {
       max-width: 64ch;
     }
   }
 
-  .zh-product--editorial-prototype .zh-product__accordion summary {
+  .zh-product__accordion summary {
     min-height: 3.55rem;
     padding: .75rem 0;
     font-size: 1.04rem;
   }
 
-  .zh-product--editorial-prototype .zh-product__accordion-icon {
+  .zh-product__accordion-icon {
     width: 1rem;
     height: 1rem;
     opacity: .82;
@@ -789,7 +760,7 @@
   <section
     data-product-root
     data-current-available="{% if cv.available %}true{% else %}false{% endif %}"
-    class="zh-product{% if is_editorial_details_prototype %} zh-product--editorial-prototype{% endif %}"
+    class="zh-product"
   >
     <nav aria-label="Kruimelpad" class="zh-product__breadcrumb mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
       <a href="{% if coll %}{{ coll.url }}{% else %}{{ routes.all_products_collection_url }}{% endif %}" class="zh-product__breadcrumb-mobile">
@@ -821,13 +792,7 @@
         {%- for block in section.blocks -%}
           {%- if block.type == 'info' -%}
             <div {{ block.shopify_attributes }}>
-              <h1 class="zh-product__title font-display">
-                {%- if is_editorial_details_prototype -%}
-                  Vierkante kruidenpotten met bamboe deksels – set van 12
-                {%- else -%}
-                  {{ product.title }}
-                {%- endif -%}
-              </h1>
+              <h1 class="zh-product__title font-display">{{ product.title }}</h1>
 
               <div class="zh-product__price-row">
                 <span data-price class="zh-product__price">
@@ -855,15 +820,9 @@
                 </span>
               </div>
 
-              {%- if is_editorial_details_prototype -%}
-                <p class="zh-product__intro">
-                  Twaalf glazen kruidenpotten, elk met een inhoud van <span class="zh-nowrap">120 ml</span>. Met bamboe draaideksels, strooidoppen en beschrijfbare labels.
-                </p>
-              {%- else -%}
-                {%- assign intro = product.metafields.custom.intro.value -%}
-                {%- if intro != blank -%}
-                  <p class="zh-product__intro">{{ intro }}</p>
-                {%- endif -%}
+              {%- assign intro = product.metafields.custom.intro.value | strip -%}
+              {%- if intro != blank -%}
+                <p class="zh-product__intro">{{ intro | escape }}</p>
               {%- endif -%}
             </div>
           {%- endif -%}
@@ -975,20 +934,20 @@
           {%- endif -%}
         {%- endfor -%}
 
-        {%- if is_editorial_details_prototype -%}
-          {%- for block in section.blocks -%}
-            {%- if block.type == 'care_shipping' -%}
-              <section
-                class="zh-product__inline-logistics"
-                aria-label="Productdetails, onderhoud, verzending en retour"
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'care_shipping' -%}
+            <section
+              class="zh-product__inline-logistics"
+              aria-label="Productdetails, onderhoud, verzending en retour"
+            >
+              <div
+                {{ block.shopify_attributes }}
+                class="zh-product__accordions"
+                data-single-accordion
               >
-                <div
-                  {{ block.shopify_attributes }}
-                  class="zh-product__accordions"
-                  data-single-accordion="{{ section.id }}"
-                >
-                  {% render 'product-details', product: product %}
+                {% render 'product-details', product: product %}
 
+                {%- if care_display_text != blank -%}
                   <details class="zh-product__accordion">
                     <summary class="font-display">
                       <span>Onderhoud</span>
@@ -996,145 +955,38 @@
                     </summary>
 
                     <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
-                      <p>De glazen potten kunnen in de vaatwasser. Was de bamboe deksels uitsluitend met de hand.</p>
+                      {%- assign care_lines = care_display_text | newline_to_br | split: '<br />' -%}
+                      {%- for line in care_lines -%}
+                        {%- assign clean_line = line | strip -%}
+                        {%- if clean_line != blank -%}
+                          <p>{{ clean_line | escape }}</p>
+                        {%- endif -%}
+                      {%- endfor -%}
                     </div>
                   </details>
+                {%- endif -%}
 
+                {%- assign shipping_body = block.settings.row2_body -%}
+                {%- assign return_body = block.settings.row3_body -%}
+                {%- if shipping_body != blank or return_body != blank -%}
                   <details class="zh-product__accordion">
                     <summary class="font-display">
                       <span>Verzending en retour</span>
                       {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
                     </summary>
 
-                    <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
-                      <p>Je ontvangt je bestelling naar verwachting binnen <span class="zh-nowrap">1–3 werkdagen</span>. Thuisbezorging kost €7,95. Voor levering aan een servicepunt betaal je €6,95. Vanaf €100 is verzending gratis.</p>
-                      <p>Meld je retour binnen <span class="zh-nowrap">14 dagen</span> na ontvangst aan. Vervolgens heb je nog <span class="zh-nowrap">14 dagen</span> om het product terug te sturen. De retourkosten zijn voor eigen rekening.</p>
+                    <div class="zh-product__accordion-body zh-product__accordion-body--editorial rich-text">
+                      {%- if shipping_body != blank -%}{{ shipping_body }}{%- endif -%}
+                      {%- if return_body != blank -%}{{ return_body }}{%- endif -%}
                     </div>
                   </details>
-                </div>
-              </section>
-            {%- endif -%}
-          {%- endfor -%}
-        {%- endif -%}
-
-        {%- unless is_editorial_details_prototype -%}
-        {%- if description_intro_html != blank or zayna_note != blank -%}
-          <section class="zh-product__description-panel"{% if description_intro_html != blank %} aria-labelledby="zh-description-heading-{{ section.id }}"{% else %} aria-label="Productnotitie"{% endif %}>
-            {%- if description_intro_html != blank -%}
-              <h2 id="zh-description-heading-{{ section.id }}" class="zh-product__section-title font-display">Over dit product</h2>
-              {%- for block in section.blocks -%}
-                {%- if block.type == 'description' -%}
-                  <div {{ block.shopify_attributes }} class="zh-product__description rich-text">
-                    {{ description_intro_html }}
-                  </div>
                 {%- endif -%}
-              {%- endfor -%}
-            {%- endif -%}
-
-            {%- if zayna_note != blank -%}
-              {%- for block in section.blocks -%}
-                {%- if block.type == 'zayna_note' -%}
-                  <figure {{ block.shopify_attributes }} class="zh-product__note">
-                    <blockquote class="font-display">“{{ zayna_note }}”</blockquote>
-                    <figcaption>— {{ block.settings.signature }}</figcaption>
-                  </figure>
-                {%- endif -%}
-              {%- endfor -%}
-            {%- endif -%}
-          </section>
-        {%- endif -%}
-        {%- endunless -%}
+              </div>
+            </section>
+          {%- endif -%}
+        {%- endfor -%}
       </div>
     </div>
-
-    {%- unless is_editorial_details_prototype -%}
-    <section class="zh-product__logistics mx-auto max-w-7xl px-4 sm:px-6 lg:px-10" aria-label="Productinformatie, gebruik, verzending en retourneren">
-      {%- for block in section.blocks -%}
-        {%- if block.type == 'care_shipping' -%}
-          <div
-            {{ block.shopify_attributes }}
-            class="zh-product__accordions"
-            {% if is_editorial_details_prototype %}
-              data-single-accordion="{{ section.id }}"
-            {% endif %}
-          >
-            {% render 'product-details', product: product %}
-
-            {%- if is_editorial_details_prototype -%}
-              <details class="zh-product__accordion">
-                <summary class="font-display">
-                  <span>Onderhoud</span>
-                  {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
-                </summary>
-
-                <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
-                  <p>De glazen potten kunnen in de vaatwasser. Was de bamboe deksels uitsluitend met de hand.</p>
-                </div>
-              </details>
-
-              <details class="zh-product__accordion">
-                <summary class="font-display">
-                  <span>Verzending en retour</span>
-                  {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
-                </summary>
-
-                <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
-                  <p>Je bestelling wordt zorgvuldig verpakt en heeft een verwachte levertijd van <span class="zh-nowrap">1–3 werkdagen</span>. Binnen Nederland kost thuisbezorging €7,95 en levering aan een servicepunt €6,95. <span class="zh-nowrap">Vanaf €100</span> verzenden we gratis.</p>
-                  <p>Een retour meld je binnen <span class="zh-nowrap">14 dagen</span> na ontvangst aan. Daarna heb je nog <span class="zh-nowrap">14 dagen</span> om het product terug te sturen. De retourkosten zijn voor eigen rekening.</p>
-                </div>
-              </details>
-            {%- else -%}
-              {%- if detail_onderhoud != blank or product_care_html != blank -%}
-                <details class="zh-product__accordion">
-                  <summary class="font-display">
-                    <span>Gebruik en onderhoud</span>
-                    {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
-                  </summary>
-
-                  <div class="zh-product__accordion-body">
-                    {%- if detail_onderhoud != blank -%}
-                      {%- assign care_lines = detail_onderhoud | newline_to_br | split: '<br />' -%}
-                      <ul class="zh-product__care-lines" role="list">
-                        {%- for line in care_lines -%}
-                          {%- assign clean_line = line | strip -%}
-                          {%- if clean_line != blank -%}
-                            <li>{{ clean_line | escape }}</li>
-                          {%- endif -%}
-                        {%- endfor -%}
-                      </ul>
-                    {%- else -%}
-                      <div class="rich-text">{{ product_care_html }}</div>
-                    {%- endif -%}
-                  </div>
-                </details>
-              {%- endif -%}
-
-              {%- for i in (1..3) -%}
-                {%- assign title_key = 'row' | append: i | append: '_title' -%}
-                {%- assign body_key = 'row' | append: i | append: '_body' -%}
-                {%- assign row_title = block.settings[title_key] -%}
-                {%- assign row_body = block.settings[body_key] -%}
-                {%- assign row_title_key = row_title | downcase | strip -%}
-                {%- assign skip_generic_care = false -%}
-                {%- if row_title_key == 'onderhoud' or row_title_key == 'gebruik en onderhoud' -%}
-                  {%- assign skip_generic_care = true -%}
-                {%- endif -%}
-                {%- if row_title != blank and row_body != blank and skip_generic_care == false -%}
-                  <details class="zh-product__accordion">
-                    <summary class="font-display">
-                      <span>{{ row_title }}</span>
-                      {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
-                    </summary>
-                    <div class="zh-product__accordion-body rich-text">{{ row_body }}</div>
-                  </details>
-                {%- endif -%}
-              {%- endfor -%}
-            {%- endif -%}
-          </div>
-        {%- endif -%}
-      {%- endfor -%}
-    </section>
-    {%- endunless -%}
 
     <script type="application/json" data-product-json>
       {
@@ -1187,31 +1039,8 @@
       }
     </script>
 
-    {%- if is_editorial_details_prototype -%}
-      <script>
-        (() => {
-          const group = document.querySelector('[data-single-accordion="{{ section.id }}"]');
-          if (!group || group.dataset.singleAccordionReady === 'true') return;
 
-          group.dataset.singleAccordionReady = 'true';
-          const rows = Array.from(group.querySelectorAll(':scope > details'));
-
-          rows.forEach((row) => {
-            row.addEventListener('toggle', () => {
-              if (!row.open) return;
-
-              rows.forEach((otherRow) => {
-                if (otherRow !== row && otherRow.open) {
-                  otherRow.open = false;
-                }
-              });
-            });
-          });
-        })();
-      </script>
-    {%- endif -%}
-
-    <script src="{{ 'product.js' | asset_url | append: '?zh=11' }}" defer></script>
+    <script src="{{ 'product.js' | asset_url | append: '?zh=12' }}" defer></script>
     {% render 'product-structured-data', product: product %}
   </section>
 </div>
@@ -1245,26 +1074,15 @@
         { "type": "text", "id": "sold_label", "label": "Tekst uitverkocht", "default": "Uitverkocht" }
       ]
     },
-    { "type": "description", "name": "Productomschrijving", "limit": 1, "settings": [] },
-    {
-      "type": "zayna_note",
-      "name": "Zayna-notitie",
-      "limit": 1,
-      "settings": [
-        { "type": "text", "id": "signature", "label": "Ondertekening", "default": "Zayna" }
-      ]
-    },
     {
       "type": "care_shipping",
       "name": "Verzending en retourneren",
       "limit": 1,
       "settings": [
-        { "type": "text", "id": "row1_title", "label": "Rij 1 titel" },
-        { "type": "richtext", "id": "row1_body", "label": "Rij 1 tekst" },
         { "type": "text", "id": "row2_title", "label": "Rij 2 titel", "default": "Verzending" },
-        { "type": "richtext", "id": "row2_body", "label": "Rij 2 tekst", "default": "<p>Nederland: thuisbezorging €7,95 of een servicepunt voor €6,95. Gratis verzending vanaf €100. De indicatieve levertijd is 1–3 werkdagen en je ontvangt track & trace.</p>" },
+        { "type": "richtext", "id": "row2_body", "label": "Rij 2 tekst", "default": "<p>Je bestelling wordt zorgvuldig verpakt en heeft een verwachte levertijd van 1–3 werkdagen. Binnen Nederland kost thuisbezorging €7,95 en levering aan een servicepunt €6,95. Vanaf €100 verzenden we gratis.</p>" },
         { "type": "text", "id": "row3_title", "label": "Rij 3 titel", "default": "Retourneren" },
-        { "type": "richtext", "id": "row3_body", "label": "Rij 3 tekst", "default": "<p>Je hebt 14 dagen na ontvangst om je retour aan te melden. Daarna heb je nog 14 dagen om het product terug te sturen. Retourkosten zijn voor eigen rekening, tenzij wettelijk anders.</p>" }
+        { "type": "richtext", "id": "row3_body", "label": "Rij 3 tekst", "default": "<p>Meld je retour binnen 14 dagen na ontvangst aan. Daarna heb je nog 14 dagen om het product terug te sturen. De retourkosten zijn voor eigen rekening.</p>" }
       ]
     }
   ]
