@@ -1,7 +1,7 @@
 {%- liquid
   assign faqs = product.metafields.custom.faqs.value
   assign visible_faq_count = 0
-  assign faq_filter_terms = 'materiaal|waarvan is|inhoud|hoeveel ml|hoeveel liter|afmeting|afmetingen|hoe groot|vaatwasser|magnetron|vriezer|warme en koude|warme dranken|koude dranken|hoeveel stuks|wat wordt meegeleverd|wat zit erbij|onderhoud|schoonmaken|schoonmaak|reinigen|handwas|afwassen' | split: '|'
+  assign faq_filter_terms = 'materiaal|waarvan is|inhoud|hoeveel ml|hoeveel liter|afmeting|afmetingen|hoe groot|vaatwasser|magnetron|vriezer|warme en koude|warme dranken|koude dranken|hoeveel stuks|wat wordt meegeleverd|wat zit erbij|meegeleverd|onderhoud|schoonmaken|schoonmaak|reinigen|handwas|afwassen|nauwkeurig|nauwkeurigheid|weeggewicht|maximaal gewicht|maximaal wegen|batterij|knoopcel|tarra|hold|waarvoor|geschikt voor|bevestigen|bevestiging|ophangen|plakken|draagvermogen|luchtdicht|hoe werkt|functies|filter|deksel' | split: '|'
 
   if faqs != blank
     for faq in faqs
@@ -22,7 +22,7 @@
       endunless
 
       unless skip_faq
-        if visible_faq_count < 4
+        if visible_faq_count < 3
           assign visible_faq_count = visible_faq_count | plus: 1
         endif
       endunless
@@ -177,7 +177,7 @@
             -%}
 
             {%- unless skip_faq -%}
-              {%- if rendered_faq_count < 4 -%}
+              {%- if rendered_faq_count < 3 -%}
                 <details class="zh-product-faq__item">
                   <summary class="font-display">
                     <span>{{ faq.question }}</span>
@@ -224,7 +224,7 @@
           -%}
 
           {%- unless skip_faq -%}
-            {%- if emitted_faqs < 4 -%}
+            {%- if emitted_faqs < 3 -%}
               {%- if emitted_faqs > 0 -%},{%- endif -%}
               {
                 "@type": "Question",
