@@ -1,25 +1,26 @@
 {%- comment -%}
-  Zayna Home — UX-prototype v5 voor twee proefproducten.
+  Zayna Home — UX-prototype v6 voor twee proefproducten.
 
   Prototypeproducten:
   - voorraadpot-600ml-borosilicaatglas
   - digitale-weeglepel-500g-0-1g
 
-  Voor deze twee producten:
-  - optionele korte openingszin;
-  - productfeiten in een rustig editorial grid;
-  - lange informatie zoals "Meegeleverd" over de volle breedte.
+  Doel v6:
+  - simpele producten: zachte microblokken zonder dubbelepunten;
+  - technische producten: rustige korte lijst, geen specificatiegrid;
+  - minder technische zichtbaarheid;
+  - zachtere kleur, kleinere tekst en verfijnde spacing.
 
-  Alle andere producten behouden de bestaande v2-weergave.
+  Alle andere producten behouden de bestaande fallback-weergave.
 {%- endcomment -%}
 
 {%- liquid
   assign detail_display_text = product.metafields.custom.detail_weergavetekst.value | strip
-  assign is_ux_prototype_v3 = false
+  assign is_ux_prototype_v6 = false
   assign is_technical_detail_prototype = false
 
   if product.handle == 'voorraadpot-600ml-borosilicaatglas' or product.handle == 'digitale-weeglepel-500g-0-1g'
-    assign is_ux_prototype_v3 = true
+    assign is_ux_prototype_v6 = true
   endif
 
   if product.handle == 'digitale-weeglepel-500g-0-1g'
@@ -80,73 +81,61 @@
       overflow-wrap: anywhere;
     }
 
-    /* UX-prototype v5: editorial detail grid */
-    .zh-product-details--ux-v3 .zh-product-details__content {
-      gap: .68rem;
-      padding: .02rem 0 .02rem;
+    /* UX-prototype v6: zachte accordion-inhoud */
+    .zh-product-details--ux-v6 .zh-product-details__content {
+      gap: .62rem;
+      max-width: 50ch;
+      padding: .02rem 0 .04rem;
     }
 
-    .zh-product-details--ux-v3 .zh-product-details__lead {
-      max-width: 46ch;
-      margin: 0;
-      color: #625a53;
-      font-size: .875rem;
-      line-height: 1.56;
-    }
-
-    .zh-product-details__grid {
+    .zh-product-details__micro-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: .74rem 1rem;
+      grid-template-columns: minmax(0, 1fr);
+      gap: .72rem;
+      max-width: 46ch;
       min-width: 0;
     }
 
-    .zh-product-details__tile {
+    .zh-product-details__micro-item {
+      display: grid;
+      gap: .08rem;
       min-width: 0;
     }
 
-    .zh-product-details__tile--wide {
-      grid-column: 1 / -1;
-    }
-
-    .zh-product-details__tile-label {
-      display: block;
-      margin: 0 0 .12rem;
-      color: #8a7768;
-      font-size: .66rem;
-      font-weight: 500;
-      letter-spacing: .012em;
-      line-height: 1.35;
-      text-transform: none;
-    }
-
-    .zh-product-details__tile-value {
-      display: block;
-      color: #2a2520;
-      font-size: .88rem;
-      line-height: 1.44;
+    .zh-product-details__micro-value {
+      color: #2f2a25;
+      font-size: .91rem;
+      font-weight: 450;
+      line-height: 1.36;
       overflow-wrap: normal;
       word-break: normal;
-      hyphens: none;
+    }
+
+    .zh-product-details__micro-note {
+      color: #746a60;
+      font-size: .82rem;
+      line-height: 1.48;
+      overflow-wrap: normal;
+      word-break: normal;
     }
 
     .zh-product-details__soft {
       display: grid;
-      gap: .6rem;
-      max-width: 46ch;
+      gap: .58rem;
+      max-width: 43ch;
     }
 
     .zh-product-details__tech-lead {
       margin: 0;
-      color: #554e48;
-      font-size: .91rem;
-      line-height: 1.58;
+      color: #5f5851;
+      font-size: .88rem;
+      line-height: 1.6;
       text-wrap: pretty;
     }
 
     .zh-product-details__soft-list {
       display: grid;
-      gap: .38rem;
+      gap: .28rem;
       margin: 0;
       padding: 0;
       list-style: none;
@@ -154,17 +143,9 @@
 
     .zh-product-details__soft-list li {
       margin: 0;
-      color: #2a2520;
-      font-size: .9rem;
-      line-height: 1.48;
-    }
-
-    .zh-product-details--ux-v3 .zh-product-details__note {
-      max-width: 50ch;
-      margin: .02rem 0 0;
-      color: #625a53;
-      font-size: .815rem;
-      line-height: 1.58;
+      color: #2f2a25;
+      font-size: .875rem;
+      line-height: 1.45;
     }
 
     @media (min-width: 640px) {
@@ -177,28 +158,38 @@
         gap: 1rem;
       }
 
-      .zh-product-details--ux-v3 .zh-product-details__content {
-        gap: .86rem;
+      .zh-product-details--ux-v6 .zh-product-details__content {
+        max-width: 52ch;
+      }
+    }
+
+    @media (min-width: 760px) {
+      .zh-product-details__micro-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .8rem 1.15rem;
       }
     }
 
     @media (min-width: 1180px) {
-      .zh-product-details__grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: .95rem 1.2rem;
+      .zh-product-details--ux-v6 .zh-product-details__content {
+        max-width: 540px;
+      }
+
+      .zh-product-details__micro-grid {
+        gap: .9rem 1.3rem;
       }
     }
   {% endstyle %}
 
-  <details class="zh-product__accordion zh-product-details{% if is_ux_prototype_v3 %} zh-product-details--ux-v3{% endif %}">
-    <summary class="font-display">
+  <details class="zh-product__accordion zh-product-details{% if is_ux_prototype_v6 %} zh-product-details--ux-v6{% endif %}">
+    <summary>
       <span>Details</span>
       {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
     </summary>
 
     {%- assign detail_lines = detail_display_text | newline_to_br | split: '<br />' -%}
 
-    {%- if is_ux_prototype_v3 -%}
+    {%- if is_ux_prototype_v6 -%}
       <div class="zh-product__accordion-body zh-product__accordion-body--editorial zh-product-details__content">
         {%- if is_technical_detail_prototype -%}
           <div class="zh-product-details__soft">
@@ -224,44 +215,28 @@
             {%- if tech_list_open -%}</ul>{%- endif -%}
           </div>
         {%- else -%}
-          {%- assign has_seen_fact = false -%}
-          {%- assign facts_open = false -%}
+          <div class="zh-product-details__micro-grid">
+            {%- assign clean_line_index = 0 -%}
+            {%- assign item_open = false -%}
 
-          {%- for line in detail_lines -%}
-            {%- assign clean_line = line | strip -%}
-            {%- if clean_line != blank -%}
-              {%- if clean_line contains ':' -%}
-                {%- assign fact_label = clean_line | split: ':' | first | strip -%}
-                {%- assign fact_value = clean_line | remove_first: fact_label | remove_first: ':' | strip -%}
-
-                {%- if fact_label != blank and fact_value != blank -%}
-                  {%- unless facts_open -%}
-                    <div class="zh-product-details__grid">
-                    {%- assign facts_open = true -%}
-                  {%- endunless -%}
-
-                  {%- assign fact_label_downcase = fact_label | downcase -%}
-                  {%- assign is_wide_fact = false -%}
-                  {%- if fact_label_downcase contains 'meegeleverd' or fact_label_downcase contains 'afsluiting' or fact_label_downcase contains 'bevestiging' or fact_label_downcase contains 'bediening' or fact_label_downcase contains 'markering' or fact_label_downcase contains 'montage' -%}
-                    {%- assign is_wide_fact = true -%}
-                  {%- endif -%}
-                  <div class="zh-product-details__tile{% if is_wide_fact %} zh-product-details__tile--wide{% endif %}">
-                    <span class="zh-product-details__tile-label">{{ fact_label | escape }}</span>
-                    <span class="zh-product-details__tile-value">{{ fact_value | escape }}</span>
-                  </div>
-                  {%- assign has_seen_fact = true -%}
+            {%- for line in detail_lines -%}
+              {%- assign clean_line = line | strip -%}
+              {%- if clean_line != blank -%}
+                {%- assign line_mod = clean_line_index | modulo: 2 -%}
+                {%- if line_mod == 0 -%}
+                  {%- if item_open -%}</div>{%- endif -%}
+                  <div class="zh-product-details__micro-item">
+                    <span class="zh-product-details__micro-value">{{ clean_line | escape }}</span>
+                  {%- assign item_open = true -%}
                 {%- else -%}
-                  {%- if facts_open -%}</div>{%- assign facts_open = false -%}{%- endif -%}
-                  <p class="{% if has_seen_fact %}zh-product-details__note{% else %}zh-product-details__lead{% endif %}">{{ clean_line | escape }}</p>
+                    <span class="zh-product-details__micro-note">{{ clean_line | escape }}</span>
                 {%- endif -%}
-              {%- else -%}
-                {%- if facts_open -%}</div>{%- assign facts_open = false -%}{%- endif -%}
-                <p class="{% if has_seen_fact %}zh-product-details__note{% else %}zh-product-details__lead{% endif %}">{{ clean_line | escape }}</p>
+                {%- assign clean_line_index = clean_line_index | plus: 1 -%}
               {%- endif -%}
-            {%- endif -%}
-          {%- endfor -%}
+            {%- endfor -%}
 
-          {%- if facts_open -%}</div>{%- endif -%}
+            {%- if item_open -%}</div>{%- endif -%}
+          </div>
         {%- endif -%}
       </div>
     {%- else -%}
