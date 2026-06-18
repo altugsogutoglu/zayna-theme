@@ -650,10 +650,10 @@
   .zh-product__accordion-body--editorial {
     width: 100%;
     max-width: none;
-    padding: 0 0 1.2rem;
-    color: #554e48;
-    font-size: .9375rem;
-    line-height: 1.65;
+    padding: 0 0 1.05rem;
+    color: #5f5851;
+    font-size: .9rem;
+    line-height: 1.62;
     overflow-wrap: normal;
     word-break: normal;
     hyphens: none;
@@ -791,9 +791,9 @@
   }
 
   .zh-product__accordion summary {
-    min-height: 3.55rem;
-    padding: .75rem 0;
-    font-size: 1.04rem;
+    min-height: 3.25rem;
+    padding: .62rem 0;
+    font-size: .98rem;
   }
 
   .zh-product__accordion-icon {
@@ -804,7 +804,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v5 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v6 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -870,13 +870,21 @@
   }
 
   .zh-product--ux-prototype-v3 .zh-product__accordion summary {
-    min-height: 2.9rem;
-    padding: .46rem 0;
-    font-size: .94rem;
+    min-height: 2.68rem;
+    padding: .4rem 0;
+    color: #2f2a25;
+    font-family: var(--font-sans, sans-serif);
+    font-size: .88rem;
+    font-weight: 500;
+    letter-spacing: .004em;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__accordion-body--editorial {
-    padding-bottom: .9rem;
+    max-width: 540px;
+    padding-bottom: .78rem;
+    color: #5f5851;
+    font-size: .875rem;
+    line-height: 1.58;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__accordion-icon {
@@ -888,7 +896,7 @@
   .zh-product__delivery-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: .62rem .95rem;
+    gap: .54rem .85rem;
   }
 
   .zh-product__delivery-item,
@@ -898,34 +906,34 @@
 
   .zh-product__delivery-label {
     display: block;
-    margin: 0 0 .12rem;
+    margin: 0 0 .1rem;
     color: #8a7768;
-    font-size: .66rem;
+    font-size: .64rem;
     font-weight: 500;
-    letter-spacing: .012em;
+    letter-spacing: .006em;
     line-height: 1.35;
     text-transform: none;
   }
 
   .zh-product__delivery-value {
     display: block;
-    color: #2a2520;
-    font-size: .84rem;
-    line-height: 1.4;
+    color: #2f2a25;
+    font-size: .81rem;
+    line-height: 1.38;
   }
 
   .zh-product__return-block {
-    margin-top: .74rem;
-    padding-top: .72rem;
-    border-top: 1px solid rgb(222 213 204 / 72%);
+    margin-top: .62rem;
+    padding-top: .64rem;
+    border-top: 1px solid rgb(222 213 204 / 68%);
   }
 
   .zh-product__return-copy {
-    max-width: 48ch;
+    max-width: 46ch;
     margin: 0;
     color: #625a53;
-    font-size: .81rem;
-    line-height: 1.54;
+    font-size: .79rem;
+    line-height: 1.52;
   }
 
   .zh-product__return-copy + .zh-product__return-copy {
@@ -964,8 +972,8 @@
     }
 
     .zh-product--ux-prototype-v3 .zh-product__accordion summary {
-      min-height: 2.75rem;
-      font-size: .9rem;
+      min-height: 2.58rem;
+      font-size: .85rem;
     }
 
     .zh-product--ux-prototype-v3 .zh-product__qty {
@@ -980,15 +988,15 @@
     }
 
     .zh-product--ux-prototype-v3 .zh-product__buy-column {
-      max-width: 640px;
+      max-width: 600px;
     }
 
     .zh-product--ux-prototype-v3 .zh-product__actions {
-      max-width: 540px;
+      max-width: 500px;
     }
 
     .zh-product--ux-prototype-v3 .zh-product__inline-logistics {
-      max-width: 610px;
+      max-width: 560px;
     }
 
     .zh-product--ux-prototype-v3 .zh-product__title {
@@ -1002,7 +1010,7 @@
 
     .zh-product--ux-prototype-v3 .zh-product__delivery-grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: .95rem 1rem;
+      gap: .72rem .9rem;
     }
   }
 
@@ -1200,7 +1208,7 @@
           {%- if block.type == 'care_shipping' -%}
             <section
               class="zh-product__inline-logistics"
-              aria-label="Productdetails, onderhoud, verzending en retour"
+              aria-label="Productdetails, onderhoud, levering en retour"
             >
               <div
                 {{ block.shopify_attributes }}
@@ -1233,7 +1241,7 @@
                 {%- if shipping_body != blank or return_body != blank -%}
                   <details class="zh-product__accordion">
                     <summary class="font-display">
-                      <span>Verzending en retour</span>
+                      <span>Levering & retour</span>
                       {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
                     </summary>
 
@@ -1260,7 +1268,7 @@
 
                         <div class="zh-product__return-block">
                           <span class="zh-product__delivery-label">Retour</span>
-                          <p class="zh-product__return-copy">{{ block.settings.return_window | default: 'Meld je retour binnen 14 dagen aan. Daarna heb je nog 14 dagen om het terug te sturen. Retourkosten zijn voor eigen rekening.' }}</p>
+                          <p class="zh-product__return-copy">{{ block.settings.return_window | default: 'Retourneren kan binnen 14 dagen na ontvangst. Daarna heb je nog 14 dagen om het product terug te sturen. Retourkosten zijn voor eigen rekening.' }}</p>
                           <p class="zh-product__return-copy">{{ block.settings.return_cost | default: 'Tenzij wettelijk anders is bepaald.' }}</p>
                         </div>
                       {%- else -%}
@@ -1387,7 +1395,7 @@
         { "type": "text", "id": "shipping_home", "label": "Thuisbezorging", "default": "€7,95" },
         { "type": "text", "id": "shipping_point", "label": "Servicepunt", "default": "€6,95" },
         { "type": "text", "id": "shipping_free", "label": "Gratis verzending", "default": "Vanaf €100" },
-        { "type": "textarea", "id": "return_window", "label": "Retourtermijn", "default": "Meld je retour binnen 14 dagen aan. Daarna heb je nog 14 dagen om het terug te sturen. Retourkosten zijn voor eigen rekening." },
+        { "type": "textarea", "id": "return_window", "label": "Retourtermijn", "default": "Retourneren kan binnen 14 dagen na ontvangst. Daarna heb je nog 14 dagen om het product terug te sturen. Retourkosten zijn voor eigen rekening." },
         { "type": "textarea", "id": "return_cost", "label": "Retourkosten", "default": "Tenzij wettelijk anders is bepaald." }
       ]
     }
