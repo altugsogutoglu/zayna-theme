@@ -689,6 +689,18 @@
   }
 
 
+
+  @media (min-width: 750px) and (max-width: 1180px) {
+    .zh-product--ux-prototype-v3 .zh-product__accordion summary {
+      min-height: 48px;
+      padding-block: 0;
+    }
+
+    .zh-product--ux-prototype-v3 .zh-product__accordion-body--editorial {
+      padding-top: .08rem;
+    }
+  }
+
   @media (min-width: 640px) {
     .zh-product__purchase {
       grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
@@ -804,7 +816,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v10 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v11 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -937,20 +949,39 @@
     pointer-events: none;
   }
 
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary::before {
+    content: "";
+    position: absolute;
+    inset: -3px 0;
+    pointer-events: auto;
+  }
+
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary > span,
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary > svg {
+    position: relative;
+    z-index: 1;
+  }
+
+
   .zh-product--ux-prototype-v3 .zh-product__accordion summary {
+    position: relative;
     cursor: pointer;
-    transform: translateZ(0);
-    will-change: auto;
     transition: color 180ms ease;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__accordion summary:hover {
     color: #2a2520;
-    transform: translateZ(0);
   }
 
   .zh-product--ux-prototype-v3 .zh-product__accordion summary:hover .zh-product__accordion-icon {
     opacity: .66;
+  }
+
+
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary,
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary:hover,
+  .zh-product--ux-prototype-v3 .zh-product__accordion[open] summary {
+    font-weight: 500;
   }
 
   .zh-product__delivery-grid {
