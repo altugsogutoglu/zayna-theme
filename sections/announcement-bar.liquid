@@ -128,12 +128,8 @@
     }
   }
 
-  @media (hover: hover) and (pointer: fine) {
-    #shopify-section-{{ section.id }}
-      .zayna-announcement:hover
-      .zayna-announcement__track {
-      animation-play-state: paused;
-    }
+  #shopify-section-{{ section.id }} .zayna-announcement:focus-within .zayna-announcement__track {
+    animation-play-state: paused;
   }
 
   @media (min-width: 750px) {
@@ -235,7 +231,7 @@
         {
           "type": "message",
           "settings": {
-            "text": "Voor 23:00 besteld, morgen verzonden"
+            "text": "Verwachte levertijd 1–3 werkdagen"
           }
         },
         {
