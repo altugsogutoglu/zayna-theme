@@ -77,7 +77,8 @@
       "type": "related-products",
       "custom_css": [],
       "settings": {
-        "heading": "Misschien vind je dit ook mooi"
+        "heading": "In dezelfde sfeer",
+        "eyebrow": "Verder kijken"
       }
     }
   },
