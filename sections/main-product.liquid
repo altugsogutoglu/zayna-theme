@@ -692,12 +692,12 @@
 
   @media (min-width: 750px) and (max-width: 1180px) {
     .zh-product--ux-prototype-v3 .zh-product__accordion summary {
-      min-height: 48px;
+      min-height: 50px;
       padding-block: 0;
     }
 
     .zh-product--ux-prototype-v3 .zh-product__accordion-body--editorial {
-      padding-top: .08rem;
+      padding-top: .1rem;
     }
   }
 
@@ -816,7 +816,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v11 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v12 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -949,23 +949,13 @@
     pointer-events: none;
   }
 
-  .zh-product--ux-prototype-v3 .zh-product__accordion summary::before {
-    content: "";
-    position: absolute;
-    inset: -3px 0;
-    pointer-events: auto;
-  }
-
-  .zh-product--ux-prototype-v3 .zh-product__accordion summary > span,
-  .zh-product--ux-prototype-v3 .zh-product__accordion summary > svg {
-    position: relative;
-    z-index: 1;
-  }
 
 
   .zh-product--ux-prototype-v3 .zh-product__accordion summary {
     position: relative;
     cursor: pointer;
+    transform: none;
+    will-change: auto;
     transition: color 180ms ease;
   }
 
