@@ -8,10 +8,6 @@
     assign related_heading = 'In dezelfde sfeer'
   endif
 
-  assign is_editorial_details_prototype = false
-  if product.handle == 'set-van-12-vierkante-kruidenpotten-120-ml-incl-labels-trechter-borosilicaat-glas'
-    assign is_editorial_details_prototype = true
-  endif
 -%}
 
 {% style %}
@@ -95,7 +91,7 @@
   {%- if recommendations.performed and recommendations.products_count > 0 -%}
     <section
       aria-labelledby="related-products-heading-{{ section.id }}"
-      class="zh-related-products__section{% if is_editorial_details_prototype %} zh-related-products__section--editorial-prototype{% endif %} mx-auto max-w-7xl px-4 sm:px-6 lg:px-10"
+      class="zh-related-products__section mx-auto max-w-7xl px-4 sm:px-6 lg:px-10"
     >
       <header class="zh-related-products__header">
         {%- if related_eyebrow != blank -%}

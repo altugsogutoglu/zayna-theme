@@ -1,20 +1,25 @@
 {%- liquid
   assign faqs = product.metafields.custom.faqs.value
   assign visible_faq_count = 0
-  assign suppress_product_faq = false
+  assign faq_filter_terms = 'materiaal|waarvan is|inhoud|hoeveel ml|hoeveel liter|afmeting|afmetingen|hoe groot|vaatwasser|magnetron|vriezer|warme en koude|warme dranken|koude dranken|hoeveel stuks|wat wordt meegeleverd|wat zit erbij|onderhoud|schoonmaken|schoonmaak|reinigen|handwas|afwassen' | split: '|'
 
-  if product.handle == 'set-van-12-vierkante-kruidenpotten-120-ml-incl-labels-trechter-borosilicaat-glas'
-    assign suppress_product_faq = true
-  endif
-
-  if suppress_product_faq == false and faqs != blank
+  if faqs != blank
     for faq in faqs
       assign faq_question = faq.question | downcase | strip
       assign skip_faq = false
 
-      if faq_question contains 'materiaal' or faq_question contains 'waarvan is' or faq_question contains 'inhoud' or faq_question contains 'hoeveel ml' or faq_question contains 'hoeveel liter' or faq_question contains 'afmeting' or faq_question contains 'afmetingen' or faq_question contains 'hoe groot' or faq_question contains 'vaatwasser' or faq_question contains 'magnetron' or faq_question contains 'vriezer' or faq_question contains 'warme en koude' or faq_question contains 'warme dranken' or faq_question contains 'koude dranken' or faq_question contains 'hoeveel stuks' or faq_question contains 'wat wordt meegeleverd' or faq_question contains 'wat zit erbij'
+      if faq.question == blank or faq.answer == blank
         assign skip_faq = true
       endif
+
+      unless skip_faq
+        for filter_term in faq_filter_terms
+          if faq_question contains filter_term
+            assign skip_faq = true
+            break
+          endif
+        endfor
+      endunless
 
       unless skip_faq
         if visible_faq_count < 4
@@ -125,7 +130,6 @@
       }
     }
 
-
     @media (min-width: 1024px) {
       .zh-product-faq__inner {
         padding-right: 2.5rem;
@@ -143,38 +147,53 @@
   <section aria-labelledby="product-faq-heading-{{ section.id }}" class="zh-product-faq">
     <div class="zh-product-faq__inner">
       <div class="zh-product-faq__content">
-      {%- if section.settings.eyebrow != blank -%}
-        <p class="zh-product-faq__eyebrow">{{ section.settings.eyebrow }}</p>
-      {%- endif -%}
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="zh-product-faq__eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
 
-      <h2 id="product-faq-heading-{{ section.id }}" class="zh-product-faq__heading font-display">{{ section.settings.heading }}</h2>
+        <h2 id="product-faq-heading-{{ section.id }}" class="zh-product-faq__heading font-display">
+          {{ section.settings.heading }}
+        </h2>
 
-      <div class="zh-product-faq__list">
-        {%- assign rendered_faq_count = 0 -%}
-        {%- for faq in faqs -%}
-          {%- liquid
-            assign faq_question = faq.question | downcase | strip
-            assign skip_faq = false
-            if faq_question contains 'materiaal' or faq_question contains 'waarvan is' or faq_question contains 'inhoud' or faq_question contains 'hoeveel ml' or faq_question contains 'hoeveel liter' or faq_question contains 'afmeting' or faq_question contains 'afmetingen' or faq_question contains 'hoe groot' or faq_question contains 'vaatwasser' or faq_question contains 'magnetron' or faq_question contains 'vriezer' or faq_question contains 'warme en koude' or faq_question contains 'warme dranken' or faq_question contains 'koude dranken' or faq_question contains 'hoeveel stuks' or faq_question contains 'wat wordt meegeleverd' or faq_question contains 'wat zit erbij'
-              assign skip_faq = true
-            endif
-          -%}
-          {%- unless skip_faq -%}
-            {%- if rendered_faq_count < 4 -%}
-              <details class="zh-product-faq__item">
-                <summary class="font-display">
-                  <span>{{ faq.question }}</span>
-                  {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product-faq__icon' %}
-                </summary>
-                <div class="zh-product-faq__answer">
-                  <p>{{ faq.answer }}</p>
-                </div>
-              </details>
-              {%- assign rendered_faq_count = rendered_faq_count | plus: 1 -%}
-            {%- endif -%}
-          {%- endunless -%}
-        {%- endfor -%}
-      </div>
+        <div class="zh-product-faq__list">
+          {%- assign rendered_faq_count = 0 -%}
+          {%- for faq in faqs -%}
+            {%- liquid
+              assign faq_question = faq.question | downcase | strip
+              assign skip_faq = false
+
+              if faq.question == blank or faq.answer == blank
+                assign skip_faq = true
+              endif
+
+              unless skip_faq
+                for filter_term in faq_filter_terms
+                  if faq_question contains filter_term
+                    assign skip_faq = true
+                    break
+                  endif
+                endfor
+              endunless
+            -%}
+
+            {%- unless skip_faq -%}
+              {%- if rendered_faq_count < 4 -%}
+                <details class="zh-product-faq__item">
+                  <summary class="font-display">
+                    <span>{{ faq.question }}</span>
+                    {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product-faq__icon' %}
+                  </summary>
+
+                  <div class="zh-product-faq__answer">
+                    <p>{{ faq.answer }}</p>
+                  </div>
+                </details>
+
+                {%- assign rendered_faq_count = rendered_faq_count | plus: 1 -%}
+              {%- endif -%}
+            {%- endunless -%}
+          {%- endfor -%}
+        </div>
       </div>
     </div>
   </section>
@@ -189,10 +208,21 @@
           {%- liquid
             assign faq_question = faq.question | downcase | strip
             assign skip_faq = false
-            if faq_question contains 'materiaal' or faq_question contains 'waarvan is' or faq_question contains 'inhoud' or faq_question contains 'hoeveel ml' or faq_question contains 'hoeveel liter' or faq_question contains 'afmeting' or faq_question contains 'afmetingen' or faq_question contains 'hoe groot' or faq_question contains 'vaatwasser' or faq_question contains 'magnetron' or faq_question contains 'vriezer' or faq_question contains 'warme en koude' or faq_question contains 'warme dranken' or faq_question contains 'koude dranken' or faq_question contains 'hoeveel stuks' or faq_question contains 'wat wordt meegeleverd' or faq_question contains 'wat zit erbij'
+
+            if faq.question == blank or faq.answer == blank
               assign skip_faq = true
             endif
+
+            unless skip_faq
+              for filter_term in faq_filter_terms
+                if faq_question contains filter_term
+                  assign skip_faq = true
+                  break
+                endif
+              endfor
+            endunless
           -%}
+
           {%- unless skip_faq -%}
             {%- if emitted_faqs < 4 -%}
               {%- if emitted_faqs > 0 -%},{%- endif -%}
