@@ -403,8 +403,8 @@
   }
 
   .zh-product__add-button:hover:not(:disabled) {
-    border-color: var(--color-clay, #a66a3f);
-    background: var(--color-clay, #a66a3f);
+    border-color: #3a3028;
+    background: #3a3028;
   }
 
   .zh-product__add-button:disabled {
@@ -804,7 +804,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v9 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v10 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -862,39 +862,49 @@
 
   .zh-product--ux-prototype-v3 .zh-product__add-button {
     min-height: 3.18rem;
-    letter-spacing: .075em;
+    letter-spacing: .065em;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__inline-logistics {
-    margin-top: 1.08rem;
+    margin-top: 1.22rem;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__purchase {
     padding-bottom: 2.8rem;
   }
 
+
+  .zh-product--ux-prototype-v3 .zh-product__accordions {
+    border-top-color: rgb(222 213 204 / 72%);
+    border-bottom-color: rgb(222 213 204 / 72%);
+  }
+
+  .zh-product--ux-prototype-v3 .zh-product__accordion + .zh-product__accordion {
+    border-top-color: rgb(222 213 204 / 72%);
+  }
+
   .zh-product--ux-prototype-v3 .zh-product__accordion summary {
-    min-height: 2.58rem;
-    padding: .38rem 0;
+    min-height: 2.56rem;
+    padding: .37rem 0;
     color: #2f2a25;
     font-family: var(--font-sans, sans-serif);
-    font-size: .86rem;
+    font-size: .84rem;
     font-weight: 500;
     letter-spacing: .001em;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__accordion-body--editorial {
     max-width: 500px;
-    padding-bottom: .72rem;
+    padding-bottom: .76rem;
     color: #625a53;
-    font-size: .805rem;
-    line-height: 1.55;
+    font-size: .81rem;
+    line-height: 1.56;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__accordion-icon {
-    width: .76rem;
-    height: .76rem;
-    opacity: .62;
+    width: .74rem;
+    height: .74rem;
+    opacity: .58;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__accordion[open] > .zh-product__accordion-body {
@@ -940,13 +950,13 @@
   }
 
   .zh-product--ux-prototype-v3 .zh-product__accordion summary:hover .zh-product__accordion-icon {
-    opacity: .72;
+    opacity: .66;
   }
 
   .zh-product__delivery-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: .68rem .95rem;
+    gap: .76rem 1.05rem;
   }
 
   .zh-product__delivery-item,
@@ -956,11 +966,11 @@
 
   .zh-product__delivery-label {
     display: block;
-    margin: 0 0 .1rem;
+    margin: 0 0 .12rem;
     color: #8a7768;
     font-size: .64rem;
     font-weight: 500;
-    letter-spacing: .006em;
+    letter-spacing: .004em;
     line-height: 1.35;
     text-transform: none;
   }
@@ -968,14 +978,14 @@
   .zh-product__delivery-value {
     display: block;
     color: #2f2a25;
-    font-size: .825rem;
+    font-size: .83rem;
     line-height: 1.42;
   }
 
   .zh-product__return-block {
-    margin-top: .78rem;
-    padding-top: .72rem;
-    border-top: 1px solid rgb(222 213 204 / 68%);
+    margin-top: .86rem;
+    padding-top: .78rem;
+    border-top: 1px solid rgb(222 213 204 / 64%);
   }
 
   .zh-product__return-copy {
@@ -1022,8 +1032,8 @@
     }
 
     .zh-product--ux-prototype-v3 .zh-product__accordion summary {
-      min-height: 2.5rem;
-      font-size: .84rem;
+      min-height: 2.48rem;
+      font-size: .82rem;
     }
 
     .zh-product--ux-prototype-v3 .zh-product__qty {
@@ -1042,7 +1052,7 @@
     }
 
     .zh-product--ux-prototype-v3 .zh-product__actions {
-      max-width: 500px;
+      max-width: 520px;
     }
 
     .zh-product--ux-prototype-v3 .zh-product__inline-logistics {

@@ -10,6 +10,13 @@
           <div class="zayna-announcement__group">
             {%- for repetition in (1..2) -%}
               {%- for block in section.blocks -%}
+                {%- liquid
+                  assign announcement_text = block.settings.text
+                  assign announcement_text = announcement_text | replace: 'Verwachte levertijd 1–3 werkdagen', 'Verwachte levertijd 1–3 werkdagen'
+                  assign announcement_text = announcement_text | replace: 'Verwachte levertijd 1–3 werkdagen', 'Verwachte levertijd 1–3 werkdagen'
+                  assign announcement_text = announcement_text | replace: 'INDICATIEVE LEVERTIJD 1-3 WERKDAGEN', 'VERWACHTE LEVERTIJD 1–3 WERKDAGEN'
+                  assign announcement_text = announcement_text | replace: 'INDICATIEVE LEVERTIJD 1–3 WERKDAGEN', 'VERWACHTE LEVERTIJD 1–3 WERKDAGEN'
+                -%}
                 <span
                   class="zayna-announcement__item"
                   {% if group == 1 and repetition == 1 %}
@@ -17,7 +24,7 @@
                   {% endif %}
                 >
                   <span class="zayna-announcement__text">
-                    {{ block.settings.text | escape }}
+                    {{ announcement_text | escape }}
                   </span>
 
                   <span
@@ -34,7 +41,14 @@
 
     <ul class="sr-only">
       {%- for block in section.blocks -%}
-        <li>{{ block.settings.text }}</li>
+        {%- liquid
+          assign announcement_text = block.settings.text
+          assign announcement_text = announcement_text | replace: 'Verwachte levertijd 1–3 werkdagen', 'Verwachte levertijd 1–3 werkdagen'
+          assign announcement_text = announcement_text | replace: 'Verwachte levertijd 1–3 werkdagen', 'Verwachte levertijd 1–3 werkdagen'
+          assign announcement_text = announcement_text | replace: 'INDICATIEVE LEVERTIJD 1-3 WERKDAGEN', 'VERWACHTE LEVERTIJD 1–3 WERKDAGEN'
+          assign announcement_text = announcement_text | replace: 'INDICATIEVE LEVERTIJD 1–3 WERKDAGEN', 'VERWACHTE LEVERTIJD 1–3 WERKDAGEN'
+        -%}
+        <li>{{ announcement_text }}</li>
       {%- endfor -%}
     </ul>
   </section>
