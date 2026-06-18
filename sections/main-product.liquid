@@ -87,12 +87,6 @@
   endif
 -%}
 
-{%- if is_editorial_details_prototype -%}
-  {%- capture description_intro_html -%}
-    <p>Het transparante glas houdt kruiden overzichtelijk in beeld, terwijl de bamboe deksels warmte en rust toevoegen. Dankzij de vierkante vorm staan de potten netjes naast elkaar in een lade, kast of op een plank.</p>
-  {%- endcapture -%}
-{%- endif -%}
-
 {% style %}
   .zh-product-page,
   .zh-product {
@@ -614,9 +608,18 @@
     line-height: 1.7;
   }
 
+  .zh-product__inline-logistics {
+    margin-top: 1.75rem;
+  }
+
+  .zh-product--editorial-prototype .zh-product__accordions {
+    width: 100%;
+    max-width: none;
+  }
+
   .zh-product__accordion-body--editorial {
     width: 100%;
-    max-width: 100%;
+    max-width: none;
     padding: 0 0 1.2rem;
     color: #554e48;
     font-size: .9375rem;
@@ -637,18 +640,6 @@
 
   .zh-product__accordion-body--editorial .zh-nowrap {
     white-space: nowrap;
-  }
-
-  @media (min-width: 640px) {
-    .zh-product__accordion-body--editorial {
-      max-width: 60ch;
-    }
-  }
-
-  @media (min-width: 1180px) {
-    .zh-product__accordion-body--editorial {
-      max-width: 64ch;
-    }
   }
 
   .zh-product__care-lines {
@@ -720,6 +711,11 @@
       top: 6.25rem;
     }
 
+    .zh-product--editorial-prototype .zh-product__gallery-column {
+      position: static;
+      top: auto;
+    }
+
     .zh-product__title {
       font-size: clamp(2.1rem, 2.6vw, 2.375rem);
     }
@@ -747,22 +743,26 @@
     }
   }
 
-  .zh-product--editorial-prototype .zh-product__description-panel {
-    max-width: 52ch;
-    margin-top: 1.65rem;
+  .zh-product--editorial-prototype .zh-product__purchase {
+    padding-bottom: 1.15rem;
   }
 
-  .zh-product--editorial-prototype .zh-product__section-title {
-    font-size: 1.25rem;
-    line-height: 1.28;
+  @media (min-width: 640px) {
+    .zh-product--editorial-prototype .zh-product__purchase {
+      padding-bottom: 1.25rem;
+    }
   }
 
-  .zh-product--editorial-prototype .zh-product__description {
-    max-width: 52ch;
-    margin-top: .5rem;
-    color: #554e48;
-    font-size: .9375rem;
-    line-height: 1.65;
+  @media (min-width: 768px) {
+    .zh-product--editorial-prototype .zh-product__purchase {
+      padding-bottom: 1.35rem;
+    }
+  }
+
+  @media (min-width: 1180px) {
+    .zh-product--editorial-prototype .zh-product__accordion-body--editorial {
+      max-width: 64ch;
+    }
   }
 
   .zh-product--editorial-prototype .zh-product__accordion summary {
@@ -775,16 +775,6 @@
     width: 1rem;
     height: 1rem;
     opacity: .82;
-  }
-
-  @media (min-width: 768px) {
-    .zh-product--editorial-prototype .zh-product__description-panel {
-      margin-top: 1.8rem;
-    }
-
-    .zh-product--editorial-prototype .zh-product__section-title {
-      font-size: 1.375rem;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -833,7 +823,7 @@
             <div {{ block.shopify_attributes }}>
               <h1 class="zh-product__title font-display">
                 {%- if is_editorial_details_prototype -%}
-                  Vierkante kruidenpotten met bamboe deksel – set van 12
+                  Vierkante kruidenpotten met bamboe deksels – set van 12
                 {%- else -%}
                   {{ product.title }}
                 {%- endif -%}
@@ -867,7 +857,7 @@
 
               {%- if is_editorial_details_prototype -%}
                 <p class="zh-product__intro">
-                  Een set van 12 glazen kruidenpotten van 120 ml met bamboe draaideksels, strooidoppen en beschrijfbare labels.
+                  Een set van 12 glazen kruidenpotten, elk met een inhoud van <span class="zh-nowrap">120 ml</span>. Inclusief bamboe draaideksels, strooidoppen en beschrijfbare labels.
                 </p>
               {%- else -%}
                 {%- assign intro = product.metafields.custom.intro.value -%}
@@ -985,6 +975,49 @@
           {%- endif -%}
         {%- endfor -%}
 
+        {%- if is_editorial_details_prototype -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'care_shipping' -%}
+              <section
+                class="zh-product__inline-logistics"
+                aria-label="Productdetails, onderhoud, verzending en retour"
+              >
+                <div
+                  {{ block.shopify_attributes }}
+                  class="zh-product__accordions"
+                  data-single-accordion="{{ section.id }}"
+                >
+                  {% render 'product-details', product: product %}
+
+                  <details class="zh-product__accordion">
+                    <summary class="font-display">
+                      <span>Onderhoud</span>
+                      {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
+                    </summary>
+
+                    <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
+                      <p>De glazen potten kunnen in de vaatwasser. Was de bamboe deksels uitsluitend met de hand.</p>
+                    </div>
+                  </details>
+
+                  <details class="zh-product__accordion">
+                    <summary class="font-display">
+                      <span>Verzending en retour</span>
+                      {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
+                    </summary>
+
+                    <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
+                      <p>Je ontvangt je bestelling naar verwachting binnen <span class="zh-nowrap">1–3 werkdagen</span>. Thuisbezorging kost €7,95. Voor levering aan een servicepunt betaal je €6,95. Vanaf €100 is verzending gratis.</p>
+                      <p>Meld je retour binnen <span class="zh-nowrap">14 dagen</span> na ontvangst aan. Vervolgens heb je nog <span class="zh-nowrap">14 dagen</span> om het product terug te sturen. De retourkosten zijn voor eigen rekening.</p>
+                    </div>
+                  </details>
+                </div>
+              </section>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+
+        {%- unless is_editorial_details_prototype -%}
         {%- if description_intro_html != blank or zayna_note != blank -%}
           <section class="zh-product__description-panel"{% if description_intro_html != blank %} aria-labelledby="zh-description-heading-{{ section.id }}"{% else %} aria-label="Productnotitie"{% endif %}>
             {%- if description_intro_html != blank -%}
@@ -1010,9 +1043,11 @@
             {%- endif -%}
           </section>
         {%- endif -%}
+        {%- endunless -%}
       </div>
     </div>
 
+    {%- unless is_editorial_details_prototype -%}
     <section class="zh-product__logistics mx-auto max-w-7xl px-4 sm:px-6 lg:px-10" aria-label="Productinformatie, gebruik, verzending en retourneren">
       {%- for block in section.blocks -%}
         {%- if block.type == 'care_shipping' -%}
@@ -1099,6 +1134,7 @@
         {%- endif -%}
       {%- endfor -%}
     </section>
+    {%- endunless -%}
 
     <script type="application/json" data-product-json>
       {
