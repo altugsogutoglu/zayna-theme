@@ -73,12 +73,12 @@
   case product.handle
     when 'voorraadpot-600ml-borosilicaatglas'
       assign is_ux_prototype_v3 = true
-      assign display_product_title = 'Glazen voorraadpot – 600 ml'
+      assign display_product_title = 'Glazen voorraadpot – 600&nbsp;ml'
       assign display_product_meta = 'Borosilicaatglas · Luchtdicht'
     when 'digitale-weeglepel-500g-0-1g'
       assign is_ux_prototype_v3 = true
       assign display_product_title = 'Digitale weeglepel'
-      assign display_product_meta = 'Tot 500 g · Nauwkeurig tot 0,1 g'
+      assign display_product_meta = 'Tot 500 g · nauwkeurig tot 0,1 g'
   endcase
 -%}
 
@@ -804,67 +804,91 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v3 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v5 — alleen voorraadpot 600 ml en digitale lepel */
+  /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
-    gap: 1.25rem;
-    padding-top: .75rem;
+    gap: 1.05rem;
+    padding-top: .52rem;
+    padding-bottom: .95rem;
+  }
+
+  .zh-product--ux-prototype-v3 .zh-product__buy-column {
+    width: 100%;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__title {
-    max-width: 19ch;
-    font-size: clamp(1.7rem, 7vw, 1.9rem);
+    max-width: 21ch;
+    font-size: clamp(1.72rem, 7.2vw, 2rem);
     line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  .zh-product--ux-prototype-v3 .zh-product__meta-line {
+    margin-top: .28rem;
+    color: #7a6b5f;
+    font-size: .72rem;
+    letter-spacing: .012em;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__price-row {
-    margin-top: .8rem;
+    margin-top: .58rem;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__status-row {
-    margin-top: .72rem;
+    margin-top: .5rem;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__intro {
-    max-width: 44ch;
-    margin-top: .82rem;
-    font-size: .925rem;
-    line-height: 1.62;
+    max-width: 39ch;
+    margin-top: .62rem;
+    font-size: .895rem;
+    line-height: 1.54;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__form-wrap {
-    margin-top: .88rem;
+    margin-top: .72rem;
+  }
+
+  .zh-product--ux-prototype-v3 .zh-product__actions {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: .62rem;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__qty {
-    grid-template-columns: repeat(3, 2.05rem);
-    height: 3.25rem;
+    grid-template-columns: repeat(3, 2rem);
+    height: 3.18rem;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__add-button {
-    min-height: 3.25rem;
-    letter-spacing: .1em;
+    min-height: 3.18rem;
+    letter-spacing: .075em;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__inline-logistics {
-    margin-top: 1.3rem;
+    margin-top: 1.08rem;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__accordion summary {
-    min-height: 3.35rem;
-    padding: .64rem 0;
-    font-size: 1rem;
+    min-height: 2.9rem;
+    padding: .46rem 0;
+    font-size: .94rem;
+  }
+
+  .zh-product--ux-prototype-v3 .zh-product__accordion-body--editorial {
+    padding-bottom: .9rem;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__accordion-icon {
-    width: .9rem;
-    height: .9rem;
+    width: .82rem;
+    height: .82rem;
+    opacity: .72;
   }
 
   .zh-product__delivery-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem 1.2rem;
+    gap: .62rem .95rem;
   }
 
   .zh-product__delivery-item,
@@ -874,59 +898,111 @@
 
   .zh-product__delivery-label {
     display: block;
-    margin: 0 0 .2rem;
-    color: #9b5f35;
-    font-size: .625rem;
-    font-weight: 600;
-    letter-spacing: .12em;
+    margin: 0 0 .12rem;
+    color: #8a7768;
+    font-size: .66rem;
+    font-weight: 500;
+    letter-spacing: .012em;
     line-height: 1.35;
-    text-transform: uppercase;
+    text-transform: none;
   }
 
   .zh-product__delivery-value {
     display: block;
     color: #2a2520;
-    font-size: .9rem;
-    line-height: 1.5;
+    font-size: .84rem;
+    line-height: 1.4;
   }
 
   .zh-product__return-block {
-    margin-top: 1.15rem;
-    padding-top: 1rem;
+    margin-top: .74rem;
+    padding-top: .72rem;
     border-top: 1px solid rgb(222 213 204 / 72%);
   }
 
   .zh-product__return-copy {
-    max-width: 55ch;
+    max-width: 48ch;
     margin: 0;
     color: #625a53;
-    font-size: .875rem;
-    line-height: 1.65;
+    font-size: .81rem;
+    line-height: 1.54;
   }
 
   .zh-product__return-copy + .zh-product__return-copy {
-    margin-top: .35rem;
+    margin-top: .22rem;
+    font-size: .78rem;
+    color: #7a6b5f;
   }
 
   @media (min-width: 640px) {
     .zh-product--ux-prototype-v3 .zh-product__purchase {
-      gap: clamp(1.4rem, 3.5vw, 2.5rem);
-      padding-top: 1.15rem;
+      gap: clamp(1.2rem, 3vw, 2rem);
+      padding-top: .95rem;
+    }
+
+    .zh-product--ux-prototype-v3 .zh-product__title {
+      max-width: 20ch;
+      font-size: clamp(1.78rem, 2.8vw, 1.98rem);
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1179px) {
+    .zh-product--ux-prototype-v3 .zh-product__purchase {
+      grid-template-columns: minmax(270px, 41.5%) minmax(0, 58.5%);
+      gap: clamp(1rem, 2.2vw, 1.55rem);
+      padding-top: 1rem;
     }
 
     .zh-product--ux-prototype-v3 .zh-product__title {
       max-width: 18ch;
-      font-size: clamp(1.9rem, 3.1vw, 2.05rem);
-    }
-  }
-
-  @media (min-width: 768px) {
-    .zh-product--ux-prototype-v3 .zh-product__title {
-      font-size: clamp(2rem, 2.35vw, 2.25rem);
+      font-size: clamp(1.62rem, 2.35vw, 1.86rem);
     }
 
     .zh-product--ux-prototype-v3 .zh-product__intro {
-      max-width: 48ch;
+      max-width: 45ch;
+      font-size: .875rem;
+    }
+
+    .zh-product--ux-prototype-v3 .zh-product__accordion summary {
+      min-height: 2.75rem;
+      font-size: .9rem;
+    }
+
+    .zh-product--ux-prototype-v3 .zh-product__qty {
+      grid-template-columns: repeat(3, 1.9rem);
+    }
+  }
+
+  @media (min-width: 1180px) {
+    .zh-product--ux-prototype-v3 .zh-product__purchase {
+      grid-template-columns: minmax(360px, 410px) minmax(0, 1fr);
+      gap: clamp(2.2rem, 4vw, 4rem);
+    }
+
+    .zh-product--ux-prototype-v3 .zh-product__buy-column {
+      max-width: 640px;
+    }
+
+    .zh-product--ux-prototype-v3 .zh-product__actions {
+      max-width: 540px;
+    }
+
+    .zh-product--ux-prototype-v3 .zh-product__inline-logistics {
+      max-width: 610px;
+    }
+
+    .zh-product--ux-prototype-v3 .zh-product__title {
+      max-width: 19ch;
+      font-size: clamp(2.05rem, 2.05vw, 2.3rem);
+    }
+
+    .zh-product--ux-prototype-v3 .zh-product__intro {
+      max-width: 46ch;
+    }
+
+    .zh-product--ux-prototype-v3 .zh-product__delivery-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .95rem 1rem;
     }
   }
 
@@ -1184,8 +1260,8 @@
 
                         <div class="zh-product__return-block">
                           <span class="zh-product__delivery-label">Retour</span>
-                          <p class="zh-product__return-copy">{{ block.settings.return_window | default: 'Meld je retour binnen 14 dagen aan. Daarna heb je nog 14 dagen om het product terug te sturen.' }}</p>
-                          <p class="zh-product__return-copy">{{ block.settings.return_cost | default: 'Retourkosten zijn voor eigen rekening, tenzij wettelijk anders is bepaald.' }}</p>
+                          <p class="zh-product__return-copy">{{ block.settings.return_window | default: 'Meld je retour binnen 14 dagen aan. Daarna heb je nog 14 dagen om het terug te sturen. Retourkosten zijn voor eigen rekening.' }}</p>
+                          <p class="zh-product__return-copy">{{ block.settings.return_cost | default: 'Tenzij wettelijk anders is bepaald.' }}</p>
                         </div>
                       {%- else -%}
                         {%- if shipping_body != blank -%}
@@ -1306,13 +1382,13 @@
         { "type": "text", "id": "row2_title", "label": "Rij 2 titel", "default": "Verzending" },
         { "type": "richtext", "id": "row2_body", "label": "Rij 2 tekst", "default": "<p><strong>Verwachte levertijd:</strong> 1–3 werkdagen</p><p><strong>Thuisbezorging:</strong> €7,95</p><p><strong>Servicepunt:</strong> €6,95</p><p><strong>Gratis verzending:</strong> vanaf €100</p>" },
         { "type": "text", "id": "row3_title", "label": "Rij 3 titel", "default": "Retourneren" },
-        { "type": "richtext", "id": "row3_body", "label": "Rij 3 tekst", "default": "<p>Meld je retour binnen 14 dagen na ontvangst aan. Daarna heb je nog 14 dagen om het product terug te sturen.</p><p>Retourkosten zijn voor eigen rekening, tenzij wettelijk anders is bepaald.</p>" },
+        { "type": "richtext", "id": "row3_body", "label": "Rij 3 tekst", "default": "<p>Meld je retour binnen 14 dagen na ontvangst aan. Daarna heb je nog 14 dagen om het product terug te sturen.</p><p>Tenzij wettelijk anders is bepaald.</p>" },
         { "type": "text", "id": "shipping_time", "label": "Levertijd", "default": "1–3 werkdagen" },
         { "type": "text", "id": "shipping_home", "label": "Thuisbezorging", "default": "€7,95" },
         { "type": "text", "id": "shipping_point", "label": "Servicepunt", "default": "€6,95" },
         { "type": "text", "id": "shipping_free", "label": "Gratis verzending", "default": "Vanaf €100" },
-        { "type": "textarea", "id": "return_window", "label": "Retourtermijn", "default": "Meld je retour binnen 14 dagen aan. Daarna heb je nog 14 dagen om het product terug te sturen." },
-        { "type": "textarea", "id": "return_cost", "label": "Retourkosten", "default": "Retourkosten zijn voor eigen rekening, tenzij wettelijk anders is bepaald." }
+        { "type": "textarea", "id": "return_window", "label": "Retourtermijn", "default": "Meld je retour binnen 14 dagen aan. Daarna heb je nog 14 dagen om het terug te sturen. Retourkosten zijn voor eigen rekening." },
+        { "type": "textarea", "id": "return_cost", "label": "Retourkosten", "default": "Tenzij wettelijk anders is bepaald." }
       ]
     }
   ]
