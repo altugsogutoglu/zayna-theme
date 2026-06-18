@@ -1,29 +1,63 @@
 {%- comment -%}
-  JSON-LD structured data for a product page: Product + Offer + BreadcrumbList.
-  Pass: product. Renders nothing visible. Validate in Google Rich Results Test.
+  JSON-LD voor Product, Offer en BreadcrumbList.
+  Gebruikt de korte intro en redactionele Details-tekst als primaire beschrijving.
+  Valt alleen terug op de oude productomschrijving wanneer beide velden leeg zijn.
+
+  Vereist:
+  - product
 {%- endcomment -%}
+
 {%- liquid
   assign cv = product.selected_or_first_available_variant
   assign coll = product.collections.first
-  assign avail = 'OutOfStock'
-  if product.available
-    assign avail = 'InStock'
+
+  assign availability = 'OutOfStock'
+  if cv.available
+    assign availability = 'InStock'
   endif
+
+  assign condition_raw = product.metafields.custom.condition.value | downcase | strip
+  assign item_condition = 'NewCondition'
+  case condition_raw
+    when 'good', 'goed', 'very good', 'heel goed'
+      assign item_condition = 'UsedCondition'
+  endcase
+
+  assign barcode_size = cv.barcode | size
+  assign schema_intro = product.metafields.custom.intro.value | strip
+  assign schema_details = product.metafields.custom.detail_weergavetekst.value | strip
 -%}
+
+{%- capture schema_description -%}
+  {%- if schema_intro != blank -%}
+    {{- schema_intro -}}
+  {%- endif -%}
+  {%- if schema_details != blank -%}
+    {%- if schema_intro != blank -%} {% endif -%}
+    {{- schema_details -}}
+  {%- endif -%}
+  {%- if schema_intro == blank and schema_details == blank -%}
+    {{- product.description | strip_html -}}
+  {%- endif -%}
+{%- endcapture -%}
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org/",
   "@type": "Product",
   "name": {{ product.title | json }},
-  "description": {{ product.description | strip_html | truncate: 4000 | json }},
-  "sku": {{ cv.sku | default: product.id | json }},
-  {% if cv.barcode != blank %}"gtin13": {{ cv.barcode | json }},{% endif %}
-  "mpn": {{ cv.sku | default: product.id | json }},
-  "brand": { "@type": "Brand", "name": {{ product.vendor | default: shop.name | json }} },
+  "description": {{ schema_description | strip | truncate: 4000 | json }},
+  {% if cv.sku != blank %}"sku": {{ cv.sku | json }},{% endif %}
+  {% case barcode_size %}
+    {% when 8 %}"gtin8": {{ cv.barcode | json }},{% when 12 %}"gtin12": {{ cv.barcode | json }},{% when 13 %}"gtin13": {{ cv.barcode | json }},{% when 14 %}"gtin14": {{ cv.barcode | json }},{% endcase %}
+  "brand": {
+    "@type": "Brand",
+    "name": {{ product.vendor | default: shop.name | json }}
+  },
   "url": {{ canonical_url | json }},
   "image": [
     {%- for image in product.images -%}
-      {{ image | image_url: width: 1200, format: 'webp' | prepend: 'https:' | json }}{%- unless forloop.last -%},{%- endunless -%}
+      {{ image | image_url: width: 1600, format: 'webp' | prepend: 'https:' | json }}{%- unless forloop.last -%},{%- endunless -%}
     {%- endfor -%}
   ],
   "offers": {
@@ -31,20 +65,39 @@
     "url": {{ canonical_url | json }},
     "priceCurrency": {{ shop.currency | json }},
     "price": "{{ cv.price | divided_by: 100.0 }}",
-    "availability": "https://schema.org/{{ avail }}",
-    "itemCondition": "https://schema.org/NewCondition",
-    "seller": { "@type": "Organization", "name": {{ shop.name | json }} }
+    "availability": "https://schema.org/{{ availability }}",
+    "itemCondition": "https://schema.org/{{ item_condition }}",
+    "seller": {
+      "@type": "Organization",
+      "name": {{ shop.name | json }}
+    }
   }
 }
 </script>
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org/",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": {{ shop.url | json }} }{% if coll %},
-    { "@type": "ListItem", "position": 2, "name": {{ coll.title | json }}, "item": {{ coll.url | prepend: shop.url | json }} }{% endif %},
-    { "@type": "ListItem", "position": {% if coll %}3{% else %}2{% endif %}, "name": {{ product.title | json }}, "item": {{ canonical_url | json }} }
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": {{ shop.url | json }}
+    }{% if coll %},
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": {{ coll.title | json }},
+      "item": {{ coll.url | prepend: shop.url | json }}
+    }{% endif %},
+    {
+      "@type": "ListItem",
+      "position": {% if coll %}3{% else %}2{% endif %},
+      "name": {{ product.title | json }},
+      "item": {{ canonical_url | json }}
+    }
   ]
 }
 </script>
