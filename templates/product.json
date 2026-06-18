@@ -43,8 +43,8 @@
             "shipping_home": "€7,95",
             "shipping_point": "€6,95",
             "shipping_free": "Vanaf €100",
-            "return_window": "Meld je retour binnen 14 dagen aan. Daarna heb je nog 14 dagen om het product terug te sturen.",
-            "return_cost": "Retourkosten zijn voor eigen rekening, tenzij wettelijk anders is bepaald."
+            "return_window": "Meld je retour binnen 14 dagen aan. Daarna heb je nog 14 dagen om het terug te sturen. Retourkosten zijn voor eigen rekening.",
+            "return_cost": "Tenzij wettelijk anders is bepaald."
           }
         }
       },
@@ -62,7 +62,7 @@
       "type": "product-faq",
       "settings": {
         "eyebrow": "",
-        "heading": "Veelgestelde vragen"
+        "heading": "Goed om te weten"
       }
     },
     "related": {
