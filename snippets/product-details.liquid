@@ -1,12 +1,12 @@
 {%- comment -%}
-  Zayna Home — UX-prototype v7 voor twee proefproducten.
+  Zayna Home — UX-prototype v8 voor twee proefproducten.
 
   Prototypeproducten:
   - voorraadpot-600ml-borosilicaatglas
   - digitale-weeglepel-500g-0-1g
 
-  Doel v6:
-  - simpele producten: zachte microblokken zonder dubbelepunten;
+  Doel v8:
+  - simpele producten: zachte labels + waarden zonder dubbelepunten;
   - technische producten: rustige korte lijst, geen specificatiegrid;
   - minder technische zichtbaarheid;
   - zachtere kleur, kleinere tekst en verfijnde spacing.
@@ -81,61 +81,71 @@
       overflow-wrap: anywhere;
     }
 
-    /* UX-prototype v7: zachte accordion-inhoud */
+    /* UX-prototype v8: stillere premium accordion-inhoud */
     .zh-product-details--ux-v6 .zh-product-details__content {
-      gap: .46rem;
-      max-width: 46ch;
-      padding: .02rem 0 .04rem;
+      gap: .52rem;
+      max-width: 44ch;
+      padding: .02rem 0 .02rem;
     }
 
-    .zh-product-details__micro-grid {
+    .zh-product-details__quiet-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: .56rem;
-      max-width: 42ch;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .58rem .95rem;
+      max-width: 38rem;
       min-width: 0;
     }
 
-    .zh-product-details__micro-item {
+    .zh-product-details__quiet-item {
       display: grid;
-      gap: .04rem;
+      gap: .08rem;
       min-width: 0;
     }
 
-    .zh-product-details__micro-value {
-      color: #3d3731;
-      font-size: .78rem;
+    .zh-product-details__quiet-label {
+      color: #8a8178;
+      font-size: .61rem;
       font-weight: 500;
-      line-height: 1.34;
+      letter-spacing: .008em;
+      line-height: 1.3;
+    }
+
+    .zh-product-details__quiet-value {
+      color: #3d3731;
+      font-size: .79rem;
+      font-weight: 400;
+      line-height: 1.38;
       overflow-wrap: normal;
       word-break: normal;
     }
 
-    .zh-product-details__micro-note {
-      color: #7b7066;
-      font-size: .715rem;
-      line-height: 1.43;
-      overflow-wrap: normal;
-      word-break: normal;
+    .zh-product-details__quiet-note {
+      grid-column: 1 / -1;
+      max-width: 40ch;
+      margin: .06rem 0 0;
+      color: #746a60;
+      font-size: .735rem;
+      line-height: 1.48;
+      text-wrap: pretty;
     }
 
     .zh-product-details__soft {
       display: grid;
-      gap: .42rem;
-      max-width: 40ch;
+      gap: .44rem;
+      max-width: 38ch;
     }
 
     .zh-product-details__tech-lead {
       margin: 0;
       color: #625a53;
-      font-size: .78rem;
-      line-height: 1.55;
+      font-size: .79rem;
+      line-height: 1.58;
       text-wrap: pretty;
     }
 
     .zh-product-details__soft-list {
       display: grid;
-      gap: .18rem;
+      gap: .22rem;
       margin: 0;
       padding: 0;
       list-style: none;
@@ -145,7 +155,8 @@
       margin: 0;
       color: #3d3731;
       font-size: .79rem;
-      line-height: 1.42;
+      font-weight: 400;
+      line-height: 1.45;
     }
 
     @media (min-width: 640px) {
@@ -159,24 +170,23 @@
       }
 
       .zh-product-details--ux-v6 .zh-product-details__content {
-        max-width: 52ch;
+        max-width: 48ch;
       }
     }
 
     @media (min-width: 760px) {
-      .zh-product-details__micro-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: .62rem 1rem;
+      .zh-product-details__quiet-grid {
+        gap: .62rem 1.05rem;
       }
     }
 
     @media (min-width: 1180px) {
       .zh-product-details--ux-v6 .zh-product-details__content {
-        max-width: 500px;
+        max-width: 460px;
       }
 
-      .zh-product-details__micro-grid {
-        gap: .62rem 1.05rem;
+      .zh-product-details__quiet-grid {
+        gap: .62rem 1.12rem;
       }
     }
   {% endstyle %}
@@ -215,7 +225,7 @@
             {%- if tech_list_open -%}</ul>{%- endif -%}
           </div>
         {%- else -%}
-          <div class="zh-product-details__micro-grid">
+          <div class="zh-product-details__quiet-grid">
             {%- assign clean_line_index = 0 -%}
             {%- assign item_open = false -%}
 
@@ -223,14 +233,21 @@
               {%- assign clean_line = line | strip -%}
               {%- if clean_line != blank -%}
                 {%- assign line_mod = clean_line_index | modulo: 2 -%}
-                {%- if line_mod == 0 -%}
-                  {%- if item_open -%}</div>{%- endif -%}
-                  <div class="zh-product-details__micro-item">
-                    <span class="zh-product-details__micro-value">{{ clean_line | escape }}</span>
-                  {%- assign item_open = true -%}
+
+                {%- if clean_line_index < 8 -%}
+                  {%- if line_mod == 0 -%}
+                    {%- if item_open -%}</div>{%- endif -%}
+                    <div class="zh-product-details__quiet-item">
+                      <span class="zh-product-details__quiet-label">{{ clean_line | escape }}</span>
+                    {%- assign item_open = true -%}
+                  {%- else -%}
+                      <span class="zh-product-details__quiet-value">{{ clean_line | escape }}</span>
+                  {%- endif -%}
                 {%- else -%}
-                    <span class="zh-product-details__micro-note">{{ clean_line | escape }}</span>
+                  {%- if item_open -%}</div>{%- assign item_open = false -%}{%- endif -%}
+                  <p class="zh-product-details__quiet-note">{{ clean_line | escape }}</p>
                 {%- endif -%}
+
                 {%- assign clean_line_index = clean_line_index | plus: 1 -%}
               {%- endif -%}
             {%- endfor -%}
