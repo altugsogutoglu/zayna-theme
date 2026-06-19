@@ -693,18 +693,6 @@
   }
 
 
-
-  @media (min-width: 750px) and (max-width: 1180px) {
-    .zh-product--ux-prototype-v3 .zh-product__accordion summary {
-      min-height: 54px;
-      padding-block: 0;
-    }
-
-    .zh-product--ux-prototype-v3 .zh-product__accordion-body--editorial {
-      padding-top: .14rem;
-    }
-  }
-
   @media (min-width: 640px) {
     .zh-product__purchase {
       grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
@@ -820,7 +808,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v15 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v16 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -1022,14 +1010,15 @@
   }
 
 
-  /* v15: final stable interaction layer for product accordions */
+
+  /* v16: cursor reset — accordions blijven klikbaar maar krijgen geen trillend muishandje */
   .zh-product--ux-prototype-v3 .zh-product__accordion summary {
     display: flex;
     width: 100%;
     box-sizing: border-box;
     align-items: center;
     justify-content: space-between;
-    cursor: pointer;
+    cursor: default !important;
     transform: none !important;
     will-change: auto !important;
     -webkit-user-select: none;
@@ -1056,14 +1045,21 @@
     user-select: none;
   }
 
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary:hover,
+  .zh-product--ux-prototype-v3 .zh-product__accordion[open] summary {
+    color: #2f2a25;
+    font-weight: 500;
+    transform: none !important;
+  }
+
   @media (min-width: 750px) and (max-width: 1180px) {
     .zh-product--ux-prototype-v3 .zh-product__accordion summary {
-      min-height: 56px;
+      min-height: 54px;
       padding-block: 0;
     }
 
     .zh-product--ux-prototype-v3 .zh-product__accordion-body--editorial {
-      padding-top: .16rem;
+      padding-top: .14rem;
     }
   }
 
