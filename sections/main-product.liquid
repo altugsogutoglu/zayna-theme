@@ -408,7 +408,7 @@
   }
 
   .zh-product__add-button:active:not(:disabled) {
-    transform: translateY(1px);
+    transform: none;
   }
 
   .zh-product__add-button:disabled {
@@ -820,7 +820,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v14 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v15 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -1018,6 +1018,52 @@
   @media (min-width: 1180px) {
     .zh-product--ux-prototype-v3 .zh-product__actions {
       max-width: 490px;
+    }
+  }
+
+
+  /* v15: final stable interaction layer for product accordions */
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transform: none !important;
+    will-change: auto !important;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary::marker {
+    content: "";
+  }
+
+  .zh-product--ux-prototype-v3 .zh-product__accordion summary > * {
+    pointer-events: none !important;
+  }
+
+  .zh-product--ux-prototype-v3 .zh-product__accordion-body,
+  .zh-product--ux-prototype-v3 .zh-product__accordion-body * {
+    cursor: default !important;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  @media (min-width: 750px) and (max-width: 1180px) {
+    .zh-product--ux-prototype-v3 .zh-product__accordion summary {
+      min-height: 56px;
+      padding-block: 0;
+    }
+
+    .zh-product--ux-prototype-v3 .zh-product__accordion-body--editorial {
+      padding-top: .16rem;
     }
   }
 
