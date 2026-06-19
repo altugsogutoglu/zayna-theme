@@ -23,7 +23,7 @@
         "m2": {
           "type": "message",
           "settings": {
-            "text": "Indicatieve levertijd 1–3 werkdagen"
+            "text": "Verwachte levertijd 1–3 werkdagen"
           }
         },
         "m3": {
@@ -38,7 +38,9 @@
         "m2",
         "m3"
       ],
-      "settings": {}
+      "settings": {
+        "speed": 42
+      }
     },
     "header": {
       "type": "header",
