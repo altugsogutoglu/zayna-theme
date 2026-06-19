@@ -696,12 +696,12 @@
 
   @media (min-width: 750px) and (max-width: 1180px) {
     .zh-product--ux-prototype-v3 .zh-product__accordion summary {
-      min-height: 52px;
+      min-height: 54px;
       padding-block: 0;
     }
 
     .zh-product--ux-prototype-v3 .zh-product__accordion-body--editorial {
-      padding-top: .12rem;
+      padding-top: .14rem;
     }
   }
 
@@ -820,7 +820,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v13 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v14 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -911,10 +911,10 @@
 
   .zh-product--ux-prototype-v3 .zh-product__accordion-body--editorial {
     max-width: 500px;
-    padding-bottom: .76rem;
+    padding-bottom: .82rem;
     color: #625a53;
     font-size: .81rem;
-    line-height: 1.56;
+    line-height: 1.6;
   }
 
   .zh-product--ux-prototype-v3 .zh-product__accordion-icon {
@@ -945,7 +945,7 @@
   }
 
   .zh-product--ux-prototype-v3 .zh-product__accordion-body--editorial p + p {
-    margin-top: .26rem;
+    margin-top: .3rem;
   }
 
 
@@ -1007,10 +1007,24 @@
     user-select: none;
   }
 
+
+  /* v14: final CTA width polish voor desktop/splitscreen */
+  @media (min-width: 750px) {
+    .zh-product--ux-prototype-v3 .zh-product__actions {
+      max-width: 500px;
+    }
+  }
+
+  @media (min-width: 1180px) {
+    .zh-product--ux-prototype-v3 .zh-product__actions {
+      max-width: 490px;
+    }
+  }
+
   .zh-product__delivery-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: .76rem 1.05rem;
+    gap: .82rem 1.08rem;
   }
 
   .zh-product__delivery-item,
@@ -1020,26 +1034,26 @@
 
   .zh-product__delivery-label {
     display: block;
-    margin: 0 0 .12rem;
-    color: #85776b;
+    margin: 0 0 .13rem;
+    color: #817468;
     font-size: .64rem;
     font-weight: 500;
-    letter-spacing: .002em;
+    letter-spacing: .001em;
     line-height: 1.35;
     text-transform: none;
   }
 
   .zh-product__delivery-value {
     display: block;
-    color: #34302b;
-    font-size: .82rem;
-    line-height: 1.43;
+    color: #3d3731;
+    font-size: .81rem;
+    line-height: 1.45;
   }
 
   .zh-product__return-block {
-    margin-top: .86rem;
-    padding-top: .78rem;
-    border-top: 1px solid rgb(222 213 204 / 64%);
+    margin-top: .92rem;
+    padding-top: .84rem;
+    border-top: 1px solid rgb(222 213 204 / 60%);
   }
 
   .zh-product__return-copy {
