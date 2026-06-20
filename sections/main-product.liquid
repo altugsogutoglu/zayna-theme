@@ -1154,6 +1154,24 @@
     margin-top: .3rem;
   }
 
+  .zh-product--accordion-system .zh-product__care-body {
+    max-width: 520px;
+    padding-top: .14rem;
+    padding-bottom: .86rem;
+    color: #625a53;
+    font-size: .81rem;
+    line-height: 1.6;
+  }
+
+  .zh-product--accordion-system .zh-product__care-body p {
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  .zh-product--accordion-system .zh-product__care-body p + p {
+    margin-top: .3rem;
+  }
+
   .zh-product--accordion-system .zh-product__accordion-body,
   .zh-product--accordion-system .zh-product__accordion-body * {
     cursor: default !important;
@@ -1510,8 +1528,9 @@
                       {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
                     </summary>
 
-                    <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
-                      {%- assign care_lines = care_display_text | newline_to_br | split: '<br />' -%}
+                    <div class="zh-product__accordion-body zh-product__accordion-body--editorial zh-product__care-body">
+                      {%- assign care_normalized = care_display_text | replace: ' · ', '<br />' | replace: '· ', '<br />' | replace: ' ·', '<br />' | replace: '·', '<br />' | newline_to_br -%}
+                      {%- assign care_lines = care_normalized | split: '<br />' -%}
                       {%- for line in care_lines -%}
                         {%- assign clean_line = line | strip -%}
                         {%- if clean_line != blank -%}
