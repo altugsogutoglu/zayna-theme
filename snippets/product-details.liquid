@@ -2,10 +2,11 @@
   Zayna Home — product details accordion
 
   Doel:
-  - alle producten met detail_weergavetekst krijgen standaard een rustige premium detailsweergave;
-  - technische producten krijgen een zachtere lijstweergave;
-  - afwijkende oudere detailregels blijven leesbaar via fallback;
-  - geen conditioneel openstaande HTML-tags over meerdere Liquid-branches.
+  - één rustige Details-weergave voor alle producten met detail_weergavetekst;
+  - oude invoer met losse label/waarde-regels netjes samenvoegen;
+  - nieuwe invoer met "Label — waarde" direct compact tonen;
+  - technische producten zacht en niet-tabelachtig tonen;
+  - geen pseudo-hitboxes, geen transform/will-change en geen onrustige hover.
 {%- endcomment -%}
 
 {%- liquid
@@ -19,167 +20,113 @@
   endif
 
   assign detail_lines = detail_display_text | newline_to_br | split: '<br />'
-  assign clean_line_count = 0
-
-  for line in detail_lines
-    assign clean_line = line | strip
-    if clean_line != blank
-      assign clean_line_count = clean_line_count | plus: 1
-    endif
-  endfor
 -%}
 
 {%- if detail_display_text != blank -%}
   {% style %}
-    .zh-product-details__content {
-      display: grid;
-      gap: .52rem;
+    .zh-product--accordion-system .zh-product-details__content {
       width: 100%;
-      max-width: 44ch;
-      padding: .02rem 0;
+      max-width: 520px;
+      padding-top: .18rem;
+      padding-bottom: .9rem;
     }
 
-    .zh-product-details__quiet-grid {
+    .zh-product--accordion-system .zh-product-details__quiet-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: .56rem .9rem;
-      max-width: 38rem;
+      gap: .68rem 1.18rem;
+      width: 100%;
       min-width: 0;
     }
 
-    .zh-product-details__quiet-item {
-      display: grid;
-      gap: .08rem;
+    .zh-product--accordion-system .zh-product-details__quiet-item {
       min-width: 0;
     }
 
-    .zh-product-details__quiet-label {
-      color: #8a8178;
-      font-size: .61rem;
+    .zh-product--accordion-system .zh-product-details__quiet-item.is-wide {
+      grid-column: 1 / -1;
+      max-width: 48ch;
+      padding-top: .04rem;
+    }
+
+    .zh-product--accordion-system .zh-product-details__quiet-label {
+      display: block;
+      margin: 0 0 .13rem;
+      color: #81776d;
+      font-size: .64rem;
       font-weight: 500;
       letter-spacing: .002em;
-      line-height: 1.34;
+      line-height: 1.35;
     }
 
-    .zh-product-details__quiet-value {
-      color: #514a44;
-      font-size: .77rem;
+    .zh-product--accordion-system .zh-product-details__quiet-value {
+      display: block;
+      color: #48423c;
+      font-size: .825rem;
       font-weight: 400;
-      line-height: 1.44;
-      overflow-wrap: normal;
-      word-break: normal;
-    }
-
-    .zh-product-details__quiet-note {
-      grid-column: 1 / -1;
-      max-width: 40ch;
-      margin: .08rem 0 0;
-      color: #746a60;
-      font-size: .735rem;
-      line-height: 1.52;
-      text-wrap: pretty;
-    }
-
-    .zh-product-details__soft {
-      display: grid;
-      gap: .48rem;
-      max-width: 38ch;
-    }
-
-    .zh-product-details__tech-lead {
-      margin: 0;
-      color: #3c352f;
-      font-size: .815rem;
-      line-height: 1.6;
-      text-wrap: pretty;
-    }
-
-    .zh-product-details__soft-list {
-      display: grid;
-      gap: .15rem;
-      margin: .1rem 0 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .zh-product-details__soft-list li {
-      margin: 0;
-      color: #7a7067;
-      font-size: .755rem;
-      font-weight: 400;
-      line-height: 1.5;
-    }
-
-    .zh-product-details__lead,
-    .zh-product-details__note {
-      max-width: 62ch;
-      margin: 0;
-      color: #554e48;
-      font-size: .9375rem;
-      line-height: 1.72;
-      text-wrap: pretty;
-    }
-
-    .zh-product-details__lead {
-      margin-bottom: .45rem;
-    }
-
-    .zh-product-details__note {
-      margin-top: .45rem;
-      color: #625a53;
-      font-size: .875rem;
-    }
-
-    .zh-product-details__fact {
-      display: grid;
-      grid-template-columns: minmax(6.5rem, 7.5rem) minmax(0, 1fr);
-      gap: .75rem;
-      align-items: start;
-      min-width: 0;
-    }
-
-    .zh-product-details__fact-label,
-    .zh-product-details__fact-value {
-      min-width: 0;
-      font-size: .875rem;
-      line-height: 1.55;
-    }
-
-    .zh-product-details__fact-label {
-      color: #2a2520;
-      font-weight: 600;
-    }
-
-    .zh-product-details__fact-value {
-      color: #625a53;
+      line-height: 1.48;
       overflow-wrap: anywhere;
     }
 
-    @media (min-width: 640px) {
-      .zh-product-details__content {
-        gap: .42rem;
-        max-width: 48ch;
+    .zh-product--accordion-system .zh-product-details__quiet-note {
+      grid-column: 1 / -1;
+      max-width: 52ch;
+      margin: .08rem 0 0;
+      color: #6b625a;
+      font-size: .805rem;
+      line-height: 1.58;
+      text-wrap: pretty;
+    }
+
+    .zh-product--accordion-system .zh-product-details__soft {
+      display: grid;
+      gap: .32rem;
+      max-width: 48ch;
+    }
+
+    .zh-product--accordion-system .zh-product-details__tech-lead {
+      margin: 0;
+      color: #48423c;
+      font-size: .825rem;
+      line-height: 1.58;
+      text-wrap: pretty;
+    }
+
+    .zh-product--accordion-system .zh-product-details__soft-item {
+      margin: 0;
+      color: #6b625a;
+      font-size: .805rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 379px) {
+      .zh-product--accordion-system .zh-product-details__quiet-grid {
+        gap: .62rem .9rem;
       }
 
-      .zh-product-details__fact {
-        grid-template-columns: minmax(7.5rem, 9rem) minmax(0, 1fr);
-        gap: 1rem;
+      .zh-product--accordion-system .zh-product-details__quiet-value {
+        font-size: .8rem;
       }
     }
 
-    @media (min-width: 760px) {
-      .zh-product-details__quiet-grid {
-        gap: .6rem 1rem;
+    @media (min-width: 750px) and (max-width: 1180px) {
+      .zh-product--accordion-system .zh-product-details__content {
+        padding-top: .16rem;
+        padding-bottom: .84rem;
+      }
+
+      .zh-product--accordion-system .zh-product-details__quiet-grid {
+        gap: .62rem 1.05rem;
       }
     }
 
     @media (min-width: 1180px) {
-      .zh-product-details__content {
-        max-width: 460px;
+      .zh-product--accordion-system .zh-product-details__content {
+        max-width: 520px;
       }
 
-      .zh-product-details__quiet-grid {
-        gap: .6rem 1.08rem;
+      .zh-product--accordion-system .zh-product-details__quiet-grid {
+        gap: .66rem 1.16rem;
       }
     }
   {% endstyle %}
@@ -193,24 +140,22 @@
     <div class="zh-product__accordion-body zh-product__accordion-body--editorial zh-product-details__content">
       {%- if is_technical_detail_product -%}
         <div class="zh-product-details__soft">
-          {%- assign technical_lead_rendered = false -%}
-          <ul class="zh-product-details__soft-list">
-            {%- for line in detail_lines -%}
-              {%- assign clean_line = line | strip -%}
-              {%- if clean_line != blank -%}
-                {%- if technical_lead_rendered == false -%}
-                  <p class="zh-product-details__tech-lead">{{ clean_line | escape }}</p>
-                  {%- assign technical_lead_rendered = true -%}
-                {%- else -%}
-                  <li>{{ clean_line | escape }}</li>
-                {%- endif -%}
+          {%- assign technical_line_count = 0 -%}
+          {%- for line in detail_lines -%}
+            {%- assign clean_line = line | strip -%}
+            {%- if clean_line != blank -%}
+              {%- if technical_line_count == 0 -%}
+                <p class="zh-product-details__tech-lead">{{ clean_line | escape }}</p>
+              {%- else -%}
+                <p class="zh-product-details__soft-item">{{ clean_line | escape }}</p>
               {%- endif -%}
-            {%- endfor -%}
-          </ul>
+              {%- assign technical_line_count = technical_line_count | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
         </div>
-
       {%- else -%}
         <div class="zh-product-details__quiet-grid">
+          {%- assign pending_label = '' -%}
           {%- assign rendered_pair_count = 0 -%}
 
           {%- for line in detail_lines -%}
@@ -229,17 +174,55 @@
                 {%- assign pair_value = clean_line | remove_first: pair_label | remove_first: ':' | strip -%}
               {%- endif -%}
 
-              {%- if pair_label != blank and pair_value != blank and rendered_pair_count < 4 -%}
-                <div class="zh-product-details__quiet-item">
+              {%- if pair_label != blank and pair_value != blank -%}
+                {%- if pending_label != blank -%}
+                  <p class="zh-product-details__quiet-note">{{ pending_label | escape }}</p>
+                  {%- assign pending_label = '' -%}
+                {%- endif -%}
+
+                {%- assign item_is_wide = false -%}
+                {%- if pair_value.size > 34 or pair_label contains 'Meegeleverd' or pair_label contains 'Gebruik' or rendered_pair_count >= 4 -%}
+                  {%- assign item_is_wide = true -%}
+                {%- endif -%}
+
+                <div class="zh-product-details__quiet-item{% if item_is_wide %} is-wide{% endif %}">
                   <span class="zh-product-details__quiet-label">{{ pair_label | escape }}</span>
                   <span class="zh-product-details__quiet-value">{{ pair_value | escape }}</span>
                 </div>
                 {%- assign rendered_pair_count = rendered_pair_count | plus: 1 -%}
+              {%- elsif pending_label != blank -%}
+                {%- assign item_is_wide = false -%}
+                {%- if clean_line.size > 34 or pending_label contains 'Meegeleverd' or pending_label contains 'Gebruik' or rendered_pair_count >= 4 -%}
+                  {%- assign item_is_wide = true -%}
+                {%- endif -%}
+
+                <div class="zh-product-details__quiet-item{% if item_is_wide %} is-wide{% endif %}">
+                  <span class="zh-product-details__quiet-label">{{ pending_label | escape }}</span>
+                  <span class="zh-product-details__quiet-value">{{ clean_line | escape }}</span>
+                </div>
+                {%- assign rendered_pair_count = rendered_pair_count | plus: 1 -%}
+                {%- assign pending_label = '' -%}
               {%- else -%}
-                <p class="zh-product-details__quiet-note">{{ clean_line | escape }}</p>
+                {%- assign line_is_label = true -%}
+                {%- if clean_line.size > 32 -%}
+                  {%- assign line_is_label = false -%}
+                {%- endif -%}
+                {%- if clean_line contains '.' or clean_line contains ',' or clean_line contains '·' or clean_line contains ' met ' or clean_line contains 'Met ' or clean_line contains ' voor ' or clean_line contains 'Voor ' or clean_line contains ' en ' or clean_line contains 'Inclusief ' or clean_line contains 'incl.' -%}
+                  {%- assign line_is_label = false -%}
+                {%- endif -%}
+
+                {%- if line_is_label -%}
+                  {%- assign pending_label = clean_line -%}
+                {%- else -%}
+                  <p class="zh-product-details__quiet-note">{{ clean_line | escape }}</p>
+                {%- endif -%}
               {%- endif -%}
             {%- endif -%}
           {%- endfor -%}
+
+          {%- if pending_label != blank -%}
+            <p class="zh-product-details__quiet-note">{{ pending_label | escape }}</p>
+          {%- endif -%}
         </div>
       {%- endif -%}
     </div>
