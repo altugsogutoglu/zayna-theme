@@ -866,7 +866,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v26 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v27 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -1459,7 +1459,6 @@
                       {%- assign has_care_lid = false -%}
                       {%- assign has_care_filter = false -%}
                       {%- assign has_care_straw = false -%}
-                      {%- assign has_care_spoon = false -%}
                       {%- assign detail_text_down = product.metafields.custom.detail_weergavetekst.value | downcase | strip -%}
 
                       {%- for line in care_lines -%}
@@ -1490,11 +1489,9 @@
                             elsif care_line_down contains 'lepel' and care_line_down contains 'vaatwasser'
                               assign care_label = 'Lepel'
                               assign care_value = 'Vaatwasserbestendig'
-                              assign has_care_spoon = true
                             elsif care_line_down contains 'lepel' and care_line_down contains 'hand'
                               assign care_label = 'Lepel'
                               assign care_value = 'Met de hand wassen'
-                              assign has_care_spoon = true
                             elsif care_line_down contains 'deksel' and care_line_down contains 'hand'
                               assign care_label = 'Deksel'
                               assign care_value = 'Met de hand wassen'

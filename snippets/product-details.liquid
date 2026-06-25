@@ -1,5 +1,5 @@
 {%- comment -%}
-  Zayna Home — V24 globale Details-renderer.
+  Zayna Home — V27 globale Details-renderer.
 
   Doel:
   - één rustige Details-opmaak voor alle producten met custom.detail_weergavetekst;
@@ -149,7 +149,7 @@
       {%- if is_technical_detail_prototype -%}
         <div class="zh-product-details__soft">
           {%- assign detail_line_index = 0 -%}
-          {%- assign tech_list_open = false -%}
+          {%- assign tech_items = '' -%}
 
           {%- for line in detail_lines -%}
             {%- assign clean_line = line | strip -%}
@@ -157,17 +157,18 @@
               {%- if detail_line_index == 0 -%}
                 <p class="zh-product-details__tech-lead">{{ clean_line | escape }}</p>
               {%- else -%}
-                {%- unless tech_list_open -%}
-                  <ul class="zh-product-details__soft-list">
-                  {%- assign tech_list_open = true -%}
-                {%- endunless -%}
-                <li>{{ clean_line | escape }}</li>
+                {%- capture tech_item -%}<li>{{ clean_line | escape }}</li>{%- endcapture -%}
+                {%- assign tech_items = tech_items | append: tech_item -%}
               {%- endif -%}
               {%- assign detail_line_index = detail_line_index | plus: 1 -%}
             {%- endif -%}
           {%- endfor -%}
 
-          {%- if tech_list_open -%}</ul>{%- endif -%}
+          {%- if tech_items != blank -%}
+            <ul class="zh-product-details__soft-list">
+              {{ tech_items }}
+            </ul>
+          {%- endif -%}
         </div>
       {%- else -%}
         {%- liquid
@@ -175,7 +176,6 @@
           assign pending_label = ''
           assign specs_markup = ''
           assign notes_markup = ''
-          assign has_specs = false
         -%}
 
         {%- for line in detail_lines -%}
@@ -253,7 +253,6 @@
                   </div>
                 {%- endcapture -%}
                 {%- assign specs_markup = specs_markup | append: spec_item -%}
-                {%- assign has_specs = true -%}
               {%- endif -%}
             {%- elsif note_text != blank -%}
               {%- capture note_item -%}
