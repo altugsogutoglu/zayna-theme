@@ -1,23 +1,18 @@
 {%- comment -%}
-  Zayna Home — UX-prototype v19 voor twee proefproducten.
+  Zayna Home — V22 globale Details-renderer.
 
-  Prototypeproducten:
-  - voorraadpot-600ml-borosilicaatglas
-  - digitale-weeglepel-500g-0-1g
-  - kruidenpotten set 12 / Theepotset Dua / drinkglas 300 ml / vierkante wandhaken zwart
+  Doel:
+  - één rustige Details-opmaak voor alle producten met custom.detail_weergavetekst;
+  - ondersteunt regels met dubbelepunt, em-dash en losse label/waarde-regels;
+  - gebruikszinnen worden onderaan als zachte toelichting getoond;
+  - technische producten kunnen een rustige lead + lijst behouden.
 
-  Doel v8:
-  - simpele producten: zachte labels + waarden zonder dubbelepunten;
-  - technische producten: rustige korte lijst, geen specificatiegrid;
-  - minder technische zichtbaarheid;
-  - zachtere kleur, kleinere tekst en verfijnde spacing.
-
-  Alle producten met detail_weergavetekst gebruiken dezelfde rustige premium-weergave.
+  Vereist:
+  - product.metafields.custom.detail_weergavetekst
 {%- endcomment -%}
 
 {%- liquid
   assign detail_display_text = product.metafields.custom.detail_weergavetekst.value | strip
-  assign is_ux_prototype_v6 = true
   assign is_technical_detail_prototype = false
 
   if product.handle == 'digitale-weeglepel-500g-0-1g'
@@ -29,100 +24,71 @@
   {% style %}
     .zh-product-details__content {
       display: grid;
-      gap: .5rem;
+      gap: .62rem;
       width: 100%;
-    }
-
-    .zh-product-details__lead,
-    .zh-product-details__note {
-      max-width: 62ch;
-      margin: 0;
-      color: #554e48;
-      font-size: .9375rem;
-      line-height: 1.72;
-      text-wrap: pretty;
+      max-width: 52ch;
+      padding: .02rem 0 .04rem;
     }
 
     .zh-product-details__lead {
-      margin-bottom: .45rem;
+      max-width: 46ch;
+      margin: 0;
+      color: #443d36;
+      font-size: .815rem;
+      line-height: 1.6;
+      text-wrap: pretty;
     }
 
-    .zh-product-details__note {
-      margin-top: .45rem;
-      color: #625a53;
-      font-size: .875rem;
-    }
-
-    .zh-product-details__fact {
-      display: grid;
-      grid-template-columns: minmax(6.5rem, 7.5rem) minmax(0, 1fr);
-      gap: .75rem;
-      align-items: start;
-      min-width: 0;
-    }
-
-    .zh-product-details__fact-label,
-    .zh-product-details__fact-value {
-      min-width: 0;
-      font-size: .875rem;
-      line-height: 1.55;
-    }
-
-    .zh-product-details__fact-label {
-      color: #2a2520;
-      font-weight: 600;
-    }
-
-    .zh-product-details__fact-value {
-      color: #625a53;
-      overflow-wrap: anywhere;
-    }
-
-    /* UX-prototype v19: stillere premium accordion-inhoud */
-    .zh-product-details--ux-v6 .zh-product-details__content {
-      gap: .52rem;
-      max-width: 44ch;
-      padding: .02rem 0 .02rem;
-    }
-
-    .zh-product-details__quiet-grid {
+    .zh-product-details__spec-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: .56rem .9rem;
-      max-width: 38rem;
+      gap: .66rem 1.18rem;
+      width: 100%;
       min-width: 0;
     }
 
-    .zh-product-details__quiet-item {
+    .zh-product-details__spec-item {
       display: grid;
-      gap: .08rem;
+      gap: .1rem;
       min-width: 0;
+      align-content: start;
     }
 
-    .zh-product-details__quiet-label {
-      color: #8a8178;
-      font-size: .61rem;
+    .zh-product-details__spec-item--wide {
+      grid-column: 1 / -1;
+      max-width: 48ch;
+    }
+
+    .zh-product-details__label {
+      color: #81776d;
+      font-size: .68rem;
       font-weight: 500;
       letter-spacing: .002em;
       line-height: 1.34;
     }
 
-    .zh-product-details__quiet-value {
-      color: #514a44;
-      font-size: .77rem;
+    .zh-product-details__value {
+      color: #3f3832;
+      font-size: .84rem;
       font-weight: 400;
-      line-height: 1.44;
+      line-height: 1.48;
       overflow-wrap: normal;
       word-break: normal;
+      text-wrap: pretty;
     }
 
-    .zh-product-details__quiet-note {
-      grid-column: 1 / -1;
-      max-width: 40ch;
-      margin: .08rem 0 0;
-      color: #746a60;
-      font-size: .735rem;
-      line-height: 1.52;
+    .zh-product-details__notes {
+      display: grid;
+      gap: .24rem;
+      max-width: 48ch;
+      margin: .02rem 0 0;
+    }
+
+    .zh-product-details__note {
+      margin: 0;
+      color: #625a53;
+      font-size: .795rem;
+      line-height: 1.58;
       text-wrap: pretty;
     }
 
@@ -156,39 +122,38 @@
       line-height: 1.5;
     }
 
-    @media (min-width: 640px) {
+    @media (max-width: 520px) {
       .zh-product-details__content {
-        gap: .42rem;
+        max-width: none;
       }
 
-      .zh-product-details__fact {
-        grid-template-columns: minmax(7.5rem, 9rem) minmax(0, 1fr);
-        gap: 1rem;
+      .zh-product-details__spec-grid {
+        gap: .64rem 1rem;
       }
 
-      .zh-product-details--ux-v6 .zh-product-details__content {
-        max-width: 48ch;
+      .zh-product-details__spec-item--wide {
+        max-width: none;
       }
     }
 
     @media (min-width: 760px) {
-      .zh-product-details__quiet-grid {
-        gap: .6rem 1rem;
+      .zh-product-details__content {
+        max-width: 54ch;
+      }
+
+      .zh-product-details__spec-grid {
+        gap: .7rem 1.25rem;
       }
     }
 
     @media (min-width: 1180px) {
-      .zh-product-details--ux-v6 .zh-product-details__content {
-        max-width: 460px;
-      }
-
-      .zh-product-details__quiet-grid {
-        gap: .6rem 1.08rem;
+      .zh-product-details__content {
+        max-width: 500px;
       }
     }
   {% endstyle %}
 
-  <details class="zh-product__accordion zh-product-details{% if is_ux_prototype_v6 %} zh-product-details--ux-v6{% endif %}">
+  <details class="zh-product__accordion zh-product-details">
     <summary>
       <span>Details</span>
       {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product__accordion-icon' %}
@@ -196,78 +161,159 @@
 
     {%- assign detail_lines = detail_display_text | newline_to_br | split: '<br />' -%}
 
-    {%- if is_ux_prototype_v6 -%}
-      <div class="zh-product__accordion-body zh-product__accordion-body--editorial zh-product-details__content">
-        {%- if is_technical_detail_prototype -%}
-          <div class="zh-product-details__soft">
-            {%- assign detail_line_index = 0 -%}
-            {%- assign tech_list_open = false -%}
+    <div class="zh-product__accordion-body zh-product__accordion-body--editorial zh-product-details__content">
+      {%- if is_technical_detail_prototype -%}
+        <div class="zh-product-details__soft">
+          {%- assign detail_line_index = 0 -%}
+          {%- assign tech_list_open = false -%}
 
-            {%- for line in detail_lines -%}
-              {%- assign clean_line = line | strip -%}
-              {%- if clean_line != blank -%}
-                {%- if detail_line_index == 0 -%}
-                  <p class="zh-product-details__tech-lead">{{ clean_line | escape }}</p>
-                {%- else -%}
-                  {%- unless tech_list_open -%}
-                    <ul class="zh-product-details__soft-list">
-                    {%- assign tech_list_open = true -%}
-                  {%- endunless -%}
-                  <li>{{ clean_line | escape }}</li>
-                {%- endif -%}
-                {%- assign detail_line_index = detail_line_index | plus: 1 -%}
+          {%- for line in detail_lines -%}
+            {%- assign clean_line = line | strip -%}
+            {%- if clean_line != blank -%}
+              {%- if detail_line_index == 0 -%}
+                <p class="zh-product-details__tech-lead">{{ clean_line | escape }}</p>
+              {%- else -%}
+                {%- unless tech_list_open -%}
+                  <ul class="zh-product-details__soft-list">
+                  {%- assign tech_list_open = true -%}
+                {%- endunless -%}
+                <li>{{ clean_line | escape }}</li>
               {%- endif -%}
-            {%- endfor -%}
 
-            {%- if tech_list_open -%}</ul>{%- endif -%}
-          </div>
-        {%- else -%}
-          <div class="zh-product-details__quiet-grid">
-            {%- assign clean_line_index = 0 -%}
-            {%- assign item_open = false -%}
+              {%- assign detail_line_index = detail_line_index | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
 
-            {%- for line in detail_lines -%}
-              {%- assign clean_line = line | strip -%}
-              {%- if clean_line != blank -%}
-                {%- if clean_line contains ':' -%}
-                  {%- if item_open -%}</div>{%- assign item_open = false -%}{%- endif -%}
-                  {%- assign fact_label = clean_line | split: ':' | first | strip -%}
-                  {%- assign fact_value = clean_line | remove_first: fact_label | remove_first: ':' | strip -%}
+          {%- if tech_list_open -%}</ul>{%- endif -%}
+        </div>
+      {%- else -%}
+        {%- liquid
+          assign known_labels = '|inhoud|formaat|afmeting|afmetingen|lengte|breedte|hoogte|diameter|bovenkant|bodem|bovenste diameter|bodemdiameter|materiaal|kleur|set|aantal|deksel|filter|meegeleverd|montage|draagvermogen|afsluiting|design|ontwerp|gebruik|functie|toepassing|'
+          assign pending_label = ''
+          assign specs_markup = ''
+          assign lead_markup = ''
+          assign notes_markup = ''
+          assign has_specs = false
+        -%}
 
-                  {%- if fact_label != blank and fact_value != blank -%}
-                    <div class="zh-product-details__quiet-item">
-                      <span class="zh-product-details__quiet-label">{{ fact_label | escape }}</span>
-                      <span class="zh-product-details__quiet-value">{{ fact_value | escape }}</span>
-                    </div>
-                  {%- else -%}
-                    <p class="zh-product-details__quiet-note">{{ clean_line | escape }}</p>
-                  {%- endif -%}
-                {%- else -%}
-                  {%- assign line_mod = clean_line_index | modulo: 2 -%}
+        {%- for line in detail_lines -%}
+          {%- liquid
+            assign clean_line = line | strip
+            assign fact_label = ''
+            assign fact_value = ''
+            assign note_text = ''
+          -%}
 
-                  {%- if clean_line_index < 8 -%}
-                    {%- if line_mod == 0 -%}
-                      {%- if item_open -%}</div>{%- endif -%}
-                      <div class="zh-product-details__quiet-item">
-                        <span class="zh-product-details__quiet-label">{{ clean_line | escape }}</span>
-                      {%- assign item_open = true -%}
-                    {%- else -%}
-                        <span class="zh-product-details__quiet-value">{{ clean_line | escape }}</span>
-                    {%- endif -%}
-                  {%- else -%}
-                    {%- if item_open -%}</div>{%- assign item_open = false -%}{%- endif -%}
-                    <p class="zh-product-details__quiet-note">{{ clean_line | escape }}</p>
-                  {%- endif -%}
+          {%- if clean_line != blank -%}
+            {%- liquid
+              assign normalized_line = clean_line | replace: ' – ', ' — ' | replace: ' - ', ' — '
+            -%}
 
-                  {%- assign clean_line_index = clean_line_index | plus: 1 -%}
+            {%- if normalized_line contains ':' -%}
+              {%- liquid
+                assign fact_label = normalized_line | split: ':' | first | strip
+                assign fact_value = normalized_line | remove_first: fact_label | remove_first: ':' | strip
+              -%}
+            {%- elsif normalized_line contains '—' -%}
+              {%- liquid
+                assign fact_label = normalized_line | split: '—' | first | strip
+                assign fact_value = normalized_line | remove_first: fact_label | remove_first: '—' | strip
+              -%}
+            {%- else -%}
+              {%- liquid
+                assign clean_key = clean_line | downcase | strip
+                assign clean_token = '|' | append: clean_key | append: '|'
+              -%}
+
+              {%- if known_labels contains clean_token -%}
+                {%- if pending_label != blank -%}
+                  {%- assign note_text = pending_label -%}
                 {%- endif -%}
+                {%- assign pending_label = clean_line -%}
+              {%- elsif pending_label != blank -%}
+                {%- assign fact_label = pending_label -%}
+                {%- assign fact_value = clean_line -%}
+                {%- assign pending_label = '' -%}
+              {%- else -%}
+                {%- assign note_text = clean_line -%}
               {%- endif -%}
-            {%- endfor -%}
+            {%- endif -%}
 
-            {%- if item_open -%}</div>{%- endif -%}
-          </div>
+            {%- if fact_label != blank and fact_value != blank -%}
+              {%- liquid
+                assign label_key = fact_label | downcase | strip
+                assign value_clean = fact_value | strip
+                assign value_down = value_clean | downcase
+                assign value_size = value_clean | size
+                assign is_note_fact = false
+                assign is_wide = false
+
+                if label_key == 'gebruik' or label_key == 'functie' or label_key == 'toepassing'
+                  assign is_note_fact = true
+                endif
+
+                if value_size > 30
+                  assign is_wide = true
+                endif
+
+                if label_key contains 'formaat' or label_key contains 'afmeting' or label_key contains 'meegeleverd' or label_key contains 'montage' or label_key contains 'draagvermogen'
+                  assign is_wide = true
+                endif
+
+                if value_down contains '·'
+                  assign is_wide = true
+                endif
+              -%}
+
+              {%- if is_note_fact -%}
+                {%- capture note_item -%}<p class="zh-product-details__note">{{ value_clean | escape }}</p>{%- endcapture -%}
+                {%- if has_specs -%}
+                  {%- assign notes_markup = notes_markup | append: note_item -%}
+                {%- else -%}
+                  {%- assign lead_markup = lead_markup | append: note_item -%}
+                {%- endif -%}
+              {%- else -%}
+                {%- capture spec_item -%}
+                  <div class="zh-product-details__spec-item{% if is_wide %} zh-product-details__spec-item--wide{% endif %}">
+                    <span class="zh-product-details__label">{{ fact_label | escape }}</span>
+                    <span class="zh-product-details__value">{{ value_clean | escape }}</span>
+                  </div>
+                {%- endcapture -%}
+                {%- assign specs_markup = specs_markup | append: spec_item -%}
+                {%- assign has_specs = true -%}
+              {%- endif -%}
+            {%- elsif note_text != blank -%}
+              {%- capture note_item -%}<p class="zh-product-details__note">{{ note_text | escape }}</p>{%- endcapture -%}
+              {%- if has_specs -%}
+                {%- assign notes_markup = notes_markup | append: note_item -%}
+              {%- else -%}
+                {%- assign lead_markup = lead_markup | append: note_item -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if pending_label != blank -%}
+          {%- capture note_item -%}<p class="zh-product-details__note">{{ pending_label | escape }}</p>{%- endcapture -%}
+          {%- if has_specs -%}
+            {%- assign notes_markup = notes_markup | append: note_item -%}
+          {%- else -%}
+            {%- assign lead_markup = lead_markup | append: note_item -%}
+          {%- endif -%}
         {%- endif -%}
-      </div>
-    {%- endif -%}
+
+        {%- if lead_markup != blank -%}
+          <div class="zh-product-details__notes">{{ lead_markup }}</div>
+        {%- endif -%}
+
+        {%- if specs_markup != blank -%}
+          <div class="zh-product-details__spec-grid">{{ specs_markup }}</div>
+        {%- endif -%}
+
+        {%- if notes_markup != blank -%}
+          <div class="zh-product-details__notes">{{ notes_markup }}</div>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
   </details>
 {%- endif -%}
