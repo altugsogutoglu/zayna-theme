@@ -1,11 +1,11 @@
 {%- comment -%}
-  Zayna Home — V23 globale Details-renderer.
+  Zayna Home — V24 globale Details-renderer.
 
   Doel:
   - één rustige Details-opmaak voor alle producten met custom.detail_weergavetekst;
   - ondersteunt dubbelepunt, em-dash en losse label/waarde-regels;
   - gebruikszinnen krijgen een vaste zachte plek onder label "Gebruik";
-  - lange waarden en belangrijke labels worden full-width;
+  - specificaties vullen consequent 2 per rij waar mogelijk;
   - geen inline-streepjes zichtbaar in de uiteindelijke UI.
 
   Vereist:
@@ -46,13 +46,9 @@
       align-content: start;
     }
 
-    .zh-product-details__spec-item--wide,
     .zh-product-details__spec-item--note {
       grid-column: 1 / -1;
       max-width: 48ch;
-    }
-
-    .zh-product-details__spec-item--note {
       margin-top: .02rem;
     }
 
@@ -119,7 +115,6 @@
         gap: .72rem 1.05rem;
       }
 
-      .zh-product-details__spec-item--wide,
       .zh-product-details__spec-item--note {
         max-width: none;
       }
@@ -230,26 +225,16 @@
               {%- liquid
                 assign label_key = fact_label | downcase | strip
                 assign value_clean = fact_value | strip
-                assign value_down = value_clean | downcase
-                assign value_size = value_clean | size
                 assign is_note_fact = false
-                assign is_wide = false
 
                 if label_key == 'gebruik' or label_key == 'functie' or label_key == 'toepassing'
                   assign is_note_fact = true
                 endif
 
-                if value_size > 24
-                  assign is_wide = true
-                endif
-
-                if label_key contains 'formaat' or label_key contains 'afmeting' or label_key contains 'meegeleverd' or label_key contains 'montage' or label_key contains 'draagvermogen' or label_key contains 'afsluiting' or label_key contains 'gebruik' or label_key contains 'functie' or label_key contains 'toepassing'
-                  assign is_wide = true
-                endif
-
-                if value_down contains '·'
-                  assign is_wide = true
-                endif
+                comment
+                  V24: normale specificaties blijven in het 2-koloms grid.
+                  Alleen Gebruik/Functie/Toepassing wordt als rustige full-width toelichting getoond.
+                endcomment
               -%}
 
               {%- if is_note_fact -%}
@@ -262,7 +247,7 @@
                 {%- assign notes_markup = notes_markup | append: note_item -%}
               {%- else -%}
                 {%- capture spec_item -%}
-                  <div class="zh-product-details__spec-item{% if is_wide %} zh-product-details__spec-item--wide{% endif %}">
+                  <div class="zh-product-details__spec-item">
                     <span class="zh-product-details__label">{{ fact_label | escape }}</span>
                     <span class="zh-product-details__value">{{ value_clean | escape }}</span>
                   </div>
