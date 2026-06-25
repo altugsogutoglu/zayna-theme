@@ -1,11 +1,12 @@
 {%- comment -%}
-  Zayna Home — V22 globale Details-renderer.
+  Zayna Home — V23 globale Details-renderer.
 
   Doel:
   - één rustige Details-opmaak voor alle producten met custom.detail_weergavetekst;
-  - ondersteunt regels met dubbelepunt, em-dash en losse label/waarde-regels;
-  - gebruikszinnen worden onderaan als zachte toelichting getoond;
-  - technische producten kunnen een rustige lead + lijst behouden.
+  - ondersteunt dubbelepunt, em-dash en losse label/waarde-regels;
+  - gebruikszinnen krijgen een vaste zachte plek onder label "Gebruik";
+  - lange waarden en belangrijke labels worden full-width;
+  - geen inline-streepjes zichtbaar in de uiteindelijke UI.
 
   Vereist:
   - product.metafields.custom.detail_weergavetekst
@@ -24,44 +25,40 @@
   {% style %}
     .zh-product-details__content {
       display: grid;
-      gap: .62rem;
+      gap: .78rem;
       width: 100%;
       max-width: 52ch;
-      padding: .02rem 0 .04rem;
-    }
-
-    .zh-product-details__lead {
-      max-width: 46ch;
-      margin: 0;
-      color: #443d36;
-      font-size: .815rem;
-      line-height: 1.6;
-      text-wrap: pretty;
+      padding: .04rem 0 .18rem;
     }
 
     .zh-product-details__spec-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: .66rem 1.18rem;
+      gap: .76rem 1.35rem;
       width: 100%;
       min-width: 0;
     }
 
     .zh-product-details__spec-item {
       display: grid;
-      gap: .1rem;
+      gap: .12rem;
       min-width: 0;
       align-content: start;
     }
 
-    .zh-product-details__spec-item--wide {
+    .zh-product-details__spec-item--wide,
+    .zh-product-details__spec-item--note {
       grid-column: 1 / -1;
       max-width: 48ch;
     }
 
+    .zh-product-details__spec-item--note {
+      margin-top: .02rem;
+    }
+
     .zh-product-details__label {
-      color: #81776d;
-      font-size: .68rem;
+      color: #82776d;
+      font-size: .66rem;
       font-weight: 500;
       letter-spacing: .002em;
       line-height: 1.34;
@@ -69,27 +66,18 @@
 
     .zh-product-details__value {
       color: #3f3832;
-      font-size: .84rem;
+      font-size: .805rem;
       font-weight: 400;
-      line-height: 1.48;
+      line-height: 1.52;
       overflow-wrap: normal;
       word-break: normal;
       text-wrap: pretty;
     }
 
-    .zh-product-details__notes {
-      display: grid;
-      gap: .24rem;
-      max-width: 48ch;
-      margin: .02rem 0 0;
-    }
-
-    .zh-product-details__note {
-      margin: 0;
+    .zh-product-details__spec-item--note .zh-product-details__value {
       color: #625a53;
-      font-size: .795rem;
+      font-size: .79rem;
       line-height: 1.58;
-      text-wrap: pretty;
     }
 
     .zh-product-details__soft {
@@ -128,10 +116,11 @@
       }
 
       .zh-product-details__spec-grid {
-        gap: .64rem 1rem;
+        gap: .72rem 1.05rem;
       }
 
-      .zh-product-details__spec-item--wide {
+      .zh-product-details__spec-item--wide,
+      .zh-product-details__spec-item--note {
         max-width: none;
       }
     }
@@ -142,7 +131,7 @@
       }
 
       .zh-product-details__spec-grid {
-        gap: .7rem 1.25rem;
+        gap: .78rem 1.42rem;
       }
     }
 
@@ -179,7 +168,6 @@
                 {%- endunless -%}
                 <li>{{ clean_line | escape }}</li>
               {%- endif -%}
-
               {%- assign detail_line_index = detail_line_index | plus: 1 -%}
             {%- endif -%}
           {%- endfor -%}
@@ -188,10 +176,9 @@
         </div>
       {%- else -%}
         {%- liquid
-          assign known_labels = '|inhoud|formaat|afmeting|afmetingen|lengte|breedte|hoogte|diameter|bovenkant|bodem|bovenste diameter|bodemdiameter|materiaal|kleur|set|aantal|deksel|filter|meegeleverd|montage|draagvermogen|afsluiting|design|ontwerp|gebruik|functie|toepassing|'
+          assign known_labels = '|inhoud|inhoud per stuk|setinhoud|formaat|afmeting|afmetingen|lengte|breedte|hoogte|diameter|bovenkant|bodem|bovenste diameter|bodemdiameter|materiaal|kleur|set|aantal|pot|deksel|filter|afdichting|afsluiting|eigenschap|glazen en rietjes|meegeleverd|montage|draagvermogen|design|ontwerp|gebruik|functie|toepassing|'
           assign pending_label = ''
           assign specs_markup = ''
-          assign lead_markup = ''
           assign notes_markup = ''
           assign has_specs = false
         -%}
@@ -252,11 +239,11 @@
                   assign is_note_fact = true
                 endif
 
-                if value_size > 30
+                if value_size > 24
                   assign is_wide = true
                 endif
 
-                if label_key contains 'formaat' or label_key contains 'afmeting' or label_key contains 'meegeleverd' or label_key contains 'montage' or label_key contains 'draagvermogen'
+                if label_key contains 'formaat' or label_key contains 'afmeting' or label_key contains 'meegeleverd' or label_key contains 'montage' or label_key contains 'draagvermogen' or label_key contains 'afsluiting' or label_key contains 'gebruik' or label_key contains 'functie' or label_key contains 'toepassing'
                   assign is_wide = true
                 endif
 
@@ -266,12 +253,13 @@
               -%}
 
               {%- if is_note_fact -%}
-                {%- capture note_item -%}<p class="zh-product-details__note">{{ value_clean | escape }}</p>{%- endcapture -%}
-                {%- if has_specs -%}
-                  {%- assign notes_markup = notes_markup | append: note_item -%}
-                {%- else -%}
-                  {%- assign lead_markup = lead_markup | append: note_item -%}
-                {%- endif -%}
+                {%- capture note_item -%}
+                  <div class="zh-product-details__spec-item zh-product-details__spec-item--note">
+                    <span class="zh-product-details__label">Gebruik</span>
+                    <span class="zh-product-details__value">{{ value_clean | escape }}</span>
+                  </div>
+                {%- endcapture -%}
+                {%- assign notes_markup = notes_markup | append: note_item -%}
               {%- else -%}
                 {%- capture spec_item -%}
                   <div class="zh-product-details__spec-item{% if is_wide %} zh-product-details__spec-item--wide{% endif %}">
@@ -283,35 +271,32 @@
                 {%- assign has_specs = true -%}
               {%- endif -%}
             {%- elsif note_text != blank -%}
-              {%- capture note_item -%}<p class="zh-product-details__note">{{ note_text | escape }}</p>{%- endcapture -%}
-              {%- if has_specs -%}
-                {%- assign notes_markup = notes_markup | append: note_item -%}
-              {%- else -%}
-                {%- assign lead_markup = lead_markup | append: note_item -%}
-              {%- endif -%}
+              {%- capture note_item -%}
+                <div class="zh-product-details__spec-item zh-product-details__spec-item--note">
+                  <span class="zh-product-details__label">Gebruik</span>
+                  <span class="zh-product-details__value">{{ note_text | escape }}</span>
+                </div>
+              {%- endcapture -%}
+              {%- assign notes_markup = notes_markup | append: note_item -%}
             {%- endif -%}
           {%- endif -%}
         {%- endfor -%}
 
         {%- if pending_label != blank -%}
-          {%- capture note_item -%}<p class="zh-product-details__note">{{ pending_label | escape }}</p>{%- endcapture -%}
-          {%- if has_specs -%}
-            {%- assign notes_markup = notes_markup | append: note_item -%}
-          {%- else -%}
-            {%- assign lead_markup = lead_markup | append: note_item -%}
-          {%- endif -%}
+          {%- capture note_item -%}
+            <div class="zh-product-details__spec-item zh-product-details__spec-item--note">
+              <span class="zh-product-details__label">Gebruik</span>
+              <span class="zh-product-details__value">{{ pending_label | escape }}</span>
+            </div>
+          {%- endcapture -%}
+          {%- assign notes_markup = notes_markup | append: note_item -%}
         {%- endif -%}
 
-        {%- if lead_markup != blank -%}
-          <div class="zh-product-details__notes">{{ lead_markup }}</div>
-        {%- endif -%}
-
-        {%- if specs_markup != blank -%}
-          <div class="zh-product-details__spec-grid">{{ specs_markup }}</div>
-        {%- endif -%}
-
-        {%- if notes_markup != blank -%}
-          <div class="zh-product-details__notes">{{ notes_markup }}</div>
+        {%- if specs_markup != blank or notes_markup != blank -%}
+          <div class="zh-product-details__spec-grid">
+            {{ specs_markup }}
+            {{ notes_markup }}
+          </div>
         {%- endif -%}
       {%- endif -%}
     </div>
