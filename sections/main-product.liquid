@@ -457,18 +457,10 @@
   .zh-product__option-button:focus-visible,
   .zh-product__qty-button:focus-visible,
   .zh-product__add-button:focus-visible,
-  .zh-product__sold-link:focus-visible {
+  .zh-product__sold-link:focus-visible,
+  .zh-product__accordion summary:focus-visible {
     outline: 2px solid var(--color-clay, #a66a3f);
     outline-offset: 3px;
-  }
-
-  .zh-product__accordion summary:focus {
-    outline: none;
-  }
-
-  .zh-product__accordion summary:focus-visible {
-    outline: 1px solid rgb(129 116 104 / 48%);
-    outline-offset: 2px;
   }
 
   .zh-product__sold-state {
@@ -700,16 +692,58 @@
     white-space: nowrap;
   }
 
-  .zh-product__care-lines {
+  .zh-product__care-grid {
     display: grid;
-    gap: .28rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .76rem 1.35rem;
+    width: 100%;
+    max-width: 52ch;
+    min-width: 0;
+    padding: .04rem 0 .18rem;
   }
 
-  .zh-product__care-lines li {
-    margin: 0;
+  .zh-product__care-item {
+    display: grid;
+    gap: .12rem;
+    min-width: 0;
+    align-content: start;
+  }
+
+  .zh-product__care-item--wide {
+    grid-column: 1 / -1;
+    max-width: 48ch;
+  }
+
+  .zh-product__care-label {
+    color: #82776d;
+    font-size: .66rem;
+    font-weight: 500;
+    letter-spacing: .002em;
+    line-height: 1.34;
+  }
+
+  .zh-product__care-value {
+    color: #4a433d;
+    font-size: .805rem;
+    font-weight: 400;
+    line-height: 1.58;
+    text-wrap: pretty;
+  }
+
+  .zh-product__care-item--wide .zh-product__care-value {
+    color: #625a53;
+    font-size: .79rem;
+  }
+
+  @media (max-width: 520px) {
+    .zh-product__care-grid {
+      gap: .72rem 1.05rem;
+      max-width: none;
+    }
+
+    .zh-product__care-item--wide {
+      max-width: none;
+    }
   }
 
   [hidden] {
@@ -832,7 +866,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v23 — globale productaccordion polish */
+  /* UX-prototype v25 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -1085,51 +1119,6 @@
     .zh-product--ux-prototype-v3 .zh-product__accordion-body--editorial {
       padding-top: .14rem;
     }
-  }
-
-
-  /* V23: globale accordion UI-polish */
-  .zh-product__inline-logistics .zh-product__accordion summary,
-  .zh-product__inline-logistics .zh-product__accordion summary.font-display {
-    min-height: 3.15rem;
-    padding: .62rem 0;
-    color: #2f2a25;
-    font-family: var(--font-sans, sans-serif);
-    font-size: .95rem;
-    font-weight: 500;
-    letter-spacing: .001em;
-    line-height: 1.42;
-    cursor: default !important;
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .zh-product__inline-logistics .zh-product__accordion summary > * {
-    pointer-events: none !important;
-  }
-
-  .zh-product__inline-logistics .zh-product__accordion-icon {
-    width: .84rem;
-    height: .84rem;
-    opacity: .62;
-  }
-
-  .zh-product__inline-logistics .zh-product__accordion[open] > .zh-product__accordion-body {
-    padding-top: .22rem;
-  }
-
-  .zh-product__inline-logistics .zh-product__accordion-body,
-  .zh-product__inline-logistics .zh-product__accordion-body * {
-    cursor: default !important;
-    -webkit-user-select: none;
-    user-select: none;
-  }
-
-  .zh-product__inline-logistics .zh-product__accordion summary:hover,
-  .zh-product__inline-logistics .zh-product__accordion[open] summary {
-    color: #2f2a25;
-    font-weight: 500;
   }
 
   .zh-product__delivery-grid {
@@ -1465,12 +1454,73 @@
 
                     <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
                       {%- assign care_lines = care_display_text | newline_to_br | split: '<br />' -%}
+                      {%- assign care_markup = '' -%}
+
                       {%- for line in care_lines -%}
                         {%- assign clean_line = line | strip -%}
                         {%- if clean_line != blank -%}
-                          <p>{{ clean_line | escape }}</p>
+                          {%- liquid
+                            assign care_line_down = clean_line | downcase
+                            assign care_label = ''
+                            assign care_value = clean_line
+                            assign care_wide = false
+
+                            if care_line_down contains 'droog' or care_line_down contains 'afdrogen'
+                              assign care_label = 'Na reinigen'
+                              assign care_value = clean_line
+                              assign care_wide = true
+                            elsif care_line_down contains 'glas' and care_line_down contains 'vaatwasser'
+                              assign care_label = 'Glas'
+                              assign care_value = 'Vaatwasserbestendig'
+                            elsif care_line_down contains 'glazen potten' and care_line_down contains 'vaatwasser'
+                              assign care_label = 'Glazen potten'
+                              assign care_value = 'Vaatwasserbestendig'
+                            elsif care_line_down contains 'potten' and care_line_down contains 'vaatwasser'
+                              assign care_label = 'Potten'
+                              assign care_value = 'Vaatwasserbestendig'
+                            elsif care_line_down contains 'deksel' and care_line_down contains 'hand'
+                              assign care_label = 'Deksel'
+                              assign care_value = 'Met de hand wassen'
+                            elsif care_line_down contains 'bamboe' and care_line_down contains 'hand'
+                              assign care_label = 'Bamboe onderdelen'
+                              assign care_value = 'Met de hand wassen'
+                            elsif care_line_down contains 'filter' and care_line_down contains 'hand'
+                              assign care_label = 'Filter'
+                              assign care_value = 'Met de hand wassen'
+                            elsif care_line_down contains 'rietje' and care_line_down contains 'hand'
+                              assign care_label = 'Rietje'
+                              assign care_value = 'Met de hand wassen'
+                            elsif care_line_down contains 'rietjes' and care_line_down contains 'hand'
+                              assign care_label = 'Rietjes'
+                              assign care_value = 'Met de hand wassen'
+                            elsif care_line_down contains 'handwas' or care_line_down contains 'met de hand' or care_line_down contains 'hand wassen'
+                              assign care_label = 'Reiniging'
+                              assign care_value = 'Met de hand wassen'
+                            elsif care_line_down contains 'vaatwasser'
+                              assign care_label = 'Reiniging'
+                              assign care_value = 'Vaatwasserbestendig'
+                            else
+                              assign care_label = 'Onderhoud'
+                              assign care_value = clean_line
+                              assign care_wide = true
+                            endif
+                          -%}
+
+                          {%- capture care_item -%}
+                            <div class="zh-product__care-item{% if care_wide %} zh-product__care-item--wide{% endif %}">
+                              <span class="zh-product__care-label">{{ care_label | escape }}</span>
+                              <span class="zh-product__care-value">{{ care_value | escape }}</span>
+                            </div>
+                          {%- endcapture -%}
+                          {%- assign care_markup = care_markup | append: care_item -%}
                         {%- endif -%}
                       {%- endfor -%}
+
+                      {%- if care_markup != blank -%}
+                        <div class="zh-product__care-grid">
+                          {{ care_markup }}
+                        </div>
+                      {%- endif -%}
                     </div>
                   </details>
                 {%- endif -%}
