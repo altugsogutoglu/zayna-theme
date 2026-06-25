@@ -866,7 +866,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v27 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v28 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -1455,134 +1455,112 @@
                     <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
                       {%- assign care_lines = care_display_text | newline_to_br | split: '<br />' -%}
                       {%- assign care_markup = '' -%}
-                      {%- assign has_care_glass = false -%}
-                      {%- assign has_care_lid = false -%}
-                      {%- assign has_care_filter = false -%}
-                      {%- assign has_care_straw = false -%}
-                      {%- assign detail_text_down = product.metafields.custom.detail_weergavetekst.value | downcase | strip -%}
+                      {%- assign pending_care_label = '' -%}
+                      {%- assign known_care_labels = '|glas|glazen potten|potten|deksel|bamboe deksel|bamboe onderdelen|filter|rietje|rietjes|lepel|glas en lepel|reiniging|na reinigen|onderhoud|' -%}
 
                       {%- for line in care_lines -%}
                         {%- assign clean_line = line | strip -%}
                         {%- if clean_line != blank -%}
                           {%- liquid
-                            assign care_line_down = clean_line | downcase
+                            assign care_line_down = clean_line | downcase | strip
                             assign care_label = ''
-                            assign care_value = clean_line
+                            assign care_value = ''
                             assign care_wide = false
-
-                            if care_line_down contains 'droog' or care_line_down contains 'afdrogen'
-                              assign care_label = 'Na reinigen'
-                              assign care_value = clean_line
-                              assign care_wide = true
-                            elsif care_line_down contains 'glas' and care_line_down contains 'vaatwasser'
-                              assign care_label = 'Glas'
-                              assign care_value = 'Vaatwasserbestendig'
-                              assign has_care_glass = true
-                            elsif care_line_down contains 'glazen potten' and care_line_down contains 'vaatwasser'
-                              assign care_label = 'Glazen potten'
-                              assign care_value = 'Vaatwasserbestendig'
-                              assign has_care_glass = true
-                            elsif care_line_down contains 'potten' and care_line_down contains 'vaatwasser'
-                              assign care_label = 'Potten'
-                              assign care_value = 'Vaatwasserbestendig'
-                              assign has_care_glass = true
-                            elsif care_line_down contains 'lepel' and care_line_down contains 'vaatwasser'
-                              assign care_label = 'Lepel'
-                              assign care_value = 'Vaatwasserbestendig'
-                            elsif care_line_down contains 'lepel' and care_line_down contains 'hand'
-                              assign care_label = 'Lepel'
-                              assign care_value = 'Met de hand wassen'
-                            elsif care_line_down contains 'deksel' and care_line_down contains 'hand'
-                              assign care_label = 'Deksel'
-                              assign care_value = 'Met de hand wassen'
-                              assign has_care_lid = true
-                            elsif care_line_down contains 'bamboe' and care_line_down contains 'hand'
-                              assign care_label = 'Bamboe onderdelen'
-                              assign care_value = 'Met de hand wassen'
-                              assign has_care_lid = true
-                            elsif care_line_down contains 'filter' and care_line_down contains 'hand'
-                              assign care_label = 'Filter'
-                              assign care_value = 'Met de hand wassen'
-                              assign has_care_filter = true
-                            elsif care_line_down contains 'rietjes' and care_line_down contains 'hand'
-                              assign care_label = 'Rietjes'
-                              assign care_value = 'Met de hand wassen'
-                              assign has_care_straw = true
-                            elsif care_line_down contains 'rietje' and care_line_down contains 'hand'
-                              assign care_label = 'Rietje'
-                              assign care_value = 'Met de hand wassen'
-                              assign has_care_straw = true
-                            elsif care_line_down contains 'handwas' or care_line_down contains 'met de hand' or care_line_down contains 'hand wassen'
-                              assign care_label = 'Reiniging'
-                              assign care_value = 'Met de hand wassen'
-                            elsif care_line_down contains 'vaatwasser'
-                              assign care_label = 'Reiniging'
-                              assign care_value = 'Vaatwasserbestendig'
-                            else
-                              assign care_label = 'Onderhoud'
-                              assign care_value = clean_line
-                              assign care_wide = true
-                            endif
+                            assign normalized_line = clean_line | replace: ' – ', ' — ' | replace: ' - ', ' — '
                           -%}
 
-                          {%- capture care_item -%}
-                            <div class="zh-product__care-item{% if care_wide %} zh-product__care-item--wide{% endif %}">
-                              <span class="zh-product__care-label">{{ care_label | escape }}</span>
-                              <span class="zh-product__care-value">{{ care_value | escape }}</span>
-                            </div>
-                          {%- endcapture -%}
-                          {%- assign care_markup = care_markup | append: care_item -%}
+                          {%- if normalized_line contains ':' -%}
+                            {%- liquid
+                              assign care_label = normalized_line | split: ':' | first | strip
+                              assign care_value = normalized_line | remove_first: care_label | remove_first: ':' | strip
+                            -%}
+                          {%- elsif normalized_line contains '—' -%}
+                            {%- liquid
+                              assign care_label = normalized_line | split: '—' | first | strip
+                              assign care_value = normalized_line | remove_first: care_label | remove_first: '—' | strip
+                            -%}
+                          {%- else -%}
+                            {%- assign care_token = '|' | append: care_line_down | append: '|' -%}
+                            {%- if known_care_labels contains care_token -%}
+                              {%- if pending_care_label != blank -%}
+                                {%- assign care_label = 'Onderhoud' -%}
+                                {%- assign care_value = pending_care_label -%}
+                                {%- assign care_wide = true -%}
+                              {%- endif -%}
+                              {%- assign pending_care_label = clean_line -%}
+                            {%- elsif pending_care_label != blank -%}
+                              {%- assign care_label = pending_care_label -%}
+                              {%- assign care_value = clean_line -%}
+                              {%- assign pending_care_label = '' -%}
+                            {%- elsif care_line_down contains 'droog' or care_line_down contains 'afdrogen' -%}
+                              {%- assign care_label = 'Na reinigen' -%}
+                              {%- assign care_value = clean_line -%}
+                              {%- assign care_wide = true -%}
+                            {%- elsif care_line_down contains 'glas' and care_line_down contains 'vaatwasser' -%}
+                              {%- assign care_label = 'Glas' -%}
+                              {%- assign care_value = 'Vaatwasserbestendig' -%}
+                            {%- elsif care_line_down contains 'glazen potten' and care_line_down contains 'vaatwasser' -%}
+                              {%- assign care_label = 'Glazen potten' -%}
+                              {%- assign care_value = 'Vaatwasserbestendig' -%}
+                            {%- elsif care_line_down contains 'potten' and care_line_down contains 'vaatwasser' -%}
+                              {%- assign care_label = 'Potten' -%}
+                              {%- assign care_value = 'Vaatwasserbestendig' -%}
+                            {%- elsif care_line_down contains 'lepel' and care_line_down contains 'vaatwasser' -%}
+                              {%- assign care_label = 'Lepel' -%}
+                              {%- assign care_value = 'Vaatwasserbestendig' -%}
+                            {%- elsif care_line_down contains 'lepel' and care_line_down contains 'hand' -%}
+                              {%- assign care_label = 'Lepel' -%}
+                              {%- assign care_value = 'Met de hand wassen' -%}
+                            {%- elsif care_line_down contains 'deksel' and care_line_down contains 'hand' -%}
+                              {%- assign care_label = 'Deksel' -%}
+                              {%- assign care_value = 'Met de hand wassen' -%}
+                            {%- elsif care_line_down contains 'bamboe' and care_line_down contains 'hand' -%}
+                              {%- assign care_label = 'Bamboe onderdelen' -%}
+                              {%- assign care_value = 'Met de hand wassen' -%}
+                            {%- elsif care_line_down contains 'filter' and care_line_down contains 'hand' -%}
+                              {%- assign care_label = 'Filter' -%}
+                              {%- assign care_value = 'Met de hand wassen' -%}
+                            {%- elsif care_line_down contains 'rietjes' and care_line_down contains 'hand' -%}
+                              {%- assign care_label = 'Rietjes' -%}
+                              {%- assign care_value = 'Met de hand wassen' -%}
+                            {%- elsif care_line_down contains 'rietje' and care_line_down contains 'hand' -%}
+                              {%- assign care_label = 'Rietje' -%}
+                              {%- assign care_value = 'Met de hand wassen' -%}
+                            {%- elsif care_line_down contains 'handwas' or care_line_down contains 'met de hand' or care_line_down contains 'hand wassen' -%}
+                              {%- assign care_label = 'Reiniging' -%}
+                              {%- assign care_value = 'Met de hand wassen' -%}
+                            {%- elsif care_line_down contains 'vaatwasser' -%}
+                              {%- assign care_label = 'Reiniging' -%}
+                              {%- assign care_value = 'Vaatwasserbestendig' -%}
+                            {%- else -%}
+                              {%- assign care_label = 'Onderhoud' -%}
+                              {%- assign care_value = clean_line -%}
+                              {%- assign care_wide = true -%}
+                            {%- endif -%}
+                          {%- endif -%}
+
+                          {%- if care_label != blank and care_value != blank -%}
+                            {%- assign care_label_down = care_label | downcase | strip -%}
+                            {%- if care_label_down == 'na reinigen' -%}
+                              {%- assign care_wide = true -%}
+                            {%- endif -%}
+
+                            {%- capture care_item -%}
+                              <div class="zh-product__care-item{% if care_wide %} zh-product__care-item--wide{% endif %}">
+                                <span class="zh-product__care-label">{{ care_label | escape }}</span>
+                                <span class="zh-product__care-value">{{ care_value | escape }}</span>
+                              </div>
+                            {%- endcapture -%}
+                            {%- assign care_markup = care_markup | append: care_item -%}
+                          {%- endif -%}
                         {%- endif -%}
                       {%- endfor -%}
 
-                      {%- comment -%}
-                        V26: voorkom dat onderhoud incompleet voelt.
-                        Als Details duidelijk glas/borosilicaat noemt en er is nog geen glasregel,
-                        voegen we een rustige glasregel toe. Dit volgt de vaste productregel voor Zayna Home.
-                      {%- endcomment -%}
-                      {%- if has_care_glass == false -%}
-                        {%- if detail_text_down contains 'borosilicaatglas' or detail_text_down contains 'glas' -%}
-                          {%- assign glass_label = 'Glas' -%}
-                          {%- if detail_text_down contains 'glazen lepel' or detail_text_down contains 'lepel' -%}
-                            {%- assign glass_label = 'Glas en lepel' -%}
-                          {%- endif -%}
-
-                          {%- capture care_item -%}
-                            <div class="zh-product__care-item">
-                              <span class="zh-product__care-label">{{ glass_label | escape }}</span>
-                              <span class="zh-product__care-value">Vaatwasserbestendig</span>
-                            </div>
-                          {%- endcapture -%}
-                          {%- assign care_markup = care_item | append: care_markup -%}
-                          {%- assign has_care_glass = true -%}
-                        {%- endif -%}
-                      {%- endif -%}
-
-                      {%- if has_care_lid == false and detail_text_down contains 'deksel' -%}
+                      {%- if pending_care_label != blank -%}
                         {%- capture care_item -%}
-                          <div class="zh-product__care-item">
-                            <span class="zh-product__care-label">Deksel</span>
-                            <span class="zh-product__care-value">Met de hand wassen</span>
-                          </div>
-                        {%- endcapture -%}
-                        {%- assign care_markup = care_markup | append: care_item -%}
-                      {%- endif -%}
-
-                      {%- if has_care_filter == false and detail_text_down contains 'filter' -%}
-                        {%- capture care_item -%}
-                          <div class="zh-product__care-item">
-                            <span class="zh-product__care-label">Filter</span>
-                            <span class="zh-product__care-value">Met de hand wassen</span>
-                          </div>
-                        {%- endcapture -%}
-                        {%- assign care_markup = care_markup | append: care_item -%}
-                      {%- endif -%}
-
-                      {%- if has_care_straw == false and detail_text_down contains 'rietje' -%}
-                        {%- capture care_item -%}
-                          <div class="zh-product__care-item">
-                            <span class="zh-product__care-label">Rietje</span>
-                            <span class="zh-product__care-value">Met de hand wassen</span>
+                          <div class="zh-product__care-item zh-product__care-item--wide">
+                            <span class="zh-product__care-label">Onderhoud</span>
+                            <span class="zh-product__care-value">{{ pending_care_label | escape }}</span>
                           </div>
                         {%- endcapture -%}
                         {%- assign care_markup = care_markup | append: care_item -%}
