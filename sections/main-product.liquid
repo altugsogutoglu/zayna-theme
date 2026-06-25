@@ -866,7 +866,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v28 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v29 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -1242,6 +1242,71 @@
     }
   }
 
+
+  /* V29: definitieve accordion-typografie + onderhoud-polish */
+  .zh-product__inline-logistics .zh-product__accordion > summary,
+  .zh-product__inline-logistics .zh-product__accordion > summary.font-display,
+  .zh-product__inline-logistics .zh-product__accordion > summary span {
+    font-family: var(--font-sans, sans-serif) !important;
+    font-size: .95rem;
+    font-weight: 500;
+    letter-spacing: .001em;
+    line-height: 1.42;
+  }
+
+  .zh-product__inline-logistics .zh-product__accordion > summary {
+    min-height: 3.1rem;
+    padding: .58rem 0;
+    color: #2f2a25;
+    cursor: default !important;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .zh-product__inline-logistics .zh-product__accordion > summary:focus {
+    outline: none;
+  }
+
+  .zh-product__inline-logistics .zh-product__accordion > summary:focus-visible {
+    outline: 1px solid rgb(129 116 104 / 42%);
+    outline-offset: 2px;
+  }
+
+  .zh-product__inline-logistics .zh-product__accordion[open] > .zh-product__accordion-body {
+    padding-top: .18rem;
+  }
+
+  .zh-product__care-grid {
+    gap: .7rem 1.35rem;
+    padding: .02rem 0 .28rem;
+  }
+
+  .zh-product__care-item {
+    gap: .09rem;
+  }
+
+  .zh-product__care-label {
+    color: #82776d;
+    font-size: .64rem;
+    font-weight: 500;
+    letter-spacing: .001em;
+    line-height: 1.34;
+  }
+
+  .zh-product__care-value {
+    color: #504941;
+    font-size: .79rem;
+    font-weight: 400;
+    line-height: 1.55;
+  }
+
+  .zh-product__care-item--wide .zh-product__care-value {
+    color: #625a53;
+    font-size: .78rem;
+    line-height: 1.58;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .zh-product * {
       transition-duration: .01ms !important;
@@ -1456,7 +1521,7 @@
                       {%- assign care_lines = care_display_text | newline_to_br | split: '<br />' -%}
                       {%- assign care_markup = '' -%}
                       {%- assign pending_care_label = '' -%}
-                      {%- assign known_care_labels = '|glas|glazen potten|potten|deksel|bamboe deksel|bamboe onderdelen|filter|rietje|rietjes|lepel|glas en lepel|reiniging|na reinigen|onderhoud|' -%}
+                      {%- assign known_care_labels = '|volledige set|complete set|set|glas|glazen potten|potten|pot|deksel|bamboe deksel|bamboe onderdelen|filter|rietje|rietjes|lepel|glas en lepel|reiniging|na reinigen|onderhoud|' -%}
 
                       {%- for line in care_lines -%}
                         {%- assign clean_line = line | strip -%}
@@ -1541,10 +1606,19 @@
 
                           {%- if care_label != blank and care_value != blank -%}
                             {%- assign care_label_down = care_label | downcase | strip -%}
-                            {%- if care_label_down == 'na reinigen' -%}
+                            {%- assign care_value_down = care_value | downcase | strip -%}
+                            {%- assign care_value_token = '|' | append: care_value_down | append: '|' -%}
+
+                            {%- if care_label_down == 'onderhoud' and known_care_labels contains care_value_token -%}
+                              {%- assign pending_care_label = care_value -%}
+                              {%- assign care_label = '' -%}
+                              {%- assign care_value = '' -%}
+                            {%- elsif care_label_down == 'na reinigen' -%}
                               {%- assign care_wide = true -%}
                             {%- endif -%}
+                          {%- endif -%}
 
+                          {%- if care_label != blank and care_value != blank -%}
                             {%- capture care_item -%}
                               <div class="zh-product__care-item{% if care_wide %} zh-product__care-item--wide{% endif %}">
                                 <span class="zh-product__care-label">{{ care_label | escape }}</span>
@@ -1557,13 +1631,17 @@
                       {%- endfor -%}
 
                       {%- if pending_care_label != blank -%}
-                        {%- capture care_item -%}
-                          <div class="zh-product__care-item zh-product__care-item--wide">
-                            <span class="zh-product__care-label">Onderhoud</span>
-                            <span class="zh-product__care-value">{{ pending_care_label | escape }}</span>
-                          </div>
-                        {%- endcapture -%}
-                        {%- assign care_markup = care_markup | append: care_item -%}
+                        {%- assign pending_care_label_down = pending_care_label | downcase | strip -%}
+                        {%- assign pending_care_token = '|' | append: pending_care_label_down | append: '|' -%}
+                        {%- unless known_care_labels contains pending_care_token -%}
+                          {%- capture care_item -%}
+                            <div class="zh-product__care-item zh-product__care-item--wide">
+                              <span class="zh-product__care-label">Onderhoud</span>
+                              <span class="zh-product__care-value">{{ pending_care_label | escape }}</span>
+                            </div>
+                          {%- endcapture -%}
+                          {%- assign care_markup = care_markup | append: care_item -%}
+                        {%- endunless -%}
                       {%- endif -%}
 
                       {%- if care_markup != blank -%}
