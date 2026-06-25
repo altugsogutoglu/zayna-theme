@@ -824,7 +824,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v18 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v19 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -1424,7 +1424,7 @@
 
                 {%- assign shipping_body = block.settings.row2_body -%}
                 {%- assign return_body = block.settings.row3_body -%}
-                {%- if shipping_body != blank or return_body != blank -%}
+                {%- if block.settings.shipping_time != blank or block.settings.shipping_home != blank or block.settings.shipping_point != blank or block.settings.shipping_free != blank or block.settings.return_window != blank -%}
                   <details class="zh-product__accordion">
                     <summary class="font-display">
                       <span>Levering & retour</span>

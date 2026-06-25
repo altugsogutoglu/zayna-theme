@@ -1,5 +1,5 @@
 {%- comment -%}
-  Zayna Home — UX-prototype v17 voor twee proefproducten.
+  Zayna Home — UX-prototype v19 voor twee proefproducten.
 
   Prototypeproducten:
   - voorraadpot-600ml-borosilicaatglas
@@ -12,17 +12,13 @@
   - minder technische zichtbaarheid;
   - zachtere kleur, kleinere tekst en verfijnde spacing.
 
-  Alle andere producten behouden de bestaande fallback-weergave.
+  Alle producten met detail_weergavetekst gebruiken dezelfde rustige premium-weergave.
 {%- endcomment -%}
 
 {%- liquid
   assign detail_display_text = product.metafields.custom.detail_weergavetekst.value | strip
-  assign is_ux_prototype_v6 = false
+  assign is_ux_prototype_v6 = true
   assign is_technical_detail_prototype = false
-
-  if product.handle == 'voorraadpot-600ml-borosilicaatglas' or product.handle == 'digitale-weeglepel-500g-0-1g' or product.handle == 'set-van-12-vierkante-kruidenpotten-120-ml-incl-labels-trechter-borosilicaat-glas' or product.handle == 'theepotset-dua-450-ml-1300-ml-borosilicaat-glas-met-rvs-filter' or product.handle == 'glazen-drinkglas-300-ml-hoog-borosilicaatglas' or product.handle == 'vierkante-wandhaak-zwart'
-    assign is_ux_prototype_v6 = true
-  endif
 
   if product.handle == 'digitale-weeglepel-500g-0-1g'
     assign is_technical_detail_prototype = true
@@ -82,7 +78,7 @@
       overflow-wrap: anywhere;
     }
 
-    /* UX-prototype v17: stillere premium accordion-inhoud */
+    /* UX-prototype v19: stillere premium accordion-inhoud */
     .zh-product-details--ux-v6 .zh-product-details__content {
       gap: .52rem;
       max-width: 44ch;
@@ -233,55 +229,44 @@
             {%- for line in detail_lines -%}
               {%- assign clean_line = line | strip -%}
               {%- if clean_line != blank -%}
-                {%- assign line_mod = clean_line_index | modulo: 2 -%}
+                {%- if clean_line contains ':' -%}
+                  {%- if item_open -%}</div>{%- assign item_open = false -%}{%- endif -%}
+                  {%- assign fact_label = clean_line | split: ':' | first | strip -%}
+                  {%- assign fact_value = clean_line | remove_first: fact_label | remove_first: ':' | strip -%}
 
-                {%- if clean_line_index < 8 -%}
-                  {%- if line_mod == 0 -%}
-                    {%- if item_open -%}</div>{%- endif -%}
+                  {%- if fact_label != blank and fact_value != blank -%}
                     <div class="zh-product-details__quiet-item">
-                      <span class="zh-product-details__quiet-label">{{ clean_line | escape }}</span>
-                    {%- assign item_open = true -%}
+                      <span class="zh-product-details__quiet-label">{{ fact_label | escape }}</span>
+                      <span class="zh-product-details__quiet-value">{{ fact_value | escape }}</span>
+                    </div>
                   {%- else -%}
-                      <span class="zh-product-details__quiet-value">{{ clean_line | escape }}</span>
+                    <p class="zh-product-details__quiet-note">{{ clean_line | escape }}</p>
                   {%- endif -%}
                 {%- else -%}
-                  {%- if item_open -%}</div>{%- assign item_open = false -%}{%- endif -%}
-                  <p class="zh-product-details__quiet-note">{{ clean_line | escape }}</p>
-                {%- endif -%}
+                  {%- assign line_mod = clean_line_index | modulo: 2 -%}
 
-                {%- assign clean_line_index = clean_line_index | plus: 1 -%}
+                  {%- if clean_line_index < 8 -%}
+                    {%- if line_mod == 0 -%}
+                      {%- if item_open -%}</div>{%- endif -%}
+                      <div class="zh-product-details__quiet-item">
+                        <span class="zh-product-details__quiet-label">{{ clean_line | escape }}</span>
+                      {%- assign item_open = true -%}
+                    {%- else -%}
+                        <span class="zh-product-details__quiet-value">{{ clean_line | escape }}</span>
+                    {%- endif -%}
+                  {%- else -%}
+                    {%- if item_open -%}</div>{%- assign item_open = false -%}{%- endif -%}
+                    <p class="zh-product-details__quiet-note">{{ clean_line | escape }}</p>
+                  {%- endif -%}
+
+                  {%- assign clean_line_index = clean_line_index | plus: 1 -%}
+                {%- endif -%}
               {%- endif -%}
             {%- endfor -%}
 
             {%- if item_open -%}</div>{%- endif -%}
           </div>
         {%- endif -%}
-      </div>
-    {%- else -%}
-      <div class="zh-product__accordion-body zh-product__accordion-body--editorial zh-product-details__content">
-        {%- assign has_seen_fact = false -%}
-
-        {%- for line in detail_lines -%}
-          {%- assign clean_line = line | strip -%}
-          {%- if clean_line != blank -%}
-            {%- if clean_line contains ':' -%}
-              {%- assign fact_label = clean_line | split: ':' | first | strip -%}
-              {%- assign fact_value = clean_line | remove_first: fact_label | remove_first: ':' | strip -%}
-
-              {%- if fact_label != blank and fact_value != blank -%}
-                <div class="zh-product-details__fact">
-                  <span class="zh-product-details__fact-label">{{ fact_label | escape }}</span>
-                  <span class="zh-product-details__fact-value">{{ fact_value | escape }}</span>
-                </div>
-                {%- assign has_seen_fact = true -%}
-              {%- else -%}
-                <p class="{% if has_seen_fact %}zh-product-details__note{% else %}zh-product-details__lead{% endif %}">{{ clean_line | escape }}</p>
-              {%- endif -%}
-            {%- else -%}
-              <p class="{% if has_seen_fact %}zh-product-details__note{% else %}zh-product-details__lead{% endif %}">{{ clean_line | escape }}</p>
-            {%- endif -%}
-          {%- endif -%}
-        {%- endfor -%}
       </div>
     {%- endif -%}
   </details>
