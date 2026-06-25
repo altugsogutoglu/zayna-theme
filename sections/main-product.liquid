@@ -866,7 +866,7 @@
 
 
   /* -------------------------------------------------------------- */
-  /* UX-prototype v29 — alleen voorraadpot 600 ml en digitale lepel */
+  /* UX-prototype v30 — alleen voorraadpot 600 ml en digitale lepel */
   /* Fijnslijping: compactere hiërarchie, betere split-screen balans */
   /* -------------------------------------------------------------- */
   .zh-product--ux-prototype-v3 .zh-product__purchase {
@@ -1521,7 +1521,7 @@
                       {%- assign care_lines = care_display_text | newline_to_br | split: '<br />' -%}
                       {%- assign care_markup = '' -%}
                       {%- assign pending_care_label = '' -%}
-                      {%- assign known_care_labels = '|volledige set|complete set|set|glas|glazen potten|potten|pot|deksel|bamboe deksel|bamboe onderdelen|filter|rietje|rietjes|lepel|glas en lepel|reiniging|na reinigen|onderhoud|' -%}
+                      {%- assign known_care_labels = '|volledige set|complete set|set|glas|glazen potten|potten|pot|deksel|bamboe deksel|bamboe onderdelen|filter|rietje|rietjes|lepel|glas en lepel|reiniging|wasadvies|wasverzachter|drogen|eerste gebruik|na reinigen|onderhoud|' -%}
 
                       {%- for line in care_lines -%}
                         {%- assign clean_line = line | strip -%}
@@ -1590,6 +1590,25 @@
                               {%- assign care_value = 'Met de hand wassen' -%}
                             {%- elsif care_line_down contains 'rietje' and care_line_down contains 'hand' -%}
                               {%- assign care_label = 'Rietje' -%}
+                              {%- assign care_value = 'Met de hand wassen' -%}
+                            {%- elsif care_line_down contains 'was op maximaal' or care_line_down contains 'maximaal 40' or care_line_down contains 'maximaal 30' or care_line_down contains 'maximaal 60' -%}
+                              {%- assign care_label = 'Wasadvies' -%}
+                              {%- assign care_value = clean_line | replace: 'Was op ', '' | replace: 'was op ', '' -%}
+                            {%- elsif care_line_down contains 'wasverzachter' -%}
+                              {%- assign care_label = 'Wasverzachter' -%}
+                              {%- if care_line_down contains 'geen' or care_line_down contains 'niet' -%}
+                                {%- assign care_value = 'Liever niet gebruiken' -%}
+                              {%- else -%}
+                                {%- assign care_value = clean_line -%}
+                              {%- endif -%}
+                            {%- elsif care_line_down contains 'droger' -%}
+                              {%- assign care_label = 'Drogen' -%}
+                              {%- assign care_value = clean_line -%}
+                            {%- elsif care_line_down contains 'eerste gebruik' or care_line_down contains 'was koud' -%}
+                              {%- assign care_label = 'Eerste gebruik' -%}
+                              {%- assign care_value = clean_line -%}
+                            {%- elsif care_line_down contains 'was de' and care_line_down contains 'met de hand' -%}
+                              {%- assign care_label = 'Volledige set' -%}
                               {%- assign care_value = 'Met de hand wassen' -%}
                             {%- elsif care_line_down contains 'handwas' or care_line_down contains 'met de hand' or care_line_down contains 'hand wassen' -%}
                               {%- assign care_label = 'Reiniging' -%}
