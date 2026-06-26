@@ -1,5 +1,5 @@
 {%- comment -%}
-  Zayna Home — V31 globale Details-renderer.
+  Zayna Home — V32 globale Details-renderer.
 
   Doel:
   - één rustige Details-opmaak voor alle producten met custom.detail_weergavetekst;
@@ -72,8 +72,8 @@
 
     .zh-product-details__spec-item--note .zh-product-details__value {
       color: #625a53;
-      font-size: .79rem;
-      line-height: 1.58;
+      font-size: .78rem;
+      line-height: 1.56;
     }
 
     .zh-product-details__soft {
@@ -227,7 +227,7 @@
                 assign value_clean = fact_value | strip
                 assign is_note_fact = false
 
-                if label_key == 'gebruik' or label_key == 'functie' or label_key == 'toepassing'
+                if label_key == 'gebruik' or label_key == 'functie' or label_key == 'toepassing' or label_key == 'meegeleverd'
                   assign is_note_fact = true
                 endif
 
@@ -238,9 +238,15 @@
               -%}
 
               {%- if is_note_fact -%}
+                {%- liquid
+                  assign note_fact_label = 'Gebruik'
+                  if label_key == 'meegeleverd'
+                    assign note_fact_label = 'Meegeleverd'
+                  endif
+                -%}
                 {%- capture note_item -%}
                   <div class="zh-product-details__spec-item zh-product-details__spec-item--note">
-                    <span class="zh-product-details__label">Gebruik</span>
+                    <span class="zh-product-details__label">{{ note_fact_label | escape }}</span>
                     <span class="zh-product-details__value">{{ value_clean | escape }}</span>
                   </div>
                 {%- endcapture -%}
