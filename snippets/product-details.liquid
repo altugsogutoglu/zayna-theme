@@ -1,5 +1,5 @@
 {%- comment -%}
-  Zayna Home — V32 globale Details-renderer.
+  Zayna Home — V34 globale Details-renderer.
 
   Doel:
   - één rustige Details-opmaak voor alle producten met custom.detail_weergavetekst;
@@ -172,7 +172,7 @@
         </div>
       {%- else -%}
         {%- liquid
-          assign known_labels = '|inhoud|inhoud per stuk|setinhoud|formaat|afmeting|afmetingen|lengte|breedte|hoogte|diameter|bovenkant|bodem|bovenste diameter|bodemdiameter|materiaal|kleur|set|aantal|pot|deksel|filter|afdichting|afsluiting|eigenschap|glazen en rietjes|meegeleverd|montage|draagvermogen|design|ontwerp|gebruik|functie|toepassing|verbinding|app|printkleur|printtechniek|resolutie|papierformaat|opladen|'
+          assign known_labels = '|inhoud|inhoud per stuk|inhoud per pot|setinhoud|formaat|afmeting|afmetingen|afmeting per pot|afmetingen per pot|lengte|breedte|hoogte|diameter|bovenkant|bodem|bovenste diameter|bodemdiameter|materiaal|materiaal potten|materiaal deksels|kleur|set|aantal|pot|potten|deksel|deksels|draaideksel|draaideksels|filter|afdichting|afsluiting|eigenschap|glazen en rietjes|meegeleverd|montage|draagvermogen|design|ontwerp|vorm|gebruik|functie|toepassing|verbinding|app|printkleur|printtechniek|resolutie|papierformaat|opladen|strooidop|strooidoppen|kruidenlabels|labels|'
           assign pending_label = ''
           assign specs_markup = ''
           assign notes_markup = ''
@@ -217,7 +217,29 @@
                 {%- assign fact_value = clean_line -%}
                 {%- assign pending_label = '' -%}
               {%- else -%}
-                {%- assign note_text = clean_line -%}
+                {%- liquid
+                  assign maybe_label = false
+                  assign clean_size = clean_line | size
+                  assign clean_down = clean_line | downcase | strip
+
+                  if clean_size <= 34
+                    assign maybe_label = true
+                  endif
+
+                  if clean_line contains '.' or clean_line contains ',' or clean_line contains '·'
+                    assign maybe_label = false
+                  endif
+
+                  if clean_down contains 'voor ' or clean_down contains 'met ' or clean_down contains 'zonder ' or clean_down contains 'incl'
+                    assign maybe_label = false
+                  endif
+                -%}
+
+                {%- if maybe_label -%}
+                  {%- assign pending_label = clean_line -%}
+                {%- else -%}
+                  {%- assign note_text = clean_line -%}
+                {%- endif -%}
               {%- endif -%}
             {%- endif -%}
 
