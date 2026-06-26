@@ -1,5 +1,5 @@
 {%- comment -%}
-  Zayna Home — V27 globale Details-renderer.
+  Zayna Home — V31 globale Details-renderer.
 
   Doel:
   - één rustige Details-opmaak voor alle producten met custom.detail_weergavetekst;
@@ -172,7 +172,7 @@
         </div>
       {%- else -%}
         {%- liquid
-          assign known_labels = '|inhoud|inhoud per stuk|setinhoud|formaat|afmeting|afmetingen|lengte|breedte|hoogte|diameter|bovenkant|bodem|bovenste diameter|bodemdiameter|materiaal|kleur|set|aantal|pot|deksel|filter|afdichting|afsluiting|eigenschap|glazen en rietjes|meegeleverd|montage|draagvermogen|design|ontwerp|gebruik|functie|toepassing|'
+          assign known_labels = '|inhoud|inhoud per stuk|setinhoud|formaat|afmeting|afmetingen|lengte|breedte|hoogte|diameter|bovenkant|bodem|bovenste diameter|bodemdiameter|materiaal|kleur|set|aantal|pot|deksel|filter|afdichting|afsluiting|eigenschap|glazen en rietjes|meegeleverd|montage|draagvermogen|design|ontwerp|gebruik|functie|toepassing|verbinding|app|printkleur|printtechniek|resolutie|papierformaat|opladen|'
           assign pending_label = ''
           assign specs_markup = ''
           assign notes_markup = ''
@@ -255,10 +255,27 @@
                 {%- assign specs_markup = specs_markup | append: spec_item -%}
               {%- endif -%}
             {%- elsif note_text != blank -%}
+              {%- liquid
+                assign note_down = note_text | downcase | strip
+                assign note_label = 'Gebruik'
+                assign note_value = note_text
+
+                if note_down contains 'meegeleverd' or note_down contains 'inclusief'
+                  assign note_label = 'Meegeleverd'
+                  assign note_value = note_text | replace: 'Meegeleverd met ', '' | replace: 'meegeleverd met ', '' | replace: 'Meegeleverd: ', '' | replace: 'meegeleverd: ', '' | replace: 'Inclusief ', '' | replace: 'inclusief ', ''
+                elsif note_down contains 'met ' and note_down contains 'rollen'
+                  assign note_label = 'Meegeleverd'
+                  assign note_value = note_text | replace: 'Met ', '' | replace: 'met ', ''
+                elsif note_down contains 'met ' and note_down contains 'kabel'
+                  assign note_label = 'Meegeleverd'
+                  assign note_value = note_text | replace: 'Met ', '' | replace: 'met ', ''
+                endif
+              -%}
+
               {%- capture note_item -%}
                 <div class="zh-product-details__spec-item zh-product-details__spec-item--note">
-                  <span class="zh-product-details__label">Gebruik</span>
-                  <span class="zh-product-details__value">{{ note_text | escape }}</span>
+                  <span class="zh-product-details__label">{{ note_label | escape }}</span>
+                  <span class="zh-product-details__value">{{ note_value | escape }}</span>
                 </div>
               {%- endcapture -%}
               {%- assign notes_markup = notes_markup | append: note_item -%}
@@ -267,10 +284,27 @@
         {%- endfor -%}
 
         {%- if pending_label != blank -%}
+          {%- liquid
+            assign pending_down = pending_label | downcase | strip
+            assign pending_note_label = 'Gebruik'
+            assign pending_note_value = pending_label
+
+            if pending_down contains 'meegeleverd' or pending_down contains 'inclusief'
+              assign pending_note_label = 'Meegeleverd'
+              assign pending_note_value = pending_label | replace: 'Meegeleverd met ', '' | replace: 'meegeleverd met ', '' | replace: 'Meegeleverd: ', '' | replace: 'meegeleverd: ', '' | replace: 'Inclusief ', '' | replace: 'inclusief ', ''
+            elsif pending_down contains 'met ' and pending_down contains 'rollen'
+              assign pending_note_label = 'Meegeleverd'
+              assign pending_note_value = pending_label | replace: 'Met ', '' | replace: 'met ', ''
+            elsif pending_down contains 'met ' and pending_down contains 'kabel'
+              assign pending_note_label = 'Meegeleverd'
+              assign pending_note_value = pending_label | replace: 'Met ', '' | replace: 'met ', ''
+            endif
+          -%}
+
           {%- capture note_item -%}
             <div class="zh-product-details__spec-item zh-product-details__spec-item--note">
-              <span class="zh-product-details__label">Gebruik</span>
-              <span class="zh-product-details__value">{{ pending_label | escape }}</span>
+              <span class="zh-product-details__label">{{ pending_note_label | escape }}</span>
+              <span class="zh-product-details__value">{{ pending_note_value | escape }}</span>
             </div>
           {%- endcapture -%}
           {%- assign notes_markup = notes_markup | append: note_item -%}
