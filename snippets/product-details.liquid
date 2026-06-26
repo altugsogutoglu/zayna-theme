@@ -1,12 +1,23 @@
 {%- comment -%}
-  Zayna Home — V34 globale Details-renderer.
+  Zayna Home — V35 globale Details-renderer.
 
   Doel:
   - één rustige Details-opmaak voor alle producten met custom.detail_weergavetekst;
   - ondersteunt dubbelepunt, em-dash en losse label/waarde-regels;
-  - gebruikszinnen krijgen een vaste zachte plek onder label "Gebruik";
-  - specificaties vullen consequent 2 per rij waar mogelijk;
-  - geen inline-streepjes zichtbaar in de uiteindelijke UI.
+  - zet details altijd in een vaste logische volgorde;
+  - gebruik en meegeleverd worden als rustige brede regels onderaan getoond;
+  - specificaties vullen consequent 2 per rij waar mogelijk.
+
+  Vaste volgorde:
+  1. Set / aantal
+  2. Inhoud
+  3. Formaat / afmetingen
+  4. Materiaal / onderdelen / kleur
+  5. Afsluiting / eigenschap / design / montage
+  6. Techniek
+  7. Overig
+  8. Meegeleverd
+  9. Gebruik
 
   Vereist:
   - product.metafields.custom.detail_weergavetekst
@@ -174,8 +185,15 @@
         {%- liquid
           assign known_labels = '|inhoud|inhoud per stuk|inhoud per pot|setinhoud|formaat|afmeting|afmetingen|afmeting per pot|afmetingen per pot|lengte|breedte|hoogte|diameter|bovenkant|bodem|bovenste diameter|bodemdiameter|materiaal|materiaal potten|materiaal deksels|kleur|set|aantal|pot|potten|deksel|deksels|draaideksel|draaideksels|filter|afdichting|afsluiting|eigenschap|glazen en rietjes|meegeleverd|montage|draagvermogen|design|ontwerp|vorm|gebruik|functie|toepassing|verbinding|app|printkleur|printtechniek|resolutie|papierformaat|opladen|strooidop|strooidoppen|kruidenlabels|labels|'
           assign pending_label = ''
-          assign specs_markup = ''
-          assign notes_markup = ''
+          assign bucket_set = ''
+          assign bucket_content = ''
+          assign bucket_size = ''
+          assign bucket_material = ''
+          assign bucket_function = ''
+          assign bucket_tech = ''
+          assign bucket_other = ''
+          assign notes_included = ''
+          assign notes_use = ''
         -%}
 
         {%- for line in detail_lines -%}
@@ -247,32 +265,34 @@
               {%- liquid
                 assign label_key = fact_label | downcase | strip
                 assign value_clean = fact_value | strip
-                assign is_note_fact = false
+                assign is_included = false
+                assign is_use = false
 
-                if label_key == 'gebruik' or label_key == 'functie' or label_key == 'toepassing' or label_key == 'meegeleverd'
-                  assign is_note_fact = true
+                if label_key == 'meegeleverd'
+                  assign is_included = true
                 endif
 
-                comment
-                  V24: normale specificaties blijven in het 2-koloms grid.
-                  Alleen Gebruik/Functie/Toepassing wordt als rustige full-width toelichting getoond.
-                endcomment
+                if label_key == 'gebruik' or label_key == 'functie' or label_key == 'toepassing'
+                  assign is_use = true
+                endif
               -%}
 
-              {%- if is_note_fact -%}
-                {%- liquid
-                  assign note_fact_label = 'Gebruik'
-                  if label_key == 'meegeleverd'
-                    assign note_fact_label = 'Meegeleverd'
-                  endif
-                -%}
+              {%- if is_included -%}
                 {%- capture note_item -%}
                   <div class="zh-product-details__spec-item zh-product-details__spec-item--note">
-                    <span class="zh-product-details__label">{{ note_fact_label | escape }}</span>
+                    <span class="zh-product-details__label">Meegeleverd</span>
                     <span class="zh-product-details__value">{{ value_clean | escape }}</span>
                   </div>
                 {%- endcapture -%}
-                {%- assign notes_markup = notes_markup | append: note_item -%}
+                {%- assign notes_included = notes_included | append: note_item -%}
+              {%- elsif is_use -%}
+                {%- capture note_item -%}
+                  <div class="zh-product-details__spec-item zh-product-details__spec-item--note">
+                    <span class="zh-product-details__label">Gebruik</span>
+                    <span class="zh-product-details__value">{{ value_clean | escape }}</span>
+                  </div>
+                {%- endcapture -%}
+                {%- assign notes_use = notes_use | append: note_item -%}
               {%- else -%}
                 {%- capture spec_item -%}
                   <div class="zh-product-details__spec-item">
@@ -280,7 +300,22 @@
                     <span class="zh-product-details__value">{{ value_clean | escape }}</span>
                   </div>
                 {%- endcapture -%}
-                {%- assign specs_markup = specs_markup | append: spec_item -%}
+
+                {%- if label_key == 'setinhoud' or label_key == 'set' or label_key == 'aantal' -%}
+                  {%- assign bucket_set = bucket_set | append: spec_item -%}
+                {%- elsif label_key contains 'inhoud' -%}
+                  {%- assign bucket_content = bucket_content | append: spec_item -%}
+                {%- elsif label_key contains 'formaat' or label_key contains 'afmeting' or label_key == 'lengte' or label_key == 'breedte' or label_key == 'hoogte' or label_key contains 'diameter' or label_key == 'bovenkant' or label_key == 'bodem' -%}
+                  {%- assign bucket_size = bucket_size | append: spec_item -%}
+                {%- elsif label_key contains 'materiaal' or label_key == 'pot' or label_key == 'potten' or label_key contains 'deksel' or label_key contains 'draaideksel' or label_key == 'filter' or label_key == 'glazen en rietjes' or label_key == 'kruidenlabels' or label_key == 'labels' or label_key == 'kleur' -%}
+                  {%- assign bucket_material = bucket_material | append: spec_item -%}
+                {%- elsif label_key contains 'afsluiting' or label_key contains 'afdichting' or label_key == 'eigenschap' or label_key == 'design' or label_key == 'ontwerp' or label_key == 'vorm' or label_key contains 'strooidop' or label_key == 'montage' or label_key == 'draagvermogen' -%}
+                  {%- assign bucket_function = bucket_function | append: spec_item -%}
+                {%- elsif label_key == 'verbinding' or label_key == 'app' or label_key contains 'print' or label_key == 'resolutie' or label_key == 'papierformaat' or label_key == 'opladen' -%}
+                  {%- assign bucket_tech = bucket_tech | append: spec_item -%}
+                {%- else -%}
+                  {%- assign bucket_other = bucket_other | append: spec_item -%}
+                {%- endif -%}
               {%- endif -%}
             {%- elsif note_text != blank -%}
               {%- liquid
@@ -306,7 +341,12 @@
                   <span class="zh-product-details__value">{{ note_value | escape }}</span>
                 </div>
               {%- endcapture -%}
-              {%- assign notes_markup = notes_markup | append: note_item -%}
+
+              {%- if note_label == 'Meegeleverd' -%}
+                {%- assign notes_included = notes_included | append: note_item -%}
+              {%- else -%}
+                {%- assign notes_use = notes_use | append: note_item -%}
+              {%- endif -%}
             {%- endif -%}
           {%- endif -%}
         {%- endfor -%}
@@ -335,13 +375,19 @@
               <span class="zh-product-details__value">{{ pending_note_value | escape }}</span>
             </div>
           {%- endcapture -%}
-          {%- assign notes_markup = notes_markup | append: note_item -%}
+
+          {%- if pending_note_label == 'Meegeleverd' -%}
+            {%- assign notes_included = notes_included | append: note_item -%}
+          {%- else -%}
+            {%- assign notes_use = notes_use | append: note_item -%}
+          {%- endif -%}
         {%- endif -%}
 
-        {%- if specs_markup != blank or notes_markup != blank -%}
+        {%- assign specs_markup = bucket_set | append: bucket_content | append: bucket_size | append: bucket_material | append: bucket_function | append: bucket_tech | append: bucket_other | append: notes_included | append: notes_use -%}
+
+        {%- if specs_markup != blank -%}
           <div class="zh-product-details__spec-grid">
             {{ specs_markup }}
-            {{ notes_markup }}
           </div>
         {%- endif -%}
       {%- endif -%}
