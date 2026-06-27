@@ -1518,6 +1518,10 @@
                     </summary>
 
                     <div class="zh-product__accordion-body zh-product__accordion-body--editorial">
+                      {%- comment -%}
+                        V37: Onderhoud is product-editable.
+                        De code mag simpele zinnen nog groeperen onder labels, maar de zichtbare waarde blijft exact de tekst uit het productmetafield.
+                      {%- endcomment -%}
                       {%- assign care_lines = care_display_text | newline_to_br | split: '<br />' -%}
                       {%- assign care_markup = '' -%}
                       {%- assign pending_care_label = '' -%}
@@ -1563,44 +1567,40 @@
                               {%- assign care_wide = true -%}
                             {%- elsif care_line_down contains 'glas' and care_line_down contains 'vaatwasser' -%}
                               {%- assign care_label = 'Glas' -%}
-                              {%- assign care_value = 'Vaatwasserbestendig' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'glazen potten' and care_line_down contains 'vaatwasser' -%}
                               {%- assign care_label = 'Glazen potten' -%}
-                              {%- assign care_value = 'Vaatwasserbestendig' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'potten' and care_line_down contains 'vaatwasser' -%}
                               {%- assign care_label = 'Potten' -%}
-                              {%- assign care_value = 'Vaatwasserbestendig' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'lepel' and care_line_down contains 'vaatwasser' -%}
                               {%- assign care_label = 'Lepel' -%}
-                              {%- assign care_value = 'Vaatwasserbestendig' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'lepel' and care_line_down contains 'hand' -%}
                               {%- assign care_label = 'Lepel' -%}
-                              {%- assign care_value = 'Met de hand wassen' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'deksel' and care_line_down contains 'hand' -%}
                               {%- assign care_label = 'Deksel' -%}
-                              {%- assign care_value = 'Met de hand wassen' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'bamboe' and care_line_down contains 'hand' -%}
                               {%- assign care_label = 'Bamboe onderdelen' -%}
-                              {%- assign care_value = 'Met de hand wassen' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'filter' and care_line_down contains 'hand' -%}
                               {%- assign care_label = 'Filter' -%}
-                              {%- assign care_value = 'Met de hand wassen' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'rietjes' and care_line_down contains 'hand' -%}
                               {%- assign care_label = 'Rietjes' -%}
-                              {%- assign care_value = 'Met de hand wassen' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'rietje' and care_line_down contains 'hand' -%}
                               {%- assign care_label = 'Rietje' -%}
-                              {%- assign care_value = 'Met de hand wassen' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'was op maximaal' or care_line_down contains 'maximaal 40' or care_line_down contains 'maximaal 30' or care_line_down contains 'maximaal 60' -%}
                               {%- assign care_label = 'Wasadvies' -%}
-                              {%- assign care_value = clean_line | replace: 'Was op ', '' | replace: 'was op ', '' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'wasverzachter' -%}
                               {%- assign care_label = 'Wasverzachter' -%}
-                              {%- if care_line_down contains 'geen' or care_line_down contains 'niet' -%}
-                                {%- assign care_value = 'Liever niet gebruiken' -%}
-                              {%- else -%}
-                                {%- assign care_value = clean_line -%}
-                              {%- endif -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'droger' -%}
                               {%- assign care_label = 'Drogen' -%}
                               {%- assign care_value = clean_line -%}
@@ -1609,13 +1609,13 @@
                               {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'was de' and care_line_down contains 'met de hand' -%}
                               {%- assign care_label = 'Volledige set' -%}
-                              {%- assign care_value = 'Met de hand wassen' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'handwas' or care_line_down contains 'met de hand' or care_line_down contains 'hand wassen' -%}
                               {%- assign care_label = 'Reiniging' -%}
-                              {%- assign care_value = 'Met de hand wassen' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- elsif care_line_down contains 'vaatwasser' -%}
                               {%- assign care_label = 'Reiniging' -%}
-                              {%- assign care_value = 'Vaatwasserbestendig' -%}
+                              {%- assign care_value = clean_line -%}
                             {%- else -%}
                               {%- assign care_label = 'Onderhoud' -%}
                               {%- assign care_value = clean_line -%}
