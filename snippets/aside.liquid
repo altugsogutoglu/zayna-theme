@@ -1,0 +1,400 @@
+{%- liquid
+  assign aside_logo = logo
+
+  if aside_logo == blank and section.settings.logo != blank
+    assign aside_logo = section.settings.logo
+  endif
+
+  if aside_logo == blank and settings.logo != blank
+    assign aside_logo = settings.logo
+  endif
+
+  assign aside_logo_width = logo_width
+
+  if aside_logo_width == blank and section.settings.logo_width != blank
+    assign aside_logo_width = section.settings.logo_width
+  endif
+
+  if aside_logo_width == blank
+    assign aside_logo_width = 150
+  endif
+
+  assign aside_logo_style = 'max-width: ' | append: aside_logo_width | append: 'px; max-height: 42px;'
+-%}
+
+<div
+  class="overlay"
+  data-aside="{{ type }}"
+  role="dialog"
+  aria-modal="true"
+  aria-hidden="true"
+  aria-label="{{ heading | default: shop.name | escape }}"
+>
+  <button
+    type="button"
+    class="close-outside"
+    aria-label="{{ 'general.accessibility.close' | t }}"
+    data-aside-close
+  ></button>
+
+  <aside
+    class="zayna-aside-panel zayna-aside-panel--{{ type }} flex h-full flex-col"
+    data-aside-panel
+    tabindex="-1"
+  >
+    <header class="zayna-aside-header">
+      {%- if type == 'mobile' -%}
+        <a
+          href="{{ routes.root_url }}"
+          class="zayna-aside-logo"
+          aria-label="{{ shop.name | escape }}"
+          data-aside-close
+        >
+          {%- if aside_logo != blank -%}
+            {{
+              aside_logo
+              | image_url: width: 480
+              | image_tag:
+                loading: 'eager',
+                widths: '120, 180, 240, 360, 480',
+                sizes: '160px',
+                class: 'zayna-aside-logo__image',
+                style: aside_logo_style,
+                alt: shop.name
+            }}
+          {%- else -%}
+            <span class="zayna-aside-logo__fallback">
+              {{ shop.name | escape }}
+            </span>
+          {%- endif -%}
+        </a>
+      {%- else -%}
+        <span class="text-label text-ink">
+          {{ heading }}
+        </span>
+      {%- endif -%}
+
+      <div class="zayna-aside-actions">
+        {%- if type == 'search' -%}
+          <button
+            type="button"
+            class="zayna-aside-cart"
+            aria-label="Open winkelmand"
+            data-aside-open="cart"
+          >
+            {% render 'icon', name: 'shopping-bag', size: 19 %}
+
+            <span
+              class="zayna-aside-cart__count{% if cart == empty or cart.item_count == 0 %} hidden{% endif %}"
+              data-cart-count
+            >
+              {{ cart.item_count }}
+            </span>
+          </button>
+        {%- endif -%}
+
+        <button
+          type="button"
+          class="zayna-aside-close"
+          aria-label="{{ 'general.accessibility.close' | t }}"
+          data-aside-close
+          data-aside-initial-focus
+        >
+          {% render 'icon', name: 'x', size: 21 %}
+        </button>
+      </div>
+    </header>
+
+    <div class="zayna-aside-scroll">
+      {{ aside_body }}
+    </div>
+  </aside>
+</div>
+
+{% style %}
+  .zayna-aside-panel {
+    min-height: 0;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+
+  .zayna-aside-header {
+    display: flex;
+    height: var(--header-height);
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 24px;
+    padding-left: 24px;
+    border-bottom: 1px solid #e7ddd2;
+    background: #fffdfb;
+  }
+
+  [data-aside="mobile"] .zayna-aside-header {
+    height: 88px;
+  }
+
+  .zayna-aside-actions {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .zayna-aside-cart {
+    position: relative;
+    display: inline-grid;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #2b2622;
+    cursor: pointer;
+    transition:
+      color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .zayna-aside-cart:hover {
+    background: #f4ece4;
+    color: #a66a3f;
+  }
+
+  .zayna-aside-cart:focus-visible {
+    outline: 2px solid #a66a3f;
+    outline-offset: 3px;
+  }
+
+  .zayna-aside-cart__count {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: inline-flex;
+    min-width: 15px;
+    height: 15px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #8d6650;
+    color: #fffdfb;
+    font-size: 8px;
+    font-weight: 500;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .zayna-aside-cart__count.hidden {
+    display: none;
+  }
+
+  .zayna-aside-scroll {
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /*
+    Het mobiele menu bevatte zelf ook een verticale scrolllaag.
+    Binnen de aside is alleen .zayna-aside-scroll verantwoordelijk
+    voor het scrollen. Hierdoor werkt het muiswiel overal boven de
+    menu-inhoud, ook in een gesplitst desktopvenster.
+  */
+  [data-aside="mobile"] .zayna-aside-scroll > .zayna-mobile-menu {
+    min-height: 100%;
+    overflow: visible;
+    overscroll-behavior: auto;
+    -webkit-overflow-scrolling: auto;
+  }
+
+  .zayna-aside-logo {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    color: #2b2622;
+    text-decoration: none;
+  }
+
+  .zayna-aside-logo__image {
+    display: block;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .zayna-aside-logo__fallback {
+    color: #2b2622;
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 21px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .zayna-aside-close {
+    display: inline-grid;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    margin-right: -10px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #2b2622;
+    cursor: pointer;
+    transition:
+      color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .zayna-aside-close:hover {
+    background: #f4ece4;
+    color: #a66a3f;
+  }
+
+  .zayna-aside-close:focus-visible,
+  .zayna-aside-logo:focus-visible {
+    outline: 2px solid #a66a3f;
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 767px) {
+    [data-aside="search"] .zayna-aside-panel--search {
+      width: 100vw;
+      max-width: none;
+    }
+
+    [data-aside="search"] .zayna-aside-header {
+      padding-right: 18px;
+      padding-left: 20px;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .zayna-aside-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: #c8b7a8 transparent;
+    }
+
+    .zayna-aside-scroll::-webkit-scrollbar {
+      width: 9px;
+    }
+
+    .zayna-aside-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .zayna-aside-scroll::-webkit-scrollbar-thumb {
+      border: 3px solid transparent;
+      border-radius: 999px;
+      background: #c8b7a8;
+      background-clip: padding-box;
+    }
+
+    .zayna-aside-scroll::-webkit-scrollbar-thumb:hover {
+      background: #a98f7a;
+      background-clip: padding-box;
+    }
+  }
+
+  @media (max-width: 389px) {
+    [data-aside="mobile"] .zayna-aside-header {
+      height: 82px;
+      padding-right: 20px;
+      padding-left: 20px;
+    }
+
+    .zayna-aside-logo__image {
+      max-width: 145px !important;
+      max-height: 38px !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .zayna-aside-close,
+    .zayna-aside-cart {
+      transition: none;
+    }
+  }
+
+  [data-aside="filters"] {
+    background: rgba(56, 46, 40, 0.22);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  [data-aside="filters"] .zayna-aside-panel--filters {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    max-height: min(78dvh, 680px);
+    border-top: 1px solid rgba(42, 37, 32, 0.09);
+    background: #faf7f3;
+    box-shadow: 0 -20px 60px -34px rgba(42, 37, 32, 0.48);
+    transform: translateY(105%);
+  }
+
+  [data-aside="filters"].expanded
+    .zayna-aside-panel--filters {
+    transform: translateY(0);
+  }
+
+  [data-aside="filters"] .zayna-aside-header {
+    height: 58px;
+    padding-right: 18px;
+    padding-left: 20px;
+    background: #faf7f3;
+  }
+
+  [data-aside="filters"] .zayna-aside-scroll {
+    flex: 0 1 auto;
+    max-height: calc(min(78dvh, 680px) - 58px);
+    background: #faf7f3;
+  }
+
+  @media (min-width: 700px) {
+    [data-aside="filters"] .zayna-aside-panel--filters {
+      top: 50%;
+      right: 24px;
+      bottom: auto;
+      left: auto;
+      width: min(400px, calc(100vw - 48px));
+      max-width: 400px;
+      max-height: calc(100dvh - 48px);
+      border: 1px solid rgba(42, 37, 32, 0.09);
+      box-shadow: -14px 20px 62px -34px rgba(42, 37, 32, 0.50);
+      transform: translate(110%, -50%);
+    }
+
+    [data-aside="filters"].expanded
+      .zayna-aside-panel--filters {
+      transform: translate(0, -50%);
+    }
+
+    [data-aside="filters"] .zayna-aside-scroll {
+      max-height: calc(100dvh - 106px);
+    }
+  }
+
+{% endstyle %}
