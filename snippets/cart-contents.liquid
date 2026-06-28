@@ -74,6 +74,49 @@
           {%- endfor -%}
         </ul>
 
+        {%- if cart.item_count > 1 -%}
+          <div
+            class="zh-cart-clear border-b border-border-soft/70 py-3"
+            data-cart-clear
+          >
+            <button
+              type="button"
+              class="zh-cart-clear__toggle inline-flex min-h-9 items-center text-[12px] text-stone-soft underline decoration-border-soft underline-offset-4 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
+              aria-expanded="false"
+              data-cart-clear-toggle
+            >
+              Winkelmand leegmaken
+            </button>
+
+            <div
+              class="zh-cart-clear__confirm mt-3 hidden p-4" style="border: 1px solid #e8e1da; background: rgba(240, 235, 230, 0.45);"
+              data-cart-clear-panel
+              role="region"
+              aria-label="Winkelmand leegmaken bevestigen"
+            >
+              <p class="font-display text-[17px] leading-snug text-ink">Winkelmand leegmaken?</p>
+              <p class="mt-1.5 text-[13px] leading-relaxed text-ink-soft">Alle producten worden uit je winkelmand verwijderd.</p>
+
+              <div class="mt-4 grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  class="min-h-10 border border-border-soft bg-surface px-3 text-[11px] text-ink transition-colors hover:border-stone focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
+                  data-cart-clear-cancel
+                >
+                  Annuleren
+                </button>
+                <button
+                  type="button"
+                  class="min-h-10 border px-3 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-70" style="border-color: rgba(141, 102, 80, 0.25); background: #efe5dc; color: #5f4638;"
+                  data-cart-clear-confirm
+                >
+                  Leegmaken
+                </button>
+              </div>
+            </div>
+          </div>
+        {%- endif -%}
+
         {%- if has_suggestions -%}
           <section
             aria-label="Populaire keuzes"
@@ -116,7 +159,7 @@
           <div class="space-y-2">
             <p class="text-xs text-ink-soft" data-free-shipping-message>
               {%- if reached -%}
-                Je komt in aanmerking voor gratis verzending <span aria-hidden="true">🎉</span>
+                Je komt in aanmerking voor gratis verzending.
               {%- else -%}
                 Nog <span class="text-ink font-medium tabular-nums" data-free-shipping-remaining>{{ remaining_cents | money }}</span> tot gratis verzending
               {%- endif -%}
@@ -175,7 +218,7 @@
 
         <div class="space-y-3">
           {% form 'cart', cart %}
-            <button type="submit" name="checkout" data-cart-checkout-button class="flex w-full h-12 items-center justify-center bg-stone text-white text-sm uppercase tracking-wide hover:bg-clay transition-colors disabled:cursor-wait disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone focus-visible:ring-offset-2">Doorgaan naar afrekenen</button>
+            <button type="submit" name="checkout" data-cart-checkout-button class="flex w-full h-12 items-center justify-center bg-ink text-surface text-[12px] uppercase tracking-[0.16em] transition-colors hover:bg-clay disabled:cursor-wait disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2">Afrekenen</button>
           {% endform %}
           <p class="text-xs text-center text-ink-soft">BTW en verzendkosten worden berekend bij het afrekenen.</p>
         </div>
