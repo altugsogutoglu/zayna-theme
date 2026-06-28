@@ -4,7 +4,7 @@
   assign all_pages = search.results | where: 'object_type', 'page'
   assign all_articles = search.results | where: 'object_type', 'article'
   assign products_only = search.results | where: 'object_type', 'product'
-  assign products_count = products_only.size
+  assign products_total = search.results_count | default: products_only.size
 -%}
 
 <section
@@ -30,10 +30,10 @@
 
     {%- if search.performed and terms != blank -%}
       <p class="zh-search-page__count">
-        {%- if products_count == 1 -%}
+        {%- if products_total == 1 -%}
           1 product gevonden
-        {%- elsif products_count > 1 -%}
-          {{ products_count }} producten gevonden
+        {%- elsif products_total > 1 -%}
+          {{ products_total }} producten gevonden
         {%- else -%}
           Geen producten gevonden
         {%- endif -%}
@@ -83,7 +83,7 @@
       <p class="zh-search-page__state-title">{{ section.settings.heading_no_term }}</p>
       <p class="zh-search-page__state-text">{{ section.settings.no_term_body }}</p>
     </div>
-  {%- elsif products_count == 0 -%}
+  {%- elsif products_total == 0 -%}
     <div class="zh-search-page__state">
       <p class="zh-search-page__state-title">{{ section.settings.empty_heading }}</p>
       <p class="zh-search-page__state-text">{{ section.settings.empty_body }}</p>
@@ -212,7 +212,7 @@
   }
 
   #ZaynaSearchResults-{{ section.id }} .zh-search-page__title span {
-    color: rgba(181, 101, 29, 0.82);
+    color: rgba(166, 106, 63, 0.78);
     font-style: italic;
   }
 
@@ -426,39 +426,39 @@
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__header {
-      padding: 34px 0 38px;
+      padding: 28px 0 32px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__title {
-      max-width: 22ch;
-      font-size: clamp(2rem, 3vw, 2.65rem);
-      line-height: 1.06;
-      letter-spacing: -0.022em;
+      max-width: 28ch;
+      font-size: clamp(1.85rem, 2.6vw, 2.35rem);
+      line-height: 1.08;
+      letter-spacing: -0.020em;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__count {
-      margin-top: 8px;
-      font-size: 13px;
+      margin-top: 7px;
+      font-size: 12.5px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__form {
-      max-width: 520px;
-      min-height: 48px;
-      margin-top: 22px;
+      max-width: 510px;
+      min-height: 46px;
+      margin-top: 19px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__input {
-      height: 46px;
-      font-size: 15.5px;
+      height: 44px;
+      font-size: 15px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__submit {
       display: inline-flex;
       width: auto;
-      min-height: 46px;
+      min-height: 44px;
       align-items: center;
       gap: 8px;
-      padding: 0 16px;
+      padding: 0 15px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__submit-icon {
@@ -468,12 +468,12 @@
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__submit-text {
       display: inline;
       font-size: 9.5px;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.13em;
       text-transform: uppercase;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__results {
-      gap: 46px;
+      gap: 40px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__grid {
@@ -488,13 +488,13 @@
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__header {
-      padding-top: 42px;
-      padding-bottom: 40px;
+      padding-top: 34px;
+      padding-bottom: 34px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__title {
-      max-width: 24ch;
-      font-size: clamp(2.35rem, 2.45vw, 3rem);
+      max-width: 30ch;
+      font-size: clamp(2rem, 1.8vw, 2.55rem);
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__section-heading {
