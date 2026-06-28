@@ -45,53 +45,53 @@
   data-line-key="{{ li.key }}"
   data-unit-price-cents="{{ unit_price_cents }}"
   data-current-quantity="{{ li.quantity }}"
-  class="flex gap-4 py-5 border-b border-border-soft last:border-0"
+  class="zh-cart-line"
 >
   {%- if img -%}
-    <a href="{{ li.url }}" class="block h-24 w-20 shrink-0 cursor-default overflow-hidden bg-cream">
+    <a href="{{ li.url }}" class="zh-cart-line__media">
       {{ img | image_url: width: 200 | image_tag:
         loading: 'lazy', width: 100, height: 100,
         alt: li.title,
-        class: 'h-full w-full object-cover' }}
+        class: 'zh-cart-line__image' }}
     </a>
   {%- endif -%}
 
-  <div class="flex flex-1 min-w-0 flex-col gap-1">
-    <div class="flex items-start justify-between gap-2">
-      <div class="min-w-0 flex-1 cursor-default">
+  <div class="zh-cart-line__main">
+    <div class="zh-cart-line__top">
+      <div class="min-w-0 flex-1">
         <a
           href="{{ li.url }}"
-          class="block max-w-full cursor-default select-none font-display text-[15px] leading-[1.25] text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone focus-visible:ring-offset-2"
+          class="zh-cart-line__title-link"
         >
-          <span class="block line-clamp-2 break-words">{{ cart_display_title }}</span>
+          <span class="zh-cart-line__title">{{ cart_display_title }}</span>
         </a>
         {%- if cart_display_meta != blank -%}
-          <p class="mt-1 select-none text-[11px] leading-snug text-ink-soft">
+          <p class="zh-cart-line__meta">
             {{ cart_display_meta }}
           </p>
         {%- endif -%}
       </div>
-      <button type="button" data-cart-change data-line-key="{{ li.key }}" data-quantity="0" aria-label="Verwijderen uit winkelmand" class="-mr-1 -mt-1 inline-flex h-8 w-8 shrink-0 items-center justify-center text-stone-soft transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone focus-visible:ring-offset-2">
+      <button type="button" data-cart-change data-line-key="{{ li.key }}" data-quantity="0" aria-label="Verwijderen uit winkelmand" class="zh-cart-line__remove">
         {% render 'icon', name: 'trash', size: 15 %}
       </button>
     </div>
 
     {%- if show_options -%}
-      <ul class="flex flex-wrap gap-x-3">
+      <ul class="zh-cart-line__options">
         {%- for opt in li.options_with_values -%}
           {%- unless opt.value == 'Default Title' -%}
-            <li><small class="text-xs text-ink-soft">{{ opt.name }}: {{ opt.value }}</small></li>
+            <li><small class="zh-cart-line__option">{{ opt.name }}: {{ opt.value }}</small></li>
           {%- endunless -%}
         {%- endfor -%}
       </ul>
     {%- endif -%}
 
     {%- if li.selling_plan_allocation -%}
-      <small class="text-xs text-ink-soft">{{ li.selling_plan_allocation.selling_plan.name }}</small>
+      <small class="zh-cart-line__option">{{ li.selling_plan_allocation.selling_plan.name }}</small>
     {%- endif -%}
 
-    <div class="mt-2 flex items-center justify-between gap-3">
-      <div data-qty-stepper class="relative inline-flex items-center h-10 border border-border-soft bg-surface select-none" role="group" aria-label="Aantal">
+    <div class="zh-cart-line__bottom">
+      <div data-qty-stepper class="zh-cart-qty" role="group" aria-label="Aantal">
         <button
           type="button"
           data-cart-change
@@ -99,17 +99,17 @@
           data-line-key="{{ li.key }}"
           data-quantity="{{ dec_qty }}"
           aria-label="{% if li.quantity <= 1 %}Product verwijderen{% else %}Aantal verlagen{% endif %}"
-          class="grid h-full w-10 place-items-center text-ink-soft hover:text-ink transition-colors focus-visible:outline-none focus-visible:text-ink"
+          class="zh-cart-qty__button"
         >
           {% render 'icon', name: 'minus', size: 14 %}
         </button>
-        <span data-line-qty aria-live="polite" class="min-w-[2ch] text-center text-sm tabular-nums text-ink">{{ li.quantity }}</span>
-        <button type="button" data-cart-change data-step="inc" data-line-key="{{ li.key }}" data-quantity="{{ inc_qty }}" aria-label="Aantal verhogen" class="grid h-full w-10 place-items-center text-ink-soft hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:text-ink">
+        <span data-line-qty aria-live="polite" class="zh-cart-qty__value">{{ li.quantity }}</span>
+        <button type="button" data-cart-change data-step="inc" data-line-key="{{ li.key }}" data-quantity="{{ inc_qty }}" aria-label="Aantal verhogen" class="zh-cart-qty__button">
           {% render 'icon', name: 'plus', size: 14 %}
         </button>
       </div>
       <div
-        class="text-price text-ink shrink-0 tabular-nums"
+        class="zh-cart-line__price"
         data-line-price
         data-line-price-cents="{{ li.final_line_price }}"
       >

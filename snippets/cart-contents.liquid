@@ -44,130 +44,248 @@
   assign suggestion_collection = settings.cart_empty_collection
   assign has_suggestions = false
   if suggestion_collection != blank and suggestion_collection.products_count > 0
-    assign has_suggestions = true
+    for suggestion_product in suggestion_collection.products
+      if suggestion_product.available
+        assign has_suggestions = true
+        break
+      endif
+    endfor
   endif
 -%}
 
 {% style %}
+  .zh-cart-line {
+    display: flex;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.075);
+  }
+
+  .zh-cart-line:last-child {
+    border-bottom: 0;
+  }
+
+  .zh-cart-line__media {
+    display: block;
+    width: 74px;
+    height: 88px;
+    flex: 0 0 auto;
+    overflow: hidden;
+    background: #f0ebe6;
+  }
+
+  .zh-cart-line__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .zh-cart-line__main {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .zh-cart-line__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .zh-cart-line__title-link {
+    display: block;
+    max-width: 100%;
+    color: #2a2520;
+    font-family: var(--font-display, Georgia, serif);
+    font-size: 14.5px;
+    line-height: 1.26;
+    letter-spacing: -0.01em;
+  }
+
+  .zh-cart-line__title {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow-wrap: anywhere;
+  }
+
+  .zh-cart-line__meta {
+    margin-top: 4px;
+    color: rgba(86, 78, 71, 0.68);
+    font-size: 10.5px;
+    line-height: 1.35;
+  }
+
+  .zh-cart-line__options {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 10px;
+    row-gap: 2px;
+    margin-top: 2px;
+  }
+
+  .zh-cart-line__option {
+    color: rgba(86, 78, 71, 0.70);
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  .zh-cart-line__remove {
+    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    margin: -8px -8px 0 0;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    color: rgba(120, 113, 108, 0.72);
+    transition: color 160ms ease, background-color 160ms ease;
+  }
+
+  .zh-cart-line__remove:hover {
+    background: rgba(240, 235, 230, 0.50);
+    color: rgba(42, 37, 32, 0.88);
+  }
+
+  .zh-cart-line__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 9px;
+  }
+
+  .zh-cart-qty {
+    position: relative;
+    display: inline-flex;
+    height: 36px;
+    align-items: center;
+    border: 1px solid rgba(42, 37, 32, 0.105);
+    background: rgba(255, 253, 251, 0.54);
+    user-select: none;
+  }
+
+  .zh-cart-qty__button {
+    display: grid;
+    width: 36px;
+    height: 100%;
+    place-items: center;
+    color: rgba(86, 78, 71, 0.74);
+    transition: color 160ms ease, background-color 160ms ease;
+  }
+
+  .zh-cart-qty__button:hover {
+    background: rgba(240, 235, 230, 0.42);
+    color: #2a2520;
+  }
+
+  .zh-cart-qty__button:disabled {
+    cursor: not-allowed;
+    opacity: 0.32;
+  }
+
+  .zh-cart-qty__value {
+    min-width: 2.2ch;
+    color: rgba(42, 37, 32, 0.86);
+    font-size: 13px;
+    line-height: 1;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .zh-cart-line__price {
+    flex: 0 0 auto;
+    color: rgba(42, 37, 32, 0.82);
+    font-size: 15px;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+
   .zh-cart-clear {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 7px;
-    margin: -2px 0 3px;
-    padding: 7px 0 12px;
+    justify-content: flex-end;
+    margin: -1px 0 2px;
+    padding: 9px 0 13px;
     border-bottom: 1px solid rgba(42, 37, 32, 0.055);
   }
 
-  .zh-cart-clear__toggle {
+  .zh-cart-clear__button {
     min-height: 32px;
     padding: 0;
     border: 0;
     background: transparent;
-    color: rgba(86, 78, 71, 0.68);
+    color: rgba(86, 78, 71, 0.58);
     font-size: 11px;
     line-height: 1;
     text-decoration: underline;
-    text-decoration-color: rgba(120, 113, 108, 0.30);
+    text-decoration-color: rgba(120, 113, 108, 0.24);
     text-underline-offset: 4px;
     transition: color 160ms ease, text-decoration-color 160ms ease;
   }
 
-  .zh-cart-clear__toggle:hover {
-    color: rgba(42, 37, 32, 0.82);
-    text-decoration-color: rgba(181, 101, 29, 0.34);
+  .zh-cart-clear__button:hover {
+    color: rgba(42, 37, 32, 0.78);
+    text-decoration-color: rgba(181, 101, 29, 0.32);
   }
 
-  .zh-cart-clear__toggle:focus-visible,
-  .zh-cart-clear__action:focus-visible {
+  .zh-cart-clear__button[disabled] {
+    cursor: wait;
+    opacity: 0.58;
+  }
+
+  .zh-cart-clear__button:focus-visible,
+  .zh-cart-line__remove:focus-visible,
+  .zh-cart-qty__button:focus-visible,
+  .zh-cart-checkout:focus-visible {
     outline: 2px solid rgba(181, 101, 29, 0.42);
     outline-offset: 3px;
   }
 
-  .zh-cart-clear__confirm {
+  .zh-cart-checkout {
     display: flex;
     width: 100%;
+    height: 52px;
     align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    color: rgba(42, 37, 32, 0.70);
-  }
-
-  .zh-cart-clear__confirm.hidden {
-    display: none !important;
-  }
-
-  .zh-cart-clear__question {
-    margin-right: auto;
-    color: rgba(42, 37, 32, 0.66);
+    justify-content: center;
+    background: #2a2520;
+    color: #fffdfb;
     font-size: 12px;
-    line-height: 1.35;
-  }
-
-  .zh-cart-clear__actions {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-  }
-
-  .zh-cart-clear__action {
-    min-height: 31px;
-    padding: 0 10px;
-    border: 1px solid rgba(42, 37, 32, 0.10);
-    background: rgba(255, 253, 251, 0.54);
-    color: rgba(42, 37, 32, 0.72);
-    font-size: 10px;
     line-height: 1;
-    transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: background-color 180ms ease, color 180ms ease;
   }
 
-  .zh-cart-clear__action--cancel:hover {
-    border-color: rgba(42, 37, 32, 0.18);
-    background: rgba(255, 253, 251, 0.86);
-    color: rgba(42, 37, 32, 0.88);
+  .zh-cart-checkout:hover {
+    background: #6f4a33;
   }
 
-  .zh-cart-clear__action--confirm {
-    border-color: rgba(141, 102, 80, 0.20);
-    background: rgba(240, 235, 230, 0.46);
-    color: rgba(95, 70, 56, 0.82);
-  }
-
-  .zh-cart-clear__action--confirm:hover {
-    border-color: rgba(141, 102, 80, 0.30);
-    background: rgba(232, 225, 218, 0.70);
-    color: rgba(42, 37, 32, 0.90);
-  }
-
-  .zh-cart-clear__action[disabled] {
+  .zh-cart-checkout:disabled {
     cursor: wait;
-    opacity: 0.68;
+    opacity: 0.72;
   }
 
   @media (max-width: 520px) {
-    .zh-cart-clear {
-      align-items: stretch;
+    .zh-cart-line {
+      gap: 13px;
+      padding: 15px 0;
     }
 
-    .zh-cart-clear__toggle {
-      align-self: flex-end;
+    .zh-cart-line__media {
+      width: 70px;
+      height: 84px;
     }
 
-    .zh-cart-clear__confirm {
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px 10px;
+    .zh-cart-line__title-link {
+      font-size: 14px;
     }
 
-    .zh-cart-clear__question {
-      min-width: 100%;
-      margin-right: 0;
-      text-align: right;
-    }
-
-    .zh-cart-clear__actions {
-      margin-left: auto;
+    .zh-cart-line__price {
+      font-size: 14.5px;
     }
   }
 {% endstyle %}
@@ -200,46 +318,14 @@
         </ul>
 
         {%- if cart.item_count > 1 -%}
-          <div
-            class="zh-cart-clear"
-            data-cart-clear
-          >
+          <div class="zh-cart-clear" data-cart-clear>
             <button
               type="button"
-              class="zh-cart-clear__toggle"
-              aria-expanded="false"
-              data-cart-clear-toggle
+              class="zh-cart-clear__button"
+              data-cart-clear-confirm
             >
               Winkelmand leegmaken
             </button>
-
-            <div
-              class="zh-cart-clear__confirm hidden"
-              data-cart-clear-panel
-              role="region"
-              aria-label="Winkelmand leegmaken bevestigen"
-            >
-              <span class="zh-cart-clear__question">
-                Winkelmand leegmaken?
-              </span>
-
-              <div class="zh-cart-clear__actions">
-                <button
-                  type="button"
-                  class="zh-cart-clear__action zh-cart-clear__action--cancel"
-                  data-cart-clear-cancel
-                >
-                  Annuleren
-                </button>
-                <button
-                  type="button"
-                  class="zh-cart-clear__action zh-cart-clear__action--confirm"
-                  data-cart-clear-confirm
-                >
-                  Leegmaken
-                </button>
-              </div>
-            </div>
           </div>
         {%- endif -%}
 
@@ -267,8 +353,18 @@
             </div>
 
             <div class="grid grid-cols-2 gap-x-4 gap-y-8{% if is_page %} lg:grid-cols-4{% endif %}">
-              {%- for product in suggestion_collection.products limit: 4 -%}
+              {%- assign shown_suggestions = 0 -%}
+              {%- for product in suggestion_collection.products -%}
+                {%- unless product.available -%}
+                  {%- continue -%}
+                {%- endunless -%}
+
                 {% render 'product-card', product: product, loading: 'lazy' %}
+
+                {%- assign shown_suggestions = shown_suggestions | plus: 1 -%}
+                {%- if shown_suggestions >= 4 -%}
+                  {%- break -%}
+                {%- endif -%}
               {%- endfor -%}
             </div>
           </section>
@@ -344,7 +440,7 @@
 
         <div class="space-y-3">
           {% form 'cart', cart %}
-            <button type="submit" name="checkout" data-cart-checkout-button class="flex w-full h-12 items-center justify-center bg-ink text-surface text-[12px] uppercase tracking-[0.16em] transition-colors hover:bg-clay disabled:cursor-wait disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2">Afrekenen</button>
+            <button type="submit" name="checkout" data-cart-checkout-button class="zh-cart-checkout">Afrekenen</button>
           {% endform %}
           <p class="text-xs text-center text-ink-soft">BTW en verzendkosten worden berekend bij het afrekenen.</p>
         </div>
