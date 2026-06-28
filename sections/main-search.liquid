@@ -1,10 +1,17 @@
 {%- liquid
-  assign per_page = section.settings.products_per_page | default: 24
   assign terms = search.terms | strip
-  assign all_pages = search.results | where: 'object_type', 'page'
-  assign all_articles = search.results | where: 'object_type', 'article'
-  assign products_only = search.results | where: 'object_type', 'product'
-  assign products_total = search.results_count | default: products_only.size
+  assign terms_key = terms | downcase | strip | handleize
+
+  assign is_strict_pot_search = false
+  case terms_key
+    when 'pot', 'potten', 'voorraadpot', 'voorraadpotten', 'kruidenpot', 'kruidenpotten', 'kruidenpotjes', 'bewaarpot', 'bewaarpotten', 'glazen-pot', 'glazen-potten'
+      assign is_strict_pot_search = true
+  endcase
+
+  assign per_page = section.settings.products_per_page | default: 24
+  if is_strict_pot_search
+    assign per_page = 250
+  endif
 -%}
 
 <script>
@@ -19,114 +26,183 @@
   })();
 </script>
 
-<section
-  id="ZaynaSearchResults-{{ section.id }}"
-  class="zh-search-page"
-  data-search
-  data-section-id="{{ section.id }}"
-  data-search-url="{{ routes.search_url }}"
->
-  <header class="zh-search-page__header">
-    <p class="zh-search-page__eyebrow">
-      <span aria-hidden="true"></span>
-      {{ section.settings.eyebrow }}
-    </p>
+{%- paginate search.results by per_page -%}
+  {%- liquid
+    assign all_pages = search.results | where: 'object_type', 'page'
+    assign all_articles = search.results | where: 'object_type', 'article'
+    assign products_only = search.results | where: 'object_type', 'product'
+    assign products_total = search.results_count | default: products_only.size
 
-    <h1 class="zh-search-page__title">
-      {%- if search.performed and terms != blank -%}
-        Resultaten voor <span>&ldquo;{{ terms }}&rdquo;</span>
-      {%- else -%}
-        {{ section.settings.heading_no_term }}
-      {%- endif -%}
-    </h1>
+    assign strict_products_count = 0
 
-    {%- if search.performed and terms != blank -%}
-      <p class="zh-search-page__count">
-        {%- if products_total == 1 -%}
-          1 product gevonden
-        {%- elsif products_total > 1 -%}
-          {{ products_total }} producten gevonden
-        {%- else -%}
-          Geen producten gevonden
-        {%- endif -%}
+    if is_strict_pot_search
+      for item in search.results
+        if item.object_type == 'product'
+          assign strict_match = false
+          assign item_title_key = item.title | downcase
+
+          if item_title_key contains 'pot'
+            assign strict_match = true
+          endif
+
+          if strict_match == false
+            for tag in item.tags
+              assign tag_key = tag | downcase | strip | handleize
+              case tag_key
+                when 'pot', 'potten', 'voorraadpot', 'voorraadpotten', 'kruidenpot', 'kruidenpotten', 'kruidenpotjes', 'bewaarpot', 'bewaarpotten', 'glazen-pot', 'glazen-potten'
+                  assign strict_match = true
+              endcase
+            endfor
+          endif
+
+          if strict_match
+            assign strict_products_count = strict_products_count | plus: 1
+          endif
+        endif
+      endfor
+
+      assign products_total = strict_products_count
+    endif
+  -%}
+
+  {%- if is_strict_pot_search and search.performed and terms != blank -%}
+    <script>
+      document.title = {{ 'Zoeken: ' | append: products_total | append: ' producten gevonden' | append: ' – ' | append: shop.name | json }};
+    </script>
+  {%- endif -%}
+
+  <section
+    id="ZaynaSearchResults-{{ section.id }}"
+    class="zh-search-page{% if is_strict_pot_search %} zh-search-page--strict{% endif %}"
+    data-search
+    data-section-id="{{ section.id }}"
+    data-search-url="{{ routes.search_url }}"
+  >
+    <header class="zh-search-page__header">
+      <p class="zh-search-page__eyebrow">
+        <span aria-hidden="true"></span>
+        {{ section.settings.eyebrow }}
       </p>
-    {%- endif -%}
 
-    <form
-      action="{{ routes.search_url }}"
-      method="get"
-      role="search"
-      class="zh-search-page__form"
-    >
-      <label for="SearchInput-{{ section.id }}" class="sr-only">
-        {{ 'general.search.title' | t }}
-      </label>
+      <h1 class="zh-search-page__title">
+        {%- if search.performed and terms != blank -%}
+          Resultaten voor <span>&ldquo;{{ terms }}&rdquo;</span>
+        {%- else -%}
+          {{ section.settings.heading_no_term }}
+        {%- endif -%}
+      </h1>
 
-      <span class="zh-search-page__form-icon" aria-hidden="true">
-        {% render 'icon', name: 'search', size: 18 %}
-      </span>
+      {%- if search.performed and terms != blank -%}
+        <p class="zh-search-page__count">
+          {%- if products_total == 1 -%}
+            1 product gevonden
+          {%- elsif products_total > 1 -%}
+            {{ products_total }} producten gevonden
+          {%- else -%}
+            Geen producten gevonden
+          {%- endif -%}
+        </p>
+      {%- endif -%}
 
-      <input
-        id="SearchInput-{{ section.id }}"
-        type="search"
-        name="q"
-        value="{{ terms | escape }}"
-        placeholder="{{ 'general.search.placeholder' | t }}"
-        autocomplete="off"
-        class="zh-search-page__input"
-        aria-label="{{ 'general.search.title' | t }}"
+      <form
+        action="{{ routes.search_url }}"
+        method="get"
+        role="search"
+        class="zh-search-page__form"
       >
+        <label for="SearchInput-{{ section.id }}" class="sr-only">
+          {{ 'general.search.title' | t }}
+        </label>
 
-      <input type="hidden" name="type" value="product">
-
-      <button type="submit" class="zh-search-page__submit" aria-label="{{ 'general.search.submit' | t }}">
-        <span class="zh-search-page__submit-icon" aria-hidden="true">
-          {% render 'icon', name: 'search', size: 17 %}
+        <span class="zh-search-page__form-icon" aria-hidden="true">
+          {% render 'icon', name: 'search', size: 18 %}
         </span>
-        <span class="zh-search-page__submit-text">
-          {{ 'general.search.submit' | t }}
-        </span>
-      </button>
-    </form>
-  </header>
 
-  {%- if search.performed == false or terms == blank -%}
-    <div class="zh-search-page__state">
-      <p class="zh-search-page__state-title">{{ section.settings.heading_no_term }}</p>
-      <p class="zh-search-page__state-text">{{ section.settings.no_term_body }}</p>
-    </div>
-  {%- elsif products_total == 0 -%}
-    <div class="zh-search-page__state">
-      <p class="zh-search-page__state-title">{{ section.settings.empty_heading }}</p>
-      <p class="zh-search-page__state-text">{{ section.settings.empty_body }}</p>
-      {%- assign empty_url = section.settings.empty_button_url | default: routes.all_products_collection_url -%}
-      <a href="{{ empty_url }}" class="zh-search-page__state-link">
-        {{ section.settings.empty_button_label }}
-        <span aria-hidden="true">→</span>
-      </a>
-    </div>
-  {%- else -%}
-    <div class="zh-search-page__results">
-      <section>
-        <div class="zh-search-page__section-heading">
-          <h2>{{ 'general.search.products' | t }}</h2>
-        </div>
+        <input
+          id="SearchInput-{{ section.id }}"
+          type="search"
+          name="q"
+          value="{{ terms | escape }}"
+          placeholder="{{ 'general.search.placeholder' | t }}"
+          autocomplete="off"
+          class="zh-search-page__input"
+          aria-label="{{ 'general.search.title' | t }}"
+        >
 
-        {%- paginate search.results by per_page -%}
+        <input type="hidden" name="type" value="product">
+
+        <button type="submit" class="zh-search-page__submit" aria-label="{{ 'general.search.submit' | t }}">
+          <span class="zh-search-page__submit-icon" aria-hidden="true">
+            {% render 'icon', name: 'search', size: 17 %}
+          </span>
+          <span class="zh-search-page__submit-text">
+            {{ 'general.search.submit' | t }}
+          </span>
+        </button>
+      </form>
+    </header>
+
+    {%- if search.performed == false or terms == blank -%}
+      <div class="zh-search-page__state">
+        <p class="zh-search-page__state-title">{{ section.settings.heading_no_term }}</p>
+        <p class="zh-search-page__state-text">{{ section.settings.no_term_body }}</p>
+      </div>
+    {%- elsif products_total == 0 -%}
+      <div class="zh-search-page__state">
+        <p class="zh-search-page__state-title">{{ section.settings.empty_heading }}</p>
+        <p class="zh-search-page__state-text">{{ section.settings.empty_body }}</p>
+        {%- assign empty_url = section.settings.empty_button_url | default: routes.all_products_collection_url -%}
+        <a href="{{ empty_url }}" class="zh-search-page__state-link">
+          {{ section.settings.empty_button_label }}
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    {%- else -%}
+      <div class="zh-search-page__results">
+        <section>
+          <div class="zh-search-page__section-heading">
+            <h2>{{ 'general.search.products' | t }}</h2>
+          </div>
+
           <div
             data-product-grid
             class="zh-search-page__grid grid grid-cols-2 gap-x-5 md:grid-cols-3 md:gap-x-7 lg:grid-cols-4 lg:gap-x-8"
           >
             {%- for item in search.results -%}
               {%- if item.object_type == 'product' -%}
-                <div data-search-product>
-                  {% render 'product-card', product: item %}
-                </div>
+                {%- liquid
+                  assign render_item = true
+
+                  if is_strict_pot_search
+                    assign render_item = false
+                    assign item_title_key = item.title | downcase
+
+                    if item_title_key contains 'pot'
+                      assign render_item = true
+                    endif
+
+                    if render_item == false
+                      for tag in item.tags
+                        assign tag_key = tag | downcase | strip | handleize
+                        case tag_key
+                          when 'pot', 'potten', 'voorraadpot', 'voorraadpotten', 'kruidenpot', 'kruidenpotten', 'kruidenpotjes', 'bewaarpot', 'bewaarpotten', 'glazen-pot', 'glazen-potten'
+                            assign render_item = true
+                        endcase
+                      endfor
+                    endif
+                  endif
+                -%}
+
+                {%- if render_item -%}
+                  <div data-search-product>
+                    {% render 'product-card', product: item %}
+                  </div>
+                {%- endif -%}
               {%- endif -%}
             {%- endfor -%}
           </div>
 
-          {%- if paginate.next -%}
+          {%- if paginate.next and is_strict_pot_search == false -%}
             <div data-load-more class="zh-search-page__load-more">
               <a
                 href="{{ paginate.next.url }}"
@@ -141,45 +217,45 @@
               </a>
             </div>
           {%- endif -%}
-        {%- endpaginate -%}
-      </section>
-
-      {%- if all_pages.size > 0 -%}
-        <section class="zh-search-page__secondary-results">
-          <div class="zh-search-page__section-heading">
-            <h2>{{ 'general.search.pages' | t }}</h2>
-            <span>{{ all_pages.size }}</span>
-          </div>
-          <div>
-            {%- for item in all_pages -%}
-              <a href="{{ item.url }}" class="zh-search-page__secondary-link">
-                <span>{{ item.title }}</span>
-                <span aria-hidden="true">→</span>
-              </a>
-            {%- endfor -%}
-          </div>
         </section>
-      {%- endif -%}
 
-      {%- if all_articles.size > 0 -%}
-        <section class="zh-search-page__secondary-results">
-          <div class="zh-search-page__section-heading">
-            <h2>{{ 'general.search.articles' | t }}</h2>
-            <span>{{ all_articles.size }}</span>
-          </div>
-          <div>
-            {%- for item in all_articles -%}
-              <a href="{{ item.url }}" class="zh-search-page__secondary-link">
-                <span>{{ item.title }}</span>
-                <span aria-hidden="true">→</span>
-              </a>
-            {%- endfor -%}
-          </div>
-        </section>
-      {%- endif -%}
-    </div>
-  {%- endif -%}
-</section>
+        {%- if is_strict_pot_search == false and all_pages.size > 0 -%}
+          <section class="zh-search-page__secondary-results">
+            <div class="zh-search-page__section-heading">
+              <h2>{{ 'general.search.pages' | t }}</h2>
+              <span>{{ all_pages.size }}</span>
+            </div>
+            <div>
+              {%- for item in all_pages -%}
+                <a href="{{ item.url }}" class="zh-search-page__secondary-link">
+                  <span>{{ item.title }}</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              {%- endfor -%}
+            </div>
+          </section>
+        {%- endif -%}
+
+        {%- if is_strict_pot_search == false and all_articles.size > 0 -%}
+          <section class="zh-search-page__secondary-results">
+            <div class="zh-search-page__section-heading">
+              <h2>{{ 'general.search.articles' | t }}</h2>
+              <span>{{ all_articles.size }}</span>
+            </div>
+            <div>
+              {%- for item in all_articles -%}
+                <a href="{{ item.url }}" class="zh-search-page__secondary-link">
+                  <span>{{ item.title }}</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              {%- endfor -%}
+            </div>
+          </section>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </section>
+{%- endpaginate -%}
 
 {% style %}
   #ZaynaSearchResults-{{ section.id }} {
