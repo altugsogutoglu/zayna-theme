@@ -7,6 +7,18 @@
   assign products_total = search.results_count | default: products_only.size
 -%}
 
+<script>
+  (() => {
+    const url = new URL(window.location.href);
+    const page = Number.parseInt(url.searchParams.get('page') || '1', 10);
+
+    if (Number.isFinite(page) && page > 1) {
+      url.searchParams.delete('page');
+      window.location.replace(url.toString());
+    }
+  })();
+</script>
+
 <section
   id="ZaynaSearchResults-{{ section.id }}"
   class="zh-search-page"
