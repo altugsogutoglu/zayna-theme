@@ -8,111 +8,215 @@
   assign total = 0
   assign total = total | plus: products.size | plus: collections.size | plus: pages.size | plus: articles.size
 -%}
-<div data-predictive-results-list>
+<div data-predictive-results-list class="zh-predictive-results">
   {%- if predictive_search.performed and total == 0 -%}
-    <div class="py-8 text-center">
-      <p class="font-display text-lg leading-snug text-ink">{{ 'general.search.no_results' | t }}</p>
-      <p class="mt-2 text-sm leading-relaxed text-ink-soft">We vonden niets voor &ldquo;{{ term }}&rdquo;. Probeer een andere zoekterm of bekijk de hele collectie.</p>
+    <div class="zh-search-empty-state">
+      <p class="zh-search-empty-state__title">{{ 'general.search.no_results' | t }}</p>
+      <p class="zh-search-empty-state__text">We vonden niets voor &ldquo;{{ term }}&rdquo;. Probeer een andere zoekterm, zoals glas, potten of olieflessen.</p>
+      <a href="{{ routes.all_products_collection_url }}" class="zh-search-empty-state__link">
+        Bekijk alle producten
+      </a>
     </div>
   {%- else -%}
-    <div class="space-y-6">
+    <div class="zh-predictive-results__stack">
       {%- if products.size > 0 -%}
-        <div>
-          <div class="mb-3 flex items-center gap-3">
-            <span class="text-[10px] uppercase tracking-[0.22em] text-stone-soft">{{ 'general.search.products' | t }}</span>
-            <span aria-hidden="true" class="h-px flex-1 bg-border-soft/70"></span>
+        <section class="zh-search-section" aria-label="Producten">
+          <div class="zh-search-section__heading">
+            <span>{{ 'general.search.products' | t }}</span>
+            <span aria-hidden="true"></span>
           </div>
-          <ul class="-mx-2">
+
+          <ul class="zh-search-products">
             {%- for product in products -%}
-              <li>
-                <a href="{{ product.url }}" data-predictive-link class="group flex items-center gap-4 rounded-sm px-2 py-2.5 transition-colors hover:bg-cream/70 focus-visible:bg-cream/70 focus-visible:outline-none">
-                  <span class="h-14 w-14 shrink-0 overflow-hidden bg-cream">
-                    {%- if product.featured_image -%}
-                      {%- assign p_alt = product.featured_image.alt | default: product.title -%}
-                      {{ product.featured_image | image_url: width: 112 | image_tag: loading: 'lazy', width: 56, height: 56, alt: p_alt, class: 'h-full w-full object-cover' }}
+              {%- liquid
+                assign quick_variant = product.selected_or_first_available_variant
+                assign can_search_add = false
+
+                if product.available and product.has_only_default_variant and quick_variant != blank and quick_variant.available
+                  assign can_search_add = true
+                endif
+
+                assign price_label = ''
+                if product.price_varies and product.price_min > 0
+                  capture price_label
+                    echo 'Vanaf '
+                    echo product.price_min | money
+                  endcapture
+                elsif product.price and product.price > 0
+                  capture price_label
+                    echo product.price | money
+                  endcapture
+                elsif product.price_min and product.price_min > 0
+                  capture price_label
+                    echo product.price_min | money
+                  endcapture
+                endif
+
+                assign product_status = 'Op voorraad'
+                unless product.available
+                  assign product_status = 'Tijdelijk niet beschikbaar'
+                else
+                  unless product.has_only_default_variant
+                    assign product_status = 'Kies je optie'
+                  endunless
+                endunless
+              -%}
+
+              <li class="zh-search-product">
+                <div class="zh-search-product__inner">
+                  <a
+                    href="{{ product.url }}"
+                    data-predictive-link
+                    class="zh-search-product__main"
+                    aria-label="Bekijk {{ product.title | escape }}"
+                  >
+                    <span class="zh-search-product__image-wrap">
+                      {%- if product.featured_image -%}
+                        {%- assign p_alt = product.featured_image.alt | default: product.title -%}
+                        {{ product.featured_image | image_url: width: 160, format: 'webp' | image_tag: loading: 'lazy', width: 64, height: 64, alt: p_alt, class: 'zh-search-product__image' }}
+                      {%- endif -%}
+                    </span>
+
+                    <span class="zh-search-product__copy">
+                      <span class="zh-search-product__title">
+                        {{ product.title }}
+                      </span>
+
+                      {%- if price_label != blank -%}
+                        <span class="zh-search-product__price">
+                          {{ price_label | strip }}
+                        </span>
+                      {%- endif -%}
+
+                      <span class="zh-search-product__status">
+                        {{ product_status }}
+                      </span>
+                    </span>
+                  </a>
+
+                  <div class="zh-search-product__action">
+                    {%- if can_search_add -%}
+                      <form
+                        method="post"
+                        action="{{ routes.cart_add_url }}"
+                        data-cart-add-form
+                        data-search-add
+                        data-cart-add-behavior="silent"
+                        data-product-title="{{ product.title | escape }}"
+                        class="zh-search-product__form"
+                      >
+                        <input type="hidden" name="id" value="{{ quick_variant.id }}">
+                        <input type="hidden" name="quantity" value="1">
+
+                        <button
+                          type="submit"
+                          class="zh-search-product__button"
+                          data-cart-add-button
+                          aria-label="Voeg {{ product.title | escape }} toe aan je winkelmand"
+                        >
+                          <span data-cart-add-label>Toevoegen</span>
+                          <span data-cart-add-icon aria-hidden="true">+</span>
+                        </button>
+                      </form>
+                    {%- elsif product.available -%}
+                      <a
+                        href="{{ product.url }}"
+                        class="zh-search-product__button zh-search-product__button--option"
+                        aria-label="Kies optie voor {{ product.title | escape }}"
+                      >
+                        <span>Kies optie</span>
+                        <span aria-hidden="true">→</span>
+                      </a>
+                    {%- else -%}
+                      <span
+                        class="zh-search-product__button zh-search-product__button--sold"
+                        aria-disabled="true"
+                      >
+                        Uitverkocht
+                      </span>
                     {%- endif -%}
-                  </span>
-                  <span class="min-w-0 flex-1">
-                    <span class="block truncate font-display text-[15px] leading-snug text-ink transition-colors group-hover:text-clay">{{ product.title }}</span>
-                    {%- if product.price and product.price > 0 -%}
-                      <span class="mt-0.5 block text-price text-sm text-ink-soft">{{ product.price | money }}</span>
-                    {%- endif -%}
-                  </span>
-                  <span aria-hidden="true" class="shrink-0 text-stone-soft opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">&rarr;</span>
-                </a>
+                  </div>
+                </div>
               </li>
             {%- endfor -%}
           </ul>
-        </div>
+        </section>
       {%- endif -%}
 
       {%- if collections.size > 0 -%}
-        <div>
-          <div class="mb-3 flex items-center gap-3">
-            <span class="text-[10px] uppercase tracking-[0.22em] text-stone-soft">{{ 'general.search.collections' | t }}</span>
-            <span aria-hidden="true" class="h-px flex-1 bg-border-soft/70"></span>
+        <section class="zh-search-section" aria-label="Collecties">
+          <div class="zh-search-section__heading">
+            <span>{{ 'general.search.collections' | t }}</span>
+            <span aria-hidden="true"></span>
           </div>
-          <ul class="-mx-2">
+          <ul class="zh-search-link-list">
             {%- for collection in collections -%}
               <li>
-                <a href="{{ collection.url }}" data-predictive-link class="group flex items-center gap-4 rounded-sm px-2 py-2.5 transition-colors hover:bg-cream/70 focus-visible:bg-cream/70 focus-visible:outline-none">
-                  <span class="h-14 w-14 shrink-0 overflow-hidden bg-cream">
+                <a href="{{ collection.url }}" data-predictive-link class="zh-search-link-row">
+                  <span class="zh-search-link-row__image-wrap">
                     {%- if collection.featured_image -%}
                       {%- assign c_alt = collection.featured_image.alt | default: collection.title -%}
-                      {{ collection.featured_image | image_url: width: 112 | image_tag: loading: 'lazy', width: 56, height: 56, alt: c_alt, class: 'h-full w-full object-cover' }}
+                      {{ collection.featured_image | image_url: width: 128, format: 'webp' | image_tag: loading: 'lazy', width: 56, height: 56, alt: c_alt, class: 'zh-search-link-row__image' }}
                     {%- endif -%}
                   </span>
-                  <span class="min-w-0 flex-1 truncate font-display text-[15px] leading-snug text-ink transition-colors group-hover:text-clay">{{ collection.title }}</span>
-                  <span aria-hidden="true" class="shrink-0 text-stone-soft opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">&rarr;</span>
+                  <span class="zh-search-link-row__title">{{ collection.title }}</span>
+                  <span class="zh-search-link-row__arrow" aria-hidden="true">→</span>
                 </a>
               </li>
             {%- endfor -%}
           </ul>
-        </div>
+        </section>
       {%- endif -%}
 
       {%- if pages.size > 0 -%}
-        <div>
-          <div class="mb-3 flex items-center gap-3">
-            <span class="text-[10px] uppercase tracking-[0.22em] text-stone-soft">{{ 'general.search.pages' | t }}</span>
-            <span aria-hidden="true" class="h-px flex-1 bg-border-soft/70"></span>
+        <section class="zh-search-section" aria-label="Pagina’s">
+          <div class="zh-search-section__heading">
+            <span>{{ 'general.search.pages' | t }}</span>
+            <span aria-hidden="true"></span>
           </div>
-          <ul class="-mx-2">
+          <ul class="zh-search-link-list">
             {%- for page in pages -%}
               <li>
-                <a href="{{ page.url }}" data-predictive-link class="group flex items-center justify-between gap-4 rounded-sm px-2 py-2.5 transition-colors hover:bg-cream/70 focus-visible:bg-cream/70 focus-visible:outline-none">
-                  <span class="min-w-0 truncate font-display text-[15px] text-ink transition-colors group-hover:text-clay">{{ page.title }}</span>
-                  <span aria-hidden="true" class="shrink-0 text-stone-soft opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">&rarr;</span>
+                <a href="{{ page.url }}" data-predictive-link class="zh-search-link-row zh-search-link-row--text">
+                  <span class="zh-search-link-row__title">{{ page.title }}</span>
+                  <span class="zh-search-link-row__arrow" aria-hidden="true">→</span>
                 </a>
               </li>
             {%- endfor -%}
           </ul>
-        </div>
+        </section>
       {%- endif -%}
 
       {%- if articles.size > 0 -%}
-        <div>
-          <div class="mb-3 flex items-center gap-3">
-            <span class="text-[10px] uppercase tracking-[0.22em] text-stone-soft">{{ 'general.search.articles' | t }}</span>
-            <span aria-hidden="true" class="h-px flex-1 bg-border-soft/70"></span>
+        <section class="zh-search-section" aria-label="Artikelen">
+          <div class="zh-search-section__heading">
+            <span>{{ 'general.search.articles' | t }}</span>
+            <span aria-hidden="true"></span>
           </div>
-          <ul class="-mx-2">
+          <ul class="zh-search-link-list">
             {%- for article in articles -%}
               <li>
-                <a href="{{ article.url }}" data-predictive-link class="group flex items-center gap-4 rounded-sm px-2 py-2.5 transition-colors hover:bg-cream/70 focus-visible:bg-cream/70 focus-visible:outline-none">
-                  <span class="h-14 w-14 shrink-0 overflow-hidden bg-cream">
+                <a href="{{ article.url }}" data-predictive-link class="zh-search-link-row">
+                  <span class="zh-search-link-row__image-wrap">
                     {%- if article.image -%}
                       {%- assign a_alt = article.image.alt | default: article.title -%}
-                      {{ article.image | image_url: width: 112 | image_tag: loading: 'lazy', width: 56, height: 56, alt: a_alt, class: 'h-full w-full object-cover' }}
+                      {{ article.image | image_url: width: 128, format: 'webp' | image_tag: loading: 'lazy', width: 56, height: 56, alt: a_alt, class: 'zh-search-link-row__image' }}
                     {%- endif -%}
                   </span>
-                  <span class="min-w-0 flex-1 truncate font-display text-[15px] leading-snug text-ink transition-colors group-hover:text-clay">{{ article.title }}</span>
-                  <span aria-hidden="true" class="shrink-0 text-stone-soft opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">&rarr;</span>
+                  <span class="zh-search-link-row__title">{{ article.title }}</span>
+                  <span class="zh-search-link-row__arrow" aria-hidden="true">→</span>
                 </a>
               </li>
             {%- endfor -%}
           </ul>
-        </div>
+        </section>
+      {%- endif -%}
+
+      {%- if total > 0 and term != blank -%}
+        <a href="{{ routes.search_url }}?q={{ term | url_encode }}&type=product,page,article" class="zh-search-view-all">
+          <span>Bekijk alle resultaten</span>
+          <span aria-hidden="true">→</span>
+        </a>
       {%- endif -%}
     </div>
   {%- endif -%}
