@@ -1,6 +1,112 @@
 {%- liquid
   assign terms = search.terms | strip
+  assign original_terms = terms
   assign terms_key = terms | downcase | strip | handleize
+  assign corrected_terms = terms
+
+  case terms_key
+    when 'pit', 'ppt', 'ppot', 'pott', 'pto', 'oot', 'poy'
+      assign corrected_terms = 'pot'
+    when 'potn', 'pottenn'
+      assign corrected_terms = 'potten'
+    when 'kruidepot', 'kruidenpt'
+      assign corrected_terms = 'kruidenpot'
+    when 'voorraadpt', 'vooraadpot'
+      assign corrected_terms = 'voorraadpot'
+    when 'bewaarpt'
+      assign corrected_terms = 'bewaarpot'
+    when 'doe', 'doke', 'doej', 'deok'
+      assign corrected_terms = 'doek'
+    when 'doekn', 'doekenn'
+      assign corrected_terms = 'doeken'
+    when 'keukendoekn', 'keuekendoek'
+      assign corrected_terms = 'keukendoek'
+    when 'theedoekn'
+      assign corrected_terms = 'theedoeken'
+    when 'gls', 'gals', 'glaz', 'glasz', 'gkas'
+      assign corrected_terms = 'glas'
+    when 'drinkgls'
+      assign corrected_terms = 'drinkglas'
+    when 'bkr', 'bekr', 'beeker', 'bekker'
+      assign corrected_terms = 'beker'
+    when 'bekerss'
+      assign corrected_terms = 'bekers'
+    when 'olue', 'olir', 'oliee', 'olii'
+      assign corrected_terms = 'olie'
+    when 'olieflesse'
+      assign corrected_terms = 'olieflessen'
+    when 'fls', 'flesz', 'flese', 'fless'
+      assign corrected_terms = 'fles'
+    when 'flessenn'
+      assign corrected_terms = 'flessen'
+    when 'mko', 'mokj', 'mokk'
+      assign corrected_terms = 'mok'
+    when 'moken'
+      assign corrected_terms = 'mokken'
+    when 'kpje', 'kopj', 'kopjeh'
+      assign corrected_terms = 'kopje'
+    when 'kopjesz'
+      assign corrected_terms = 'kopjes'
+    when 'koffiekpj'
+      assign corrected_terms = 'koffiekopje'
+    when 'the', 'theee', 'theeë'
+      assign corrected_terms = 'thee'
+    when 'thepot', 'theepott'
+      assign corrected_terms = 'theepot'
+    when 'karf', 'kraaf', 'karaff', 'karafg'
+      assign corrected_terms = 'karaf'
+    when 'hak', 'haakj'
+      assign corrected_terms = 'haak'
+    when 'haakn'
+      assign corrected_terms = 'haken'
+    when 'wandhak'
+      assign corrected_terms = 'wandhaak'
+    when 'bestk', 'bstek', 'bestekj', 'bstiek'
+      assign corrected_terms = 'bestek'
+    when 'rietj', 'rietjeh'
+      assign corrected_terms = 'rietje'
+    when 'rietjesz', 'rietjs'
+      assign corrected_terms = 'rietjes'
+    when 'onderzeter', 'onderzettr'
+      assign corrected_terms = 'onderzetter'
+    when 'pannenonderzeter'
+      assign corrected_terms = 'pannenonderzetter'
+    when 'maatlepls', 'maatlepelz'
+      assign corrected_terms = 'maatlepels'
+    when 'weeglepl'
+      assign corrected_terms = 'weeglepel'
+    when 'ovenwamt', 'ovenwanr'
+      assign corrected_terms = 'ovenwant'
+    when 'ovenhandschoe'
+      assign corrected_terms = 'ovenhandschoen'
+    when 'honig', 'honning'
+      assign corrected_terms = 'honing'
+    when 'honingpt'
+      assign corrected_terms = 'honingpot'
+    when 'zeepomp', 'zeeppom'
+      assign corrected_terms = 'zeeppomp'
+    when 'zeepdispenserr'
+      assign corrected_terms = 'zeepdispenser'
+    when 'barbeque'
+      assign corrected_terms = 'barbecue'
+    when 'bbqspies', 'barbecuespiez'
+      assign corrected_terms = 'barbecuespies'
+    when 'avacodo', 'avokado'
+      assign corrected_terms = 'avocado'
+    when 'avocadosnijdr'
+      assign corrected_terms = 'avocadosnijder'
+    when 'miniprint'
+      assign corrected_terms = 'miniprinter'
+    when 'labelprint', 'labelprinterr'
+      assign corrected_terms = 'labelprinter'
+  endcase
+
+  assign has_search_correction = false
+  if corrected_terms != terms
+    assign has_search_correction = true
+    assign terms = corrected_terms
+    assign terms_key = terms | downcase | strip | handleize
+  endif
 
   assign strict_search_group = ''
   assign strict_search_tags = ''
@@ -103,6 +209,18 @@
     assign per_page = 250
   endif
 -%}
+
+{%- if has_search_correction -%}
+  <script>
+    (() => {
+      const url = new URL(window.location.href);
+      url.searchParams.set('q', {{ terms | json }});
+      url.searchParams.set('type', 'product');
+      url.searchParams.delete('page');
+      window.location.replace(url.toString());
+    })();
+  </script>
+{%- endif -%}
 
 <script>
   (() => {
