@@ -422,35 +422,43 @@
 
   @media (min-width: 760px) {
     #ZaynaSearchResults-{{ section.id }} {
-      padding: 0 24px 98px;
+      padding: 0 24px 94px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__header {
-      padding: 38px 0 46px;
+      padding: 34px 0 38px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__title {
-      max-width: 17ch;
-      font-size: clamp(2.35rem, 4.6vw, 4.1rem);
+      max-width: 22ch;
+      font-size: clamp(2rem, 3vw, 2.65rem);
+      line-height: 1.06;
+      letter-spacing: -0.022em;
+    }
+
+    #ZaynaSearchResults-{{ section.id }} .zh-search-page__count {
+      margin-top: 8px;
+      font-size: 13px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__form {
-      min-height: 50px;
-      margin-top: 26px;
+      max-width: 520px;
+      min-height: 48px;
+      margin-top: 22px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__input {
-      height: 48px;
-      font-size: 16px;
+      height: 46px;
+      font-size: 15.5px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__submit {
       display: inline-flex;
       width: auto;
-      min-height: 48px;
+      min-height: 46px;
       align-items: center;
       gap: 8px;
-      padding: 0 18px;
+      padding: 0 16px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__submit-icon {
@@ -459,13 +467,38 @@
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__submit-text {
       display: inline;
-      font-size: 10px;
-      letter-spacing: 0.17em;
+      font-size: 9.5px;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
+    }
+
+    #ZaynaSearchResults-{{ section.id }} .zh-search-page__results {
+      gap: 46px;
     }
 
     #ZaynaSearchResults-{{ section.id }} .zh-search-page__grid {
       row-gap: 42px;
+    }
+  }
+
+  @media (min-width: 1180px) {
+    #ZaynaSearchResults-{{ section.id }} {
+      padding-right: 40px;
+      padding-left: 40px;
+    }
+
+    #ZaynaSearchResults-{{ section.id }} .zh-search-page__header {
+      padding-top: 42px;
+      padding-bottom: 40px;
+    }
+
+    #ZaynaSearchResults-{{ section.id }} .zh-search-page__title {
+      max-width: 24ch;
+      font-size: clamp(2.35rem, 2.45vw, 3rem);
+    }
+
+    #ZaynaSearchResults-{{ section.id }} .zh-search-page__section-heading {
+      margin-bottom: 22px;
     }
   }
 {% endstyle %}
