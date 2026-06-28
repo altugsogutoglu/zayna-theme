@@ -74,15 +74,35 @@
         </span>
       {%- endif -%}
 
-      <button
-        type="button"
-        class="zayna-aside-close"
-        aria-label="{{ 'general.accessibility.close' | t }}"
-        data-aside-close
-        data-aside-initial-focus
-      >
-        {% render 'icon', name: 'x', size: 21 %}
-      </button>
+      <div class="zayna-aside-actions">
+        {%- if type == 'search' -%}
+          <button
+            type="button"
+            class="zayna-aside-cart"
+            aria-label="Open winkelmand"
+            data-aside-open="cart"
+          >
+            {% render 'icon', name: 'shopping-bag', size: 19 %}
+
+            <span
+              class="zayna-aside-cart__count{% if cart == empty or cart.item_count == 0 %} hidden{% endif %}"
+              data-cart-count
+            >
+              {{ cart.item_count }}
+            </span>
+          </button>
+        {%- endif -%}
+
+        <button
+          type="button"
+          class="zayna-aside-close"
+          aria-label="{{ 'general.accessibility.close' | t }}"
+          data-aside-close
+          data-aside-initial-focus
+        >
+          {% render 'icon', name: 'x', size: 21 %}
+        </button>
+      </div>
     </header>
 
     <div class="zayna-aside-scroll">
@@ -112,6 +132,64 @@
 
   [data-aside="mobile"] .zayna-aside-header {
     height: 88px;
+  }
+
+  .zayna-aside-actions {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .zayna-aside-cart {
+    position: relative;
+    display: inline-grid;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #2b2622;
+    cursor: pointer;
+    transition:
+      color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .zayna-aside-cart:hover {
+    background: #f4ece4;
+    color: #a66a3f;
+  }
+
+  .zayna-aside-cart:focus-visible {
+    outline: 2px solid #a66a3f;
+    outline-offset: 3px;
+  }
+
+  .zayna-aside-cart__count {
+    position: absolute;
+    top: 4px;
+    right: 3px;
+    display: inline-flex;
+    min-width: 17px;
+    height: 17px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #a66a3f;
+    color: #fffdfb;
+    font-size: 9px;
+    font-weight: 500;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .zayna-aside-cart__count.hidden {
+    display: none;
   }
 
   .zayna-aside-scroll {
@@ -197,6 +275,18 @@
     outline-offset: 3px;
   }
 
+  @media (max-width: 767px) {
+    [data-aside="search"] .zayna-aside-panel--search {
+      width: 100vw;
+      max-width: none;
+    }
+
+    [data-aside="search"] .zayna-aside-header {
+      padding-right: 18px;
+      padding-left: 20px;
+    }
+  }
+
   @media (hover: hover) and (pointer: fine) {
     .zayna-aside-scroll {
       scrollbar-width: thin;
@@ -238,7 +328,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .zayna-aside-close {
+    .zayna-aside-close,
+    .zayna-aside-cart {
       transition: none;
     }
   }

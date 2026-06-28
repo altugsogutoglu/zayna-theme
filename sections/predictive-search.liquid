@@ -52,13 +52,9 @@
                   endcapture
                 endif
 
-                assign product_status = 'Op voorraad'
+                assign product_status = ''
                 unless product.available
                   assign product_status = 'Tijdelijk niet beschikbaar'
-                else
-                  unless product.has_only_default_variant
-                    assign product_status = 'Kies je optie'
-                  endunless
                 endunless
               -%}
 
@@ -88,9 +84,11 @@
                         </span>
                       {%- endif -%}
 
-                      <span class="zh-search-product__status">
-                        {{ product_status }}
-                      </span>
+                      {%- if product_status != blank -%}
+                        <span class="zh-search-product__status">
+                          {{ product_status }}
+                        </span>
+                      {%- endif -%}
                     </span>
                   </a>
 
@@ -115,7 +113,6 @@
                           aria-label="Voeg {{ product.title | escape }} toe aan je winkelmand"
                         >
                           <span data-cart-add-label>Toevoegen</span>
-                          <span data-cart-add-icon aria-hidden="true">+</span>
                         </button>
                       </form>
                     {%- elsif product.available -%}
@@ -125,7 +122,6 @@
                         aria-label="Kies optie voor {{ product.title | escape }}"
                       >
                         <span>Kies optie</span>
-                        <span aria-hidden="true">→</span>
                       </a>
                     {%- else -%}
                       <span
