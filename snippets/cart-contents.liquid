@@ -250,6 +250,63 @@
     outline-offset: 3px;
   }
 
+
+  .zh-cart-shipping {
+    display: grid;
+    gap: 7px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .zh-cart-shipping__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 17px;
+  }
+
+  .zh-cart-shipping__label {
+    margin: 0;
+    color: rgba(42, 37, 32, 0.72);
+    font-size: 9.5px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .zh-cart-shipping__message {
+    margin: 0;
+    color: rgba(86, 78, 71, 0.7);
+    font-size: 11px;
+    line-height: 1.1;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .zh-cart-shipping__message [data-free-shipping-remaining] {
+    color: rgba(42, 37, 32, 0.88);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .zh-cart-shipping__track {
+    position: relative;
+    height: 2px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(42, 37, 32, 0.095);
+  }
+
+  .zh-cart-shipping__fill {
+    height: 100%;
+    border-radius: inherit;
+    background: #9a633c;
+    transition: width 320ms ease;
+  }
+
   .zh-cart-checkout {
     display: flex;
     width: 100%;
@@ -382,29 +439,33 @@
       </div>
 
       <div
-        class="cart-drawer-footer border-t border-border-soft bg-surface px-5 md:px-6 pt-4 md:pt-5 space-y-4"
+        class="cart-drawer-footer border-t border-border-soft bg-surface px-5 md:px-6 pt-3 md:pt-3 space-y-3"
         data-cart-footer
       >
         {%- if threshold_cents > 0 -%}
-          <div class="space-y-2">
-            <p class="text-xs text-ink-soft" data-free-shipping-message>
-              {%- if reached -%}
-                Je komt in aanmerking voor gratis verzending.
-              {%- else -%}
-                Nog <span class="text-ink font-medium tabular-nums" data-free-shipping-remaining>{{ remaining_cents | money }}</span> tot gratis verzending
-              {%- endif -%}
-            </p>
+          <div class="zh-cart-shipping" data-free-shipping-card>
+            <div class="zh-cart-shipping__top">
+              <p class="zh-cart-shipping__label">Gratis verzending</p>
+              <p class="zh-cart-shipping__message" data-free-shipping-message>
+                {%- if reached -%}
+                  Bereikt
+                {%- else -%}
+                  Nog <span data-free-shipping-remaining>{{ remaining_cents | money }}</span>
+                {%- endif -%}
+              </p>
+            </div>
+
             <div
               role="progressbar"
               aria-valuemin="0"
               aria-valuemax="100"
               aria-valuenow="{{ pct }}"
-              aria-label="Voortgang gratis verzending"
-              class="h-1.5 w-full overflow-hidden rounded-full bg-border-soft"
+              aria-label="Voortgang tot gratis verzending"
+              class="zh-cart-shipping__track"
               data-free-shipping-progress
             >
               <div
-                class="h-full rounded-full bg-clay transition-[width] duration-300"
+                class="zh-cart-shipping__fill"
                 style="width: {{ pct }}%"
                 data-free-shipping-progress-fill
               ></div>
@@ -482,8 +543,18 @@
             >
               <p class="text-label text-ink-soft mb-4">Populaire keuzes</p>
               <div class="grid grid-cols-2 gap-x-4 gap-y-8">
-                {%- for product in suggestion_collection.products limit: 4 -%}
+                {%- assign shown_empty_suggestions = 0 -%}
+                {%- for product in suggestion_collection.products -%}
+                  {%- unless product.available -%}
+                    {%- continue -%}
+                  {%- endunless -%}
+
                   {% render 'product-card', product: product, loading: 'lazy' %}
+
+                  {%- assign shown_empty_suggestions = shown_empty_suggestions | plus: 1 -%}
+                  {%- if shown_empty_suggestions >= 4 -%}
+                    {%- break -%}
+                  {%- endif -%}
                 {%- endfor -%}
               </div>
             </section>
