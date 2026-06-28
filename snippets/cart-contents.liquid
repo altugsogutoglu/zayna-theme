@@ -47,6 +47,131 @@
     assign has_suggestions = true
   endif
 -%}
+
+{% style %}
+  .zh-cart-clear {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 7px;
+    margin: -2px 0 3px;
+    padding: 7px 0 12px;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.055);
+  }
+
+  .zh-cart-clear__toggle {
+    min-height: 32px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: rgba(86, 78, 71, 0.68);
+    font-size: 11px;
+    line-height: 1;
+    text-decoration: underline;
+    text-decoration-color: rgba(120, 113, 108, 0.30);
+    text-underline-offset: 4px;
+    transition: color 160ms ease, text-decoration-color 160ms ease;
+  }
+
+  .zh-cart-clear__toggle:hover {
+    color: rgba(42, 37, 32, 0.82);
+    text-decoration-color: rgba(181, 101, 29, 0.34);
+  }
+
+  .zh-cart-clear__toggle:focus-visible,
+  .zh-cart-clear__action:focus-visible {
+    outline: 2px solid rgba(181, 101, 29, 0.42);
+    outline-offset: 3px;
+  }
+
+  .zh-cart-clear__confirm {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    color: rgba(42, 37, 32, 0.70);
+  }
+
+  .zh-cart-clear__confirm.hidden {
+    display: none !important;
+  }
+
+  .zh-cart-clear__question {
+    margin-right: auto;
+    color: rgba(42, 37, 32, 0.66);
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .zh-cart-clear__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .zh-cart-clear__action {
+    min-height: 31px;
+    padding: 0 10px;
+    border: 1px solid rgba(42, 37, 32, 0.10);
+    background: rgba(255, 253, 251, 0.54);
+    color: rgba(42, 37, 32, 0.72);
+    font-size: 10px;
+    line-height: 1;
+    transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+  }
+
+  .zh-cart-clear__action--cancel:hover {
+    border-color: rgba(42, 37, 32, 0.18);
+    background: rgba(255, 253, 251, 0.86);
+    color: rgba(42, 37, 32, 0.88);
+  }
+
+  .zh-cart-clear__action--confirm {
+    border-color: rgba(141, 102, 80, 0.20);
+    background: rgba(240, 235, 230, 0.46);
+    color: rgba(95, 70, 56, 0.82);
+  }
+
+  .zh-cart-clear__action--confirm:hover {
+    border-color: rgba(141, 102, 80, 0.30);
+    background: rgba(232, 225, 218, 0.70);
+    color: rgba(42, 37, 32, 0.90);
+  }
+
+  .zh-cart-clear__action[disabled] {
+    cursor: wait;
+    opacity: 0.68;
+  }
+
+  @media (max-width: 520px) {
+    .zh-cart-clear {
+      align-items: stretch;
+    }
+
+    .zh-cart-clear__toggle {
+      align-self: flex-end;
+    }
+
+    .zh-cart-clear__confirm {
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px 10px;
+    }
+
+    .zh-cart-clear__question {
+      min-width: 100%;
+      margin-right: 0;
+      text-align: right;
+    }
+
+    .zh-cart-clear__actions {
+      margin-left: auto;
+    }
+  }
+{% endstyle %}
+
 <span data-cart-total-count data-count="{{ cart.item_count }}" hidden></span>
 <section
   class="flex {% unless is_page %}h-full{% endunless %} flex-col bg-surface"
@@ -76,12 +201,12 @@
 
         {%- if cart.item_count > 1 -%}
           <div
-            class="zh-cart-clear border-b border-border-soft/70 py-3"
+            class="zh-cart-clear"
             data-cart-clear
           >
             <button
               type="button"
-              class="zh-cart-clear__toggle inline-flex min-h-9 items-center text-[12px] text-stone-soft underline decoration-border-soft underline-offset-4 transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
+              class="zh-cart-clear__toggle"
               aria-expanded="false"
               data-cart-clear-toggle
             >
@@ -89,25 +214,26 @@
             </button>
 
             <div
-              class="zh-cart-clear__confirm mt-3 hidden p-4" style="border: 1px solid #e8e1da; background: rgba(240, 235, 230, 0.45);"
+              class="zh-cart-clear__confirm hidden"
               data-cart-clear-panel
               role="region"
               aria-label="Winkelmand leegmaken bevestigen"
             >
-              <p class="font-display text-[17px] leading-snug text-ink">Winkelmand leegmaken?</p>
-              <p class="mt-1.5 text-[13px] leading-relaxed text-ink-soft">Alle producten worden uit je winkelmand verwijderd.</p>
+              <span class="zh-cart-clear__question">
+                Winkelmand leegmaken?
+              </span>
 
-              <div class="mt-4 grid grid-cols-2 gap-2">
+              <div class="zh-cart-clear__actions">
                 <button
                   type="button"
-                  class="min-h-10 border border-border-soft bg-surface px-3 text-[11px] text-ink transition-colors hover:border-stone focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2"
+                  class="zh-cart-clear__action zh-cart-clear__action--cancel"
                   data-cart-clear-cancel
                 >
                   Annuleren
                 </button>
                 <button
                   type="button"
-                  class="min-h-10 border px-3 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-70" style="border-color: rgba(141, 102, 80, 0.25); background: #efe5dc; color: #5f4638;"
+                  class="zh-cart-clear__action zh-cart-clear__action--confirm"
                   data-cart-clear-confirm
                 >
                   Leegmaken
