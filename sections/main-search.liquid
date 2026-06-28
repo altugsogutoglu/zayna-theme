@@ -2,14 +2,104 @@
   assign terms = search.terms | strip
   assign terms_key = terms | downcase | strip | handleize
 
-  assign is_strict_pot_search = false
+  assign strict_search_group = ''
+  assign strict_search_tags = ''
+  assign strict_search_title_needles = ''
+
   case terms_key
-    when 'pot', 'potten', 'voorraadpot', 'voorraadpotten', 'kruidenpot', 'kruidenpotten', 'kruidenpotjes', 'bewaarpot', 'bewaarpotten', 'glazen-pot', 'glazen-potten'
-      assign is_strict_pot_search = true
+    when 'pot', 'potten', 'voorraadpot', 'voorraadpotten', 'kruidenpot', 'kruidenpotten', 'kruidenpotjes', 'bewaarpot', 'bewaarpotten', 'glazen-pot', 'glazen-potten', 'honingpot', 'honingpotten'
+      assign strict_search_group = 'pot'
+      assign strict_search_tags = '|pot|potten|voorraadpot|voorraadpotten|kruidenpot|kruidenpotten|kruidenpotjes|bewaarpot|bewaarpotten|glazen-pot|glazen-potten|honingpot|honingpotten|'
+      assign strict_search_title_needles = '|pot|voorraadpot|kruidenpot|bewaarpot|honingpot|'
+    when 'doek', 'doeken', 'keukendoek', 'keukendoeken', 'handdoek', 'handdoeken', 'theedoek', 'theedoeken', 'keukentextiel', 'textiel'
+      assign strict_search_group = 'doek'
+      assign strict_search_tags = '|doek|doeken|keukendoek|keukendoeken|handdoek|handdoeken|theedoek|theedoeken|keukentextiel|textiel|'
+      assign strict_search_title_needles = '|doek|handdoek|theedoek|keukentextiel|textiel|'
+    when 'glas', 'glazen', 'drinkglas', 'drinkglazen', 'waterglas', 'waterglazen', 'theeglas', 'theeglazen', 'beker', 'bekers', 'ribbelglas', 'ribbelglazen', 'wave-glas', 'dubbelwandig-glas', 'dubbelwandige-glazen'
+      assign strict_search_group = 'glas'
+      assign strict_search_tags = '|glas|glazen|drinkglas|drinkglazen|waterglas|waterglazen|theeglas|theeglazen|beker|bekers|ribbelglas|ribbelglazen|wave-glas|dubbelwandig-glas|dubbelwandige-glazen|'
+      assign strict_search_title_needles = '|glas|glazen|drinkglas|waterglas|theeglas|beker|bekers|ribbelglas|wave-glas|dubbelwandig-glas|'
+    when 'fles', 'flessen', 'olie', 'olien', 'oliefles', 'olieflessen', 'olieflacon', 'olieflacons', 'azijn', 'azijnfles', 'azijnflessen', 'flacon', 'flacons'
+      assign strict_search_group = 'fles'
+      assign strict_search_tags = '|fles|flessen|olie|olien|oliefles|olieflessen|olieflacon|olieflacons|azijn|azijnfles|azijnflessen|flacon|flacons|'
+      assign strict_search_title_needles = '|fles|flessen|olie|oliefles|olieflacon|azijn|azijnfles|flacon|flacons|'
+    when 'mok', 'mokken', 'kop', 'kopje', 'kopjes', 'koffiekop', 'koffiekopje', 'koffiekopjes', 'espresso', 'espressokop', 'espressokopje', 'espressokopjes'
+      assign strict_search_group = 'mok'
+      assign strict_search_tags = '|mok|mokken|kop|kopje|kopjes|koffiekop|koffiekopje|koffiekopjes|espresso|espressokop|espressokopje|espressokopjes|'
+      assign strict_search_title_needles = '|mok|mokken|kopje|kopjes|koffiekop|espresso|espressokop|'
+    when 'thee', 'theepot', 'theepotten', 'theeglas', 'theeglazen', 'theezeef', 'zeef', 'filter', 'rvs-filter'
+      assign strict_search_group = 'thee'
+      assign strict_search_tags = '|thee|theepot|theepotten|theeglas|theeglazen|theezeef|zeef|filter|rvs-filter|'
+      assign strict_search_title_needles = '|thee|theepot|theeglas|theezeef|filter|'
+    when 'karaf', 'karaffen', 'waterkan', 'waterkannen', 'kan', 'kannen', 'schenkkan', 'schenkkannen'
+      assign strict_search_group = 'karaf'
+      assign strict_search_tags = '|karaf|karaffen|waterkan|waterkannen|kan|kannen|schenkkan|schenkkannen|'
+      assign strict_search_title_needles = '|karaf|karaffen|waterkan|waterkannen|schenkkan|schenkkannen|'
+    when 'label', 'labels', 'sticker', 'stickers', 'etiket', 'etiketten', 'kruidenlabel', 'kruidenlabels', 'kruidensticker', 'kruidenstickers'
+      assign strict_search_group = 'label'
+      assign strict_search_tags = '|label|labels|sticker|stickers|etiket|etiketten|kruidenlabel|kruidenlabels|kruidensticker|kruidenstickers|'
+      assign strict_search_title_needles = '|label|labels|sticker|stickers|etiket|etiketten|'
+    when 'haak', 'haken', 'wandhaak', 'wandhaken', 'handdoekhaak', 'handdoekhaken', 'zelfklevende-haak', 'zelfklevende-haken'
+      assign strict_search_group = 'haak'
+      assign strict_search_tags = '|haak|haken|wandhaak|wandhaken|handdoekhaak|handdoekhaken|zelfklevende-haak|zelfklevende-haken|'
+      assign strict_search_title_needles = '|haak|haken|wandhaak|wandhaken|'
+    when 'bestek', 'bestekset', 'vork', 'vorken', 'mes', 'messen', 'lepel', 'lepels', 'tafelbestek', 'goud-bestek', 'rvs-bestek'
+      assign strict_search_group = 'bestek'
+      assign strict_search_tags = '|bestek|bestekset|vork|vorken|mes|messen|lepel|lepels|tafelbestek|goud-bestek|rvs-bestek|'
+      assign strict_search_title_needles = '|bestek|bestekset|vork|vorken|mes|messen|lepel|lepels|'
+    when 'rietje', 'rietjes', 'glazen-rietje', 'glazen-rietjes', 'drinkrietje', 'drinkrietjes'
+      assign strict_search_group = 'rietje'
+      assign strict_search_tags = '|rietje|rietjes|glazen-rietje|glazen-rietjes|drinkrietje|drinkrietjes|'
+      assign strict_search_title_needles = '|rietje|rietjes|'
+    when 'maatlepel', 'maatlepels', 'meetlepel', 'meetlepels', 'weeglepel', 'lepelset'
+      assign strict_search_group = 'maatlepel'
+      assign strict_search_tags = '|maatlepel|maatlepels|meetlepel|meetlepels|weeglepel|lepelset|'
+      assign strict_search_title_needles = '|maatlepel|maatlepels|meetlepel|meetlepels|weeglepel|lepelset|'
+    when 'onderzetter', 'onderzetters', 'pannenonderzetter', 'pannenonderzetters'
+      assign strict_search_group = 'onderzetter'
+      assign strict_search_tags = '|onderzetter|onderzetters|pannenonderzetter|pannenonderzetters|'
+      assign strict_search_title_needles = '|onderzetter|onderzetters|pannenonderzetter|pannenonderzetters|'
+    when 'ovenwant', 'ovenwanten', 'ovenhandschoen', 'ovenhandschoenen', 'pannenlap', 'pannenlappen'
+      assign strict_search_group = 'oven'
+      assign strict_search_tags = '|ovenwant|ovenwanten|ovenhandschoen|ovenhandschoenen|pannenlap|pannenlappen|'
+      assign strict_search_title_needles = '|ovenwant|ovenwanten|ovenhandschoen|ovenhandschoenen|pannenlap|pannenlappen|'
+    when 'honing', 'honingpot', 'honingpotten', 'honinglepel'
+      assign strict_search_group = 'honing'
+      assign strict_search_tags = '|honing|honingpot|honingpotten|honinglepel|'
+      assign strict_search_title_needles = '|honing|honingpot|honinglepel|'
+    when 'zeep', 'zeeppomp', 'zeepdispenser', 'dispenser', 'pomp', 'pompje'
+      assign strict_search_group = 'zeep'
+      assign strict_search_tags = '|zeep|zeeppomp|zeepdispenser|dispenser|pomp|pompje|'
+      assign strict_search_title_needles = '|zeep|zeeppomp|zeepdispenser|dispenser|pompje|'
+    when 'bbq', 'barbecue', 'spies', 'spiesen', 'barbecuespies', 'barbecuespiesen'
+      assign strict_search_group = 'bbq'
+      assign strict_search_tags = '|bbq|barbecue|spies|spiesen|barbecuespies|barbecuespiesen|'
+      assign strict_search_title_needles = '|bbq|barbecue|spies|spiesen|barbecuespies|barbecuespiesen|'
+    when 'kruiden', 'kruidenpot', 'kruidenpotten', 'kruidenlabel', 'kruidenlabels', 'kruidensticker', 'kruidenstickers', 'kruidenstrooier', 'strooier'
+      assign strict_search_group = 'kruiden'
+      assign strict_search_tags = '|kruiden|kruidenpot|kruidenpotten|kruidenlabel|kruidenlabels|kruidensticker|kruidenstickers|kruidenstrooier|strooier|'
+      assign strict_search_title_needles = '|kruiden|kruidenpot|kruidenlabel|kruidensticker|kruidenstrooier|strooier|'
+    when 'tang', 'tangen', 'serveertang', 'keukentang'
+      assign strict_search_group = 'tang'
+      assign strict_search_tags = '|tang|tangen|serveertang|keukentang|'
+      assign strict_search_title_needles = '|tang|tangen|serveertang|keukentang|'
+    when 'printer', 'miniprinter', 'mini-printer', 'thermische-printer', 'labelprinter'
+      assign strict_search_group = 'printer'
+      assign strict_search_tags = '|printer|miniprinter|mini-printer|thermische-printer|labelprinter|'
+      assign strict_search_title_needles = '|printer|miniprinter|mini-printer|thermische-printer|labelprinter|'
+    when 'avocado', 'avocadosnijder', 'snijder'
+      assign strict_search_group = 'avocado'
+      assign strict_search_tags = '|avocado|avocadosnijder|snijder|'
+      assign strict_search_title_needles = '|avocado|avocadosnijder|snijder|'
   endcase
 
+  assign is_strict_search = false
+  if strict_search_group != blank
+    assign is_strict_search = true
+  endif
+
   assign per_page = section.settings.products_per_page | default: 24
-  if is_strict_pot_search
+  if is_strict_search
     assign per_page = 250
   endif
 -%}
@@ -35,23 +125,27 @@
 
     assign strict_products_count = 0
 
-    if is_strict_pot_search
+    if is_strict_search
       for item in search.results
         if item.object_type == 'product'
           assign strict_match = false
-          assign item_title_key = item.title | downcase
+          assign item_title_key = item.title | downcase | handleize
+          assign title_needles = strict_search_title_needles | split: '|'
 
-          if item_title_key contains 'pot'
-            assign strict_match = true
-          endif
+          for needle in title_needles
+            if needle != blank and item_title_key contains needle
+              assign strict_match = true
+            endif
+          endfor
 
           if strict_match == false
             for tag in item.tags
               assign tag_key = tag | downcase | strip | handleize
-              case tag_key
-                when 'pot', 'potten', 'voorraadpot', 'voorraadpotten', 'kruidenpot', 'kruidenpotten', 'kruidenpotjes', 'bewaarpot', 'bewaarpotten', 'glazen-pot', 'glazen-potten'
-                  assign strict_match = true
-              endcase
+              assign tag_probe = '|' | append: tag_key | append: '|'
+
+              if strict_search_tags contains tag_probe
+                assign strict_match = true
+              endif
             endfor
           endif
 
@@ -65,7 +159,7 @@
     endif
   -%}
 
-  {%- if is_strict_pot_search and search.performed and terms != blank -%}
+  {%- if is_strict_search and search.performed and terms != blank -%}
     <script>
       document.title = {{ 'Zoeken: ' | append: products_total | append: ' producten gevonden' | append: ' – ' | append: shop.name | json }};
     </script>
@@ -73,7 +167,7 @@
 
   <section
     id="ZaynaSearchResults-{{ section.id }}"
-    class="zh-search-page{% if is_strict_pot_search %} zh-search-page--strict{% endif %}"
+    class="zh-search-page{% if is_strict_search %} zh-search-page--strict{% endif %}"
     data-search
     data-section-id="{{ section.id }}"
     data-search-url="{{ routes.search_url }}"
@@ -173,21 +267,25 @@
                 {%- liquid
                   assign render_item = true
 
-                  if is_strict_pot_search
+                  if is_strict_search
                     assign render_item = false
-                    assign item_title_key = item.title | downcase
+                    assign item_title_key = item.title | downcase | handleize
+                    assign title_needles = strict_search_title_needles | split: '|'
 
-                    if item_title_key contains 'pot'
-                      assign render_item = true
-                    endif
+                    for needle in title_needles
+                      if needle != blank and item_title_key contains needle
+                        assign render_item = true
+                      endif
+                    endfor
 
                     if render_item == false
                       for tag in item.tags
                         assign tag_key = tag | downcase | strip | handleize
-                        case tag_key
-                          when 'pot', 'potten', 'voorraadpot', 'voorraadpotten', 'kruidenpot', 'kruidenpotten', 'kruidenpotjes', 'bewaarpot', 'bewaarpotten', 'glazen-pot', 'glazen-potten'
-                            assign render_item = true
-                        endcase
+                        assign tag_probe = '|' | append: tag_key | append: '|'
+
+                        if strict_search_tags contains tag_probe
+                          assign render_item = true
+                        endif
                       endfor
                     endif
                   endif
@@ -202,7 +300,7 @@
             {%- endfor -%}
           </div>
 
-          {%- if paginate.next and is_strict_pot_search == false -%}
+          {%- if paginate.next and is_strict_search == false -%}
             <div data-load-more class="zh-search-page__load-more">
               <a
                 href="{{ paginate.next.url }}"
@@ -219,7 +317,7 @@
           {%- endif -%}
         </section>
 
-        {%- if is_strict_pot_search == false and all_pages.size > 0 -%}
+        {%- if is_strict_search == false and all_pages.size > 0 -%}
           <section class="zh-search-page__secondary-results">
             <div class="zh-search-page__section-heading">
               <h2>{{ 'general.search.pages' | t }}</h2>
@@ -236,7 +334,7 @@
           </section>
         {%- endif -%}
 
-        {%- if is_strict_pot_search == false and all_articles.size > 0 -%}
+        {%- if is_strict_search == false and all_articles.size > 0 -%}
           <section class="zh-search-page__secondary-results">
             <div class="zh-search-page__section-heading">
               <h2>{{ 'general.search.articles' | t }}</h2>
