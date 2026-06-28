@@ -287,6 +287,11 @@
         margin-top: 15px;
       }
 
+      [data-aside="search"] .zayna-search-results.is-refreshing .zh-predictive-results {
+        opacity: 0.58;
+        transition: opacity 140ms ease;
+      }
+
       [data-aside="search"] .zayna-search-results a,
       [data-aside="search"] .zayna-search-results button {
         -webkit-tap-highlight-color: transparent;
@@ -424,22 +429,22 @@
 
       [data-aside="search"] .zh-search-product__button {
         display: inline-flex;
-        min-width: 76px;
-        min-height: 30px;
+        min-width: 74px;
+        min-height: 31px;
         align-items: center;
         justify-content: center;
         gap: 0;
         padding: 0 10px;
-        border: 1px solid rgba(42, 37, 32, 0.16);
-        background: rgba(255, 253, 251, 0.52);
+        border: 1px solid rgba(42, 37, 32, 0.13);
+        background: rgba(255, 253, 251, 0.62);
         color: var(--zh-search-ink);
-        font-size: 9.2px;
-        font-weight: 500;
-        letter-spacing: 0.045em;
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 0.01em;
         line-height: 1;
         text-align: center;
         text-decoration: none;
-        text-transform: uppercase;
+        text-transform: none;
         white-space: nowrap;
         cursor: pointer;
         transition:
@@ -450,9 +455,9 @@
       }
 
       [data-aside="search"] .zh-search-product__button:hover {
-        border-color: rgba(42, 37, 32, 0.30);
-        background: rgba(42, 37, 32, 0.92);
-        color: #fffdfb;
+        border-color: rgba(150, 97, 63, 0.24);
+        background: rgba(244, 238, 232, 0.72);
+        color: #2a2520;
       }
 
       [data-aside="search"] .zh-search-product__button[disabled] {
@@ -641,13 +646,13 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 12px 0;
+        padding: 10px 0;
         border-bottom: 1px solid var(--zh-search-border);
       }
 
       [data-aside="search"] .zh-search-skeleton__image {
-        width: 64px;
-        height: 64px;
+        width: 58px;
+        height: 58px;
         flex: 0 0 auto;
         background: rgba(42, 37, 32, 0.07);
       }
@@ -675,12 +680,12 @@
       [data-aside="search"] .zh-search-skeleton.is-animated .zh-search-skeleton__label,
       [data-aside="search"] .zh-search-skeleton.is-animated .zh-search-skeleton__image,
       [data-aside="search"] .zh-search-skeleton.is-animated .zh-search-skeleton__line {
-        animation: zhSearchPulse 1.25s ease-in-out infinite;
+        animation: zhSearchPulse 1.45s ease-in-out infinite;
       }
 
       @keyframes zhSearchPulse {
-        0%, 100% { opacity: 0.42; }
-        50% { opacity: 0.78; }
+        0%, 100% { opacity: 0.34; }
+        50% { opacity: 0.62; }
       }
 
       @media (max-width: 374px) {
@@ -709,8 +714,8 @@
         }
 
         [data-aside="search"] .zh-search-product__button:hover {
-          border-color: rgba(42, 37, 32, 0.16);
-          background: rgba(255, 253, 251, 0.52);
+          border-color: rgba(42, 37, 32, 0.13);
+          background: rgba(255, 253, 251, 0.62);
           color: var(--zh-search-ink);
         }
 
@@ -757,7 +762,7 @@
       }
     {% endstyle %}
 
-    <script src="{{ 'search.js' | asset_url | append: '?zh=5' }}" defer></script>
+    <script src="{{ 'search.js' | asset_url | append: '?zh=6' }}" defer></script>
 
     {% section 'cart-drawer' %}
   </body>
