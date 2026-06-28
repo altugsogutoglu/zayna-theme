@@ -5,17 +5,38 @@
   assign pages = res.pages
   assign articles = res.articles
   assign term = predictive_search.terms
+  assign normalized_term = term | downcase | strip
+  assign is_pot_search = false
+
+  if normalized_term == 'pot' or normalized_term == 'potten' or normalized_term == 'potje' or normalized_term == 'potjes'
+    assign is_pot_search = true
+  endif
+
   assign total = 0
   assign total = total | plus: products.size | plus: collections.size | plus: pages.size | plus: articles.size
 -%}
 <div data-predictive-results-list class="zh-predictive-results">
   {%- if predictive_search.performed and total == 0 -%}
     <div class="zh-search-empty-state">
-      <p class="zh-search-empty-state__title">{{ 'general.search.no_results' | t }}</p>
-      <p class="zh-search-empty-state__text">We vonden niets voor &ldquo;{{ term }}&rdquo;. Probeer een andere zoekterm, zoals glas, potten of olieflessen.</p>
-      <a href="{{ routes.all_products_collection_url }}" class="zh-search-empty-state__link">
-        Bekijk alle producten
-      </a>
+      {%- if is_pot_search -%}
+        <p class="zh-search-empty-state__title">Bedoel je voorraadpotten of kruidenpotten?</p>
+        <p class="zh-search-empty-state__text">We konden &ldquo;{{ term }}&rdquo; nog niet direct koppelen aan een product. Bekijk de meest logische resultaten hieronder.</p>
+
+        <div class="zh-search-empty-state__choices" aria-label="Suggesties voor potten">
+          <a href="{{ routes.search_url }}?q=voorraadpot&type=product" class="zh-search-empty-state__choice">
+            Voorraadpotten
+          </a>
+          <a href="{{ routes.search_url }}?q=kruidenpot&type=product" class="zh-search-empty-state__choice">
+            Kruidenpotten
+          </a>
+        </div>
+      {%- else -%}
+        <p class="zh-search-empty-state__title">{{ 'general.search.no_results' | t }}</p>
+        <p class="zh-search-empty-state__text">We vonden niets voor &ldquo;{{ term }}&rdquo;. Probeer een andere zoekterm of bekijk de collectie.</p>
+        <a href="{{ routes.all_products_collection_url }}" class="zh-search-empty-state__link">
+          Bekijk alle producten
+        </a>
+      {%- endif -%}
     </div>
   {%- else -%}
     <div class="zh-predictive-results__stack">
@@ -75,7 +96,7 @@
 
                     <span class="zh-search-product__copy">
                       <span class="zh-search-product__title">
-                        {{ product.title }}
+                        {{ product.title | escape }}
                       </span>
 
                       {%- if price_label != blank -%}
