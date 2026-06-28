@@ -1,103 +1,148 @@
 {%- liquid
   assign per_page = section.settings.products_per_page | default: 24
-  assign terms = search.terms
+  assign terms = search.terms | strip
   assign all_pages = search.results | where: 'object_type', 'page'
   assign all_articles = search.results | where: 'object_type', 'article'
   assign products_only = search.results | where: 'object_type', 'product'
+  assign products_count = products_only.size
 -%}
+
 <section
-  class="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-10"
+  id="ZaynaSearchResults-{{ section.id }}"
+  class="zh-search-page"
   data-search
   data-section-id="{{ section.id }}"
   data-search-url="{{ routes.search_url }}"
 >
-  <header class="relative isolate pt-6 pb-10 sm:pt-10 sm:pb-14">
-    <p class="text-label text-clay mb-4 flex items-center gap-3 sm:mb-5">
-      <span aria-hidden="true" class="block h-px w-10 bg-clay/60 sm:w-12"></span>
+  <header class="zh-search-page__header">
+    <p class="zh-search-page__eyebrow">
+      <span aria-hidden="true"></span>
       {{ section.settings.eyebrow }}
     </p>
-    <h1 class="font-display text-[clamp(2.25rem,7.5vw,4.75rem)] leading-[1.02] tracking-[-0.025em] text-ink">
+
+    <h1 class="zh-search-page__title">
       {%- if search.performed and terms != blank -%}
-        Resultaten voor <span class="italic text-clay/80">&ldquo;{{ terms }}&rdquo;</span>
+        Resultaten voor <span>&ldquo;{{ terms }}&rdquo;</span>
       {%- else -%}
         {{ section.settings.heading_no_term }}
       {%- endif -%}
     </h1>
-    {%- if search.performed and search.results.size > 0 -%}
-      {%- assign count_label = 'general.search.result' | t: count: search.results.size -%}
-      <p class="mt-4 text-[15px] text-ink-soft">{{ count_label }}</p>
+
+    {%- if search.performed and terms != blank -%}
+      <p class="zh-search-page__count">
+        {%- if products_count == 1 -%}
+          1 product gevonden
+        {%- elsif products_count > 1 -%}
+          {{ products_count }} producten gevonden
+        {%- else -%}
+          Geen producten gevonden
+        {%- endif -%}
+      </p>
     {%- endif -%}
 
-    <div class="mt-8 max-w-xl">
-      <form action="{{ routes.search_url }}" method="get" role="search" class="group flex items-center gap-3 border-b-2 border-ink/15 pb-3 transition-colors focus-within:border-clay">
-        <span aria-hidden="true" class="shrink-0 text-stone-soft transition-colors group-focus-within:text-clay">{% render 'icon', name: 'search', size: 20 %}</span>
-        <input type="search" name="q" value="{{ terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}" autocomplete="off" class="min-w-0 flex-1 bg-transparent text-lg text-ink placeholder:text-stone-soft focus:outline-none" aria-label="{{ 'general.search.title' | t }}" />
-        <input type="hidden" name="type" value="product,page,article" />
-        <button type="submit" class="shrink-0 bg-ink px-6 py-3 text-[11px] uppercase tracking-[0.22em] text-surface transition-colors hover:bg-clay focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2">{{ 'general.search.submit' | t }}</button>
-      </form>
-    </div>
+    <form
+      action="{{ routes.search_url }}"
+      method="get"
+      role="search"
+      class="zh-search-page__form"
+    >
+      <label for="SearchInput-{{ section.id }}" class="sr-only">
+        {{ 'general.search.title' | t }}
+      </label>
+
+      <span class="zh-search-page__form-icon" aria-hidden="true">
+        {% render 'icon', name: 'search', size: 18 %}
+      </span>
+
+      <input
+        id="SearchInput-{{ section.id }}"
+        type="search"
+        name="q"
+        value="{{ terms | escape }}"
+        placeholder="{{ 'general.search.placeholder' | t }}"
+        autocomplete="off"
+        class="zh-search-page__input"
+        aria-label="{{ 'general.search.title' | t }}"
+      >
+
+      <input type="hidden" name="type" value="product">
+
+      <button type="submit" class="zh-search-page__submit" aria-label="{{ 'general.search.submit' | t }}">
+        <span class="zh-search-page__submit-icon" aria-hidden="true">
+          {% render 'icon', name: 'search', size: 17 %}
+        </span>
+        <span class="zh-search-page__submit-text">
+          {{ 'general.search.submit' | t }}
+        </span>
+      </button>
+    </form>
   </header>
 
   {%- if search.performed == false or terms == blank -%}
-    <div class="border-t border-border-soft py-20 text-center sm:py-28">
-      <p class="font-display text-2xl italic text-stone sm:text-3xl">{{ section.settings.heading_no_term }}</p>
-      <p class="mx-auto mt-4 max-w-sm text-[15px] leading-relaxed text-ink-soft">{{ section.settings.no_term_body }}</p>
+    <div class="zh-search-page__state">
+      <p class="zh-search-page__state-title">{{ section.settings.heading_no_term }}</p>
+      <p class="zh-search-page__state-text">{{ section.settings.no_term_body }}</p>
     </div>
-  {%- elsif search.results.size == 0 -%}
-    <div class="border-t border-border-soft py-20 text-center sm:py-28">
-      <p class="font-display text-2xl italic text-stone sm:text-3xl">{{ section.settings.empty_heading }}</p>
-      <p class="mx-auto mt-4 max-w-sm text-[15px] leading-relaxed text-ink-soft">{{ section.settings.empty_body }}</p>
+  {%- elsif products_count == 0 -%}
+    <div class="zh-search-page__state">
+      <p class="zh-search-page__state-title">{{ section.settings.empty_heading }}</p>
+      <p class="zh-search-page__state-text">{{ section.settings.empty_body }}</p>
       {%- assign empty_url = section.settings.empty_button_url | default: routes.all_products_collection_url -%}
-      <a href="{{ empty_url }}" class="group mt-8 inline-flex items-center justify-center gap-3 bg-ink px-7 py-3.5 text-[11px] uppercase tracking-[0.22em] text-surface transition-colors hover:bg-clay focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2">
+      <a href="{{ empty_url }}" class="zh-search-page__state-link">
         {{ section.settings.empty_button_label }}
-        <span aria-hidden="true" class="text-base leading-none transition-transform group-hover:translate-x-1">&rarr;</span>
+        <span aria-hidden="true">→</span>
       </a>
     </div>
   {%- else -%}
-    <div class="space-y-16 sm:space-y-20">
-      {%- if products_only.size > 0 -%}
-        <section>
-          <div class="mb-8 flex items-baseline justify-between border-b border-border-soft pb-4">
-            <h2 class="font-display text-h3 normal-case tracking-normal text-ink">{{ 'general.search.products' | t }}</h2>
+    <div class="zh-search-page__results">
+      <section>
+        <div class="zh-search-page__section-heading">
+          <h2>{{ 'general.search.products' | t }}</h2>
+        </div>
+
+        {%- paginate search.results by per_page -%}
+          <div
+            data-product-grid
+            class="zh-search-page__grid grid grid-cols-2 gap-x-5 gap-y-11 md:grid-cols-3 md:gap-x-7 md:gap-y-14 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16"
+          >
+            {%- for item in search.results -%}
+              {%- if item.object_type == 'product' -%}
+                <div data-search-product>
+                  {% render 'product-card', product: item %}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
           </div>
-          {%- paginate search.results by per_page -%}
-            <div data-product-grid class="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 md:gap-x-7 md:gap-y-14 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16">
-              {%- for item in search.results -%}
-                {%- if item.object_type == 'product' -%}
-                  <div data-search-product>{% render 'product-card', product: item %}</div>
-                {%- endif -%}
-              {%- endfor -%}
+
+          {%- if paginate.next -%}
+            <div data-load-more class="zh-search-page__load-more">
+              <a
+                href="{{ paginate.next.url }}"
+                data-load-more-link
+                data-loading-label="{{ 'general.search.loading' | t }}"
+                data-retry-label="Opnieuw proberen"
+                rel="next"
+                class="zh-search-page__load-more-link"
+              >
+                <span data-load-more-text>Meer laden</span>
+                <span aria-hidden="true">↓</span>
+              </a>
             </div>
-            {%- if paginate.next -%}
-              <div data-load-more class="mt-14 flex justify-center">
-                <a
-                  href="{{ paginate.next.url }}"
-                  data-load-more-link
-                  data-loading-label="{{ 'general.search.loading' | t }}"
-                  data-retry-label="Opnieuw proberen"
-                  rel="next"
-                  class="inline-flex items-center justify-center gap-2 border border-ink/15 px-7 py-3.5 text-[11px] uppercase tracking-[0.22em] text-ink transition-colors hover:border-clay hover:text-clay"
-                >
-                  <span data-load-more-text>Meer laden</span>
-                  <span aria-hidden="true">&darr;</span>
-                </a>
-              </div>
-            {%- endif -%}
-          {%- endpaginate -%}
-        </section>
-      {%- endif -%}
+          {%- endif -%}
+        {%- endpaginate -%}
+      </section>
 
       {%- if all_pages.size > 0 -%}
-        <section>
-          <div class="mb-8 flex items-baseline justify-between border-b border-border-soft pb-4">
-            <h2 class="font-display text-h3 normal-case tracking-normal text-ink">{{ 'general.search.pages' | t }}</h2>
-            <span class="text-label text-stone-soft">{{ all_pages.size }}</span>
+        <section class="zh-search-page__secondary-results">
+          <div class="zh-search-page__section-heading">
+            <h2>{{ 'general.search.pages' | t }}</h2>
+            <span>{{ all_pages.size }}</span>
           </div>
           <div>
             {%- for item in all_pages -%}
-              <a href="{{ item.url }}" class="group flex items-center justify-between gap-4 border-b border-border-soft py-4 transition-colors hover:border-clay/40">
-                <span class="font-display text-lg leading-snug text-ink transition-colors group-hover:text-clay">{{ item.title }}</span>
-                <span aria-hidden="true" class="shrink-0 text-base leading-none text-stone-soft transition-all duration-300 group-hover:translate-x-1 group-hover:text-clay">&rarr;</span>
+              <a href="{{ item.url }}" class="zh-search-page__secondary-link">
+                <span>{{ item.title }}</span>
+                <span aria-hidden="true">→</span>
               </a>
             {%- endfor -%}
           </div>
@@ -105,16 +150,16 @@
       {%- endif -%}
 
       {%- if all_articles.size > 0 -%}
-        <section>
-          <div class="mb-8 flex items-baseline justify-between border-b border-border-soft pb-4">
-            <h2 class="font-display text-h3 normal-case tracking-normal text-ink">{{ 'general.search.articles' | t }}</h2>
-            <span class="text-label text-stone-soft">{{ all_articles.size }}</span>
+        <section class="zh-search-page__secondary-results">
+          <div class="zh-search-page__section-heading">
+            <h2>{{ 'general.search.articles' | t }}</h2>
+            <span>{{ all_articles.size }}</span>
           </div>
           <div>
             {%- for item in all_articles -%}
-              <a href="{{ item.url }}" class="group flex items-center justify-between gap-4 border-b border-border-soft py-4 transition-colors hover:border-clay/40">
-                <span class="font-display text-lg leading-snug text-ink transition-colors group-hover:text-clay">{{ item.title }}</span>
-                <span aria-hidden="true" class="shrink-0 text-base leading-none text-stone-soft transition-all duration-300 group-hover:translate-x-1 group-hover:text-clay">&rarr;</span>
+              <a href="{{ item.url }}" class="zh-search-page__secondary-link">
+                <span>{{ item.title }}</span>
+                <span aria-hidden="true">→</span>
               </a>
             {%- endfor -%}
           </div>
@@ -123,6 +168,293 @@
     </div>
   {%- endif -%}
 </section>
+
+{% style %}
+  #ZaynaSearchResults-{{ section.id }} {
+    width: min(100%, 1280px);
+    margin: 0 auto;
+    padding: 0 16px 72px;
+    color: var(--color-ink, #2a2520);
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__header {
+    padding: 18px 0 28px;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 9px;
+    color: var(--color-clay, #b5651d);
+    font-size: 9px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.19em;
+    text-transform: uppercase;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__eyebrow > span {
+    width: 28px;
+    height: 1px;
+    background: rgba(181, 101, 29, 0.56);
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__title {
+    max-width: 13.5ch;
+    margin: 0;
+    color: var(--color-ink, #2a2520);
+    font-family: var(--font-display, Georgia, serif);
+    font-size: clamp(2rem, 8.2vw, 2.4rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.028em;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__title span {
+    color: rgba(181, 101, 29, 0.82);
+    font-style: italic;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__count {
+    margin: 10px 0 0;
+    color: rgba(42, 37, 32, 0.60);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__form {
+    display: flex;
+    width: 100%;
+    max-width: 560px;
+    min-height: 46px;
+    align-items: center;
+    margin-top: 20px;
+    border: 1px solid rgba(42, 37, 32, 0.10);
+    background: rgba(255, 253, 251, 0.62);
+    transition: border-color 180ms ease, background-color 180ms ease;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__form:focus-within {
+    border-color: rgba(181, 101, 29, 0.42);
+    background: rgba(255, 253, 251, 0.86);
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__form-icon {
+    display: grid;
+    width: 43px;
+    flex: 0 0 auto;
+    place-items: center;
+    color: rgba(42, 37, 32, 0.42);
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__input {
+    min-width: 0;
+    flex: 1 1 auto;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    color: var(--color-ink, #2a2520);
+    font-size: 15px;
+    line-height: 1;
+    outline: none;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__input::placeholder {
+    color: rgba(120, 113, 108, 0.66);
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__submit {
+    display: grid;
+    width: 44px;
+    min-height: 44px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-left: 1px solid rgba(42, 37, 32, 0.08);
+    background: rgba(240, 235, 230, 0.54);
+    color: rgba(42, 37, 32, 0.78);
+    transition: background-color 180ms ease, color 180ms ease;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__submit:hover {
+    background: rgba(232, 225, 218, 0.72);
+    color: var(--color-ink, #2a2520);
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__submit:focus-visible {
+    outline: 2px solid rgba(181, 101, 29, 0.52);
+    outline-offset: 2px;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__submit-text {
+    display: none;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__results {
+    display: grid;
+    gap: 52px;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.075);
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__section-heading h2 {
+    margin: 0;
+    color: var(--color-ink, #2a2520);
+    font-family: var(--font-display, Georgia, serif);
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__section-heading span {
+    color: rgba(120, 113, 108, 0.72);
+    font-size: 11px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__state {
+    margin-top: 18px;
+    padding: 44px 18px 54px;
+    border-top: 1px solid rgba(42, 37, 32, 0.08);
+    text-align: center;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__state-title {
+    margin: 0;
+    color: rgba(42, 37, 32, 0.78);
+    font-family: var(--font-display, Georgia, serif);
+    font-size: 24px;
+    font-style: italic;
+    line-height: 1.18;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__state-text {
+    max-width: 36ch;
+    margin: 12px auto 0;
+    color: rgba(42, 37, 32, 0.62);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__state-link,
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__load-more-link {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    margin-top: 24px;
+    padding: 0 18px;
+    border: 1px solid rgba(42, 37, 32, 0.16);
+    background: rgba(255, 253, 251, 0.54);
+    color: var(--color-ink, #2a2520);
+    font-size: 10px;
+    letter-spacing: 0.13em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: border-color 180ms ease, color 180ms ease, background-color 180ms ease;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__state-link:hover,
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__load-more-link:hover {
+    border-color: rgba(181, 101, 29, 0.34);
+    background: rgba(240, 235, 230, 0.62);
+    color: var(--color-clay, #b5651d);
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__load-more {
+    display: flex;
+    justify-content: center;
+    margin-top: 44px;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__secondary-results {
+    max-width: 720px;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__secondary-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.075);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__secondary-link > span:first-child {
+    color: var(--color-ink, #2a2520);
+    font-family: var(--font-display, Georgia, serif);
+    font-size: 17px;
+    line-height: 1.25;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__secondary-link > span:last-child {
+    color: rgba(120, 113, 108, 0.72);
+    transition: transform 180ms ease, color 180ms ease;
+  }
+
+  #ZaynaSearchResults-{{ section.id }} .zh-search-page__secondary-link:hover > span:last-child {
+    transform: translateX(3px);
+    color: var(--color-clay, #b5651d);
+  }
+
+  @media (min-width: 760px) {
+    #ZaynaSearchResults-{{ section.id }} {
+      padding: 0 24px 96px;
+    }
+
+    #ZaynaSearchResults-{{ section.id }} .zh-search-page__header {
+      padding: 34px 0 48px;
+    }
+
+    #ZaynaSearchResults-{{ section.id }} .zh-search-page__title {
+      max-width: 15ch;
+      font-size: clamp(2.7rem, 5.4vw, 4.55rem);
+    }
+
+    #ZaynaSearchResults-{{ section.id }} .zh-search-page__form {
+      min-height: 50px;
+      margin-top: 28px;
+    }
+
+    #ZaynaSearchResults-{{ section.id }} .zh-search-page__input {
+      height: 48px;
+      font-size: 16px;
+    }
+
+    #ZaynaSearchResults-{{ section.id }} .zh-search-page__submit {
+      display: inline-flex;
+      width: auto;
+      min-height: 48px;
+      align-items: center;
+      gap: 8px;
+      padding: 0 18px;
+    }
+
+    #ZaynaSearchResults-{{ section.id }} .zh-search-page__submit-icon {
+      display: none;
+    }
+
+    #ZaynaSearchResults-{{ section.id }} .zh-search-page__submit-text {
+      display: inline;
+      font-size: 10px;
+      letter-spacing: 0.17em;
+      text-transform: uppercase;
+    }
+  }
+{% endstyle %}
 
 {% schema %}
 {
@@ -133,9 +465,9 @@
     { "type": "text", "id": "heading_no_term", "label": "Heading (no search term)", "default": "Wat zoek je?" },
     { "type": "range", "id": "products_per_page", "min": 8, "max": 48, "step": 4, "label": "Products per page", "default": 24 },
     { "type": "header", "content": "No-term state" },
-    { "type": "textarea", "id": "no_term_body", "label": "No-term body", "default": "Zoek naar producten, pagina's en artikelen, of bekijk de volledige collectie." },
+    { "type": "textarea", "id": "no_term_body", "label": "No-term body", "default": "Zoek naar producten of bekijk de volledige collectie." },
     { "type": "header", "content": "Empty (no results) state" },
-    { "type": "text", "id": "empty_heading", "label": "Empty heading", "default": "Geen resultaten gevonden." },
+    { "type": "text", "id": "empty_heading", "label": "Empty heading", "default": "Geen producten gevonden." },
     { "type": "textarea", "id": "empty_body", "label": "Empty body", "default": "Probeer een andere zoekterm of bekijk onze volledige collectie." },
     { "type": "text", "id": "empty_button_label", "label": "Empty button label", "default": "Bekijk collectie" },
     { "type": "url", "id": "empty_button_url", "label": "Empty button link" }
