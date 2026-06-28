@@ -7,9 +7,14 @@
   assign term = predictive_search.terms
   assign normalized_term = term | downcase | strip
   assign is_pot_search = false
+  assign is_doek_search = false
 
   if normalized_term == 'pot' or normalized_term == 'potten' or normalized_term == 'potje' or normalized_term == 'potjes'
     assign is_pot_search = true
+  endif
+
+  if normalized_term == 'doek' or normalized_term == 'doeken' or normalized_term == 'textiel' or normalized_term == 'keukentextiel'
+    assign is_doek_search = true
   endif
 
   assign total = 0
@@ -28,6 +33,18 @@
           </a>
           <a href="{{ routes.search_url }}?q=kruidenpot&type=product" class="zh-search-empty-state__choice">
             Kruidenpotten
+          </a>
+        </div>
+      {%- elsif is_doek_search -%}
+        <p class="zh-search-empty-state__title">Bedoel je keukendoeken of keukentextiel?</p>
+        <p class="zh-search-empty-state__text">We konden &ldquo;{{ term }}&rdquo; nog niet direct koppelen aan een product. Bekijk de meest logische resultaten hieronder.</p>
+
+        <div class="zh-search-empty-state__choices" aria-label="Suggesties voor doeken">
+          <a href="{{ routes.search_url }}?q=keukendoek&type=product" class="zh-search-empty-state__choice">
+            Keukendoeken
+          </a>
+          <a href="{{ routes.search_url }}?q=keukentextiel&type=product" class="zh-search-empty-state__choice">
+            Keukentextiel
           </a>
         </div>
       {%- else -%}
@@ -230,7 +247,7 @@
       {%- endif -%}
 
       {%- if total > 0 and term != blank -%}
-        <a href="{{ routes.search_url }}?q={{ term | url_encode }}&type=product,page,article" class="zh-search-view-all">
+        <a href="{{ routes.search_url }}?q={{ term | url_encode }}&type=product" class="zh-search-view-all">
           <span>Bekijk alle resultaten</span>
           <span aria-hidden="true">→</span>
         </a>
