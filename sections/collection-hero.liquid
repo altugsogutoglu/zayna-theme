@@ -1,6 +1,6 @@
 {%- comment -%}
-  Zayna Home — compacte collectieheader.
-  De collectie blijft herkenbaar, terwijl het productgrid sneller in beeld komt.
+  Zayna Home — verfijnde collectieheader.
+  Compact, specifiek per collectie en zonder losse desktop-kolom rechts.
 {%- endcomment -%}
 
 {%- liquid
@@ -19,13 +19,33 @@
     assign hero_title = section.settings.all_title
   endif
 
+  assign title_key = hero_title | downcase
   assign intro = collection.description | strip_html | strip
-  if intro == blank
-    assign intro = section.settings.intro_fallback
-  endif
 
-  if is_all and section.settings.all_intro != blank
-    assign intro = section.settings.all_intro
+  if intro == blank
+    if is_all
+      assign intro = section.settings.all_intro | default: 'De complete selectie van Zayna Home: rustige keuken- en woonproducten voor dagelijks gebruik.'
+    elsif title_key contains 'drinkglazen' or title_key contains 'bekers'
+      assign intro = 'Glaswerk voor dagelijks gebruik en een rustig gedekte tafel.'
+    elsif title_key contains 'voorraad' or title_key contains 'bewaren'
+      assign intro = 'Voorraadpotten die bewaren praktisch en zichtbaar mooi maken.'
+    elsif title_key contains 'koffie' or title_key contains 'thee'
+      assign intro = 'Rustige items voor koffie- en theemomenten, van glas tot serveeraccessoires.'
+    elsif title_key contains 'kruiden'
+      assign intro = 'Voor een overzichtelijke kruidenlade of voorraadkast, rustig en praktisch ingedeeld.'
+    elsif title_key contains 'bestek' or title_key contains 'lepels'
+      assign intro = 'Bestek en lepels met een verzorgde uitstraling voor elke tafel.'
+    elsif title_key contains 'keukenhulpen' or title_key contains 'dispensers'
+      assign intro = 'Praktische keukenhulpen die op het aanrecht rustig mogen blijven staan.'
+    elsif title_key contains 'kookaccessoires'
+      assign intro = 'Kleine accessoires die koken en serveren overzichtelijker maken.'
+    elsif title_key contains 'keukentextiel'
+      assign intro = 'Zacht keukentextiel en accessoires voor een verzorgde keuken.'
+    elsif title_key contains 'rietjes'
+      assign intro = 'Herbruikbare glazen rietjes voor warme en koude dranken.'
+    else
+      assign intro = section.settings.intro_fallback | default: 'Rustige keuken- en woonproducten, zorgvuldig geselecteerd voor dagelijks gebruik.'
+    endif
   endif
 
   assign heading_id = 'ZaynaCollectionTitle-' | append: section.id
@@ -37,19 +57,17 @@
   aria-labelledby="{{ heading_id }}"
 >
   <div class="zh-collection-hero__inner">
-    <div class="zh-collection-hero__heading">
-      <p class="zh-collection-hero__eyebrow">
-        <span aria-hidden="true"></span>
-        {{ eyebrow | escape }}
-      </p>
+    <p class="zh-collection-hero__eyebrow">
+      <span aria-hidden="true"></span>
+      {{ eyebrow | escape }}
+    </p>
 
-      <h1
-        id="{{ heading_id }}"
-        class="zh-collection-hero__title"
-      >
-        {{ hero_title | escape }}
-      </h1>
-    </div>
+    <h1
+      id="{{ heading_id }}"
+      class="zh-collection-hero__title"
+    >
+      {{ hero_title | escape }}
+    </h1>
 
     {%- if intro != blank -%}
       <p class="zh-collection-hero__intro">
@@ -68,7 +86,7 @@
     .zh-collection-hero__inner {
     width: min(100%, 1280px);
     margin: 0 auto;
-    padding: 17px 16px 18px;
+    padding: 18px 16px 13px;
   }
 
   #ZaynaCollectionHero-{{ section.id }}
@@ -76,7 +94,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 0 0 7px;
+    margin: 0 0 8px;
     color: #9a6039;
     font-size: 9px;
     font-weight: 500;
@@ -87,14 +105,14 @@
 
   #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__eyebrow > span {
-    width: 25px;
+    width: 24px;
     height: 1px;
-    background: rgba(166, 106, 63, 0.54);
+    background: rgba(166, 106, 63, 0.50);
   }
 
   #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__title {
-    max-width: 17ch;
+    max-width: 21ch;
     margin: 0;
     color: #2a2520;
     font-family:
@@ -102,7 +120,7 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: clamp(2rem, 8.4vw, 2.2rem);
+    font-size: clamp(2rem, 8vw, 2.18rem);
     font-weight: 400;
     line-height: 1.045;
     letter-spacing: -0.026em;
@@ -111,59 +129,55 @@
 
   #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__intro {
-    display: -webkit-box;
-    max-width: 52ch;
+    max-width: 58ch;
     margin: 10px 0 0;
     overflow: hidden;
-    color: #625a53;
+    color: rgba(42, 37, 32, 0.66);
     font-size: 13px;
-    line-height: 1.52;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-height: 1.54;
+    text-wrap: pretty;
   }
 
   @media (min-width: 640px) {
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__inner {
-      padding: 22px 24px 22px;
+      padding: 22px 24px 15px;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__title {
-      max-width: 18ch;
-      font-size: clamp(2.2rem, 4.7vw, 2.5rem);
+      max-width: 23ch;
+      font-size: clamp(2.18rem, 4.35vw, 2.55rem);
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__intro {
-      max-width: 58ch;
+      max-width: 62ch;
       margin-top: 11px;
       font-size: 13.5px;
+      line-height: 1.58;
     }
   }
 
   @media (min-width: 900px) {
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__inner {
-      display: grid;
-      grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
-      align-items: end;
-      gap: 42px;
-      padding: 25px 40px 26px;
+      padding: 28px 40px 16px;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__title {
-      max-width: 19ch;
-      font-size: clamp(2.5rem, 3.15vw, 2.85rem);
+      max-width: 24ch;
+      font-size: clamp(2.35rem, 2.72vw, 2.95rem);
+      line-height: 1.02;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__intro {
-      max-width: 42ch;
-      margin: 0 0 3px;
+      max-width: 64ch;
+      margin-top: 12px;
       font-size: 14px;
-      line-height: 1.58;
+      line-height: 1.6;
     }
   }
 {% endstyle %}
