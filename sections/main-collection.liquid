@@ -1,0 +1,1139 @@
+{%- comment -%}
+  Zayna Home — rustig collectieproductgrid.
+  Filters, sortering en prijsvelden worden beheerd door assets/collection.js.
+{%- endcomment -%}
+
+<script src="{{ 'collection.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign per_page = 250
+  assign sort_now = collection.sort_by | default: collection.default_sort_by
+
+  assign has_filters = false
+  for filter in collection.filters
+    assign has_filters = true
+    break
+  endfor
+
+  assign active_count = 0
+  assign any_active = false
+
+  for filter in collection.filters
+    assign active_count = active_count | plus: filter.active_values.size
+
+    if filter.active_values.size > 0
+      assign any_active = true
+    endif
+
+    if filter.type == 'price_range'
+      if filter.min_value.value != blank or filter.max_value.value != blank
+        assign active_count = active_count | plus: 1
+        assign any_active = true
+      endif
+    endif
+  endfor
+
+  assign clear_url = collection.url
+  if sort_now != blank
+    assign clear_url = collection.url | append: '?sort_by=' | append: sort_now
+  endif
+-%}
+
+{% style %}
+  #ZaynaCollectionGrid-{{ section.id }} {
+    width: min(100%, 1280px);
+    margin: 0 auto;
+    padding: 0 16px 72px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar {
+    display: flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 17px;
+    border-top: 0;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.075);
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__count {
+    margin: 0;
+    color: rgba(42, 37, 32, 0.58);
+    font-size: 11.5px;
+    line-height: 1;
+    letter-spacing: 0.005em;
+    white-space: nowrap;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__count > span {
+    color: #2a2520;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__actions {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__control,
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(42, 37, 32, 0.075);
+    background: rgba(255, 253, 251, 0.34);
+    color: rgba(42, 37, 32, 0.66);
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__control {
+    padding: 0 8px;
+    cursor: pointer;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__control > span:not(.zh-collection-toolbar__badge) {
+    font-size: 10px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__badge {
+    display: inline-flex;
+    min-width: 18px;
+    height: 18px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    border: 1px solid rgba(166, 106, 63, 0.18);
+    border-radius: 999px;
+    background: rgba(242, 232, 223, 0.72);
+    color: #875235;
+    font-size: 9px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort {
+    position: relative;
+    min-width: 0;
+    padding: 0 7px 0 8px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort select {
+    width: min(30vw, 126px);
+    min-width: 0;
+    padding: 0 20px 0 0;
+    overflow: hidden;
+    border: 0;
+    outline: 0;
+    appearance: none;
+    background: transparent;
+    color: #2a2520;
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 12.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort > span {
+    position: absolute;
+    right: 6px;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    margin: -2px 0 18px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filter {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    gap: 7px;
+    padding: 0 10px;
+    border: 1px solid rgba(166, 106, 63, 0.18);
+    border-radius: 999px;
+    background: rgba(242, 232, 223, 0.54);
+    color: #6e4932;
+    font-size: 10px;
+    text-decoration: none;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filters__clear {
+    color: rgba(42, 37, 32, 0.60);
+    font-size: 10px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-product-grid > * {
+    min-width: 0;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-empty {
+    padding: 62px 20px;
+    border-top: 1px solid rgba(42, 37, 32, 0.08);
+    text-align: center;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-empty > p {
+    margin: 0;
+    color: rgba(42, 37, 32, 0.68);
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 22px;
+    font-style: italic;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-empty > span {
+    display: block;
+    margin-top: 8px;
+    color: rgba(42, 37, 32, 0.58);
+    font-size: 13px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-empty__button {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 19px;
+    padding: 0 18px;
+    border: 1px solid rgba(166, 106, 63, 0.30);
+    background: rgba(242, 232, 223, 0.68);
+    color: #875235;
+    font-size: 10px;
+    letter-spacing: 0.13em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-seo {
+    max-width: 680px;
+    margin-top: 62px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(42, 37, 32, 0.08);
+    color: rgba(42, 37, 32, 0.64);
+    font-size: 14px;
+    line-height: 1.72;
+    white-space: pre-line;
+  }
+
+  .zh-filter-form {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+  }
+
+  .zh-filter-form__body {
+    flex: 1 1 auto;
+    padding: 20px 20px 24px;
+  }
+
+  .zh-filter-group {
+    margin: 0;
+    padding: 0 0 22px;
+    border: 0;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.075);
+  }
+
+  .zh-filter-group + .zh-filter-group {
+    padding-top: 22px;
+  }
+
+  .zh-filter-group legend {
+    margin-bottom: 13px;
+    color: #2a2520;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+  }
+
+  .zh-price-filter {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .zh-price-filter label > span:first-child {
+    display: block;
+    margin-bottom: 6px;
+    color: rgba(42, 37, 32, 0.58);
+    font-size: 10px;
+  }
+
+  .zh-price-input {
+    display: flex;
+    min-height: 42px;
+    align-items: center;
+    border: 1px solid rgba(42, 37, 32, 0.11);
+    background: rgba(255, 253, 251, 0.84);
+  }
+
+  .zh-price-input:focus-within {
+    border-color: rgba(166, 106, 63, 0.58);
+    box-shadow: 0 0 0 1px rgba(166, 106, 63, 0.10);
+  }
+
+  .zh-price-input > span {
+    padding-left: 11px;
+    color: rgba(42, 37, 32, 0.50);
+    font-size: 12px;
+  }
+
+  .zh-price-input input {
+    width: 100%;
+    min-width: 0;
+    padding: 0 9px 0 5px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #2a2520;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .zh-price-filter__maximum {
+    margin: 7px 0 0;
+    color: rgba(42, 37, 32, 0.48);
+    font-size: 10px;
+  }
+
+  .zh-price-filter__error {
+    margin: 8px 0 0;
+    color: #8b4c42;
+    font-size: 11px;
+    line-height: 1.42;
+  }
+
+  .zh-filter-values {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .zh-filter-value {
+    display: flex;
+    min-height: 40px;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .zh-filter-value.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.36;
+  }
+
+  .zh-filter-value input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .zh-filter-value__box,
+  .zh-filter-value__radio {
+    display: grid;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    place-items: center;
+    border: 1px solid rgba(42, 37, 32, 0.16);
+    background: #fffdfb;
+    color: transparent;
+    transition:
+      border-color 160ms ease,
+      background-color 160ms ease,
+      color 160ms ease;
+  }
+
+  .zh-filter-value__radio {
+    border-radius: 999px;
+  }
+
+  .zh-filter-value input:checked + .zh-filter-value__box {
+    border-color: #9b613d;
+    background: #9b613d;
+    color: #fffdfb;
+  }
+
+  .zh-filter-value input:checked + .zh-filter-value__radio {
+    border-color: #9b613d;
+    box-shadow: inset 0 0 0 4px #fffdfb;
+    background: #9b613d;
+  }
+
+  .zh-filter-value input:focus-visible + .zh-filter-value__box,
+  .zh-filter-value input:focus-visible + .zh-filter-value__radio {
+    outline: 2px solid #a66a3f;
+    outline-offset: 3px;
+  }
+
+  .zh-filter-value__label {
+    color: rgba(42, 37, 32, 0.72);
+    font-size: 13px;
+  }
+
+  .zh-filter-value__count {
+    margin-left: auto;
+    color: rgba(42, 37, 32, 0.44);
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .zh-filter-form__footer {
+    position: sticky;
+    bottom: var(--zh-keyboard-offset, 0px);
+    z-index: 2;
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 13px;
+    padding:
+      15px
+      20px
+      calc(15px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(42, 37, 32, 0.08);
+    background: rgba(250, 247, 243, 0.97);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .zh-filter-form__clear {
+    display: inline-flex;
+    min-height: 44px;
+    min-width: 86px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    border: 1px solid rgba(42, 37, 32, 0.11);
+    background: rgba(255, 253, 251, 0.60);
+    color: rgba(42, 37, 32, 0.66);
+    font-size: 10px;
+    text-decoration: none;
+  }
+
+  .zh-filter-form__clear.is-hidden {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .zh-filter-form__submit {
+    display: inline-flex;
+    min-height: 44px;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #3b302a;
+    background: #3b302a;
+    color: #fffdfb;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-product-grid,
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-empty {
+    transition: opacity 180ms ease;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}.is-loading
+    .zh-product-grid,
+  #ZaynaCollectionGrid-{{ section.id }}.is-loading
+    .zh-collection-empty {
+    opacity: 0.72;
+    pointer-events: none;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-empty {
+    max-width: 560px;
+    margin: 20px auto 0;
+    border: 1px solid rgba(42, 37, 32, 0.075);
+    background: rgba(255, 253, 251, 0.38);
+  }
+
+  @media (max-width: 639px) {
+    .zh-filter-form {
+      min-height: 100%;
+    }
+
+    .zh-filter-form__footer {
+      transition: bottom 160ms ease;
+    }
+  }
+
+  @media (min-width: 640px) {
+    #ZaynaCollectionGrid-{{ section.id }} {
+      padding-right: 24px;
+      padding-bottom: 84px;
+      padding-left: 24px;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-toolbar {
+      min-height: 42px;
+      margin-bottom: 20px;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-toolbar__count {
+      font-size: 10px;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-toolbar__control,
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-sort {
+      min-height: 32px;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-sort select {
+      width: 150px;
+      font-size: 12.5px;
+    }
+
+    .zh-filter-form__body {
+      padding-right: 24px;
+      padding-left: 24px;
+    }
+
+    .zh-filter-form__footer {
+      padding-right: 24px;
+      padding-left: 24px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #ZaynaCollectionGrid-{{ section.id }} {
+      padding-right: 40px;
+      padding-bottom: 92px;
+      padding-left: 40px;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-toolbar__control:hover,
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-sort:hover {
+      border-color: rgba(166, 106, 63, 0.18);
+      background: rgba(242, 232, 223, 0.18);
+      color: #8f5a39;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-active-filter:hover,
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-empty__button:hover {
+      border-color: rgba(166, 106, 63, 0.36);
+      background: rgba(242, 232, 223, 0.88);
+    }
+
+    .zh-filter-value:hover .zh-filter-value__label {
+      color: #955c39;
+    }
+
+    .zh-filter-form__submit:hover {
+      border-color: #955c39;
+      background: #955c39;
+    }
+
+    .zh-filter-form__clear:hover {
+      border-color: rgba(166, 106, 63, 0.28);
+      background: rgba(242, 232, 223, 0.58);
+      color: #955c39;
+    }
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-results-region[data-result-total="1"]
+    .zh-product-grid {
+    grid-template-columns: calc((100% - 16px) / 2);
+    justify-content: center;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}[data-current-count="0"],
+  #ZaynaCollectionGrid-{{ section.id }}[data-current-count="1"],
+  #ZaynaCollectionGrid-{{ section.id }}[data-current-count="2"] {
+    padding-bottom: 48px;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filter,
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filters__clear {
+    flex: 0 0 auto;
+  }
+
+  @media (min-width: 640px) {
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-results-region[data-result-total="1"]
+      .zh-product-grid {
+      grid-template-columns: calc((100% - 20px) / 2);
+    }
+  }
+
+  @media (min-width: 768px) {
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-results-region[data-result-total="1"]
+      .zh-product-grid {
+      grid-template-columns: calc((100% - 48px) / 3);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-results-region[data-result-total="1"]
+      .zh-product-grid {
+      grid-template-columns: calc((100% - 84px) / 4);
+    }
+  }
+
+{% endstyle %}
+
+<div
+  id="ZaynaCollectionGrid-{{ section.id }}"
+  data-collection
+  data-section-id="{{ section.id }}"
+  data-collection-url="{{ collection.url }}"
+  data-current-count="{{ collection.products_count }}"
+  class="zh-main-collection"
+>
+  {%- paginate collection.products by per_page -%}
+
+    <div
+      class="zh-collection-toolbar"
+      data-collection-toolbar
+    >
+      <p
+        class="zh-collection-toolbar__count"
+        aria-live="polite"
+        data-result-count
+      >
+        <span>{{ collection.products_count }}</span>
+        {% if collection.products_count == 1 %}
+          product
+        {% else %}
+          producten
+        {% endif %}
+      </p>
+
+      <div class="zh-collection-toolbar__actions">
+        {%- if has_filters -%}
+          <button
+            type="button"
+            data-aside-open="filters"
+            class="zh-collection-toolbar__control"
+          >
+            {% render 'icon', name: 'sliders', size: 14 %}
+            <span>Filteren</span>
+
+            <span data-filter-count-slot>
+              {%- if active_count > 0 -%}
+                <span
+                  class="zh-collection-toolbar__badge"
+                  aria-label="{{ active_count }} actieve filters"
+                >
+                  {{ active_count }}
+                </span>
+              {%- endif -%}
+            </span>
+          </button>
+        {%- endif -%}
+
+        <label class="zh-collection-sort">
+          <span class="sr-only">Producten sorteren</span>
+
+          <select
+            data-sort-select
+            form="CollectionFilterForm-{{ section.id }}"
+            name="sort_by"
+            aria-label="Producten sorteren"
+          >
+            <option value="manual"{% if sort_now == 'manual' %} selected{% endif %}>
+              Aanbevolen
+            </option>
+            <option value="best-selling"{% if sort_now == 'best-selling' %} selected{% endif %}>
+              Best verkocht
+            </option>
+            <option value="created-descending"{% if sort_now == 'created-descending' %} selected{% endif %}>
+              Nieuwste eerst
+            </option>
+            <option value="price-ascending"{% if sort_now == 'price-ascending' %} selected{% endif %}>
+              Prijs oplopend
+            </option>
+            <option value="price-descending"{% if sort_now == 'price-descending' %} selected{% endif %}>
+              Prijs aflopend
+            </option>
+          </select>
+
+          <span aria-hidden="true">
+            {% render 'icon', name: 'chevron-down', size: 13 %}
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <div data-active-filters-region>
+    {%- if any_active -%}
+      <div
+        class="zh-active-filters"
+        aria-label="Actieve filters"
+      >
+        {%- for filter in collection.filters -%}
+          {%- for value in filter.active_values -%}
+            {%- assign active_label = value.label -%}
+            {%- if active_label == 'Niet op voorraad' -%}
+              {%- assign active_label = 'Uitverkocht' -%}
+            {%- endif -%}
+
+            <a
+              href="{{ value.url_to_remove }}"
+              data-filter-remove
+              class="zh-active-filter"
+            >
+              <span>{{ active_label | escape }}</span>
+              {% render 'icon', name: 'x', size: 12 %}
+            </a>
+          {%- endfor -%}
+
+          {%- if filter.type == 'price_range' -%}
+            {%- if filter.min_value.value != blank or filter.max_value.value != blank -%}
+              {%- liquid
+                assign active_min = filter.min_value.value | default: 0
+                assign active_max = filter.max_value.value | default: filter.range_max
+              -%}
+
+              <a
+                href="{{ filter.url_to_remove }}"
+                data-filter-remove
+                class="zh-active-filter"
+              >
+                <span>
+                  {{ active_min | money }}
+                  –
+                  {{ active_max | money }}
+                </span>
+                {% render 'icon', name: 'x', size: 12 %}
+              </a>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        <a
+          href="{{ clear_url }}"
+          data-filter-clear
+          class="zh-active-filters__clear"
+        >
+          Filters wissen
+        </a>
+      </div>
+    {%- endif -%}
+    </div>
+
+    <div
+      class="zh-results-region"
+      data-results-region
+      data-result-total="{{ collection.products_count }}"
+    >
+    {%- if collection.products_count == 0 -%}
+      <div class="zh-collection-empty">
+        {%- if any_active -%}
+          <p>Geen producten gevonden.</p>
+          <span>Pas je filters aan om meer resultaten te zien.</span>
+
+          <a
+            href="{{ clear_url }}"
+            data-filter-clear
+            class="zh-collection-empty__button"
+          >
+            Filters wissen
+          </a>
+        {%- else -%}
+          <p>
+            {{ section.settings.empty_title | default: 'Deze collectie wordt aangevuld.' }}
+          </p>
+          <span>
+            {{ section.settings.empty_body | default: 'Bekijk de andere collecties of kom snel terug.' }}
+          </span>
+        {%- endif -%}
+      </div>
+    {%- else -%}
+      <div
+        data-product-grid
+        role="region"
+        aria-label="{{ collection.title | escape }}"
+        class="zh-product-grid grid grid-cols-2 items-stretch gap-x-4 gap-y-8 sm:gap-x-5 sm:gap-y-9 md:grid-cols-3 md:gap-x-6 md:gap-y-10 lg:grid-cols-4 lg:gap-x-7 lg:gap-y-11"
+      >
+        {%- for product in collection.products -%}
+          {%- assign product_loading = 'lazy' -%}
+
+          {%- if forloop.index <= 8 -%}
+            {%- assign product_loading = 'eager' -%}
+          {%- endif -%}
+
+          {% render
+            'product-card',
+            product: product,
+            loading: product_loading,
+            card_context: 'collection'
+          %}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+    </div>
+
+    {%- assign seo_text = collection.metafields.custom.seo_text.value -%}
+
+    {%- if seo_text != blank -%}
+      <section
+        aria-label="Over deze collectie"
+        class="zh-collection-seo"
+      >
+        {{ seo_text }}
+      </section>
+    {%- endif -%}
+
+    {%- if has_filters -%}
+      {%- capture filter_body -%}
+        <form
+          id="CollectionFilterForm-{{ section.id }}"
+          data-filter-form
+          action="{{ collection.url }}"
+          method="get"
+          class="zh-filter-form"
+          novalidate
+        >
+          <input
+            type="hidden"
+            name="sort_by"
+            value="{{ sort_now }}"
+          >
+
+          <div class="zh-filter-form__body">
+            {%- for filter in collection.filters -%}
+              {%- liquid
+                assign filter_label_downcase = filter.label | downcase
+                assign is_availability = false
+
+                if filter_label_downcase contains 'beschikbaarheid'
+                  assign is_availability = true
+                endif
+
+                if filter.param_name contains 'availability'
+                  assign is_availability = true
+                endif
+              -%}
+
+              <fieldset class="zh-filter-group">
+                <legend>{{ filter.label }}</legend>
+
+                {%- case filter.type -%}
+                  {%- when 'price_range' -%}
+                    {%- liquid
+                      assign min_display = ''
+                      assign max_display = ''
+
+                      if filter.min_value.value != blank
+                        assign min_display = filter.min_value.value | money_without_currency
+                      endif
+
+                      if filter.max_value.value != blank
+                        assign max_display = filter.max_value.value | money_without_currency
+                      endif
+                    -%}
+
+                    <div
+                      class="zh-price-filter"
+                      data-price-filter
+                    >
+                      <label>
+                        <span>Van</span>
+
+                        <span class="zh-price-input">
+                          <span aria-hidden="true">€</span>
+
+                          <input
+                            type="text"
+                            name="{{ filter.min_value.param_name }}"
+                            value="{{ min_display }}"
+                            inputmode="decimal"
+                            autocomplete="off"
+                            placeholder="Geen min."
+                            data-price-input="min"
+                          >
+                        </span>
+                      </label>
+
+                      <label>
+                        <span>Tot</span>
+
+                        <span class="zh-price-input">
+                          <span aria-hidden="true">€</span>
+
+                          <input
+                            type="text"
+                            name="{{ filter.max_value.param_name }}"
+                            value="{{ max_display }}"
+                            inputmode="decimal"
+                            autocomplete="off"
+                            placeholder="Geen max."
+                            data-price-input="max"
+                          >
+                        </span>
+                      </label>
+                    </div>
+
+                    <p
+                      class="zh-price-filter__error"
+                      data-price-error
+                      hidden
+                    >
+                      De minimale prijs mag niet hoger zijn dan de maximale prijs.
+                    </p>
+
+                  {%- else -%}
+                    {%- if is_availability -%}
+                      <ul class="zh-filter-values">
+                        <li>
+                          <label class="zh-filter-value">
+                            <input
+                              type="radio"
+                              name="{{ filter.param_name }}"
+                              value=""
+                              {% if filter.active_values.size == 0 %}checked{% endif %}
+                            >
+
+                            <span
+                              class="zh-filter-value__radio"
+                              aria-hidden="true"
+                            ></span>
+
+                            <span class="zh-filter-value__label">
+                              Alle producten
+                            </span>
+                          </label>
+                        </li>
+
+                        {%- for value in filter.values -%}
+                          {%- assign value_label = value.label -%}
+                          {%- if value_label == 'Niet op voorraad' -%}
+                            {%- assign value_label = 'Uitverkocht' -%}
+                          {%- endif -%}
+
+                          <li>
+                            <label
+                              class="zh-filter-value{% if value.count == 0 and value.active == false %} is-disabled{% endif %}"
+                            >
+                              <input
+                                type="radio"
+                                name="{{ value.param_name }}"
+                                value="{{ value.value }}"
+                                {% if value.active %}checked{% endif %}
+                                {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                              >
+
+                              <span
+                                class="zh-filter-value__radio"
+                                aria-hidden="true"
+                              ></span>
+
+                              <span class="zh-filter-value__label">
+                                {{ value_label }}
+                              </span>
+
+                              <span class="zh-filter-value__count">
+                                {{ value.count }}
+                              </span>
+                            </label>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- else -%}
+                      <ul class="zh-filter-values">
+                        {%- for value in filter.values -%}
+                          <li>
+                            <label
+                              class="zh-filter-value{% if value.count == 0 and value.active == false %} is-disabled{% endif %}"
+                            >
+                              <input
+                                type="checkbox"
+                                name="{{ value.param_name }}"
+                                value="{{ value.value }}"
+                                {% if value.active %}checked{% endif %}
+                                {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                              >
+
+                              <span
+                                class="zh-filter-value__box"
+                                aria-hidden="true"
+                              >
+                                {% render 'icon', name: 'check', size: 12 %}
+                              </span>
+
+                              <span class="zh-filter-value__label">
+                                {{ value.label }}
+                              </span>
+
+                              <span class="zh-filter-value__count">
+                                {{ value.count }}
+                              </span>
+                            </label>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- endif -%}
+                {%- endcase -%}
+              </fieldset>
+            {%- endfor -%}
+          </div>
+
+          <div class="zh-filter-form__footer">
+            <a
+              href="{{ clear_url }}"
+              data-filter-clear
+              class="zh-filter-form__clear{% unless any_active %} is-hidden{% endunless %}"
+              data-filter-clear-button
+            >
+              Wissen
+            </a>
+
+            <button
+              type="submit"
+              class="zh-filter-form__submit"
+            >
+              Filters toepassen
+            </button>
+          </div>
+        </form>
+      {%- endcapture -%}
+
+      <div data-filter-container>
+        {% render
+          'aside',
+          type: 'filters',
+          heading: 'Filteren',
+          aside_body: filter_body
+        %}
+      </div>
+    {%- endif -%}
+
+  {%- endpaginate -%}
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": {{ shop.url | json }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ collection.title | json }},
+          "item": {{ canonical_url | json }}
+        }
+      ]
+    }
+  </script>
+</div>
+
+
+
+{% schema %}
+{
+  "name": "Collection grid",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Lege collectie"
+    },
+    {
+      "type": "text",
+      "id": "empty_title",
+      "label": "Titel",
+      "default": "Deze collectie wordt aangevuld."
+    },
+    {
+      "type": "textarea",
+      "id": "empty_body",
+      "label": "Tekst",
+      "default": "Bekijk de andere collecties of kom snel terug."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection grid"
+    }
+  ]
+}
+{% endschema %}
