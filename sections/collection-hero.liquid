@@ -1,6 +1,6 @@
 {%- comment -%}
-  Zayna Home — premium collectieheader.
-  Rustig, warm en conversiegericht zonder hero-overdrijving.
+  Zayna Home — collectieheader, fase 2C.
+  Minder dashboard, meer rustige cataloguscompositie.
 {%- endcomment -%}
 
 {%- liquid
@@ -53,21 +53,6 @@
     assign title_class = title_class | append: ' is-long'
   endif
 
-  assign aside_line = 'Rustig gekozen voor dagelijks gebruik.'
-  if is_all
-    assign aside_line = 'De complete selectie van Zayna Home.'
-  elsif title_key contains 'drinkglazen' or title_key contains 'bekers'
-    assign aside_line = 'Glaswerk dat ook zichtbaar mooi blijft staan.'
-  elsif title_key contains 'voorraad' or title_key contains 'bewaren'
-    assign aside_line = 'Bewaren met rust, overzicht en uitstraling.'
-  elsif title_key contains 'kruiden'
-    assign aside_line = 'Voor een keuken die overzichtelijker oogt.'
-  elsif title_key contains 'keukenhulpen' or title_key contains 'dispensers'
-    assign aside_line = 'Kleine details voor een verzorgd aanrecht.'
-  elsif title_key contains 'keukentextiel'
-    assign aside_line = 'Zachte basics voor een rustige keuken.'
-  endif
-
   assign heading_id = 'ZaynaCollectionTitle-' | append: section.id
 -%}
 
@@ -96,11 +81,6 @@
         </p>
       {%- endif -%}
     </div>
-
-    <aside class="zh-collection-hero__aside" aria-label="Zayna Home selectie">
-      <span class="zh-collection-hero__aside-kicker">Zayna Home selectie</span>
-      <span class="zh-collection-hero__aside-line">{{ aside_line | escape }}</span>
-    </aside>
   </div>
 </header>
 
@@ -109,10 +89,10 @@
     position: relative;
     overflow: hidden;
     background:
-      radial-gradient(
-        circle at 88% 0%,
-        rgba(242, 232, 223, 0.58),
-        rgba(242, 232, 223, 0) 35%
+      linear-gradient(
+        180deg,
+        rgba(255, 253, 251, 0.22),
+        rgba(255, 253, 251, 0)
       ),
       var(--color-bg, #faf5f2);
   }
@@ -123,7 +103,7 @@
     bottom: 0;
     left: 0;
     height: 1px;
-    background: rgba(42, 37, 32, 0.055);
+    background: rgba(42, 37, 32, 0.045);
     content: '';
   }
 
@@ -131,14 +111,14 @@
     .zh-collection-hero__inner {
     position: relative;
     z-index: 1;
-    width: min(100%, 1280px);
+    width: min(100%, 1180px);
     margin: 0 auto;
-    padding: 20px 16px 16px;
+    padding: 22px 16px 17px;
   }
 
   #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__copy {
-    max-width: 700px;
+    max-width: 760px;
   }
 
   #ZaynaCollectionHero-{{ section.id }}
@@ -172,7 +152,7 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: clamp(1.96rem, 7.4vw, 2.16rem);
+    font-size: clamp(2rem, 7.4vw, 2.18rem);
     font-weight: 400;
     line-height: 1.045;
     letter-spacing: -0.026em;
@@ -182,13 +162,13 @@
   #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__title.is-long {
     max-width: 24ch;
-    font-size: clamp(1.86rem, 6.75vw, 2.05rem);
+    font-size: clamp(1.88rem, 6.7vw, 2.08rem);
     line-height: 1.055;
   }
 
   #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__intro {
-    max-width: 60ch;
+    max-width: 62ch;
     margin: 9px 0 0;
     overflow: hidden;
     color: rgba(42, 37, 32, 0.67);
@@ -197,97 +177,64 @@
     text-wrap: pretty;
   }
 
-  #ZaynaCollectionHero-{{ section.id }}
-    .zh-collection-hero__aside {
-    display: none;
-  }
-
   @media (min-width: 640px) {
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__inner {
-      padding: 23px 24px 17px;
+      padding: 27px 24px 18px;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__title {
       max-width: 24ch;
-      font-size: clamp(2.1rem, 4.05vw, 2.5rem);
+      font-size: clamp(2.24rem, 4.25vw, 2.68rem);
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__title.is-long {
-      max-width: 26ch;
-      font-size: clamp(2rem, 3.75vw, 2.34rem);
-    }
-
-    #ZaynaCollectionHero-{{ section.id }}
-      .zh-collection-hero__intro {
-      max-width: 64ch;
-      margin-top: 10px;
-      font-size: 13.5px;
-      line-height: 1.58;
-    }
-  }
-
-  @media (min-width: 960px) {
-    #ZaynaCollectionHero-{{ section.id }}
-      .zh-collection-hero__inner {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(250px, 318px);
-      align-items: end;
-      gap: 46px;
-      padding: 32px 40px 22px;
-    }
-
-    #ZaynaCollectionHero-{{ section.id }}
-      .zh-collection-hero__title {
-      max-width: 25ch;
-      font-size: clamp(2.25rem, 2.38vw, 2.82rem);
-      line-height: 1.02;
-    }
-
-    #ZaynaCollectionHero-{{ section.id }}
-      .zh-collection-hero__title.is-long {
-      max-width: 28ch;
-      font-size: clamp(2.08rem, 2.1vw, 2.46rem);
-      line-height: 1.035;
+      max-width: 27ch;
+      font-size: clamp(2.06rem, 3.8vw, 2.42rem);
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__intro {
       max-width: 66ch;
-      margin-top: 12px;
-      font-size: 14px;
-      line-height: 1.6;
+      margin-top: 10px;
+      font-size: 13.8px;
+      line-height: 1.58;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #ZaynaCollectionHero-{{ section.id }}
+      .zh-collection-hero__inner {
+      padding: 40px 40px 24px;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
-      .zh-collection-hero__aside {
-      display: grid;
-      gap: 7px;
-      max-width: 318px;
-      justify-self: end;
-      padding: 18px 19px;
-      border: 1px solid rgba(166, 106, 63, 0.12);
-      background: rgba(255, 253, 251, 0.34);
-      color: rgba(42, 37, 32, 0.62);
+      .zh-collection-hero__copy {
+      max-width: 820px;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
-      .zh-collection-hero__aside-kicker {
-      color: #8f5a39;
-      font-size: 9.5px;
-      font-weight: 500;
-      letter-spacing: 0.17em;
-      line-height: 1;
-      text-transform: uppercase;
+      .zh-collection-hero__title {
+      max-width: 25ch;
+      font-size: clamp(2.72rem, 3.05vw, 3.34rem);
+      line-height: 1.01;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
-      .zh-collection-hero__aside-line {
-      color: rgba(42, 37, 32, 0.68);
-      font-size: 13px;
-      line-height: 1.52;
+      .zh-collection-hero__title.is-long {
+      max-width: 28ch;
+      font-size: clamp(2.35rem, 2.45vw, 2.82rem);
+      line-height: 1.025;
+    }
+
+    #ZaynaCollectionHero-{{ section.id }}
+      .zh-collection-hero__intro {
+      max-width: 68ch;
+      margin-top: 13px;
+      font-size: 14.2px;
+      line-height: 1.62;
     }
   }
 {% endstyle %}

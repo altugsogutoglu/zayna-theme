@@ -53,7 +53,7 @@
 
 {% style %}
   #ZaynaCollectionGrid-{{ section.id }} {
-    width: min(100%, 1280px);
+    width: min(100%, 1180px);
     margin: 0 auto;
     padding: 0 16px 72px;
   }
@@ -61,21 +61,21 @@
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar {
     display: flex;
-    min-height: 44px;
+    min-height: 39px;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 18px;
-    padding: 6px 0 10px;
-    border-top: 1px solid rgba(42, 37, 32, 0.055);
-    border-bottom: 1px solid rgba(42, 37, 32, 0.075);
+    margin-bottom: 20px;
+    padding: 3px 0 10px;
+    border-top: 0;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.06);
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__count {
     margin: 0;
-    color: rgba(42, 37, 32, 0.58);
-    font-size: 11.5px;
+    color: rgba(42, 37, 32, 0.56);
+    font-size: 11.8px;
     line-height: 1;
     letter-spacing: 0.005em;
     white-space: nowrap;
@@ -92,7 +92,7 @@
     display: flex;
     min-width: 0;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -103,21 +103,21 @@
     min-height: 32px;
     align-items: center;
     gap: 6px;
-    border: 1px solid rgba(42, 37, 32, 0.07);
-    background: rgba(255, 253, 251, 0.28);
-    color: rgba(42, 37, 32, 0.68);
+    border: 0;
+    background: transparent;
+    color: rgba(42, 37, 32, 0.66);
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__control {
-    padding: 0 9px;
+    padding: 0;
     cursor: pointer;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__control > span:not(.zh-collection-toolbar__badge) {
-    font-size: 10.5px;
-    letter-spacing: 0.015em;
+    font-size: 11.5px;
+    letter-spacing: 0.005em;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -128,9 +128,9 @@
     align-items: center;
     justify-content: center;
     padding: 0 5px;
-    border: 1px solid rgba(166, 106, 63, 0.18);
+    border: 1px solid rgba(166, 106, 63, 0.16);
     border-radius: 999px;
-    background: rgba(242, 232, 223, 0.72);
+    background: rgba(242, 232, 223, 0.52);
     color: #875235;
     font-size: 9px;
     font-variant-numeric: tabular-nums;
@@ -140,13 +140,13 @@
     .zh-collection-sort {
     position: relative;
     min-width: 0;
-    padding: 0 7px 0 9px;
+    padding: 0;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-sort__label {
     display: none;
-    color: rgba(42, 37, 32, 0.48);
+    color: rgba(42, 37, 32, 0.46);
     font-size: 10px;
     letter-spacing: 0.12em;
     line-height: 1;
@@ -169,7 +169,7 @@
     min-height: 32px;
     min-width: 0;
     align-items: center;
-    gap: 7px;
+    gap: 6px;
     border: 0;
     background: transparent;
     color: inherit;
@@ -178,7 +178,7 @@
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-sort__current {
-    max-width: min(30vw, 126px);
+    max-width: min(30vw, 136px);
     overflow: hidden;
     color: #2a2520;
     font-family:
@@ -186,7 +186,7 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: 12.6px;
+    font-size: 12.8px;
     line-height: 1;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -638,15 +638,15 @@
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar {
-      min-height: 46px;
+      min-height: 42px;
       margin-bottom: 21px;
-      padding-top: 7px;
+      padding-top: 3px;
       padding-bottom: 11px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar__count {
-      font-size: 11.5px;
+      font-size: 11.8px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
@@ -682,18 +682,33 @@
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar {
-      margin-bottom: 24px;
+      min-height: 38px;
+      margin-bottom: 25px;
+      padding-top: 2px;
+      padding-bottom: 10px;
     }
 
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-toolbar__count {
+      font-size: 12px;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-toolbar__control,
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-sort {
-      gap: 9px;
-      padding-left: 10px;
+      min-height: 30px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
-      .zh-collection-sort__label {
-      display: inline-flex;
+      .zh-collection-toolbar__control > span:not(.zh-collection-toolbar__badge) {
+      font-size: 11.8px;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-sort__current {
+      max-width: 168px;
+      font-size: 13px;
     }
   }
 
@@ -702,8 +717,6 @@
       .zh-collection-toolbar__control:hover,
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-sort:hover {
-      border-color: rgba(166, 106, 63, 0.18);
-      background: rgba(242, 232, 223, 0.18);
       color: #8f5a39;
     }
 
