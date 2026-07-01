@@ -1,6 +1,6 @@
 {%- comment -%}
-  Zayna Home — verfijnde collectieheader.
-  Compact, specifiek per collectie en zonder losse desktop-kolom rechts.
+  Zayna Home — premium collectieheader.
+  Rustig, warm en conversiegericht zonder hero-overdrijving.
 {%- endcomment -%}
 
 {%- liquid
@@ -24,28 +24,48 @@
 
   if intro == blank
     if is_all
-      assign intro = section.settings.all_intro | default: 'De complete selectie van Zayna Home: rustige keuken- en woonproducten voor dagelijks gebruik.'
+      assign intro = section.settings.all_intro | default: 'Een rustige selectie keuken- en woonproducten die praktisch zijn én zichtbaar mooi blijven.'
     elsif title_key contains 'drinkglazen' or title_key contains 'bekers'
       assign intro = 'Glaswerk voor dagelijks gebruik en een rustig gedekte tafel.'
     elsif title_key contains 'voorraad' or title_key contains 'bewaren'
-      assign intro = 'Voorraadpotten die bewaren praktisch en zichtbaar mooi maken.'
+      assign intro = 'Voorraadpotten die bewaren praktisch maken en zichtbaar mooi blijven.'
     elsif title_key contains 'koffie' or title_key contains 'thee'
-      assign intro = 'Rustige items voor koffie- en theemomenten, van glas tot serveeraccessoires.'
+      assign intro = 'Rustige items voor koffie- en theemomenten, van glaswerk tot serveerdetails.'
     elsif title_key contains 'kruiden'
       assign intro = 'Voor een overzichtelijke kruidenlade of voorraadkast, rustig en praktisch ingedeeld.'
     elsif title_key contains 'bestek' or title_key contains 'lepels'
-      assign intro = 'Bestek en lepels met een verzorgde uitstraling voor elke tafel.'
+      assign intro = 'Bestek en lepels met een verzorgde uitstraling voor dagelijks gebruik en mooie tafelmomenten.'
     elsif title_key contains 'keukenhulpen' or title_key contains 'dispensers'
-      assign intro = 'Praktische keukenhulpen die op het aanrecht rustig mogen blijven staan.'
+      assign intro = 'Functionele details voor een rustig, verzorgd en praktisch aanrecht.'
     elsif title_key contains 'kookaccessoires'
-      assign intro = 'Kleine accessoires die koken en serveren overzichtelijker maken.'
+      assign intro = 'Kleine accessoires die koken, serveren en opruimen overzichtelijker maken.'
     elsif title_key contains 'keukentextiel'
-      assign intro = 'Zacht keukentextiel en accessoires voor een verzorgde keuken.'
+      assign intro = 'Zacht keukentextiel en accessoires die je keuken rustig en verzorgd laten aanvoelen.'
     elsif title_key contains 'rietjes'
-      assign intro = 'Herbruikbare glazen rietjes voor warme en koude dranken.'
+      assign intro = 'Herbruikbare glazen rietjes voor warme en koude dranken, subtiel en stijlvol in gebruik.'
     else
       assign intro = section.settings.intro_fallback | default: 'Rustige keuken- en woonproducten, zorgvuldig geselecteerd voor dagelijks gebruik.'
     endif
+  endif
+
+  assign title_class = 'zh-collection-hero__title'
+  if hero_title.size > 23
+    assign title_class = title_class | append: ' is-long'
+  endif
+
+  assign aside_line = 'Rustig gekozen voor dagelijks gebruik.'
+  if is_all
+    assign aside_line = 'De complete selectie van Zayna Home.'
+  elsif title_key contains 'drinkglazen' or title_key contains 'bekers'
+    assign aside_line = 'Glaswerk dat ook zichtbaar mooi blijft staan.'
+  elsif title_key contains 'voorraad' or title_key contains 'bewaren'
+    assign aside_line = 'Bewaren met rust, overzicht en uitstraling.'
+  elsif title_key contains 'kruiden'
+    assign aside_line = 'Voor een keuken die overzichtelijker oogt.'
+  elsif title_key contains 'keukenhulpen' or title_key contains 'dispensers'
+    assign aside_line = 'Kleine details voor een verzorgd aanrecht.'
+  elsif title_key contains 'keukentextiel'
+    assign aside_line = 'Zachte basics voor een rustige keuken.'
   endif
 
   assign heading_id = 'ZaynaCollectionTitle-' | append: section.id
@@ -57,36 +77,68 @@
   aria-labelledby="{{ heading_id }}"
 >
   <div class="zh-collection-hero__inner">
-    <p class="zh-collection-hero__eyebrow">
-      <span aria-hidden="true"></span>
-      {{ eyebrow | escape }}
-    </p>
-
-    <h1
-      id="{{ heading_id }}"
-      class="zh-collection-hero__title"
-    >
-      {{ hero_title | escape }}
-    </h1>
-
-    {%- if intro != blank -%}
-      <p class="zh-collection-hero__intro">
-        {{ intro | escape }}
+    <div class="zh-collection-hero__copy">
+      <p class="zh-collection-hero__eyebrow">
+        <span aria-hidden="true"></span>
+        {{ eyebrow | escape }}
       </p>
-    {%- endif -%}
+
+      <h1
+        id="{{ heading_id }}"
+        class="{{ title_class }}"
+      >
+        {{ hero_title | escape }}
+      </h1>
+
+      {%- if intro != blank -%}
+        <p class="zh-collection-hero__intro">
+          {{ intro | escape }}
+        </p>
+      {%- endif -%}
+    </div>
+
+    <aside class="zh-collection-hero__aside" aria-label="Zayna Home selectie">
+      <span class="zh-collection-hero__aside-kicker">Zayna Home selectie</span>
+      <span class="zh-collection-hero__aside-line">{{ aside_line | escape }}</span>
+    </aside>
   </div>
 </header>
 
 {% style %}
   #ZaynaCollectionHero-{{ section.id }} {
-    background: var(--color-bg, #faf5f2);
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(
+        circle at 88% 0%,
+        rgba(242, 232, 223, 0.58),
+        rgba(242, 232, 223, 0) 35%
+      ),
+      var(--color-bg, #faf5f2);
+  }
+
+  #ZaynaCollectionHero-{{ section.id }}::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    background: rgba(42, 37, 32, 0.055);
+    content: '';
   }
 
   #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__inner {
+    position: relative;
+    z-index: 1;
     width: min(100%, 1280px);
     margin: 0 auto;
-    padding: 18px 16px 13px;
+    padding: 20px 16px 16px;
+  }
+
+  #ZaynaCollectionHero-{{ section.id }}
+    .zh-collection-hero__copy {
+    max-width: 700px;
   }
 
   #ZaynaCollectionHero-{{ section.id }}
@@ -112,7 +164,7 @@
 
   #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__title {
-    max-width: 21ch;
+    max-width: 22ch;
     margin: 0;
     color: #2a2520;
     font-family:
@@ -120,7 +172,7 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: clamp(2rem, 8vw, 2.18rem);
+    font-size: clamp(1.96rem, 7.4vw, 2.16rem);
     font-weight: 400;
     line-height: 1.045;
     letter-spacing: -0.026em;
@@ -128,56 +180,114 @@
   }
 
   #ZaynaCollectionHero-{{ section.id }}
+    .zh-collection-hero__title.is-long {
+    max-width: 24ch;
+    font-size: clamp(1.86rem, 6.75vw, 2.05rem);
+    line-height: 1.055;
+  }
+
+  #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__intro {
-    max-width: 58ch;
-    margin: 10px 0 0;
+    max-width: 60ch;
+    margin: 9px 0 0;
     overflow: hidden;
-    color: rgba(42, 37, 32, 0.66);
+    color: rgba(42, 37, 32, 0.67);
     font-size: 13px;
     line-height: 1.54;
     text-wrap: pretty;
   }
 
+  #ZaynaCollectionHero-{{ section.id }}
+    .zh-collection-hero__aside {
+    display: none;
+  }
+
   @media (min-width: 640px) {
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__inner {
-      padding: 22px 24px 15px;
-    }
-
-    #ZaynaCollectionHero-{{ section.id }}
-      .zh-collection-hero__title {
-      max-width: 23ch;
-      font-size: clamp(2.18rem, 4.35vw, 2.55rem);
-    }
-
-    #ZaynaCollectionHero-{{ section.id }}
-      .zh-collection-hero__intro {
-      max-width: 62ch;
-      margin-top: 11px;
-      font-size: 13.5px;
-      line-height: 1.58;
-    }
-  }
-
-  @media (min-width: 900px) {
-    #ZaynaCollectionHero-{{ section.id }}
-      .zh-collection-hero__inner {
-      padding: 28px 40px 16px;
+      padding: 23px 24px 17px;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__title {
       max-width: 24ch;
-      font-size: clamp(2.35rem, 2.72vw, 2.95rem);
-      line-height: 1.02;
+      font-size: clamp(2.1rem, 4.05vw, 2.5rem);
+    }
+
+    #ZaynaCollectionHero-{{ section.id }}
+      .zh-collection-hero__title.is-long {
+      max-width: 26ch;
+      font-size: clamp(2rem, 3.75vw, 2.34rem);
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__intro {
       max-width: 64ch;
+      margin-top: 10px;
+      font-size: 13.5px;
+      line-height: 1.58;
+    }
+  }
+
+  @media (min-width: 960px) {
+    #ZaynaCollectionHero-{{ section.id }}
+      .zh-collection-hero__inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(250px, 318px);
+      align-items: end;
+      gap: 46px;
+      padding: 32px 40px 22px;
+    }
+
+    #ZaynaCollectionHero-{{ section.id }}
+      .zh-collection-hero__title {
+      max-width: 25ch;
+      font-size: clamp(2.25rem, 2.38vw, 2.82rem);
+      line-height: 1.02;
+    }
+
+    #ZaynaCollectionHero-{{ section.id }}
+      .zh-collection-hero__title.is-long {
+      max-width: 28ch;
+      font-size: clamp(2.08rem, 2.1vw, 2.46rem);
+      line-height: 1.035;
+    }
+
+    #ZaynaCollectionHero-{{ section.id }}
+      .zh-collection-hero__intro {
+      max-width: 66ch;
       margin-top: 12px;
       font-size: 14px;
       line-height: 1.6;
+    }
+
+    #ZaynaCollectionHero-{{ section.id }}
+      .zh-collection-hero__aside {
+      display: grid;
+      gap: 7px;
+      max-width: 318px;
+      justify-self: end;
+      padding: 18px 19px;
+      border: 1px solid rgba(166, 106, 63, 0.12);
+      background: rgba(255, 253, 251, 0.34);
+      color: rgba(42, 37, 32, 0.62);
+    }
+
+    #ZaynaCollectionHero-{{ section.id }}
+      .zh-collection-hero__aside-kicker {
+      color: #8f5a39;
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.17em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    #ZaynaCollectionHero-{{ section.id }}
+      .zh-collection-hero__aside-line {
+      color: rgba(42, 37, 32, 0.68);
+      font-size: 13px;
+      line-height: 1.52;
     }
   }
 {% endstyle %}
@@ -219,7 +329,7 @@
       "type": "textarea",
       "id": "all_intro",
       "label": "Intro",
-      "default": "Bekijk de complete collectie van Zayna Home, zorgvuldig geselecteerd op design, kwaliteit en functie."
+      "default": "Een rustige selectie keuken- en woonproducten die praktisch zijn én zichtbaar mooi blijven."
     }
   ],
   "presets": [

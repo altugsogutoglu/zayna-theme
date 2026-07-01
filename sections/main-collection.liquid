@@ -8,6 +8,18 @@
 {%- liquid
   assign per_page = 250
   assign sort_now = collection.sort_by | default: collection.default_sort_by
+  assign sort_label = 'Aanbevolen'
+
+  case sort_now
+    when 'best-selling'
+      assign sort_label = 'Best verkocht'
+    when 'created-descending'
+      assign sort_label = 'Nieuwste eerst'
+    when 'price-ascending'
+      assign sort_label = 'Prijs oplopend'
+    when 'price-descending'
+      assign sort_label = 'Prijs aflopend'
+  endcase
 
   assign has_filters = false
   for filter in collection.filters
@@ -49,12 +61,13 @@
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar {
     display: flex;
-    min-height: 40px;
+    min-height: 44px;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 17px;
-    border-top: 0;
+    margin-bottom: 18px;
+    padding: 6px 0 10px;
+    border-top: 1px solid rgba(42, 37, 32, 0.055);
     border-bottom: 1px solid rgba(42, 37, 32, 0.075);
   }
 
@@ -90,20 +103,21 @@
     min-height: 32px;
     align-items: center;
     gap: 6px;
-    border: 1px solid rgba(42, 37, 32, 0.075);
-    background: rgba(255, 253, 251, 0.34);
-    color: rgba(42, 37, 32, 0.66);
+    border: 1px solid rgba(42, 37, 32, 0.07);
+    background: rgba(255, 253, 251, 0.28);
+    color: rgba(42, 37, 32, 0.68);
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__control {
-    padding: 0 8px;
+    padding: 0 9px;
     cursor: pointer;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__control > span:not(.zh-collection-toolbar__badge) {
-    font-size: 10px;
+    font-size: 10.5px;
+    letter-spacing: 0.015em;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -126,38 +140,121 @@
     .zh-collection-sort {
     position: relative;
     min-width: 0;
-    padding: 0 7px 0 8px;
+    padding: 0 7px 0 9px;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
-    .zh-collection-sort select {
-    width: min(30vw, 126px);
-    min-width: 0;
-    padding: 0 20px 0 0;
+    .zh-collection-sort__label {
+    display: none;
+    color: rgba(42, 37, 32, 0.48);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort__native {
+    position: absolute;
+    width: 1px;
+    height: 1px;
     overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort__button {
+    display: inline-flex;
+    min-height: 32px;
+    min-width: 0;
+    align-items: center;
+    gap: 7px;
     border: 0;
-    outline: 0;
-    appearance: none;
     background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort__current {
+    max-width: min(30vw, 126px);
+    overflow: hidden;
     color: #2a2520;
     font-family:
       var(
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: 12.5px;
+    font-size: 12.6px;
+    line-height: 1;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort__chevron {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    color: rgba(42, 37, 32, 0.52);
+    transition: transform 160ms ease;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort.is-open
+    .zh-collection-sort__chevron {
+    transform: rotate(180deg);
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort__popover {
+    position: absolute;
+    top: calc(100% + 7px);
+    right: 0;
+    z-index: 20;
+    display: grid;
+    min-width: 190px;
+    padding: 6px;
+    border: 1px solid rgba(42, 37, 32, 0.09);
+    background: #fffdfb;
+    box-shadow: 0 18px 46px -30px rgba(42, 37, 32, 0.52);
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort__popover[hidden] {
+    display: none;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort__option {
+    display: flex;
+    min-height: 35px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: rgba(42, 37, 32, 0.72);
+    font-size: 12.5px;
+    text-align: left;
     cursor: pointer;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
-    .zh-collection-sort > span {
-    position: absolute;
-    right: 6px;
-    display: grid;
-    place-items: center;
-    pointer-events: none;
+    .zh-collection-sort__option[aria-selected="true"] {
+    background: rgba(242, 232, 223, 0.48);
+    color: #7f5135;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort__button:focus-visible,
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-sort__option:focus-visible {
+    outline: 2px solid #a66a3f;
+    outline-offset: 2px;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -510,6 +607,26 @@
     .zh-filter-form__footer {
       transition: bottom 160ms ease;
     }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-sort__popover {
+      position: fixed;
+      top: auto;
+      right: 12px;
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      left: 12px;
+      min-width: 0;
+      padding: 8px;
+      border-radius: 18px;
+      box-shadow: 0 22px 60px -32px rgba(42, 37, 32, 0.66);
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-sort__option {
+      min-height: 42px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
   }
 
   @media (min-width: 640px) {
@@ -521,13 +638,15 @@
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar {
-      min-height: 42px;
-      margin-bottom: 20px;
+      min-height: 46px;
+      margin-bottom: 21px;
+      padding-top: 7px;
+      padding-bottom: 11px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar__count {
-      font-size: 10px;
+      font-size: 11.5px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
@@ -538,9 +657,9 @@
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
-      .zh-collection-sort select {
-      width: 150px;
-      font-size: 12.5px;
+      .zh-collection-sort__current {
+      max-width: 146px;
+      font-size: 12.8px;
     }
 
     .zh-filter-form__body {
@@ -560,6 +679,22 @@
       padding-bottom: 92px;
       padding-left: 40px;
     }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-toolbar {
+      margin-bottom: 24px;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-sort {
+      gap: 9px;
+      padding-left: 10px;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-sort__label {
+      display: inline-flex;
+    }
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -569,6 +704,12 @@
       .zh-collection-sort:hover {
       border-color: rgba(166, 106, 63, 0.18);
       background: rgba(242, 232, 223, 0.18);
+      color: #8f5a39;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-sort__option:hover:not([aria-selected="true"]) {
+      background: rgba(242, 232, 223, 0.22);
       color: #8f5a39;
     }
 
@@ -705,36 +846,54 @@
           </button>
         {%- endif -%}
 
-        <label class="zh-collection-sort">
-          <span class="sr-only">Producten sorteren</span>
+        <div
+          class="zh-collection-sort"
+          data-sort-menu
+        >
+          <button
+            type="button"
+            class="zh-collection-sort__button"
+            data-sort-toggle
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <span class="zh-collection-sort__label" aria-hidden="true">Sorteer</span>
+            <span class="sr-only">Producten sorteren</span>
+            <span class="zh-collection-sort__current" data-sort-current>{{ sort_label }}</span>
+            <span class="zh-collection-sort__chevron" aria-hidden="true">
+              {% render 'icon', name: 'chevron-down', size: 13 %}
+            </span>
+          </button>
 
           <select
             data-sort-select
+            class="zh-collection-sort__native"
             form="CollectionFilterForm-{{ section.id }}"
             name="sort_by"
-            aria-label="Producten sorteren"
+            aria-hidden="true"
+            tabindex="-1"
           >
-            <option value="manual"{% if sort_now == 'manual' %} selected{% endif %}>
-              Aanbevolen
-            </option>
-            <option value="best-selling"{% if sort_now == 'best-selling' %} selected{% endif %}>
-              Best verkocht
-            </option>
-            <option value="created-descending"{% if sort_now == 'created-descending' %} selected{% endif %}>
-              Nieuwste eerst
-            </option>
-            <option value="price-ascending"{% if sort_now == 'price-ascending' %} selected{% endif %}>
-              Prijs oplopend
-            </option>
-            <option value="price-descending"{% if sort_now == 'price-descending' %} selected{% endif %}>
-              Prijs aflopend
-            </option>
+            <option value="manual"{% if sort_now == 'manual' %} selected{% endif %}>Aanbevolen</option>
+            <option value="best-selling"{% if sort_now == 'best-selling' %} selected{% endif %}>Best verkocht</option>
+            <option value="created-descending"{% if sort_now == 'created-descending' %} selected{% endif %}>Nieuwste eerst</option>
+            <option value="price-ascending"{% if sort_now == 'price-ascending' %} selected{% endif %}>Prijs oplopend</option>
+            <option value="price-descending"{% if sort_now == 'price-descending' %} selected{% endif %}>Prijs aflopend</option>
           </select>
 
-          <span aria-hidden="true">
-            {% render 'icon', name: 'chevron-down', size: 13 %}
-          </span>
-        </label>
+          <div
+            class="zh-collection-sort__popover"
+            data-sort-popover
+            role="listbox"
+            aria-label="Producten sorteren"
+            hidden
+          >
+            <button type="button" class="zh-collection-sort__option" data-sort-option value="manual" role="option" aria-selected="{% if sort_now == 'manual' %}true{% else %}false{% endif %}">Aanbevolen</button>
+            <button type="button" class="zh-collection-sort__option" data-sort-option value="best-selling" role="option" aria-selected="{% if sort_now == 'best-selling' %}true{% else %}false{% endif %}">Best verkocht</button>
+            <button type="button" class="zh-collection-sort__option" data-sort-option value="created-descending" role="option" aria-selected="{% if sort_now == 'created-descending' %}true{% else %}false{% endif %}">Nieuwste eerst</button>
+            <button type="button" class="zh-collection-sort__option" data-sort-option value="price-ascending" role="option" aria-selected="{% if sort_now == 'price-ascending' %}true{% else %}false{% endif %}">Prijs oplopend</button>
+            <button type="button" class="zh-collection-sort__option" data-sort-option value="price-descending" role="option" aria-selected="{% if sort_now == 'price-descending' %}true{% else %}false{% endif %}">Prijs aflopend</button>
+          </div>
+        </div>
       </div>
     </div>
 
