@@ -1,5 +1,5 @@
 {%- comment -%}
-  Zayna Home — rustig collectieproductgrid.
+  Zayna Home — rustig collectieproductgrid, fase 2D.
   Filters, sortering en prijsvelden worden beheerd door assets/collection.js.
 {%- endcomment -%}
 
@@ -61,21 +61,21 @@
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar {
     display: flex;
-    min-height: 39px;
+    min-height: 34px;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 20px;
-    padding: 3px 0 10px;
+    margin-bottom: 18px;
+    padding: 0 0 8px;
     border-top: 0;
-    border-bottom: 1px solid rgba(42, 37, 32, 0.06);
+    border-bottom: 0;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__count {
     margin: 0;
-    color: rgba(42, 37, 32, 0.56);
-    font-size: 11.8px;
+    color: rgba(42, 37, 32, 0.52);
+    font-size: 11.6px;
     line-height: 1;
     letter-spacing: 0.005em;
     white-space: nowrap;
@@ -92,7 +92,7 @@
     display: flex;
     min-width: 0;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -100,7 +100,7 @@
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-sort {
     display: inline-flex;
-    min-height: 32px;
+    min-height: 30px;
     align-items: center;
     gap: 6px;
     border: 0;
@@ -116,7 +116,7 @@
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__control > span:not(.zh-collection-toolbar__badge) {
-    font-size: 11.5px;
+    font-size: 11.2px;
     letter-spacing: 0.005em;
   }
 
@@ -166,7 +166,7 @@
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-sort__button {
     display: inline-flex;
-    min-height: 32px;
+    min-height: 30px;
     min-width: 0;
     align-items: center;
     gap: 6px;
@@ -186,7 +186,7 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: 12.8px;
+    font-size: 12.4px;
     line-height: 1;
     text-overflow: ellipsis;
     white-space: nowrap;

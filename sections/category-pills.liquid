@@ -1,21 +1,7 @@
 {%- comment -%}
-  Zayna Home — collectie navigatie, stap 18F.
-
-  Desktop vanaf 1024 px:
-  - horizontale native scrollrail;
-  - één Tab-stop op de actieve collectie;
-  - links/rechts/Home/End verplaatsen alleen de focus;
-  - Enter opent de gekozen collectie.
-
-  Mobiel en splitscreen onder 1024 px:
-  - compacte knop;
-  - verticaal collectiemenu;
-  - omhoog/omlaag/Home/End verplaatsen de focus;
-  - Enter opent de gekozen collectie;
-  - Escape sluit en herstelt de focus.
-
-  De volgorde komt bij voorkeur uit één centraal Shopify-menu.
-  Zonder geselecteerd menu wordt de vaste Zayna Home-volgorde gebruikt.
+  Zayna Home — collectie navigatie, fase 2D.
+  Geen dropdown meer: de collecties vormen een direct zichtbare winkelroute.
+  Mobiel en splitscreen gebruiken een zachte horizontale rail; desktop een rustige tab-rij.
 {%- endcomment -%}
 
 {%- liquid
@@ -31,235 +17,27 @@
     assign all_active = true
   endif
 
-  assign current_collection_label = collection.title
-  if all_active
-    assign current_collection_label = 'Alle producten'
-  endif
-
   assign preferred_titles_string = 'Drinkglazen & bekers|Voorraadpotten & bewaren|Koffie & thee|Kruidenpotten & labels|Bestek & lepels|Keukenhulpen & dispensers|Kookaccessoires|Keukentextiel & accessoires|Glazen rietjes'
   assign preferred_titles = preferred_titles_string | split: '|'
-
-  assign current_in_navigation = false
-
-  if use_menu
-    for link in menu.links
-      if link.url == collection.url
-        assign current_in_navigation = true
-        break
-      endif
-    endfor
-  elsif all_active == false
-    for preferred_title in preferred_titles
-      for collection_item in collections
-        if collection_item.title == preferred_title and collection_item.handle == collection.handle
-          assign current_in_navigation = true
-          break
-        endif
-      endfor
-
-      if current_in_navigation
-        break
-      endif
-    endfor
-  endif
-
-  assign all_tabindex = '-1'
-  if all_active or current_in_navigation == false
-    assign all_tabindex = '0'
-  endif
 -%}
-
-{%- comment -%}
-  Critical visibility rules are deliberately emitted before the markup.
-  This prevents both navigation variants from appearing during refresh.
-{%- endcomment -%}
-<style>
-  #ZaynaCategoryPills-{{ section.id }} .zh-category-mobile {
-    display: block;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }} .zh-category-rail {
-    display: none;
-  }
-
-  @media (min-width: 1024px) {
-    #ZaynaCategoryPills-{{ section.id }} .zh-category-mobile {
-      display: none;
-    }
-
-    #ZaynaCategoryPills-{{ section.id }} .zh-category-rail {
-      display: grid;
-    }
-  }
-</style>
 
 <nav
   id="ZaynaCategoryPills-{{ section.id }}"
   class="zh-category-navigation"
-  data-category-navigation
-  aria-label="Bladeren per collectie"
+  aria-label="Collecties"
 >
-  <details
-    class="zh-category-mobile"
-    data-category-mobile
-  >
-    <summary
-      class="zh-category-mobile__summary"
-      data-category-summary
-    >
-      <span class="zh-category-mobile__summary-copy">
-        <span class="zh-category-mobile__summary-kicker">Bekijk andere collecties</span>
-        <span class="zh-category-mobile__summary-title">{{ current_collection_label | escape }}</span>
-      </span>
-
-      <span class="zh-category-mobile__summary-action" aria-hidden="true">
-        <span>Wissel</span>
-        <span class="zh-category-mobile__chevron">
-          {% render 'icon', name: 'chevron-down', size: 15 %}
-        </span>
-      </span>
-    </summary>
-
-    <button
-      type="button"
-      class="zh-category-mobile__backdrop"
-      data-category-backdrop
-      aria-label="Collectiemenu sluiten"
-      tabindex="-1"
-    ></button>
-
-    <div
-      class="zh-category-mobile__menu"
-      data-category-menu
-      role="dialog"
-      aria-modal="true"
-      aria-label="Collecties"
-    >
-      <div class="zh-category-mobile__menu-header">
-        <div class="zh-category-mobile__menu-copy">
-          <span class="zh-category-mobile__menu-title">Collecties</span>
-          <span class="zh-category-mobile__menu-subtitle">Kies een categorie om verder te kijken.</span>
-        </div>
-
-        <button
-          type="button"
-          class="zh-category-mobile__close"
-          data-category-close
-          aria-label="Collectiemenu sluiten"
-        >
-          {% render 'icon', name: 'x', size: 20 %}
-        </button>
-      </div>
-
-      <div
-        class="zh-category-mobile__options"
-        data-category-mobile-options
-        role="listbox"
-        aria-label="Kies een collectie"
-      >
-        <a
-          href="{{ routes.all_products_collection_url }}"
-          class="zh-category-mobile__link{% if all_active %} is-active{% endif %}"
-          data-category-mobile-link
-          role="option"
-          aria-selected="{% if all_active %}true{% else %}false{% endif %}"
-          {% if all_active %}aria-current="page"{% endif %}
-        >
-          <span>Alle producten</span>
-
-          {%- if all_active -%}
-            {% render 'icon', name: 'check', size: 14 %}
-          {%- endif -%}
-        </a>
-
-        {%- if use_menu -%}
-          {%- for link in menu.links -%}
-            {%- assign is_active = false -%}
-
-            {%- if link.url == collection.url -%}
-              {%- assign is_active = true -%}
-            {%- endif -%}
-
-            <a
-              href="{{ link.url }}"
-              class="zh-category-mobile__link{% if is_active %} is-active{% endif %}"
-              data-category-mobile-link
-              role="option"
-              aria-selected="{% if is_active %}true{% else %}false{% endif %}"
-              {% if is_active %}aria-current="page"{% endif %}
-            >
-              <span>{{ link.title | escape }}</span>
-
-              {%- if is_active -%}
-                {% render 'icon', name: 'check', size: 14 %}
-              {%- endif -%}
-            </a>
-          {%- endfor -%}
-        {%- else -%}
-          {%- for preferred_title in preferred_titles -%}
-            {%- for collection_item in collections -%}
-              {%- if collection_item.title != preferred_title -%}
-                {%- continue -%}
-              {%- endif -%}
-
-              {%- assign is_active = false -%}
-
-              {%- if collection_item.handle == collection.handle -%}
-                {%- assign is_active = true -%}
-              {%- endif -%}
-
-              <a
-                href="{{ collection_item.url }}"
-                class="zh-category-mobile__link{% if is_active %} is-active{% endif %}"
-                data-category-mobile-link
-                role="option"
-                aria-selected="{% if is_active %}true{% else %}false{% endif %}"
-                {% if is_active %}aria-current="page"{% endif %}
-              >
-                <span>{{ collection_item.title | escape }}</span>
-
-                {%- if is_active -%}
-                  {% render 'icon', name: 'check', size: 14 %}
-                {%- endif -%}
-              </a>
-
-              {%- break -%}
-            {%- endfor -%}
-          {%- endfor -%}
-        {%- endif -%}
-      </div>
-    </div>
-  </details>
-
-  <div
-    class="zh-category-rail"
-    data-category-rail
-  >
-    <button
-      type="button"
-      class="zh-category-rail__control zh-category-rail__control--prev"
-      data-category-prev
-      aria-label="Vorige collecties"
-      aria-hidden="true"
-      tabindex="-1"
-      disabled
-    >
-      <span aria-hidden="true">←</span>
-    </button>
-
+  <div class="zh-category-rail">
     <div
       class="zh-category-rail__viewport"
-      data-category-viewport
+      data-category-visible-viewport
       role="group"
-      aria-label="Collecties. Gebruik links en rechts om een collectie te kiezen en Enter om deze te openen."
+      aria-label="Wissel tussen collecties"
     >
       <ul class="zh-category-rail__list">
         <li class="zh-category-rail__item">
           <a
             href="{{ routes.all_products_collection_url }}"
-            class="zh-category-pill{% if all_active %} is-active{% endif %}"
-            data-category-desktop-link
-            tabindex="{{ all_tabindex }}"
+            class="zh-category-link{% if all_active %} is-active{% endif %}"
             {% if all_active %}aria-current="page"{% endif %}
           >
             Alle producten
@@ -269,19 +47,15 @@
         {%- if use_menu -%}
           {%- for link in menu.links -%}
             {%- assign is_active = false -%}
-            {%- assign link_tabindex = '-1' -%}
 
             {%- if link.url == collection.url -%}
               {%- assign is_active = true -%}
-              {%- assign link_tabindex = '0' -%}
             {%- endif -%}
 
             <li class="zh-category-rail__item">
               <a
                 href="{{ link.url }}"
-                class="zh-category-pill{% if is_active %} is-active{% endif %}"
-                data-category-desktop-link
-                tabindex="{{ link_tabindex }}"
+                class="zh-category-link{% if is_active %} is-active{% endif %}"
                 {% if is_active %}aria-current="page"{% endif %}
               >
                 {{ link.title | escape }}
@@ -296,19 +70,15 @@
               {%- endif -%}
 
               {%- assign is_active = false -%}
-              {%- assign link_tabindex = '-1' -%}
 
               {%- if collection_item.handle == collection.handle -%}
                 {%- assign is_active = true -%}
-                {%- assign link_tabindex = '0' -%}
               {%- endif -%}
 
               <li class="zh-category-rail__item">
                 <a
                   href="{{ collection_item.url }}"
-                  class="zh-category-pill{% if is_active %} is-active{% endif %}"
-                  data-category-desktop-link
-                  tabindex="{{ link_tabindex }}"
+                  class="zh-category-link{% if is_active %} is-active{% endif %}"
                   {% if is_active %}aria-current="page"{% endif %}
                 >
                   {{ collection_item.title | escape }}
@@ -321,309 +91,86 @@
         {%- endif -%}
       </ul>
     </div>
-
-    <button
-      type="button"
-      class="zh-category-rail__control zh-category-rail__control--next"
-      data-category-next
-      aria-label="Volgende collecties"
-      aria-hidden="true"
-      tabindex="-1"
-      disabled
-    >
-      <span aria-hidden="true">→</span>
-    </button>
-
-    <span
-      class="zh-category-rail__fade zh-category-rail__fade--left"
-      data-category-fade-left
-      aria-hidden="true"
-    ></span>
-
-    <span
-      class="zh-category-rail__fade zh-category-rail__fade--right"
-      data-category-fade-right
-      aria-hidden="true"
-    ></span>
   </div>
 </nav>
+
+
+<script>
+  (() => {
+    const root = document.getElementById('ZaynaCategoryPills-{{ section.id }}');
+    const viewport = root?.querySelector('[data-category-visible-viewport]');
+    const active = root?.querySelector('.zh-category-link.is-active');
+
+    if (!viewport || !active) return;
+
+    window.requestAnimationFrame(() => {
+      const targetLeft = active.offsetLeft - ((viewport.clientWidth - active.offsetWidth) / 2);
+
+      viewport.scrollTo({
+        left: Math.max(0, targetLeft),
+        top: 0,
+        behavior: 'auto'
+      });
+    });
+  })();
+</script>
 
 {% style %}
   #ZaynaCategoryPills-{{ section.id }} {
     position: relative;
     width: min(100%, 1180px);
-    margin: 0 auto 14px;
+    margin: 0 auto 10px;
     padding: 0 16px;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__summary {
-    display: flex;
-    min-height: 54px;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 9px 12px;
-    border: 1px solid rgba(42, 37, 32, 0.075);
-    border-radius: 12px;
-    background: rgba(255, 253, 251, 0.34);
-    color: rgba(42, 37, 32, 0.76);
-    cursor: pointer;
-    list-style: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__summary-copy {
-    display: grid;
-    min-width: 0;
-    gap: 4px;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__summary-kicker {
-    color: #9a6039;
-    font-size: 8.2px;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    line-height: 1;
-    text-transform: uppercase;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__summary-title {
-    overflow: hidden;
-    color: #2a2520;
-    font-family:
-      var(
-        --font-display,
-        var(--font-heading-family, Georgia, serif)
-      );
-    font-size: 15.5px;
-    line-height: 1.1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__summary-action {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    gap: 6px;
-    color: rgba(42, 37, 32, 0.50);
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    line-height: 1;
-    text-transform: uppercase;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__summary::-webkit-details-marker {
-    display: none;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__chevron {
-    display: grid;
-    place-items: center;
-    color: rgba(42, 37, 32, 0.62);
-    transition: transform 180ms ease;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile[open]
-    .zh-category-mobile__chevron {
-    transform: rotate(180deg);
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 48;
-    display: none;
-    border: 0;
-    background: rgba(56, 46, 40, 0.14);
-    backdrop-filter: blur(1.5px);
-    -webkit-backdrop-filter: blur(1.5px);
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__menu {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 49;
-    display: none;
-    max-height: min(70dvh, 560px);
-    overflow: hidden;
-    border-top: 1px solid rgba(42, 37, 32, 0.08);
-    border-radius: 18px 18px 0 0;
-    background: #fffdfb;
-    box-shadow: 0 -18px 48px -34px rgba(42, 37, 32, 0.42);
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile[open]
-    .zh-category-mobile__backdrop,
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile[open]
-    .zh-category-mobile__menu {
-    display: block;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__menu-header {
-    display: flex;
-    min-height: 64px;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 0 10px 0 18px;
-    border-bottom: 1px solid rgba(42, 37, 32, 0.065);
-    background: #fffdfb;
-    color: #2a2520;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__menu-copy {
-    display: grid;
-    gap: 4px;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__menu-title {
-    font-family:
-      var(
-        --font-display,
-        var(--font-heading-family, Georgia, serif)
-      );
-    font-size: 18px;
-    line-height: 1;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__menu-subtitle {
-    color: rgba(42, 37, 32, 0.55);
-    font-size: 11.5px;
-    line-height: 1.35;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__close {
-    display: grid;
-    width: 40px;
-    height: 40px;
-    place-items: center;
-    border: 0;
-    border-radius: 50%;
-    background: transparent;
-    color: #2a2520;
-    cursor: pointer;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__options {
-    max-height: calc(min(70dvh, 560px) - 64px);
-    overflow-y: auto;
-    padding: 7px 10px calc(11px + env(safe-area-inset-bottom));
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    scrollbar-color:
-      rgba(42, 37, 32, 0.24)
-      transparent;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__link {
-    display: flex;
-    min-height: 39px;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    margin: 1px 0;
-    padding: 0 12px;
-    border-radius: 10px;
-    color: rgba(42, 37, 32, 0.72);
-    font-size: 12.8px;
-    text-decoration: none;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__link.is-active {
-    background: rgba(242, 232, 223, 0.46);
-    box-shadow: inset 2px 0 0 rgba(166, 106, 63, 0.48);
-    color: #7f5135;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__link.is-keyboard-target {
-    position: relative;
-    z-index: 1;
-    outline: 2px solid #a66a3f;
-    outline-offset: -2px;
-    background: rgba(242, 232, 223, 0.20);
-    color: #7f5238;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__link.is-active.is-keyboard-target {
-    background: rgba(242, 232, 223, 0.46);
-    color: #7f5135;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__menu.is-keyboard-mode
-    .zh-category-mobile__link:hover:not(.is-active):not(.is-keyboard-target) {
-    background: transparent;
-    color: rgba(42, 37, 32, 0.72);
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__summary:focus-visible,
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__close:focus-visible,
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__link:focus-visible,
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pill:focus-visible {
-    outline: 2px solid #a66a3f;
-    outline-offset: 2px;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-mobile__link:focus-visible {
-    position: relative;
-    z-index: 1;
-  }
-
-  html.zh-category-menu-open {
-    overflow: hidden;
-  }
-
-  html.zh-category-menu-open .marquee__track {
-    animation-play-state: paused !important;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail {
     position: relative;
-    grid-template-columns: 30px minmax(0, 1fr) 30px;
-    align-items: center;
-    gap: 12px;
-    padding: 13px 0 11px;
-    border-top: 1px solid rgba(42, 37, 32, 0.055);
-    border-bottom: 1px solid rgba(42, 37, 32, 0.065);
+    padding: 7px 0 12px;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.06);
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-rail::before,
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-rail::after {
+    position: absolute;
+    top: 0;
+    bottom: 1px;
+    z-index: 2;
+    width: 22px;
+    content: '';
+    pointer-events: none;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-rail::before {
+    left: 0;
+    background: linear-gradient(
+      90deg,
+      var(--color-bg, #faf5f2) 10%,
+      rgba(250, 245, 242, 0)
+    );
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-rail::after {
+    right: 0;
+    background: linear-gradient(
+      270deg,
+      var(--color-bg, #faf5f2) 10%,
+      rgba(250, 245, 242, 0)
+    );
   }
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail__viewport {
     min-width: 0;
+    margin: 0 -16px;
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-behavior: smooth;
+    padding: 0 16px;
+    scroll-padding: 16px;
     scrollbar-width: none;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
@@ -639,214 +186,193 @@
     display: flex;
     width: max-content;
     align-items: center;
-    gap: 30px;
+    gap: 8px;
     margin: 0;
-    padding: 1px 0 5px;
+    padding: 1px 0 3px;
     list-style: none;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail__item {
     flex: 0 0 auto;
+    scroll-snap-align: start;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pill {
+    .zh-category-link {
     position: relative;
     display: inline-flex;
-    min-height: 38px;
+    min-height: 34px;
     align-items: center;
     justify-content: center;
-    padding: 0 1px;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    color: rgba(42, 37, 32, 0.68);
-    font-size: 14px;
+    padding: 0 12px;
+    border: 1px solid rgba(42, 37, 32, 0.075);
+    border-radius: 999px;
+    background: rgba(255, 253, 251, 0.32);
+    color: rgba(42, 37, 32, 0.70);
+    font-size: 12.2px;
     line-height: 1;
     text-decoration: none;
     white-space: nowrap;
     transition:
-      color 180ms ease;
+      border-color 180ms ease,
+      background-color 180ms ease,
+      color 180ms ease,
+      box-shadow 180ms ease;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pill::after {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: 2px;
-    background: rgba(166, 106, 63, 0.54);
-    content: '';
-    opacity: 0;
-    transform: scaleX(0.62);
-    transform-origin: center;
-    transition:
-      opacity 180ms ease,
-      transform 180ms ease;
+    .zh-category-link.is-active {
+    border-color: rgba(166, 106, 63, 0.30);
+    background: rgba(242, 232, 223, 0.64);
+    box-shadow: inset 0 -1px 0 rgba(166, 106, 63, 0.24);
+    color: #7a4a30;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pill.is-active {
-    color: #7c4d31;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pill.is-active::after {
-    opacity: 1;
-    transform: scaleX(1);
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pill.is-keyboard-target {
-    position: relative;
-    z-index: 3;
+    .zh-category-link:focus-visible {
     outline: 2px solid #a66a3f;
-    outline-offset: 5px;
-    color: #7f5238;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-pill.is-active.is-keyboard-target {
-    color: #7c4d31;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail.is-keyboard-mode
-    .zh-category-pill:hover:not(.is-active):not(.is-keyboard-target) {
-    color: rgba(42, 37, 32, 0.62);
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__control {
-    display: grid;
-    width: 30px;
-    height: 30px;
-    place-items: center;
-    border: 1px solid rgba(42, 37, 32, 0.07);
-    border-radius: 999px;
-    background: rgba(255, 253, 251, 0.30);
-    color: rgba(42, 37, 32, 0.46);
-    font-size: 13px;
-    cursor: pointer;
-    opacity: 0;
-    pointer-events: none;
-    transition:
-      opacity 160ms ease,
-      border-color 160ms ease,
-      color 160ms ease;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail.has-overflow
-    .zh-category-rail__control:not(:disabled) {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__control:disabled {
-    visibility: hidden;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__fade {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    z-index: 2;
-    width: 22px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 160ms ease;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__fade--left {
-    left: 36px;
-    background: linear-gradient(
-      90deg,
-      #faf5f2 12%,
-      rgba(250, 245, 242, 0)
-    );
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__fade--right {
-    right: 36px;
-    background: linear-gradient(
-      270deg,
-      #faf5f2 12%,
-      rgba(250, 245, 242, 0)
-    );
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail.can-scroll-prev
-    .zh-category-rail__fade--left,
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail.can-scroll-next
-    .zh-category-rail__fade--right {
-    opacity: 1;
+    outline-offset: 3px;
   }
 
   @media (min-width: 640px) {
     #ZaynaCategoryPills-{{ section.id }} {
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       padding-right: 24px;
       padding-left: 24px;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-rail {
+      padding-top: 9px;
+      padding-bottom: 13px;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-rail__viewport {
+      margin-right: -24px;
+      margin-left: -24px;
+      padding-right: 24px;
+      padding-left: 24px;
+      scroll-padding: 24px;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-rail__list {
+      gap: 10px;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-link {
+      min-height: 36px;
+      padding-right: 14px;
+      padding-left: 14px;
+      font-size: 12.8px;
     }
   }
 
   @media (min-width: 1024px) {
     #ZaynaCategoryPills-{{ section.id }} {
-      margin-bottom: 15px;
+      margin-bottom: 13px;
       padding-right: 40px;
       padding-left: 40px;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-rail {
+      padding: 13px 0 15px;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-rail::before,
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-rail::after {
+      width: 30px;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-rail__viewport {
+      margin-right: -40px;
+      margin-left: -40px;
+      padding-right: 40px;
+      padding-left: 40px;
+      scroll-padding: 40px;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-rail__list {
+      gap: 30px;
+      padding-bottom: 4px;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-link {
+      min-height: 37px;
+      padding: 0 1px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      color: rgba(42, 37, 32, 0.68);
+      font-size: 14.2px;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-link::after {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      background: rgba(166, 106, 63, 0.58);
+      content: '';
+      opacity: 0;
+      transform: scaleX(0.72);
+      transform-origin: center;
+      transition:
+        opacity 180ms ease,
+        transform 180ms ease;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-link.is-active {
+      color: #74482f;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-link.is-active::after {
+      opacity: 1;
+      transform: scaleX(1);
     }
   }
 
   @media (hover: hover) and (pointer: fine) {
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-pill:hover:not(.is-active):not(.is-keyboard-target) {
+      .zh-category-link:hover:not(.is-active) {
+      border-color: rgba(166, 106, 63, 0.18);
+      background: rgba(242, 232, 223, 0.22);
       color: #8f5a39;
     }
 
+    @media (min-width: 1024px) {
+      #ZaynaCategoryPills-{{ section.id }}
+        .zh-category-link:hover:not(.is-active) {
+        background: transparent;
+      }
 
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-pill:hover:not(.is-active):not(.is-keyboard-target)::after {
-      opacity: 0.38;
-      transform: scaleX(0.86);
-    }
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-mobile__link:hover:not(.is-active):not(.is-keyboard-target) {
-      background: rgba(242, 232, 223, 0.20);
-      color: #8f5a39;
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-rail__control:not(:disabled):hover {
-      border-color: rgba(166, 106, 63, 0.30);
-      color: #955c39;
+      #ZaynaCategoryPills-{{ section.id }}
+        .zh-category-link:hover:not(.is-active)::after {
+        opacity: 0.35;
+        transform: scaleX(0.86);
+      }
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-rail__viewport {
-      scroll-behavior: auto;
-    }
-
+      .zh-category-link,
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-mobile__chevron,
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-pill,
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-rail__control {
+      .zh-category-link::after {
       transition: none;
     }
   }
