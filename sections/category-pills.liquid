@@ -108,15 +108,15 @@
       data-category-summary
     >
       <span class="zh-category-mobile__summary-copy">
-        <span class="zh-category-mobile__summary-kicker">Collectie</span>
+        <span class="zh-category-mobile__summary-kicker">Bekijk andere collecties</span>
         <span class="zh-category-mobile__summary-title">{{ current_collection_label | escape }}</span>
       </span>
 
-      <span
-        class="zh-category-mobile__chevron"
-        aria-hidden="true"
-      >
-        {% render 'icon', name: 'chevron-down', size: 15 %}
+      <span class="zh-category-mobile__summary-action" aria-hidden="true">
+        <span>Wissel</span>
+        <span class="zh-category-mobile__chevron">
+          {% render 'icon', name: 'chevron-down', size: 15 %}
+        </span>
       </span>
     </summary>
 
@@ -235,8 +235,6 @@
     class="zh-category-rail"
     data-category-rail
   >
-    <span class="zh-category-rail__label">Collecties</span>
-
     <button
       type="button"
       class="zh-category-rail__control zh-category-rail__control--prev"
@@ -353,23 +351,22 @@
 {% style %}
   #ZaynaCategoryPills-{{ section.id }} {
     position: relative;
-    width: min(100%, 1280px);
-    margin: 0 auto 12px;
+    width: min(100%, 1180px);
+    margin: 0 auto 14px;
     padding: 0 16px;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-mobile__summary {
     display: flex;
-    min-height: 46px;
+    min-height: 54px;
     align-items: center;
     justify-content: space-between;
     gap: 14px;
-    padding: 7px 2px 8px;
-    border: 0;
-    border-top: 1px solid rgba(42, 37, 32, 0.055);
-    border-bottom: 1px solid rgba(42, 37, 32, 0.09);
-    background: transparent;
+    padding: 9px 12px;
+    border: 1px solid rgba(42, 37, 32, 0.075);
+    border-radius: 12px;
+    background: rgba(255, 253, 251, 0.34);
     color: rgba(42, 37, 32, 0.76);
     cursor: pointer;
     list-style: none;
@@ -386,9 +383,9 @@
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-mobile__summary-kicker {
     color: #9a6039;
-    font-size: 8.5px;
+    font-size: 8.2px;
     font-weight: 500;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.16em;
     line-height: 1;
     text-transform: uppercase;
   }
@@ -402,10 +399,23 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: 15px;
+    font-size: 15.5px;
     line-height: 1.1;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-mobile__summary-action {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
+    color: rgba(42, 37, 32, 0.50);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -600,21 +610,12 @@
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail {
     position: relative;
-    grid-template-columns: auto 28px minmax(0, 1fr) 28px;
+    grid-template-columns: 30px minmax(0, 1fr) 30px;
     align-items: center;
-    gap: 10px;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__label {
-    padding-right: 8px;
-    color: #9a6039;
-    font-size: 9.5px;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    line-height: 1;
-    text-transform: uppercase;
-    white-space: nowrap;
+    gap: 12px;
+    padding: 13px 0 11px;
+    border-top: 1px solid rgba(42, 37, 32, 0.055);
+    border-bottom: 1px solid rgba(42, 37, 32, 0.065);
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -638,9 +639,9 @@
     display: flex;
     width: max-content;
     align-items: center;
-    gap: 24px;
+    gap: 30px;
     margin: 0;
-    padding: 1px 0 4px;
+    padding: 1px 0 5px;
     list-style: none;
   }
 
@@ -653,15 +654,15 @@
     .zh-category-pill {
     position: relative;
     display: inline-flex;
-    min-height: 34px;
+    min-height: 38px;
     align-items: center;
     justify-content: center;
     padding: 0 1px;
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: rgba(42, 37, 32, 0.66);
-    font-size: 13.2px;
+    color: rgba(42, 37, 32, 0.68);
+    font-size: 14px;
     line-height: 1;
     text-decoration: none;
     white-space: nowrap;
@@ -675,8 +676,8 @@
     right: 0;
     bottom: 0;
     left: 0;
-    height: 1px;
-    background: rgba(166, 106, 63, 0.50);
+    height: 2px;
+    background: rgba(166, 106, 63, 0.54);
     content: '';
     opacity: 0;
     transform: scaleX(0.62);
@@ -688,7 +689,7 @@
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-pill.is-active {
-    color: #825034;
+    color: #7c4d31;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -708,7 +709,7 @@
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-pill.is-active.is-keyboard-target {
-    color: #825034;
+    color: #7c4d31;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -720,8 +721,8 @@
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail__control {
     display: grid;
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     place-items: center;
     border: 1px solid rgba(42, 37, 32, 0.07);
     border-radius: 999px;
@@ -765,7 +766,7 @@
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail__fade--left {
-    left: 126px;
+    left: 36px;
     background: linear-gradient(
       90deg,
       #faf5f2 12%,
@@ -775,7 +776,7 @@
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-rail__fade--right {
-    right: 34px;
+    right: 36px;
     background: linear-gradient(
       270deg,
       #faf5f2 12%,
@@ -794,7 +795,7 @@
 
   @media (min-width: 640px) {
     #ZaynaCategoryPills-{{ section.id }} {
-      margin-bottom: 13px;
+      margin-bottom: 15px;
       padding-right: 24px;
       padding-left: 24px;
     }
@@ -802,7 +803,7 @@
 
   @media (min-width: 1024px) {
     #ZaynaCategoryPills-{{ section.id }} {
-      margin-bottom: 14px;
+      margin-bottom: 15px;
       padding-right: 40px;
       padding-left: 40px;
     }
