@@ -1,5 +1,5 @@
 {%- comment -%}
-  Zayna Home — rustig collectieproductgrid, fase 2I.
+  Zayna Home — rustig collectieproductgrid, fase 2M.
   Filters, sortering en prijsvelden worden beheerd door assets/collection.js.
 {%- endcomment -%}
 
@@ -61,21 +61,21 @@
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar {
     display: flex;
-    min-height: 31px;
+    min-height: 28px;
     align-items: center;
     justify-content: space-between;
     gap: 14px;
-    margin-bottom: 22px;
-    padding: 0 0 14px;
+    margin-bottom: 18px;
+    padding: 0 0 11px;
     border-top: 0;
-    border-bottom: 1px solid rgba(42, 37, 32, 0.045);
+    border-bottom: 1px solid rgba(42, 37, 32, 0.035);
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__count {
     margin: 0;
-    color: rgba(42, 37, 32, 0.50);
-    font-size: 11px;
+    color: rgba(42, 37, 32, 0.46);
+    font-size: 10.8px;
     line-height: 1;
     letter-spacing: 0;
     white-space: nowrap;
@@ -92,7 +92,7 @@
     display: flex;
     min-width: 0;
     align-items: center;
-    gap: 20px;
+    gap: 18px;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -100,12 +100,12 @@
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-sort {
     display: inline-flex;
-    min-height: 32px;
+    min-height: 28px;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     border: 0;
     background: transparent;
-    color: rgba(42, 37, 32, 0.56);
+    color: rgba(42, 37, 32, 0.46);
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -116,13 +116,13 @@
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__control > span:not(.zh-collection-toolbar__badge) {
-    font-size: 11px;
+    font-size: 10.9px;
     letter-spacing: 0;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__control svg {
-    opacity: 0.58;
+    opacity: 0.48;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -171,10 +171,10 @@
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-sort__button {
     display: inline-flex;
-    min-height: 30px;
+    min-height: 28px;
     min-width: 0;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     border: 0;
     background: transparent;
     color: inherit;
@@ -185,8 +185,8 @@
     .zh-collection-sort__current {
     max-width: min(30vw, 136px);
     overflow: hidden;
-    color: rgba(42, 37, 32, 0.66);
-    font-size: 11.2px;
+    color: rgba(42, 37, 32, 0.62);
+    font-size: 11px;
     line-height: 1;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -197,7 +197,7 @@
     display: grid;
     flex: 0 0 auto;
     place-items: center;
-    color: rgba(42, 37, 32, 0.52);
+    color: rgba(42, 37, 32, 0.46);
     transition: transform 160ms ease;
   }
 
@@ -263,7 +263,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 7px;
-    margin: -2px 0 18px;
+    margin: -1px 0 17px;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -283,7 +283,7 @@
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-active-filters__clear {
-    color: rgba(42, 37, 32, 0.56);
+    color: rgba(42, 37, 32, 0.46);
     font-size: 10px;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -318,7 +318,7 @@
     .zh-collection-empty > span {
     display: block;
     margin-top: 8px;
-    color: rgba(42, 37, 32, 0.56);
+    color: rgba(42, 37, 32, 0.46);
     font-size: 13px;
   }
 
@@ -359,22 +359,22 @@
 
   .zh-filter-form__body {
     flex: 1 1 auto;
-    padding: 20px 20px 24px;
+    padding: 18px 20px 22px;
   }
 
   .zh-filter-group {
     margin: 0;
-    padding: 0 0 22px;
+    padding: 0 0 20px;
     border: 0;
     border-bottom: 1px solid rgba(42, 37, 32, 0.075);
   }
 
   .zh-filter-group + .zh-filter-group {
-    padding-top: 22px;
+    padding-top: 20px;
   }
 
   .zh-filter-group legend {
-    margin-bottom: 13px;
+    margin-bottom: 12px;
     color: #2a2520;
     font-size: 10px;
     font-weight: 500;
@@ -391,7 +391,7 @@
   .zh-price-filter label > span:first-child {
     display: block;
     margin-bottom: 6px;
-    color: rgba(42, 37, 32, 0.56);
+    color: rgba(42, 37, 32, 0.46);
     font-size: 10px;
   }
 
@@ -526,11 +526,11 @@
     display: flex;
     flex: 0 0 auto;
     align-items: center;
-    gap: 13px;
+    gap: 12px;
     padding:
-      15px
+      14px
       20px
-      calc(15px + env(safe-area-inset-bottom));
+      calc(14px + env(safe-area-inset-bottom));
     border-top: 1px solid rgba(42, 37, 32, 0.08);
     background: rgba(250, 247, 243, 0.97);
     backdrop-filter: blur(10px);
@@ -539,7 +539,7 @@
 
   .zh-filter-form__clear {
     display: inline-flex;
-    min-height: 44px;
+    min-height: 42px;
     min-width: 86px;
     align-items: center;
     justify-content: center;
@@ -558,7 +558,7 @@
 
   .zh-filter-form__submit {
     display: inline-flex;
-    min-height: 44px;
+    min-height: 42px;
     flex: 1;
     align-items: center;
     justify-content: center;
@@ -567,7 +567,7 @@
     color: #fffdfb;
     font-size: 10px;
     font-weight: 500;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.13em;
     text-transform: uppercase;
     cursor: pointer;
     transition:
@@ -638,28 +638,28 @@
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar {
-      min-height: 36px;
-      margin-bottom: 20px;
-      padding-top: 2px;
-      padding-bottom: 13px;
+      min-height: 31px;
+      margin-bottom: 18px;
+      padding-top: 0;
+      padding-bottom: 11px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar__count {
-      font-size: 11.6px;
+      font-size: 11.2px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar__control,
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-sort {
-      min-height: 32px;
+      min-height: 29px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-sort__current {
       max-width: 146px;
-      font-size: 11.9px;
+      font-size: 11.5px;
     }
 
     .zh-filter-form__body {
@@ -682,33 +682,33 @@
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar {
-      min-height: 32px;
-      margin-bottom: 24px;
+      min-height: 30px;
+      margin-bottom: 20px;
       padding-top: 0;
-      padding-bottom: 14px;
+      padding-bottom: 12px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar__count {
-      font-size: 11.8px;
+      font-size: 11.4px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar__control,
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-sort {
-      min-height: 30px;
+      min-height: 28px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar__control > span:not(.zh-collection-toolbar__badge) {
-      font-size: 11.6px;
+      font-size: 11.2px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-sort__current {
       max-width: 168px;
-      font-size: 12px;
+      font-size: 11.7px;
     }
   }
 
@@ -842,8 +842,9 @@
             type="button"
             data-aside-open="filters"
             class="zh-collection-toolbar__control"
+            aria-haspopup="dialog"
+            aria-expanded="false"
           >
-            {% render 'icon', name: 'sliders', size: 14 %}
             <span>Filteren</span>
 
             <span data-filter-count-slot>
