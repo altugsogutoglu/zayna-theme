@@ -19,12 +19,6 @@
         "all_intro": "Bekijk de complete collectie van Zayna Home, zorgvuldig geselecteerd op design, kwaliteit en functie."
       }
     },
-    "category-pills": {
-      "type": "category-pills",
-      "settings": {
-        "menu": "category-pill-menu"
-      }
-    },
     "main-collection": {
       "type": "main-collection",
       "settings": {
@@ -35,7 +29,6 @@
   },
   "order": [
     "collection-hero",
-    "category-pills",
     "main-collection"
   ]
 }
