@@ -1,6 +1,15 @@
 {%- comment -%}
-  Zayna Home — Editorial Homeware category pills, fase 2J.
+  Zayna Home — Fase 2K: Editorial category navigation.
   Premium typografische collectie-navigatie zonder iconen.
+
+  Desktop:
+  - editorial wordmark navigation, geen standaard pill/filterchip-gevoel;
+  - korte labels voor rust, aria-labels behouden volledige collectienamen;
+  - directe klikfeedback + lichte prefetch.
+
+  Mobiel / splitscreen:
+  - zachte swipebare scroll-pills met korte labels;
+  - scroll snap, verborgen scrollbar, subtiele rechter fade alleen wanneer er meer te scrollen is.
 {%- endcomment -%}
 
 {%- liquid
@@ -21,27 +30,27 @@
 -%}
 
 <nav
-  id="ZaynaCategoryPills-{{ section.id }}"
-  class="zh-category-editorial"
+  id="ZaynaCategoryNav-{{ section.id }}"
+  class="zh-category-nav"
+  data-category-nav
   aria-label="Collecties"
 >
-  <div class="zh-category-editorial__viewport-wrap">
+  <div class="zh-category-nav__viewport-wrap">
     <div
-      class="zh-category-editorial__viewport"
-      data-category-editorial-viewport
-      tabindex="0"
-      aria-label="Blader door collecties"
+      class="zh-category-nav__viewport"
+      data-category-nav-viewport
     >
-      <ul class="zh-category-editorial__list">
-        <li class="zh-category-editorial__item">
+      <ul class="zh-category-nav__list" role="list">
+        <li class="zh-category-nav__item">
           <a
             href="{{ routes.all_products_collection_url }}"
-            class="zh-category-editorial__pill{% if all_active %} is-active{% endif %}"
+            class="zh-category-nav__link{% if all_active %} is-active{% endif %}"
             aria-label="Alle producten"
+            data-category-nav-link
             {% if all_active %}aria-current="page"{% endif %}
           >
-            <span class="zh-category-editorial__label zh-category-editorial__label--mobile">Alle</span>
-            <span class="zh-category-editorial__label zh-category-editorial__label--desktop">Alle producten</span>
+            <span class="zh-category-nav__label zh-category-nav__label--short">Alle</span>
+            <span class="zh-category-nav__label zh-category-nav__label--long">Alle producten</span>
           </a>
         </li>
 
@@ -54,39 +63,40 @@
               endif
 
               assign full_label = link.title
-              assign mobile_label = full_label
+              assign short_label = full_label
               assign label_key = full_label | downcase
 
               if label_key contains 'drinkglazen' or label_key contains 'bekers'
-                assign mobile_label = 'Glaswerk'
+                assign short_label = 'Glaswerk'
               elsif label_key contains 'voorraad' or label_key contains 'bewaren'
-                assign mobile_label = 'Voorraad'
+                assign short_label = 'Voorraad'
               elsif label_key contains 'koffie' or label_key contains 'thee'
-                assign mobile_label = 'Koffie & thee'
+                assign short_label = 'Koffie & thee'
               elsif label_key contains 'kruiden'
-                assign mobile_label = 'Kruiden'
+                assign short_label = 'Kruiden'
               elsif label_key contains 'bestek' or label_key contains 'lepels'
-                assign mobile_label = 'Bestek'
+                assign short_label = 'Bestek'
               elsif label_key contains 'keukenhulpen' or label_key contains 'dispensers'
-                assign mobile_label = 'Keukenhulpen'
+                assign short_label = 'Keukenhulpen'
               elsif label_key contains 'kookaccessoires'
-                assign mobile_label = 'Koken'
+                assign short_label = 'Koken'
               elsif label_key contains 'keukentextiel'
-                assign mobile_label = 'Textiel'
+                assign short_label = 'Textiel'
               elsif label_key contains 'rietjes'
-                assign mobile_label = 'Rietjes'
+                assign short_label = 'Rietjes'
               endif
             -%}
 
-            <li class="zh-category-editorial__item">
+            <li class="zh-category-nav__item">
               <a
                 href="{{ link.url }}"
-                class="zh-category-editorial__pill{% if is_active %} is-active{% endif %}"
+                class="zh-category-nav__link{% if is_active %} is-active{% endif %}"
                 aria-label="{{ full_label | escape }}"
+                data-category-nav-link
                 {% if is_active %}aria-current="page"{% endif %}
               >
-                <span class="zh-category-editorial__label zh-category-editorial__label--mobile">{{ mobile_label | escape }}</span>
-                <span class="zh-category-editorial__label zh-category-editorial__label--desktop">{{ full_label | escape }}</span>
+                <span class="zh-category-nav__label zh-category-nav__label--short">{{ short_label | escape }}</span>
+                <span class="zh-category-nav__label zh-category-nav__label--long">{{ full_label | escape }}</span>
               </a>
             </li>
           {%- endfor -%}
@@ -104,39 +114,40 @@
                 endif
 
                 assign full_label = collection_item.title
-                assign mobile_label = full_label
+                assign short_label = full_label
                 assign label_key = full_label | downcase
 
                 if label_key contains 'drinkglazen' or label_key contains 'bekers'
-                  assign mobile_label = 'Glaswerk'
+                  assign short_label = 'Glaswerk'
                 elsif label_key contains 'voorraad' or label_key contains 'bewaren'
-                  assign mobile_label = 'Voorraad'
+                  assign short_label = 'Voorraad'
                 elsif label_key contains 'koffie' or label_key contains 'thee'
-                  assign mobile_label = 'Koffie & thee'
+                  assign short_label = 'Koffie & thee'
                 elsif label_key contains 'kruiden'
-                  assign mobile_label = 'Kruiden'
+                  assign short_label = 'Kruiden'
                 elsif label_key contains 'bestek' or label_key contains 'lepels'
-                  assign mobile_label = 'Bestek'
+                  assign short_label = 'Bestek'
                 elsif label_key contains 'keukenhulpen' or label_key contains 'dispensers'
-                  assign mobile_label = 'Keukenhulpen'
+                  assign short_label = 'Keukenhulpen'
                 elsif label_key contains 'kookaccessoires'
-                  assign mobile_label = 'Koken'
+                  assign short_label = 'Koken'
                 elsif label_key contains 'keukentextiel'
-                  assign mobile_label = 'Textiel'
+                  assign short_label = 'Textiel'
                 elsif label_key contains 'rietjes'
-                  assign mobile_label = 'Rietjes'
+                  assign short_label = 'Rietjes'
                 endif
               -%}
 
-              <li class="zh-category-editorial__item">
+              <li class="zh-category-nav__item">
                 <a
                   href="{{ collection_item.url }}"
-                  class="zh-category-editorial__pill{% if is_active %} is-active{% endif %}"
+                  class="zh-category-nav__link{% if is_active %} is-active{% endif %}"
                   aria-label="{{ full_label | escape }}"
+                  data-category-nav-link
                   {% if is_active %}aria-current="page"{% endif %}
                 >
-                  <span class="zh-category-editorial__label zh-category-editorial__label--mobile">{{ mobile_label | escape }}</span>
-                  <span class="zh-category-editorial__label zh-category-editorial__label--desktop">{{ full_label | escape }}</span>
+                  <span class="zh-category-nav__label zh-category-nav__label--short">{{ short_label | escape }}</span>
+                  <span class="zh-category-nav__label zh-category-nav__label--long">{{ full_label | escape }}</span>
                 </a>
               </li>
 
@@ -151,30 +162,45 @@
 
 <script>
   (() => {
-    const root = document.getElementById('ZaynaCategoryPills-{{ section.id }}');
-    if (!root || root.dataset.editorialPillsReady === 'true') return;
+    const root = document.getElementById('ZaynaCategoryNav-{{ section.id }}');
+    if (!root || root.dataset.categoryNavReady === 'true') return;
 
-    root.dataset.editorialPillsReady = 'true';
+    root.dataset.categoryNavReady = 'true';
 
-    const viewport = root.querySelector('[data-category-editorial-viewport]');
-    const activePill = root.querySelector('.zh-category-editorial__pill.is-active');
-    const mediaDesktop = window.matchMedia('(min-width: 1024px)');
+    const viewport = root.querySelector('[data-category-nav-viewport]');
+    const links = Array.from(root.querySelectorAll('[data-category-nav-link]'));
+    const activeLink = root.querySelector('[data-category-nav-link][aria-current="page"]');
+    const desktopQuery = window.matchMedia('(min-width: 1024px)');
+    const prefetched = new Set();
     let frame = 0;
 
-    const updateFade = () => {
+    const prefetch = (url) => {
+      if (!url || prefetched.has(url)) return;
+      if (url === window.location.pathname || url === window.location.href) return;
+
+      prefetched.add(url);
+
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = url;
+      link.as = 'document';
+      document.head.appendChild(link);
+    };
+
+    const setScrollState = () => {
       if (!viewport) return;
 
       window.cancelAnimationFrame(frame);
       frame = window.requestAnimationFrame(() => {
-        const canScrollNext = viewport.scrollLeft + viewport.clientWidth < viewport.scrollWidth - 2;
-        root.classList.toggle('has-scroll-next', canScrollNext && !mediaDesktop.matches);
+        const canScrollNext = viewport.scrollLeft + viewport.clientWidth < viewport.scrollWidth - 3;
+        root.classList.toggle('has-scroll-next', canScrollNext && !desktopQuery.matches);
       });
     };
 
-    const revealActivePill = () => {
-      if (!viewport || !activePill || mediaDesktop.matches) return;
+    const revealActive = () => {
+      if (!viewport || !activeLink || desktopQuery.matches) return;
 
-      const targetLeft = activePill.offsetLeft - ((viewport.clientWidth - activePill.offsetWidth) / 2);
+      const targetLeft = activeLink.offsetLeft - ((viewport.clientWidth - activeLink.offsetWidth) / 2);
 
       viewport.scrollTo({
         left: Math.max(0, targetLeft),
@@ -183,99 +209,113 @@
       });
     };
 
-    root.querySelectorAll('.zh-category-editorial__pill').forEach((pill) => {
-      pill.addEventListener('click', (event) => {
+    links.forEach((link) => {
+      const href = link.getAttribute('href');
+      const isCurrent = link.getAttribute('aria-current') === 'page';
+
+      link.addEventListener('pointerenter', () => prefetch(href), { passive: true });
+      link.addEventListener('focus', () => prefetch(href));
+      link.addEventListener('touchstart', () => prefetch(href), { passive: true });
+
+      link.addEventListener('click', (event) => {
         if (
           event.defaultPrevented ||
           event.metaKey ||
           event.ctrlKey ||
           event.shiftKey ||
           event.altKey ||
-          pill.target === '_blank' ||
-          pill.getAttribute('aria-current') === 'page'
+          isCurrent ||
+          link.target === '_blank'
         ) {
           return;
         }
 
         root.classList.add('is-navigating');
-        pill.classList.add('is-pending');
         root.setAttribute('aria-busy', 'true');
+        link.classList.add('is-pending');
       });
     });
 
-    viewport?.addEventListener('scroll', updateFade, { passive: true });
-    window.addEventListener('resize', updateFade, { passive: true });
+    viewport?.addEventListener('scroll', setScrollState, { passive: true });
+    window.addEventListener('resize', setScrollState, { passive: true });
 
-    if (mediaDesktop.addEventListener) {
-      mediaDesktop.addEventListener('change', () => {
-        revealActivePill();
-        updateFade();
+    if (desktopQuery.addEventListener) {
+      desktopQuery.addEventListener('change', () => {
+        revealActive();
+        setScrollState();
+      });
+    } else if (desktopQuery.addListener) {
+      desktopQuery.addListener(() => {
+        revealActive();
+        setScrollState();
       });
     }
 
     if ('ResizeObserver' in window && viewport) {
-      new ResizeObserver(updateFade).observe(viewport);
+      new ResizeObserver(setScrollState).observe(viewport);
     }
 
     window.requestAnimationFrame(() => {
-      revealActivePill();
-      updateFade();
+      revealActive();
+      setScrollState();
     });
   })();
 </script>
 
 {% style %}
-  #ZaynaCategoryPills-{{ section.id }} {
+  #ZaynaCategoryNav-{{ section.id }} {
     --zh-category-bg: #FAF9F8;
     --zh-category-border: #E0DEDC;
     --zh-category-text: #595959;
+    --zh-category-muted: rgba(42, 37, 32, 0.56);
     --zh-category-hover-border: #CFCAC4;
     --zh-category-accent: #A96B56;
     --zh-category-active-bg: #FFF8F0;
     --zh-category-active-border: #E8E0D8;
+    --zh-category-page-bg: var(--color-bg, #faf5f2);
 
     position: relative;
-    width: min(100%, 1280px);
-    margin: 40px auto 32px;
+    width: min(100%, 1180px);
+    margin: 34px auto 24px;
     padding: 0 16px;
   }
 
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-editorial__viewport-wrap {
+  #ZaynaCategoryNav-{{ section.id }}
+    .zh-category-nav__viewport-wrap {
     position: relative;
   }
 
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-editorial__viewport-wrap::after {
+  #ZaynaCategoryNav-{{ section.id }}
+    .zh-category-nav__viewport-wrap::after {
     position: absolute;
     top: 0;
     right: -1px;
     bottom: 0;
     z-index: 2;
-    width: 54px;
+    width: 44px;
     background: linear-gradient(
       90deg,
       rgba(250, 245, 242, 0),
-      var(--color-bg, #FAF9F8) 78%
+      var(--zh-category-page-bg) 88%
     );
     content: '';
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease-in-out;
+    transition: opacity 0.18s ease-in-out;
   }
 
-  #ZaynaCategoryPills-{{ section.id }}.has-scroll-next
-    .zh-category-editorial__viewport-wrap::after {
-    opacity: 1;
+  #ZaynaCategoryNav-{{ section.id }}.has-scroll-next
+    .zh-category-nav__viewport-wrap::after {
+    opacity: 0.94;
   }
 
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-editorial__viewport {
+  #ZaynaCategoryNav-{{ section.id }}
+    .zh-category-nav__viewport {
     min-width: 0;
     margin: 0 -16px;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 0 16px;
+    padding: 0 16px 1px;
     scroll-padding: 16px;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
@@ -283,13 +323,13 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-editorial__viewport::-webkit-scrollbar {
+  #ZaynaCategoryNav-{{ section.id }}
+    .zh-category-nav__viewport::-webkit-scrollbar {
     display: none;
   }
 
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-editorial__list {
+  #ZaynaCategoryNav-{{ section.id }}
+    .zh-category-nav__list {
     display: flex;
     width: max-content;
     align-items: center;
@@ -299,14 +339,15 @@
     list-style: none;
   }
 
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-editorial__item {
+  #ZaynaCategoryNav-{{ section.id }}
+    .zh-category-nav__item {
     flex: 0 0 auto;
     scroll-snap-align: start;
   }
 
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-editorial__pill {
+  #ZaynaCategoryNav-{{ section.id }}
+    .zh-category-nav__link {
+    position: relative;
     display: inline-flex;
     min-height: 40px;
     align-items: center;
@@ -332,8 +373,8 @@
       transform 0.2s ease-in-out;
   }
 
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-editorial__pill.is-active {
+  #ZaynaCategoryNav-{{ section.id }}
+    .zh-category-nav__link.is-active {
     border-color: var(--zh-category-active-border);
     background: var(--zh-category-active-bg);
     color: var(--zh-category-accent);
@@ -341,43 +382,45 @@
     pointer-events: none;
   }
 
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-editorial__pill:active:not(.is-active) {
+  #ZaynaCategoryNav-{{ section.id }}
+    .zh-category-nav__link:active:not(.is-active) {
     transform: scale(0.98);
   }
 
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-editorial__pill:focus-visible {
+  #ZaynaCategoryNav-{{ section.id }}
+    .zh-category-nav__link:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px rgba(169, 107, 86, 0.20);
   }
 
-  #ZaynaCategoryPills-{{ section.id }}.is-navigating
-    .zh-category-editorial__pill:not(.is-pending):not(.is-active) {
-    opacity: 0.48;
+  #ZaynaCategoryNav-{{ section.id }}.is-navigating
+    .zh-category-nav__link:not(.is-active):not(.is-pending) {
+    opacity: 0.46;
   }
 
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-editorial__pill.is-pending {
+  #ZaynaCategoryNav-{{ section.id }}
+    .zh-category-nav__link.is-pending {
     border-color: var(--zh-category-active-border);
     background: var(--zh-category-active-bg);
     color: var(--zh-category-accent);
     transform: scale(0.98);
   }
 
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-editorial__label--desktop {
+  #ZaynaCategoryNav-{{ section.id }}
+    .zh-category-nav__label--long {
     display: none;
   }
 
   @media (min-width: 640px) {
-    #ZaynaCategoryPills-{{ section.id }} {
+    #ZaynaCategoryNav-{{ section.id }} {
+      margin-top: 36px;
+      margin-bottom: 26px;
       padding-right: 24px;
       padding-left: 24px;
     }
 
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-editorial__viewport {
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__viewport {
       margin-right: -24px;
       margin-left: -24px;
       padding-right: 24px;
@@ -387,18 +430,20 @@
   }
 
   @media (min-width: 1024px) {
-    #ZaynaCategoryPills-{{ section.id }} {
+    #ZaynaCategoryNav-{{ section.id }} {
+      margin-top: 36px;
+      margin-bottom: 28px;
       padding-right: 40px;
       padding-left: 40px;
     }
 
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-editorial__viewport-wrap::after {
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__viewport-wrap::after {
       display: none;
     }
 
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-editorial__viewport {
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__viewport {
       margin: 0;
       overflow: visible;
       padding: 0;
@@ -406,49 +451,126 @@
       scroll-snap-type: none;
     }
 
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-editorial__list {
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__list {
       width: auto;
       flex-wrap: wrap;
-      gap: 16px;
+      column-gap: 30px;
+      row-gap: 13px;
+      align-items: baseline;
     }
 
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-editorial__pill {
-      min-height: 44px;
-      padding: 12px 24px;
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__item {
+      scroll-snap-align: none;
+    }
+
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__link {
+      min-height: 34px;
+      padding: 0 1px 8px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--zh-category-muted);
       font-size: 14px;
+      line-height: 1.1;
+      transition:
+        color 0.2s ease-in-out,
+        opacity 0.2s ease-in-out,
+        transform 0.2s ease-in-out;
     }
 
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-editorial__label--mobile {
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__link::after {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 1px;
+      background: rgba(169, 107, 86, 0.58);
+      content: '';
+      opacity: 0;
+      transform: scaleX(0.58);
+      transform-origin: left center;
+      transition:
+        opacity 0.2s ease-in-out,
+        transform 0.2s ease-in-out;
+    }
+
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__link.is-active {
+      background: transparent;
+      color: var(--zh-category-accent);
+      font-weight: 500;
+    }
+
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__link.is-active::after,
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__link.is-pending::after {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__link.is-pending {
+      color: var(--zh-category-accent);
+      transform: translateY(1px);
+    }
+
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__link:active:not(.is-active) {
+      transform: translateY(1px);
+    }
+
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__link:focus-visible {
+      border-radius: 4px;
+      box-shadow: 0 0 0 3px rgba(169, 107, 86, 0.18);
+    }
+
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__label--short {
       display: none;
     }
 
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-editorial__label--desktop {
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__label--long {
       display: inline;
     }
   }
 
+  @media (min-width: 1280px) {
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__list {
+      column-gap: 34px;
+    }
+  }
+
   @media (hover: hover) and (pointer: fine) {
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-editorial__pill:hover:not(.is-active) {
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__link:hover:not(.is-active) {
       border-color: var(--zh-category-hover-border);
       color: var(--zh-category-accent);
+    }
+
+    @media (min-width: 1024px) {
+      #ZaynaCategoryNav-{{ section.id }}
+        .zh-category-nav__link:hover:not(.is-active)::after {
+        opacity: 0.44;
+        transform: scaleX(1);
+      }
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-editorial__viewport {
-      scroll-behavior: auto;
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-editorial__viewport-wrap::after,
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-editorial__pill {
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__viewport-wrap::after,
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__link,
+    #ZaynaCategoryNav-{{ section.id }}
+      .zh-category-nav__link::after {
       transition: none;
     }
   }
