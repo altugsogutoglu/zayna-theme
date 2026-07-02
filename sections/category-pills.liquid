@@ -1,6 +1,7 @@
 {%- comment -%}
-  Zayna Home — collectie navigatie, fase 2H.
-  Mobiel blijft een rustige swipe-strip; desktop wordt een echte collectie-index.
+  Zayna Home — collectie navigatie, fase 2I.
+  Desktop gebruikt een subtiele collectie-strip in plaats van een blok/index.
+  Mobiel en splitscreen blijven swipebaar met korte, rustige labels.
 {%- endcomment -%}
 
 {%- liquid
@@ -25,28 +26,23 @@
   class="zh-category-navigation"
   aria-label="Collecties"
 >
-  <div class="zh-category-index">
-    <div class="zh-category-index__heading" aria-hidden="true">
-      <span></span>
-      <strong>Collecties</strong>
-    </div>
-
+  <div class="zh-category-strip">
     <div
-      class="zh-category-index__viewport"
+      class="zh-category-strip__viewport"
       data-category-visible-viewport
       role="group"
       aria-label="Wissel tussen collecties"
     >
-      <ul class="zh-category-index__list">
-        <li class="zh-category-index__item">
+      <ul class="zh-category-strip__list">
+        <li class="zh-category-strip__item">
           <a
             href="{{ routes.all_products_collection_url }}"
-            class="zh-category-index__link{% if all_active %} is-active{% endif %}"
+            class="zh-category-strip__link{% if all_active %} is-active{% endif %}"
             aria-label="Alle producten"
             {% if all_active %}aria-current="page"{% endif %}
           >
-            <span class="zh-category-index__short">Alle</span>
-            <span class="zh-category-index__full">Alle producten</span>
+            <span class="zh-category-strip__label zh-category-strip__label--mobile">Alle</span>
+            <span class="zh-category-strip__label zh-category-strip__label--desktop">Alle producten</span>
           </a>
         </li>
 
@@ -59,39 +55,38 @@
               endif
 
               assign full_label = link.title
-              assign short_label = full_label
+              assign display_label = full_label
               assign label_key = full_label | downcase
 
               if label_key contains 'drinkglazen' or label_key contains 'bekers'
-                assign short_label = 'Glaswerk'
+                assign display_label = 'Glaswerk'
               elsif label_key contains 'voorraad' or label_key contains 'bewaren'
-                assign short_label = 'Voorraad'
+                assign display_label = 'Voorraad'
               elsif label_key contains 'koffie' or label_key contains 'thee'
-                assign short_label = 'Koffie & thee'
+                assign display_label = 'Koffie & thee'
               elsif label_key contains 'kruiden'
-                assign short_label = 'Kruiden'
+                assign display_label = 'Kruiden'
               elsif label_key contains 'bestek' or label_key contains 'lepels'
-                assign short_label = 'Bestek'
+                assign display_label = 'Bestek'
               elsif label_key contains 'keukenhulpen' or label_key contains 'dispensers'
-                assign short_label = 'Keukenhulpen'
+                assign display_label = 'Keukenhulpen'
               elsif label_key contains 'kookaccessoires'
-                assign short_label = 'Koken'
+                assign display_label = 'Koken'
               elsif label_key contains 'keukentextiel'
-                assign short_label = 'Textiel'
+                assign display_label = 'Textiel'
               elsif label_key contains 'rietjes'
-                assign short_label = 'Rietjes'
+                assign display_label = 'Rietjes'
               endif
             -%}
 
-            <li class="zh-category-index__item">
+            <li class="zh-category-strip__item">
               <a
                 href="{{ link.url }}"
-                class="zh-category-index__link{% if is_active %} is-active{% endif %}"
+                class="zh-category-strip__link{% if is_active %} is-active{% endif %}"
                 aria-label="{{ full_label | escape }}"
                 {% if is_active %}aria-current="page"{% endif %}
               >
-                <span class="zh-category-index__short">{{ short_label | escape }}</span>
-                <span class="zh-category-index__full">{{ full_label | escape }}</span>
+                <span class="zh-category-strip__label">{{ display_label | escape }}</span>
               </a>
             </li>
           {%- endfor -%}
@@ -109,39 +104,38 @@
                 endif
 
                 assign full_label = collection_item.title
-                assign short_label = full_label
+                assign display_label = full_label
                 assign label_key = full_label | downcase
 
                 if label_key contains 'drinkglazen' or label_key contains 'bekers'
-                  assign short_label = 'Glaswerk'
+                  assign display_label = 'Glaswerk'
                 elsif label_key contains 'voorraad' or label_key contains 'bewaren'
-                  assign short_label = 'Voorraad'
+                  assign display_label = 'Voorraad'
                 elsif label_key contains 'koffie' or label_key contains 'thee'
-                  assign short_label = 'Koffie & thee'
+                  assign display_label = 'Koffie & thee'
                 elsif label_key contains 'kruiden'
-                  assign short_label = 'Kruiden'
+                  assign display_label = 'Kruiden'
                 elsif label_key contains 'bestek' or label_key contains 'lepels'
-                  assign short_label = 'Bestek'
+                  assign display_label = 'Bestek'
                 elsif label_key contains 'keukenhulpen' or label_key contains 'dispensers'
-                  assign short_label = 'Keukenhulpen'
+                  assign display_label = 'Keukenhulpen'
                 elsif label_key contains 'kookaccessoires'
-                  assign short_label = 'Koken'
+                  assign display_label = 'Koken'
                 elsif label_key contains 'keukentextiel'
-                  assign short_label = 'Textiel'
+                  assign display_label = 'Textiel'
                 elsif label_key contains 'rietjes'
-                  assign short_label = 'Rietjes'
+                  assign display_label = 'Rietjes'
                 endif
               -%}
 
-              <li class="zh-category-index__item">
+              <li class="zh-category-strip__item">
                 <a
                   href="{{ collection_item.url }}"
-                  class="zh-category-index__link{% if is_active %} is-active{% endif %}"
+                  class="zh-category-strip__link{% if is_active %} is-active{% endif %}"
                   aria-label="{{ full_label | escape }}"
                   {% if is_active %}aria-current="page"{% endif %}
                 >
-                  <span class="zh-category-index__short">{{ short_label | escape }}</span>
-                  <span class="zh-category-index__full">{{ full_label | escape }}</span>
+                  <span class="zh-category-strip__label">{{ display_label | escape }}</span>
                 </a>
               </li>
 
@@ -160,7 +154,7 @@
     if (!root) return;
 
     const viewport = root.querySelector('[data-category-visible-viewport]');
-    const active = root.querySelector('.zh-category-index__link.is-active');
+    const active = root.querySelector('.zh-category-strip__link.is-active');
     const prefetched = new Set();
 
     const scrollActiveIntoView = () => {
@@ -191,7 +185,7 @@
       document.head.appendChild(link);
     };
 
-    root.querySelectorAll('.zh-category-index__link').forEach((anchor) => {
+    root.querySelectorAll('.zh-category-strip__link').forEach((anchor) => {
       anchor.addEventListener('pointerenter', () => prefetch(anchor));
       anchor.addEventListener('focus', () => prefetch(anchor));
       anchor.addEventListener('touchstart', () => prefetch(anchor), { passive: true });
@@ -223,24 +217,19 @@
   #ZaynaCategoryPills-{{ section.id }} {
     position: relative;
     width: min(100%, 1180px);
-    margin: 0 auto 18px;
+    margin: 0 auto 15px;
     padding: 0 16px;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-index {
+    .zh-category-strip {
     position: relative;
-    padding: 13px 0 11px;
-    background: transparent;
+    padding: 9px 0 12px;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.055);
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-index__heading {
-    display: none;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-index__viewport {
+    .zh-category-strip__viewport {
     min-width: 0;
     margin: 0 -16px;
     overflow-x: auto;
@@ -253,57 +242,57 @@
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-index__viewport::-webkit-scrollbar {
+    .zh-category-strip__viewport::-webkit-scrollbar {
     display: none;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-index__list {
+    .zh-category-strip__list {
     display: flex;
     width: max-content;
     align-items: center;
-    gap: 21px;
+    gap: 20px;
     margin: 0;
-    padding: 1px 0 2px;
+    padding: 1px 0 0;
     list-style: none;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-index__item {
+    .zh-category-strip__item {
     flex: 0 0 auto;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-index__link {
+    .zh-category-strip__link {
     position: relative;
     display: inline-flex;
-    min-height: 34px;
+    min-height: 33px;
     align-items: center;
     justify-content: center;
-    padding: 0 1px 8px;
+    padding: 0 0 8px;
     color: rgba(42, 37, 32, 0.58);
-    font-size: 13.4px;
+    font-size: 13.2px;
     line-height: 1;
     text-decoration: none;
     white-space: nowrap;
     transition:
       color 150ms ease,
       opacity 150ms ease,
-      background-color 150ms ease;
+      transform 150ms ease;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-index__link::after {
+    .zh-category-strip__link::after {
     position: absolute;
     right: 0;
-    bottom: 2px;
+    bottom: 1px;
     left: 0;
-    height: 2px;
+    height: 1.5px;
     border-radius: 99px;
-    background: rgba(150, 90, 52, 0.72);
+    background: rgba(150, 90, 52, 0.70);
     content: '';
     opacity: 0;
-    transform: scaleX(0.58);
+    transform: scaleX(0.56);
     transform-origin: center;
     transition:
       opacity 150ms ease,
@@ -311,53 +300,54 @@
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-index__full {
+    .zh-category-strip__label--desktop {
     display: none;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-index__link.is-active {
+    .zh-category-strip__link.is-active {
     color: #5f3d2c;
     font-weight: 500;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-index__link.is-active::after {
+    .zh-category-strip__link.is-active::after {
     opacity: 1;
     transform: scaleX(1);
   }
 
   #ZaynaCategoryPills-{{ section.id }}.is-navigating
-    .zh-category-index__link:not(.is-navigating) {
+    .zh-category-strip__link:not(.is-navigating) {
     opacity: 0.42;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-index__link.is-navigating {
+    .zh-category-strip__link.is-navigating {
     color: #74482f;
+    transform: translateY(-1px);
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-index__link:focus-visible {
+    .zh-category-strip__link:focus-visible {
     outline: 2px solid #a66a3f;
     outline-offset: 5px;
   }
 
   @media (min-width: 640px) {
     #ZaynaCategoryPills-{{ section.id }} {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       padding-right: 24px;
       padding-left: 24px;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index {
-      padding-top: 14px;
+      .zh-category-strip {
+      padding-top: 10px;
       padding-bottom: 13px;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__viewport {
+      .zh-category-strip__viewport {
       margin-right: -24px;
       margin-left: -24px;
       padding-right: 24px;
@@ -366,90 +356,43 @@
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__list {
-      gap: 25px;
+      .zh-category-strip__list {
+      gap: 24px;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__link {
-      min-height: 36px;
-      font-size: 13.9px;
+      .zh-category-strip__link {
+      min-height: 35px;
+      font-size: 13.8px;
     }
   }
 
   @media (min-width: 760px) and (max-width: 1023px) {
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index {
-      padding: 15px 0 14px;
-      border-top: 1px solid rgba(42, 37, 32, 0.045);
-      border-bottom: 1px solid rgba(42, 37, 32, 0.045);
-      background: rgba(255, 253, 251, 0.28);
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__heading {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      margin: 0 0 9px;
-      color: #9a6039;
-      font-size: 8.8px;
-      font-weight: 500;
-      line-height: 1;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__heading > span {
-      width: 22px;
-      height: 1px;
-      background: rgba(166, 106, 63, 0.48);
+      .zh-category-strip {
+      padding-top: 12px;
+      padding-bottom: 14px;
+      border-top: 1px solid rgba(42, 37, 32, 0.04);
+      background: transparent;
     }
   }
 
   @media (min-width: 1024px) {
     #ZaynaCategoryPills-{{ section.id }} {
-      margin-bottom: 24px;
+      margin-bottom: 18px;
       padding-right: 40px;
       padding-left: 40px;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index {
-      padding: 20px 22px 18px;
-      border: 1px solid rgba(42, 37, 32, 0.055);
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255, 253, 251, 0.66),
-          rgba(250, 247, 243, 0.42)
-        );
+      .zh-category-strip {
+      padding: 6px 0 13px;
+      border-bottom-color: rgba(42, 37, 32, 0.06);
+      background: transparent;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__heading {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 0 0 13px;
-      color: #9a6039;
-      font-size: 9px;
-      font-weight: 500;
-      line-height: 1;
-      letter-spacing: 0.19em;
-      text-transform: uppercase;
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__heading > span {
-      width: 24px;
-      height: 1px;
-      background: rgba(166, 106, 63, 0.52);
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__viewport {
+      .zh-category-strip__viewport {
       margin: 0;
       overflow: visible;
       padding: 0;
@@ -457,93 +400,65 @@
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__list {
-      display: grid;
-      width: 100%;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      align-items: stretch;
-      gap: 6px 18px;
+      .zh-category-strip__list {
+      display: flex;
+      width: auto;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 28px;
       padding: 0;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__item {
-      min-width: 0;
+      .zh-category-strip__link {
+      min-height: 34px;
+      padding-bottom: 8px;
+      color: rgba(42, 37, 32, 0.56);
+      font-size: 14.2px;
+      letter-spacing: -0.004em;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__link {
-      display: flex;
-      min-height: 42px;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 0 11px;
-      border-bottom: 1px solid rgba(42, 37, 32, 0.052);
-      color: rgba(42, 37, 32, 0.64);
-      font-size: 14px;
-      line-height: 1.22;
-      letter-spacing: -0.006em;
-      white-space: normal;
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__link::after {
-      right: 11px;
-      bottom: 0;
-      left: 11px;
-      height: 2px;
-      transform-origin: left center;
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__short {
+      .zh-category-strip__label--mobile {
       display: none;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__full {
+      .zh-category-strip__label--desktop {
       display: inline;
-    }
-
-    #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__link.is-active {
-      background: rgba(242, 232, 223, 0.34);
-      color: #5f3d2c;
     }
   }
 
-  @media (min-width: 1200px) {
+  @media (min-width: 1280px) {
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__list {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      .zh-category-strip__list {
+      gap: 10px 32px;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-strip__link {
+      font-size: 14.5px;
     }
   }
 
   @media (hover: hover) and (pointer: fine) {
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__link:hover:not(.is-active) {
+      .zh-category-strip__link:hover:not(.is-active) {
       color: #8f5a39;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__link:hover:not(.is-active)::after {
+      .zh-category-strip__link:hover:not(.is-active)::after {
       opacity: 0.24;
-      transform: scaleX(0.78);
-    }
-
-    @media (min-width: 1024px) {
-      #ZaynaCategoryPills-{{ section.id }}
-        .zh-category-index__link:hover:not(.is-active) {
-        background: rgba(242, 232, 223, 0.18);
-      }
+      transform: scaleX(0.82);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__link,
+      .zh-category-strip__link,
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-index__link::after {
+      .zh-category-strip__link::after {
       transition: none;
     }
   }
