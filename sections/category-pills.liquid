@@ -1,6 +1,6 @@
 {%- comment -%}
-  Zayna Home — collectie navigatie, fase 2F.
-  Premium collectie-tabs: geen filterchip-look, geen zij-fades, geen verticale lijnen.
+  Zayna Home — collectie navigatie, fase 2G.
+  Zachte collectie-strip: geen pills, geen fades, directe winkelroute.
 {%- endcomment -%}
 
 {%- liquid
@@ -25,15 +25,20 @@
   class="zh-category-navigation"
   aria-label="Collecties"
 >
-  <div class="zh-category-rail">
+  <div class="zh-category-strip">
+    <div class="zh-category-strip__label" aria-hidden="true">
+      <span></span>
+      Collecties
+    </div>
+
     <div
-      class="zh-category-rail__viewport"
+      class="zh-category-strip__viewport"
       data-category-visible-viewport
       role="group"
       aria-label="Wissel tussen collecties"
     >
-      <ul class="zh-category-rail__list">
-        <li class="zh-category-rail__item">
+      <ul class="zh-category-strip__list">
+        <li class="zh-category-strip__item">
           <a
             href="{{ routes.all_products_collection_url }}"
             class="zh-category-link{% if all_active %} is-active{% endif %}"
@@ -78,7 +83,7 @@
               endif
             -%}
 
-            <li class="zh-category-rail__item">
+            <li class="zh-category-strip__item">
               <a
                 href="{{ link.url }}"
                 class="zh-category-link{% if is_active %} is-active{% endif %}"
@@ -128,7 +133,7 @@
                 endif
               -%}
 
-              <li class="zh-category-rail__item">
+              <li class="zh-category-strip__item">
                 <a
                   href="{{ collection_item.url }}"
                   class="zh-category-link{% if is_active %} is-active{% endif %}"
@@ -152,12 +157,14 @@
 <script>
   (() => {
     const root = document.getElementById('ZaynaCategoryPills-{{ section.id }}');
-    const viewport = root?.querySelector('[data-category-visible-viewport]');
-    const active = root?.querySelector('.zh-category-link.is-active');
+    if (!root) return;
 
-    if (!viewport || !active) return;
+    const viewport = root.querySelector('[data-category-visible-viewport]');
+    const active = root.querySelector('.zh-category-link.is-active');
+    const prefetched = new Set();
 
-    window.requestAnimationFrame(() => {
+    const scrollActiveIntoView = () => {
+      if (!viewport || !active) return;
       if (window.matchMedia('(min-width: 1024px)').matches) return;
 
       const targetLeft = active.offsetLeft - ((viewport.clientWidth - active.offsetWidth) / 2);
@@ -167,7 +174,48 @@
         top: 0,
         behavior: 'auto'
       });
+    };
+
+    const prefetch = (anchor) => {
+      const href = anchor?.getAttribute('href');
+      if (!href || prefetched.has(href)) return;
+
+      const url = new URL(href, window.location.origin);
+      if (url.origin !== window.location.origin) return;
+
+      prefetched.add(href);
+
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = url.href;
+      document.head.appendChild(link);
+    };
+
+    root.querySelectorAll('.zh-category-link').forEach((anchor) => {
+      anchor.addEventListener('pointerenter', () => prefetch(anchor));
+      anchor.addEventListener('focus', () => prefetch(anchor));
+      anchor.addEventListener('touchstart', () => prefetch(anchor), { passive: true });
+
+      anchor.addEventListener('click', (event) => {
+        if (
+          event.defaultPrevented ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey ||
+          anchor.target === '_blank' ||
+          anchor.getAttribute('aria-current') === 'page'
+        ) {
+          return;
+        }
+
+        root.classList.add('is-navigating');
+        anchor.classList.add('is-navigating');
+        root.setAttribute('aria-busy', 'true');
+      });
     });
+
+    window.requestAnimationFrame(scrollActiveIntoView);
   })();
 </script>
 
@@ -175,20 +223,31 @@
   #ZaynaCategoryPills-{{ section.id }} {
     position: relative;
     width: min(100%, 1180px);
-    margin: 0 auto 12px;
+    margin: 0 auto 16px;
     padding: 0 16px;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail {
+    .zh-category-strip {
     position: relative;
-    padding: 7px 0 11px;
-    border-top: 1px solid rgba(42, 37, 32, 0.04);
-    border-bottom: 1px solid rgba(42, 37, 32, 0.045);
+    padding: 13px 0 12px;
+    border-top: 1px solid rgba(42, 37, 32, 0.052);
+    border-bottom: 1px solid rgba(42, 37, 32, 0.052);
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 253, 251, 0.42),
+        rgba(250, 247, 243, 0.24)
+      );
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__viewport {
+    .zh-category-strip__label {
+    display: none;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-strip__viewport {
     min-width: 0;
     margin: 0 -16px;
     overflow-x: auto;
@@ -201,46 +260,60 @@
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__viewport::-webkit-scrollbar {
+    .zh-category-strip__viewport::-webkit-scrollbar {
     display: none;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__list {
+    .zh-category-strip__list {
     display: flex;
     width: max-content;
     align-items: center;
     gap: 18px;
     margin: 0;
-    padding: 2px 0 4px;
+    padding: 1px 0 2px;
     list-style: none;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-rail__item {
+    .zh-category-strip__item {
     flex: 0 0 auto;
-    scroll-snap-align: start;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-link {
     position: relative;
     display: inline-flex;
-    min-height: 30px;
+    min-height: 34px;
     align-items: center;
     justify-content: center;
-    padding: 0 1px 3px;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    color: rgba(42, 37, 32, 0.58);
-    font-size: 13px;
+    padding: 0 2px 7px;
+    color: rgba(42, 37, 32, 0.60);
+    font-size: 13.4px;
     line-height: 1;
     text-decoration: none;
     white-space: nowrap;
     transition:
-      color 170ms ease,
-      opacity 170ms ease;
+      color 150ms ease,
+      opacity 150ms ease;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-link::after {
+    position: absolute;
+    right: 0;
+    bottom: 3px;
+    left: 0;
+    height: 2px;
+    border-radius: 99px;
+    background: rgba(150, 90, 52, 0.68);
+    content: '';
+    opacity: 0;
+    transform: scaleX(0.56);
+    transform-origin: center;
+    transition:
+      opacity 150ms ease,
+      transform 150ms ease;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -249,25 +322,9 @@
   }
 
   #ZaynaCategoryPills-{{ section.id }}
-    .zh-category-link::after {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: 1px;
-    background: rgba(166, 106, 63, 0.64);
-    content: '';
-    opacity: 0;
-    transform: scaleX(0.68);
-    transform-origin: center;
-    transition:
-      opacity 170ms ease,
-      transform 170ms ease;
-  }
-
-  #ZaynaCategoryPills-{{ section.id }}
     .zh-category-link.is-active {
-    color: #74482f;
+    color: #5f3d2c;
+    font-weight: 500;
   }
 
   #ZaynaCategoryPills-{{ section.id }}
@@ -276,27 +333,37 @@
     transform: scaleX(1);
   }
 
+  #ZaynaCategoryPills-{{ section.id }}.is-navigating
+    .zh-category-link:not(.is-navigating) {
+    opacity: 0.46;
+  }
+
+  #ZaynaCategoryPills-{{ section.id }}
+    .zh-category-link.is-navigating {
+    color: #74482f;
+  }
+
   #ZaynaCategoryPills-{{ section.id }}
     .zh-category-link:focus-visible {
     outline: 2px solid #a66a3f;
-    outline-offset: 4px;
+    outline-offset: 5px;
   }
 
   @media (min-width: 640px) {
     #ZaynaCategoryPills-{{ section.id }} {
-      margin-bottom: 13px;
+      margin-bottom: 18px;
       padding-right: 24px;
       padding-left: 24px;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-rail {
-      padding-top: 8px;
-      padding-bottom: 12px;
+      .zh-category-strip {
+      padding-top: 14px;
+      padding-bottom: 13px;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-rail__viewport {
+      .zh-category-strip__viewport {
       margin-right: -24px;
       margin-left: -24px;
       padding-right: 24px;
@@ -305,33 +372,62 @@
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-rail__list {
+      .zh-category-strip__list {
       gap: 22px;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
       .zh-category-link {
-      min-height: 31px;
-      font-size: 13.4px;
+      min-height: 35px;
+      font-size: 13.8px;
     }
   }
 
   @media (min-width: 1024px) {
     #ZaynaCategoryPills-{{ section.id }} {
-      margin-bottom: 14px;
+      margin-bottom: 22px;
       padding-right: 40px;
       padding-left: 40px;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-rail {
-      padding: 14px 0 15px;
-      border-top-color: rgba(42, 37, 32, 0.04);
-      border-bottom-color: rgba(42, 37, 32, 0.045);
+      .zh-category-strip {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr);
+      align-items: start;
+      column-gap: 34px;
+      padding: 18px 0 17px;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 253, 251, 0.48),
+          rgba(250, 247, 243, 0.30)
+        );
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-rail__viewport {
+      .zh-category-strip__label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding-top: 10px;
+      color: #9a6039;
+      font-size: 9px;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: 0.19em;
+      text-transform: uppercase;
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-strip__label > span {
+      width: 23px;
+      height: 1px;
+      background: rgba(166, 106, 63, 0.50);
+    }
+
+    #ZaynaCategoryPills-{{ section.id }}
+      .zh-category-strip__viewport {
       margin: 0;
       overflow: visible;
       padding: 0;
@@ -339,22 +435,22 @@
     }
 
     #ZaynaCategoryPills-{{ section.id }}
-      .zh-category-rail__list {
+      .zh-category-strip__list {
       display: flex;
-      width: min(100%, 1080px);
+      width: min(100%, 940px);
       flex-wrap: wrap;
       align-items: center;
-      gap: 12px 30px;
+      gap: 12px 28px;
       padding: 0;
     }
 
     #ZaynaCategoryPills-{{ section.id }}
       .zh-category-link {
-      min-height: 31px;
-      padding-bottom: 4px;
-      color: rgba(42, 37, 32, 0.62);
-      font-size: 14.2px;
-      line-height: 1.08;
+      min-height: 34px;
+      padding: 0 0 7px;
+      color: rgba(42, 37, 32, 0.64);
+      font-size: 14.6px;
+      line-height: 1.12;
       letter-spacing: -0.01em;
     }
 
@@ -370,7 +466,7 @@
 
     #ZaynaCategoryPills-{{ section.id }}
       .zh-category-link.is-active {
-      color: #70462f;
+      color: #5f3d2c;
     }
   }
 
@@ -383,7 +479,7 @@
     #ZaynaCategoryPills-{{ section.id }}
       .zh-category-link:hover:not(.is-active)::after {
       opacity: 0.28;
-      transform: scaleX(0.74);
+      transform: scaleX(0.72);
     }
   }
 
