@@ -11,33 +11,7 @@
   "sections": {
     "main": {
       "type": "contact-form",
-      "settings": {
-        "eyebrow": "Contact",
-        "heading": "Contact",
-        "intro": "We kijken graag met je mee. Heb je een vraag over een product, bestelling of retour? Stuur ons een bericht.",
-        "form_hint": "Gaat je vraag over een bestelling? Voeg je bestelnummer toe, dan kijken we sneller mee.",
-        "label_name": "Naam",
-        "label_email": "E-mailadres",
-        "label_subject": "Waar gaat je vraag over?",
-        "subjects": "Productvraag, Bestelling, Retour of ruil, Anders",
-        "label_order": "Bestelnummer, indien van toepassing",
-        "order_hint": "Alleen nodig bij een bestelling of retour.",
-        "label_message": "Bericht",
-        "submit_label": "Bericht versturen",
-        "success_text": "Bedankt voor je bericht. We reageren zo snel mogelijk.",
-        "error_text": "Er ging iets mis. Controleer je gegevens en probeer het opnieuw.",
-        "support_heading": "Klantenservice",
-        "support_text": "Je kunt ons bereiken via e-mail of Instagram. We reageren persoonlijk en zorgvuldig.",
-        "email": "info@zaynahome.nl",
-        "instagram_url": "https://www.instagram.com/zaynahome.nl",
-        "instagram_label": "@zaynahome.nl",
-        "helpful_heading": "Goed om te weten",
-        "note_response": "We reageren meestal binnen 24 uur op werkdagen.",
-        "note_shipping": "Verzending duurt meestal 1–3 werkdagen vanuit Nederland.",
-        "note_order": "Vermeld bij vragen over je bestelling indien mogelijk je bestelnummer.",
-        "company_heading": "Bedrijfsgegevens",
-        "company_details": "<p>Zayna Home</p><p>KvK: 97745200</p><p>btw-id: NL005285507B86</p>"
-      }
+      "settings": {}
     }
   },
   "order": [
