@@ -49,7 +49,7 @@
   endif
 
   assign title_class = 'zh-collection-hero__title'
-  if hero_title.size > 23
+  if hero_title.size > 20
     assign title_class = title_class | append: ' is-long'
   endif
 
@@ -113,7 +113,7 @@
     z-index: 1;
     width: min(100%, 1180px);
     margin: 0 auto;
-    padding: 20px 16px 8px;
+    padding: 22px 16px 9px;
   }
 
   #ZaynaCollectionHero-{{ section.id }}
@@ -152,7 +152,7 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: clamp(2rem, 7.4vw, 2.18rem);
+    font-size: clamp(1.84rem, 6.85vw, 2.04rem);
     font-weight: 400;
     line-height: 1.045;
     letter-spacing: -0.026em;
@@ -162,7 +162,7 @@
   #ZaynaCollectionHero-{{ section.id }}
     .zh-collection-hero__title.is-long {
     max-width: 24ch;
-    font-size: clamp(1.88rem, 6.7vw, 2.08rem);
+    font-size: clamp(1.68rem, 5.95vw, 1.90rem);
     line-height: 1.055;
   }
 
@@ -180,19 +180,19 @@
   @media (min-width: 640px) {
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__inner {
-      padding: 24px 24px 9px;
+      padding: 27px 24px 11px;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__title {
       max-width: 24ch;
-      font-size: clamp(2.24rem, 4.25vw, 2.68rem);
+      font-size: clamp(2.08rem, 3.85vw, 2.48rem);
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__title.is-long {
       max-width: 27ch;
-      font-size: clamp(2.06rem, 3.8vw, 2.42rem);
+      font-size: clamp(1.88rem, 3.35vw, 2.18rem);
     }
 
     #ZaynaCollectionHero-{{ section.id }}
@@ -207,7 +207,7 @@
   @media (min-width: 1024px) {
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__inner {
-      padding: 34px 40px 10px;
+      padding: 39px 40px 12px;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
@@ -218,14 +218,14 @@
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__title {
       max-width: 25ch;
-      font-size: clamp(2.72rem, 3.05vw, 3.34rem);
+      font-size: clamp(2.54rem, 2.78vw, 3.10rem);
       line-height: 1.01;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__title.is-long {
       max-width: 28ch;
-      font-size: clamp(2.35rem, 2.45vw, 2.82rem);
+      font-size: clamp(2.12rem, 2.22vw, 2.56rem);
       line-height: 1.025;
     }
 
