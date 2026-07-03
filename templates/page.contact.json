@@ -28,12 +28,7 @@
         "label_message": "Bericht",
         "submit_label": "Bericht versturen",
         "success_text": "Bedankt voor je bericht. We reageren zo snel mogelijk.",
-        "error_text": "Er ging iets mis. Controleer je gegevens en probeer het opnieuw.",
-        "support_heading": "Klantenservice",
-        "support_text": "Je kunt ons ook rechtstreeks bereiken via e-mail of Instagram.",
-        "email": "info@zaynahome.nl",
-        "instagram_url": "https://www.instagram.com/zaynahome.nl",
-        "instagram_label": "@zaynahome.nl"
+        "error_text": "Er ging iets mis. Controleer je gegevens en probeer het opnieuw."
       }
     }
   },
