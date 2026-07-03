@@ -1,104 +1,860 @@
 {%- liquid
   assign s = section.settings
+  assign subjects = s.subjects | split: ','
 -%}
-<article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-10 py-16">
-  <header class="mb-10">
-    <p class="text-label text-clay mb-3">{{ s.eyebrow }}</p>
-    <h1 class="font-display text-h1">{{ s.heading }}</h1>
-    {%- if s.intro != blank -%}
-      <p class="mt-4 text-ink-soft">{{ s.intro }}</p>
-    {%- endif -%}
-  </header>
 
-  <div class="grid gap-12 md:grid-cols-[2fr_1fr]">
-    {%- form 'contact', class: 'space-y-5' -%}
-      {%- if form.posted_successfully? -%}
-        <p class="text-sm text-sage" role="status">{{ s.success_text }}</p>
-      {%- elsif form.errors -%}
-        <p class="text-sm text-danger" role="alert">{{ s.error_text }}</p>
+<section
+  id="ZaynaContact-{{ section.id }}"
+  class="zh-contact"
+  aria-labelledby="ZaynaContactTitle-{{ section.id }}"
+>
+  <div class="zh-contact__inner">
+    <header class="zh-contact__header">
+      {%- if s.eyebrow != blank -%}
+        <p class="zh-contact__eyebrow">
+          <span aria-hidden="true"></span>
+          {{ s.eyebrow | escape }}
+        </p>
       {%- endif -%}
 
-      <div>
-        <label for="ContactName" class="text-label text-ink-soft block mb-2">{{ s.label_name }}</label>
-        <input id="ContactName" type="text" name="contact[name]" required autocomplete="name" value="{% if form.name %}{{ form.name }}{% endif %}" class="w-full h-11 border border-border-soft bg-surface px-3 text-sm text-ink focus:outline-none focus:border-stone">
-      </div>
-      <div>
-        <label for="ContactEmail" class="text-label text-ink-soft block mb-2">{{ s.label_email }}</label>
-        <input id="ContactEmail" type="email" name="contact[email]" required autocomplete="email" value="{% if form.email %}{{ form.email }}{% endif %}" class="w-full h-11 border border-border-soft bg-surface px-3 text-sm text-ink focus:outline-none focus:border-stone">
-      </div>
-      <div>
-        <label for="ContactSubject" class="text-label text-ink-soft block mb-2">{{ s.label_subject }}</label>
-        <select id="ContactSubject" name="contact[Onderwerp]" required class="w-full h-11 border border-border-soft bg-surface px-3 text-sm text-ink focus:outline-none focus:border-stone">
-          <option value="" disabled selected>{{ s.subject_placeholder }}</option>
-          {%- assign subjects = s.subjects | split: ',' -%}
-          {%- for subject in subjects -%}
-            {%- assign subject = subject | strip -%}
-            <option value="{{ subject | escape }}">{{ subject }}</option>
-          {%- endfor -%}
-        </select>
-      </div>
-      <div>
-        <label for="ContactMessage" class="text-label text-ink-soft block mb-2">{{ s.label_message }}</label>
-        <textarea id="ContactMessage" name="contact[body]" rows="6" required class="w-full border border-border-soft bg-surface px-3 py-2.5 text-sm text-ink focus:outline-none focus:border-stone">{% if form.body %}{{ form.body }}{% endif %}</textarea>
-      </div>
-      <button type="submit" class="h-12 px-7 bg-stone text-white text-sm uppercase tracking-wide hover:bg-clay transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone focus-visible:ring-offset-2">
-        {{ s.submit_label }}
-      </button>
-    {%- endform -%}
+      <h1
+        id="ZaynaContactTitle-{{ section.id }}"
+        class="zh-contact__title"
+      >
+        {{ s.heading | escape }}
+      </h1>
 
-    <aside class="space-y-4 text-sm">
-      {%- if s.email != blank -%}
-        <a href="mailto:{{ s.email }}" class="flex items-center gap-3 text-ink hover:text-clay transition-colors">
-          {% render 'icon', name: 'mail', size: 18 %}{{ s.email }}
-        </a>
-      {%- endif -%}
-      {%- if s.instagram_url != blank -%}
-        <a href="{{ s.instagram_url }}" target="_blank" rel="noreferrer" class="flex items-center gap-3 text-ink hover:text-clay transition-colors">
-          {% render 'icon', name: 'instagram', size: 18 %}{{ s.instagram_label }}
-        </a>
-      {%- endif -%}
-      {%- if s.note_response != blank -%}
-        <p class="text-ink-soft pt-2">{{ s.note_response }}</p>
-      {%- endif -%}
-      {%- if s.note_shipping != blank -%}
-        <p class="text-ink-soft">{{ s.note_shipping }}</p>
-      {%- endif -%}
-      {%- if s.company_details != blank -%}
-        <div class="border-t border-border-soft pt-4 mt-4 space-y-1 text-xs text-ink-soft">
-          <p class="text-label text-ink-soft">{{ s.company_heading }}</p>
-          <div class="rich-text text-xs [&>*]:mt-0 [&_p]:text-ink-soft">{{ s.company_details }}</div>
+      {%- if s.intro != blank -%}
+        <div class="zh-contact__intro">
+          {{ s.intro | newline_to_br }}
         </div>
       {%- endif -%}
-    </aside>
+    </header>
+
+    <div class="zh-contact__layout">
+      <div class="zh-contact__form-card">
+        {%- form 'contact', class: 'zh-contact-form' -%}
+          {%- if form.posted_successfully? -%}
+            <div class="zh-contact-message zh-contact-message--success" role="status">
+              {{ s.success_text | escape }}
+            </div>
+          {%- elsif form.errors -%}
+            <div class="zh-contact-message zh-contact-message--error" role="alert">
+              {{ s.error_text | escape }}
+            </div>
+          {%- endif -%}
+
+          <div class="zh-contact-form__row zh-contact-form__row--split">
+            <div class="zh-contact-field">
+              <label for="ContactName-{{ section.id }}" class="zh-contact-label">
+                {{ s.label_name | escape }}
+              </label>
+              <input
+                id="ContactName-{{ section.id }}"
+                type="text"
+                name="contact[name]"
+                required
+                autocomplete="name"
+                value="{% if form.name %}{{ form.name | escape }}{% endif %}"
+                class="zh-contact-input"
+              >
+            </div>
+
+            <div class="zh-contact-field">
+              <label for="ContactEmail-{{ section.id }}" class="zh-contact-label">
+                {{ s.label_email | escape }}
+              </label>
+              <input
+                id="ContactEmail-{{ section.id }}"
+                type="email"
+                name="contact[email]"
+                required
+                autocomplete="email"
+                value="{% if form.email %}{{ form.email | escape }}{% endif %}"
+                class="zh-contact-input"
+              >
+            </div>
+          </div>
+
+          <fieldset class="zh-contact-subjects">
+            <legend class="zh-contact-label">
+              {{ s.label_subject | escape }}
+            </legend>
+
+            <div class="zh-contact-subjects__grid">
+              {%- for subject in subjects -%}
+                {%- assign subject_label = subject | strip -%}
+                {%- if subject_label != blank -%}
+                  <label class="zh-contact-subject">
+                    <input
+                      type="radio"
+                      name="contact[Onderwerp]"
+                      value="{{ subject_label | escape }}"
+                      required
+                    >
+                    <span>{{ subject_label | escape }}</span>
+                  </label>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </fieldset>
+
+          <div class="zh-contact-field">
+            <label for="ContactOrder-{{ section.id }}" class="zh-contact-label">
+              {{ s.label_order | escape }}
+            </label>
+            <input
+              id="ContactOrder-{{ section.id }}"
+              type="text"
+              name="contact[Bestelnummer]"
+              autocomplete="off"
+              class="zh-contact-input"
+            >
+            {%- if s.order_hint != blank -%}
+              <p class="zh-contact-help">
+                {{ s.order_hint | escape }}
+              </p>
+            {%- endif -%}
+          </div>
+
+          <div class="zh-contact-field">
+            <label for="ContactMessage-{{ section.id }}" class="zh-contact-label">
+              {{ s.label_message | escape }}
+            </label>
+            <textarea
+              id="ContactMessage-{{ section.id }}"
+              name="contact[body]"
+              rows="7"
+              required
+              class="zh-contact-textarea"
+            >{% if form.body %}{{ form.body | escape }}{% endif %}</textarea>
+          </div>
+
+          <div class="zh-contact-form__footer">
+            <button type="submit" class="zh-contact-submit">
+              {{ s.submit_label | escape }}
+            </button>
+
+            {%- if s.note_response != blank -%}
+              <p class="zh-contact-form__note">
+                {{ s.note_response | escape }}
+              </p>
+            {%- endif -%}
+          </div>
+        {%- endform -%}
+      </div>
+
+      <aside class="zh-contact-sidebar" aria-label="Klantenservice informatie">
+        <div class="zh-contact-service-card">
+          {%- if s.support_heading != blank -%}
+            <p class="zh-contact-sidebar__heading">
+              {{ s.support_heading | escape }}
+            </p>
+          {%- endif -%}
+
+          {%- if s.support_text != blank -%}
+            <p class="zh-contact-sidebar__text">
+              {{ s.support_text | escape }}
+            </p>
+          {%- endif -%}
+
+          <div class="zh-contact-links">
+            {%- if s.email != blank -%}
+              <a href="mailto:{{ s.email | escape }}" class="zh-contact-link">
+                <span class="zh-contact-link__label">E-mail</span>
+                <span>{{ s.email | escape }}</span>
+              </a>
+            {%- endif -%}
+
+            {%- if s.instagram_url != blank -%}
+              <a
+                href="{{ s.instagram_url }}"
+                target="_blank"
+                rel="noreferrer"
+                class="zh-contact-link"
+              >
+                <span class="zh-contact-link__label">Instagram</span>
+                <span>{{ s.instagram_label | escape }}</span>
+              </a>
+            {%- endif -%}
+          </div>
+        </div>
+
+        <div class="zh-contact-info-card">
+          <p class="zh-contact-sidebar__heading">
+            {{ s.helpful_heading | escape }}
+          </p>
+
+          <ul class="zh-contact-notes">
+            {%- if s.note_shipping != blank -%}
+              <li>{{ s.note_shipping | escape }}</li>
+            {%- endif -%}
+
+            {%- if s.note_order != blank -%}
+              <li>{{ s.note_order | escape }}</li>
+            {%- endif -%}
+          </ul>
+
+          <div class="zh-contact-quicklinks" aria-label="Handige links">
+            <a href="/policies/shipping-policy">Verzending</a>
+            <a href="/policies/refund-policy">Retourneren</a>
+            <a href="{{ routes.collections_url }}">Collecties bekijken</a>
+          </div>
+        </div>
+
+        {%- if s.company_details != blank -%}
+          <div class="zh-contact-company">
+            <p class="zh-contact-sidebar__heading">
+              {{ s.company_heading | escape }}
+            </p>
+            <div class="zh-contact-company__details">
+              {{ s.company_details }}
+            </div>
+          </div>
+        {%- endif -%}
+      </aside>
+    </div>
   </div>
-</article>
+</section>
+
+{% style %}
+  #ZaynaContact-{{ section.id }} {
+    --zh-contact-bg: var(--color-bg, #faf5f2);
+    --zh-contact-surface: #fffdfb;
+    --zh-contact-ink: #2a2520;
+    --zh-contact-soft: rgba(42, 37, 32, 0.66);
+    --zh-contact-muted: rgba(42, 37, 32, 0.48);
+    --zh-contact-border: rgba(42, 37, 32, 0.085);
+    --zh-contact-border-strong: rgba(42, 37, 32, 0.15);
+    --zh-contact-clay: #9b613d;
+    --zh-contact-cream: rgba(255, 253, 251, 0.48);
+
+    background: var(--zh-contact-bg);
+    color: var(--zh-contact-ink);
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact__inner {
+    width: min(100%, 1180px);
+    margin: 0 auto;
+    padding: 34px 16px 68px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact__header {
+    max-width: 760px;
+    margin-bottom: 28px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 10px;
+    color: var(--zh-contact-clay);
+    font-size: 9px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.19em;
+    text-transform: uppercase;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact__eyebrow > span {
+    width: 26px;
+    height: 1px;
+    background: rgba(155, 97, 61, 0.52);
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact__title {
+    max-width: 14ch;
+    margin: 0;
+    color: var(--zh-contact-ink);
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: clamp(2.18rem, 7.2vw, 3.3rem);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.026em;
+    text-wrap: balance;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact__intro {
+    max-width: 62ch;
+    margin-top: 14px;
+    color: var(--zh-contact-soft);
+    font-size: 14.2px;
+    line-height: 1.72;
+    text-wrap: pretty;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact__layout {
+    display: grid;
+    gap: 28px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact__form-card,
+  #ZaynaContact-{{ section.id }} .zh-contact-service-card,
+  #ZaynaContact-{{ section.id }} .zh-contact-info-card,
+  #ZaynaContact-{{ section.id }} .zh-contact-company {
+    border: 1px solid var(--zh-contact-border);
+    background: var(--zh-contact-cream);
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact__form-card {
+    padding: 20px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-form {
+    display: grid;
+    gap: 18px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-form__row {
+    display: grid;
+    gap: 18px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-field {
+    display: grid;
+    gap: 8px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-label {
+    color: var(--zh-contact-muted);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-input,
+  #ZaynaContact-{{ section.id }} .zh-contact-textarea {
+    width: 100%;
+    min-width: 0;
+    border: 1px solid var(--zh-contact-border);
+    background: rgba(255, 253, 251, 0.72);
+    color: var(--zh-contact-ink);
+    font-size: 14px;
+    line-height: 1.45;
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease,
+      box-shadow 180ms ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-input {
+    height: 46px;
+    padding: 0 13px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-textarea {
+    min-height: 154px;
+    padding: 12px 13px;
+    resize: vertical;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-input:focus,
+  #ZaynaContact-{{ section.id }} .zh-contact-textarea:focus {
+    border-color: rgba(155, 97, 61, 0.42);
+    outline: 0;
+    background: var(--zh-contact-surface);
+    box-shadow: 0 0 0 1px rgba(155, 97, 61, 0.08);
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-help,
+  #ZaynaContact-{{ section.id }} .zh-contact-form__note {
+    margin: 0;
+    color: var(--zh-contact-muted);
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-subjects {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-subjects__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-subject {
+    position: relative;
+    display: flex;
+    min-height: 42px;
+    align-items: center;
+    border: 1px solid var(--zh-contact-border);
+    background: rgba(255, 253, 251, 0.50);
+    color: rgba(42, 37, 32, 0.68);
+    cursor: pointer;
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease,
+      color 180ms ease;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-subject input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-subject span {
+    display: block;
+    width: 100%;
+    padding: 11px 12px;
+    font-size: 12.5px;
+    line-height: 1.25;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-subject:has(input:checked) {
+    border-color: rgba(155, 97, 61, 0.36);
+    background: rgba(242, 232, 223, 0.74);
+    color: #704a33;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-subject:has(input:focus-visible) {
+    outline: 2px solid rgba(166, 106, 63, 0.42);
+    outline-offset: 3px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-form__footer {
+    display: grid;
+    gap: 10px;
+    align-items: center;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-submit {
+    display: inline-flex;
+    min-height: 44px;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    border: 1px solid #3b302a;
+    background: #3b302a;
+    color: #fffdfb;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-submit:focus-visible {
+    outline: 2px solid rgba(166, 106, 63, 0.42);
+    outline-offset: 3px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-message {
+    padding: 12px 13px;
+    border: 1px solid var(--zh-contact-border);
+    color: var(--zh-contact-ink);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-message--success {
+    background: rgba(239, 229, 220, 0.64);
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-message--error {
+    border-color: rgba(139, 76, 66, 0.24);
+    background: rgba(139, 76, 66, 0.055);
+    color: #7a4139;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-sidebar {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-service-card,
+  #ZaynaContact-{{ section.id }} .zh-contact-info-card,
+  #ZaynaContact-{{ section.id }} .zh-contact-company {
+    padding: 18px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-sidebar__heading {
+    margin: 0 0 9px;
+    color: var(--zh-contact-ink);
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-sidebar__text {
+    margin: 0;
+    color: var(--zh-contact-soft);
+    font-size: 13.2px;
+    line-height: 1.62;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-links {
+    display: grid;
+    gap: 10px;
+    margin-top: 17px;
+    padding-top: 15px;
+    border-top: 1px solid var(--zh-contact-border);
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-link {
+    display: grid;
+    gap: 4px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-link__label {
+    color: var(--zh-contact-muted);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.17em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-link span:last-child {
+    color: rgba(42, 37, 32, 0.78);
+    font-size: 13.5px;
+    line-height: 1.35;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-notes {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--zh-contact-soft);
+    font-size: 13px;
+    line-height: 1.58;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-notes li {
+    position: relative;
+    padding-left: 14px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-notes li::before {
+    position: absolute;
+    top: 0.72em;
+    left: 0;
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(155, 97, 61, 0.46);
+    content: '';
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-quicklinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    margin-top: 17px;
+    padding-top: 15px;
+    border-top: 1px solid var(--zh-contact-border);
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-quicklinks a {
+    color: rgba(42, 37, 32, 0.62);
+    font-size: 12px;
+    line-height: 1.3;
+    text-decoration: underline;
+    text-decoration-color: rgba(42, 37, 32, 0.20);
+    text-underline-offset: 4px;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-company__details {
+    color: var(--zh-contact-muted);
+    font-size: 12px;
+    line-height: 1.56;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-company__details p {
+    margin: 0;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-company__details p + p {
+    margin-top: 3px;
+  }
+
+  @media (min-width: 640px) {
+    #ZaynaContact-{{ section.id }} .zh-contact__inner {
+      padding-right: 24px;
+      padding-left: 24px;
+    }
+
+    #ZaynaContact-{{ section.id }} .zh-contact__form-card {
+      padding: 24px;
+    }
+
+    #ZaynaContact-{{ section.id }} .zh-contact-form__row--split {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 900px) {
+    #ZaynaContact-{{ section.id }} .zh-contact__inner {
+      padding-top: 46px;
+      padding-right: 40px;
+      padding-bottom: 88px;
+      padding-left: 40px;
+    }
+
+    #ZaynaContact-{{ section.id }} .zh-contact__header {
+      margin-bottom: 34px;
+    }
+
+    #ZaynaContact-{{ section.id }} .zh-contact__layout {
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+      gap: 34px;
+      align-items: start;
+    }
+
+    #ZaynaContact-{{ section.id }} .zh-contact__form-card {
+      padding: 30px;
+    }
+
+    #ZaynaContact-{{ section.id }} .zh-contact-form__footer {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    #ZaynaContact-{{ section.id }} .zh-contact-submit {
+      width: auto;
+      min-width: 174px;
+    }
+  }
+
+  @media (min-width: 1180px) {
+    #ZaynaContact-{{ section.id }} .zh-contact__layout {
+      grid-template-columns: minmax(0, 1.42fr) minmax(320px, 0.58fr);
+      gap: 42px;
+    }
+  }
+
+  @media (max-width: 419px) {
+    #ZaynaContact-{{ section.id }} .zh-contact__inner {
+      padding-top: 30px;
+    }
+
+    #ZaynaContact-{{ section.id }} .zh-contact__title {
+      font-size: clamp(2.02rem, 10vw, 2.4rem);
+    }
+
+    #ZaynaContact-{{ section.id }} .zh-contact__intro {
+      font-size: 13.6px;
+      line-height: 1.65;
+    }
+
+    #ZaynaContact-{{ section.id }} .zh-contact__form-card {
+      padding: 18px;
+    }
+
+    #ZaynaContact-{{ section.id }} .zh-contact-subjects__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    #ZaynaContact-{{ section.id }} .zh-contact-submit:hover {
+      border-color: var(--zh-contact-clay);
+      background: var(--zh-contact-clay);
+    }
+
+    #ZaynaContact-{{ section.id }} .zh-contact-subject:hover {
+      border-color: rgba(155, 97, 61, 0.24);
+      background: rgba(255, 253, 251, 0.84);
+      color: #704a33;
+    }
+
+    #ZaynaContact-{{ section.id }} .zh-contact-link:hover span:last-child,
+    #ZaynaContact-{{ section.id }} .zh-contact-quicklinks a:hover {
+      color: var(--zh-contact-clay);
+      text-decoration-color: rgba(155, 97, 61, 0.40);
+    }
+  }
+{% endstyle %}
 
 {% schema %}
 {
   "name": "Contact form",
   "tag": "section",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Contact" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Stuur ons een bericht." },
-    { "type": "textarea", "id": "intro", "label": "Intro", "default": "Heb je een vraag over een product, je bestelling of iets anders? Stuur ons een bericht en we reageren zo snel mogelijk — meestal binnen 24 uur op werkdagen." },
-    { "type": "header", "content": "Form labels" },
-    { "type": "text", "id": "label_name", "label": "Name label", "default": "Naam" },
-    { "type": "text", "id": "label_email", "label": "Email label", "default": "E-mailadres" },
-    { "type": "text", "id": "label_subject", "label": "Subject label", "default": "Onderwerp" },
-    { "type": "text", "id": "subject_placeholder", "label": "Subject placeholder", "default": "Kies een onderwerp" },
-    { "type": "text", "id": "subjects", "label": "Subjects (comma-separated)", "default": "Vraag over een product, Vraag over een bestelling, Retour of ruil, Anders" },
-    { "type": "text", "id": "label_message", "label": "Message label", "default": "Bericht" },
-    { "type": "text", "id": "submit_label", "label": "Submit label", "default": "Verstuur bericht" },
-    { "type": "text", "id": "success_text", "label": "Success text", "default": "Bedankt voor je bericht. We reageren zo snel mogelijk." },
-    { "type": "text", "id": "error_text", "label": "Error text", "default": "Er ging iets mis. Controleer je gegevens en probeer het opnieuw." },
-    { "type": "header", "content": "Sidebar" },
-    { "type": "text", "id": "email", "label": "Email", "default": "info@zaynahome.nl" },
-    { "type": "text", "id": "instagram_url", "label": "Instagram URL", "default": "https://www.instagram.com/zaynahome.nl" },
-    { "type": "text", "id": "instagram_label", "label": "Instagram label", "default": "@zaynahome.nl" },
-    { "type": "text", "id": "note_response", "label": "Response note", "default": "Reactietijd: binnen 24 uur op werkdagen." },
-    { "type": "text", "id": "note_shipping", "label": "Shipping note", "default": "Verzending: binnen 1–3 werkdagen vanuit Nederland." },
-    { "type": "text", "id": "company_heading", "label": "Company heading", "default": "Bedrijfsgegevens" },
-    { "type": "richtext", "id": "company_details", "label": "Company details", "default": "<p>KvK: 97745200</p><p>BTW: NL005285507B86</p>" }
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Contact"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "We helpen je graag."
+    },
+    {
+      "type": "textarea",
+      "id": "intro",
+      "label": "Intro",
+      "default": "Heb je een vraag over een product, je bestelling of een retour? Stuur ons een bericht. We reageren meestal binnen 24 uur op werkdagen.\n\nGaat je vraag over een bestelling? Vermeld dan indien mogelijk je bestelnummer, zodat we sneller met je kunnen meekijken."
+    },
+    {
+      "type": "header",
+      "content": "Form labels"
+    },
+    {
+      "type": "text",
+      "id": "label_name",
+      "label": "Name label",
+      "default": "Naam"
+    },
+    {
+      "type": "text",
+      "id": "label_email",
+      "label": "Email label",
+      "default": "E-mailadres"
+    },
+    {
+      "type": "text",
+      "id": "label_subject",
+      "label": "Subject label",
+      "default": "Waar gaat je vraag over?"
+    },
+    {
+      "type": "text",
+      "id": "subjects",
+      "label": "Subjects (comma-separated)",
+      "default": "Productvraag, Bestelling, Retour of ruil, Anders"
+    },
+    {
+      "type": "text",
+      "id": "label_order",
+      "label": "Order number label",
+      "default": "Bestelnummer (optioneel)"
+    },
+    {
+      "type": "text",
+      "id": "order_hint",
+      "label": "Order hint",
+      "default": "Handig bij vragen over een bestelling of retour."
+    },
+    {
+      "type": "text",
+      "id": "label_message",
+      "label": "Message label",
+      "default": "Bericht"
+    },
+    {
+      "type": "text",
+      "id": "submit_label",
+      "label": "Submit label",
+      "default": "Bericht versturen"
+    },
+    {
+      "type": "text",
+      "id": "success_text",
+      "label": "Success text",
+      "default": "Bedankt voor je bericht. We reageren zo snel mogelijk."
+    },
+    {
+      "type": "text",
+      "id": "error_text",
+      "label": "Error text",
+      "default": "Er ging iets mis. Controleer je gegevens en probeer het opnieuw."
+    },
+    {
+      "type": "header",
+      "content": "Sidebar"
+    },
+    {
+      "type": "text",
+      "id": "support_heading",
+      "label": "Support heading",
+      "default": "Klantenservice"
+    },
+    {
+      "type": "textarea",
+      "id": "support_text",
+      "label": "Support text",
+      "default": "We kijken zorgvuldig met je mee en reageren persoonlijk."
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email",
+      "default": "info@zaynahome.nl"
+    },
+    {
+      "type": "text",
+      "id": "instagram_url",
+      "label": "Instagram URL",
+      "default": "https://www.instagram.com/zaynahome.nl"
+    },
+    {
+      "type": "text",
+      "id": "instagram_label",
+      "label": "Instagram label",
+      "default": "@zaynahome.nl"
+    },
+    {
+      "type": "text",
+      "id": "helpful_heading",
+      "label": "Helpful heading",
+      "default": "Handig om te weten"
+    },
+    {
+      "type": "text",
+      "id": "note_response",
+      "label": "Response note",
+      "default": "We reageren meestal binnen 24 uur op werkdagen."
+    },
+    {
+      "type": "text",
+      "id": "note_shipping",
+      "label": "Shipping note",
+      "default": "Verzending binnen 1–3 werkdagen vanuit Nederland."
+    },
+    {
+      "type": "text",
+      "id": "note_order",
+      "label": "Order note",
+      "default": "Vermeld bij vragen over je bestelling indien mogelijk je bestelnummer."
+    },
+    {
+      "type": "text",
+      "id": "company_heading",
+      "label": "Company heading",
+      "default": "Bedrijfsgegevens"
+    },
+    {
+      "type": "richtext",
+      "id": "company_details",
+      "label": "Company details",
+      "default": "<p>Zayna Home</p><p>KvK: 97745200</p><p>btw-id: NL005285507B86</p>"
+    }
   ]
 }
 {% endschema %}
