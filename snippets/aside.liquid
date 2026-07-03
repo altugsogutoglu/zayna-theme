@@ -1,3 +1,8 @@
+{%- comment -%}
+  Zayna Home — aside/drawer wrapper, fase 2U.
+  Mobiele drawer-header compacter gemaakt zodat het menu sneller begint.
+{%- endcomment -%}
+
 {%- liquid
   assign aside_logo = logo
 
@@ -131,7 +136,7 @@
   }
 
   [data-aside="mobile"] .zayna-aside-header {
-    height: 88px;
+    height: 74px;
   }
 
   .zayna-aside-actions {
@@ -232,6 +237,11 @@
     object-fit: contain;
   }
 
+  [data-aside="mobile"] .zayna-aside-logo__image {
+    max-width: 154px !important;
+    max-height: 34px !important;
+  }
+
   .zayna-aside-logo__fallback {
     color: #2b2622;
     font-family:
@@ -248,10 +258,10 @@
 
   .zayna-aside-close {
     display: inline-grid;
-    width: 40px;
-    height: 40px;
-    flex: 0 0 40px;
-    margin-right: -10px;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    margin-right: -8px;
     padding: 0;
     place-items: center;
     border: 0;
@@ -316,14 +326,14 @@
 
   @media (max-width: 389px) {
     [data-aside="mobile"] .zayna-aside-header {
-      height: 82px;
+      height: 70px;
       padding-right: 20px;
       padding-left: 20px;
     }
 
-    .zayna-aside-logo__image {
-      max-width: 145px !important;
-      max-height: 38px !important;
+    [data-aside="mobile"] .zayna-aside-logo__image {
+      max-width: 146px !important;
+      max-height: 32px !important;
     }
   }
 

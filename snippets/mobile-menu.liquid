@@ -1,6 +1,6 @@
 {%- comment -%}
-  Zayna Home — rustig mobiel menu, fase 2T.
-  Doel: minder groot, minder lijnen/pijlen, meer editorial rust.
+  Zayna Home — rustig mobiel menu, fase 2U.
+  Doel: nog compacter, zachtere lijnen en minder drawer-zwaarte.
 {%- endcomment -%}
 
 {%- liquid
@@ -171,12 +171,12 @@
   }
 
   .zayna-mobile-menu__nav {
-    padding: 18px 24px 0;
+    padding: 15px 24px 0;
   }
 
   .zayna-mobile-menu__label {
-    margin: 0 0 12px;
-    color: rgba(43, 38, 34, 0.44);
+    margin: 0 0 10px;
+    color: rgba(43, 38, 34, 0.40);
     font-size: 9px;
     font-weight: 500;
     line-height: 1.4;
@@ -193,21 +193,21 @@
   }
 
   .zayna-mobile-menu__main-list {
-    border-top: 1px solid rgba(42, 37, 32, 0.055);
+    border-top: 1px solid rgba(42, 37, 32, 0.038);
   }
 
   .zayna-mobile-menu__main-link,
   .zayna-mobile-menu__summary {
     display: flex;
     width: 100%;
-    min-height: 46px;
+    min-height: 41px;
     align-items: center;
     justify-content: space-between;
-    gap: 14px;
+    gap: 12px;
     margin: 0;
-    padding: 9px 0;
+    padding: 7px 0;
     border: 0;
-    border-bottom: 1px solid rgba(42, 37, 32, 0.06);
+    border-bottom: 1px solid rgba(42, 37, 32, 0.042);
     background: transparent;
     color: #2b2622;
     font-family:
@@ -215,10 +215,10 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: clamp(20px, 5.2vw, 22px);
+    font-size: clamp(18.5px, 4.8vw, 20.5px);
     font-weight: 400;
     line-height: 1.1;
-    letter-spacing: -0.018em;
+    letter-spacing: -0.014em;
     text-align: left;
     text-decoration: none;
     cursor: pointer;
@@ -260,13 +260,13 @@
 
   .zayna-mobile-menu__toggle {
     display: grid;
-    width: 22px;
-    height: 32px;
-    flex: 0 0 22px;
+    width: 20px;
+    height: 30px;
+    flex: 0 0 20px;
     place-items: center;
     color: rgba(43, 38, 34, 0.48);
     font-family: Arial, sans-serif;
-    font-size: 17px;
+    font-size: 15.5px;
     font-weight: 300;
     line-height: 1;
     transition: color 160ms ease;
@@ -304,15 +304,15 @@
   }
 
   .zayna-mobile-menu__submenu {
-    padding: 14px 0 16px;
-    border-bottom: 1px solid rgba(42, 37, 32, 0.06);
+    padding: 11px 0 13px;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.042);
     background: transparent;
   }
 
   .zayna-mobile-menu__submenu-label {
-    margin: 0 0 10px;
-    color: rgba(43, 38, 34, 0.42);
-    font-size: 8.8px;
+    margin: 0 0 8px;
+    color: rgba(43, 38, 34, 0.38);
+    font-size: 8.4px;
     font-weight: 500;
     line-height: 1.4;
     letter-spacing: 0.18em;
@@ -331,10 +331,10 @@
 
   .zayna-mobile-menu__all-products {
     display: inline-flex;
-    min-height: 34px;
+    min-height: 31px;
     align-items: center;
     color: #8f5732;
-    font-size: 12.8px;
+    font-size: 12.2px;
     font-weight: 500;
     line-height: 1.4;
     text-decoration: none;
@@ -354,11 +354,11 @@
     display: flex;
     width: 100%;
     min-width: 0;
-    min-height: 37px;
+    min-height: 33px;
     align-items: center;
-    padding: 6px 0;
+    padding: 5px 0;
     color: rgba(43, 38, 34, 0.72);
-    font-size: 14.2px;
+    font-size: 13.4px;
     line-height: 1.35;
     text-decoration: none;
     -webkit-tap-highlight-color: transparent;
@@ -379,20 +379,20 @@
   }
 
   .zayna-mobile-menu__service {
-    padding: 22px 24px 0;
+    padding: 18px 24px 0;
   }
 
   .zayna-mobile-menu__service-list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 18px;
-    row-gap: 8px;
+    column-gap: 16px;
+    row-gap: 5px;
     padding-top: 2px;
   }
 
   .zayna-mobile-menu__service-link {
     display: inline-flex;
-    min-height: 30px;
+    min-height: 28px;
     align-items: center;
     justify-content: flex-start;
     margin: 0;
@@ -401,7 +401,7 @@
     background: transparent;
     color: rgba(43, 38, 34, 0.58);
     font-family: var(--font-body-family, Arial, sans-serif);
-    font-size: 12.8px;
+    font-size: 12.2px;
     font-weight: 400;
     line-height: 1.4;
     letter-spacing: 0;
@@ -416,23 +416,23 @@
   .zayna-mobile-menu__footer {
     margin-top: auto;
     padding:
-      24px 24px
-      max(24px, env(safe-area-inset-bottom));
+      20px 24px
+      max(22px, env(safe-area-inset-bottom));
   }
 
   .zayna-mobile-menu__footer::before {
     content: "";
     display: block;
     height: 1px;
-    margin-bottom: 14px;
-    background: rgba(42, 37, 32, 0.055);
+    margin-bottom: 12px;
+    background: rgba(42, 37, 32, 0.038);
   }
 
   .zayna-mobile-menu__footer p {
     max-width: 32ch;
     margin: 0;
     color: rgba(43, 38, 34, 0.48);
-    font-size: 11.6px;
+    font-size: 11.2px;
     line-height: 1.55;
   }
 
@@ -460,8 +460,8 @@
 
     .zayna-mobile-menu__main-link,
     .zayna-mobile-menu__summary {
-      min-height: 44px;
-      font-size: 20px;
+      min-height: 40px;
+      font-size: 18.5px;
     }
 
     .zayna-mobile-menu__service-list {
