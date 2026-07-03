@@ -11,7 +11,30 @@
   "sections": {
     "main": {
       "type": "contact-form",
-      "settings": {}
+      "settings": {
+        "eyebrow": "Contact",
+        "heading": "Contact",
+        "intro": "Heb je een vraag over een product, bestelling of retour? Stuur ons een bericht.",
+        "note_response": "We reageren meestal binnen 24 uur op werkdagen.",
+        "form_heading": "",
+        "form_intro": "",
+        "form_hint": "Vermeld bij vragen over je bestelling indien mogelijk je bestelnummer.",
+        "label_name": "Naam",
+        "label_email": "E-mailadres",
+        "label_subject": "Waar gaat je vraag over?",
+        "subjects": "Productvraag, Bestelling, Retour of ruil, Anders",
+        "label_order": "Bestelnummer, indien van toepassing",
+        "order_hint": "Alleen nodig bij een bestelling of retour.",
+        "label_message": "Bericht",
+        "submit_label": "Bericht versturen",
+        "success_text": "Bedankt voor je bericht. We reageren zo snel mogelijk.",
+        "error_text": "Er ging iets mis. Controleer je gegevens en probeer het opnieuw.",
+        "support_heading": "Klantenservice",
+        "support_text": "Je kunt ons ook rechtstreeks bereiken via e-mail of Instagram.",
+        "email": "info@zaynahome.nl",
+        "instagram_url": "https://www.instagram.com/zaynahome.nl",
+        "instagram_label": "@zaynahome.nl"
+      }
     }
   },
   "order": [
