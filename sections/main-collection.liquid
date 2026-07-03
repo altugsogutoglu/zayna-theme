@@ -1,5 +1,5 @@
 {%- comment -%}
-  Zayna Home — rustig collectieproductgrid, fase 2M.
+  Zayna Home — rustig collectieproductgrid, fase 2P.
   Filters, sortering en prijsvelden worden beheerd door assets/collection.js.
 {%- endcomment -%}
 
@@ -61,14 +61,14 @@
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar {
     display: flex;
-    min-height: 38px;
+    min-height: 34px;
     align-items: center;
     justify-content: space-between;
     gap: 14px;
-    margin-bottom: 20px;
-    padding: 7px 0 10px;
+    margin-bottom: 17px;
+    padding: 5px 0 9px;
     border-top: 0;
-    border-bottom: 1px solid rgba(42, 37, 32, 0.045);
+    border-bottom: 1px solid rgba(42, 37, 32, 0.040);
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -92,7 +92,7 @@
     display: flex;
     min-width: 0;
     align-items: center;
-    gap: 18px;
+    gap: 16px;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -101,9 +101,9 @@
     .zh-collection-sort {
     position: relative;
     display: inline-flex;
-    min-height: 28px;
+    min-height: 27px;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     border: 0;
     appearance: none;
     -webkit-appearance: none;
@@ -125,7 +125,7 @@
     .zh-collection-sort__button::after {
     position: absolute;
     right: 0;
-    bottom: 3px;
+    bottom: 2px;
     left: 0;
     height: 1px;
     transform: scaleX(0);
@@ -153,13 +153,20 @@
     height: auto;
     align-items: center;
     justify-content: center;
+    gap: 4px;
     padding: 0;
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: #8f5a39;
+    color: rgba(143, 90, 57, 0.76);
     font-size: 10.2px;
     font-variant-numeric: tabular-nums;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
+    .zh-collection-toolbar__badge::before {
+    color: rgba(42, 37, 32, 0.34);
+    content: '·';
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -193,7 +200,7 @@
     .zh-collection-sort__button {
     position: relative;
     display: inline-flex;
-    min-height: 28px;
+    min-height: 27px;
     min-width: 0;
     align-items: center;
     gap: 5px;
@@ -297,31 +304,39 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 7px;
-    margin: -1px 0 17px;
+    gap: 10px;
+    margin: -4px 0 13px;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-active-filter {
     display: inline-flex;
-    min-height: 32px;
+    min-height: 24px;
     align-items: center;
-    gap: 7px;
-    padding: 0 10px;
-    border: 1px solid rgba(166, 106, 63, 0.18);
-    border-radius: 999px;
-    background: rgba(242, 232, 223, 0.54);
-    color: #6e4932;
-    font-size: 10px;
+    gap: 5px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: rgba(110, 73, 50, 0.74);
+    font-size: 10.6px;
+    line-height: 1;
     text-decoration: none;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
+    .zh-active-filter svg {
+    width: 10px;
+    height: 10px;
+    opacity: 0.52;
+  }
+
+  #ZaynaCollectionGrid-{{ section.id }}
     .zh-active-filters__clear {
-    color: rgba(42, 37, 32, 0.40);
-    font-size: 10px;
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    color: rgba(42, 37, 32, 0.38);
+    font-size: 10.4px;
+    line-height: 1;
+    text-decoration: none;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -668,7 +683,7 @@
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar {
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
@@ -696,10 +711,10 @@
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar {
-      min-height: 40px;
-      margin-bottom: 20px;
-      padding-top: 8px;
-      padding-bottom: 10px;
+      min-height: 36px;
+      margin-bottom: 17px;
+      padding-top: 6px;
+      padding-bottom: 9px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
@@ -748,10 +763,10 @@
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar {
-      min-height: 42px;
-      margin-bottom: 22px;
-      padding-top: 9px;
-      padding-bottom: 11px;
+      min-height: 38px;
+      margin-bottom: 18px;
+      padding-top: 7px;
+      padding-bottom: 10px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
@@ -761,7 +776,7 @@
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar__actions {
-      gap: 22px;
+      gap: 20px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
@@ -815,6 +830,16 @@
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-active-filter:hover,
     #ZaynaCollectionGrid-{{ section.id }}
+      .zh-active-filters__clear:hover {
+      color: #8f5a39;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-active-filter:hover svg {
+      opacity: 0.78;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-empty__button:hover {
       border-color: rgba(166, 106, 63, 0.36);
       background: rgba(242, 232, 223, 0.88);
@@ -853,7 +878,7 @@
     .zh-active-filters {
     flex-wrap: nowrap;
     overflow-x: auto;
-    padding-bottom: 2px;
+    padding-bottom: 1px;
     scrollbar-width: none;
   }
 
@@ -1048,7 +1073,7 @@
           data-filter-clear
           class="zh-active-filters__clear"
         >
-          Filters wissen
+          Wissen
         </a>
       </div>
     {%- endif -%}
