@@ -1,9 +1,3 @@
-{%- comment -%}
-  Zayna Home — header + rustig desktop mega menu, fase 2U.
-  Desktop mega menu is bewust teruggebracht: geen uitgelichte beeldkaart,
-  minder visuele massa en categorieën als primaire route.
-{%- endcomment -%}
-
 {%- liquid
   assign menu = section.settings.menu
   assign logo_width = section.settings.logo_width | default: 140
@@ -540,14 +534,13 @@
   #shopify-section-{{ section.id }} .zayna-mega-inner {
     display: grid;
     grid-template-columns:
-      minmax(168px, 0.58fr)
-      minmax(0, 1.82fr);
+      minmax(190px, 0.75fr)
+      minmax(0, 2.25fr)
+      minmax(260px, 0.95fr);
     align-items: start;
-    gap: 30px;
-    width: min(100%, 1060px);
-    max-width: 1060px;
-    padding-top: 18px;
-    padding-bottom: 18px;
+    gap: 28px;
+    padding-top: 20px;
+    padding-bottom: 20px;
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-intro,
@@ -559,44 +552,44 @@
   #shopify-section-{{ section.id }} .zayna-mega-kicker {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin: 0 0 11px;
-    color: #9b613d;
-    font-size: 9px;
+    gap: 12px;
+    margin: 0 0 14px;
+    color: #a66a3f;
+    font-size: 10px;
     line-height: 1.4;
-    letter-spacing: 0.20em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-kicker span {
     display: block;
-    width: 26px;
+    width: 32px;
     height: 1px;
     flex: 0 0 auto;
-    background: rgba(166, 106, 63, 0.44);
+    background: rgba(166, 106, 63, 0.6);
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-blurb {
-    max-width: 27ch;
+    max-width: 30ch;
     margin: 0;
-    color: rgba(42, 37, 32, 0.58);
+    color: #675f58;
     font-family: var(--font-body-family, Arial, sans-serif);
-    font-size: 12.5px;
+    font-size: 13.5px;
     font-style: normal;
     font-weight: 400;
-    line-height: 1.58;
+    line-height: 1.65;
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-service {
-    display: none;
+    margin-top: 22px;
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-small-heading {
-    margin: 0 0 10px;
-    color: rgba(43, 38, 34, 0.42);
-    font-size: 9px;
+    margin: 0 0 13px;
+    color: #9b9188;
+    font-size: 10px;
     line-height: 1.4;
-    letter-spacing: 0.20em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
   }
 
@@ -615,35 +608,35 @@
   #shopify-section-{{ section.id }} .zayna-mega-categories {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 20px;
+    column-gap: 22px;
     row-gap: 0;
-    margin: 0;
+    margin: 0 -9px;
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-link {
     display: flex;
     min-width: 0;
-    min-height: 36px;
+    min-height: 42px;
     align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
-    padding: 4px 0;
-    border-radius: 0;
+    justify-content: space-between;
+    gap: 9px;
+    padding: 5px 9px;
+    border-radius: 2px;
     color: inherit;
     text-decoration: none;
-    transition: color 180ms ease;
+    transition: background-color 180ms ease;
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-link:hover {
-    background: transparent;
+    background: rgba(232, 225, 218, 0.46);
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-category-title {
     display: block;
     min-width: 0;
-    color: rgba(43, 38, 34, 0.82);
+    color: #2b2622;
     font-family: var(--font-heading-family, Georgia, serif);
-    font-size: 14.5px;
+    font-size: 15.5px;
     font-weight: 400;
     line-height: 1.22;
     transition: color 180ms ease;
@@ -654,16 +647,33 @@
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-arrow {
-    display: none;
+    flex: 0 0 auto;
+    color: #9b9188;
+    font-size: 14px;
+    transition:
+      color 180ms ease,
+      transform 180ms ease;
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-link:hover .zayna-mega-arrow {
     color: #a66a3f;
-    transform: none;
+    transform: translateX(4px);
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-cta {
-    display: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    margin-top: 12px;
+    padding-top: 13px;
+    border-top: 1px solid #e7ddd2;
+    color: #2b2622;
+    font-size: 10.5px;
+    line-height: 1.4;
+    letter-spacing: 0.21em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 180ms ease;
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-cta:hover {
@@ -671,7 +681,8 @@
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-feature {
-    display: none;
+    display: flex;
+    min-height: 305px;
   }
 
   #shopify-section-{{ section.id }} .zayna-mega-feature > a {
@@ -775,14 +786,12 @@
 
     #shopify-section-{{ section.id }} .zayna-mega-inner {
       grid-template-columns:
-        minmax(150px, 0.62fr)
-        minmax(0, 1.7fr);
+        minmax(165px, 0.7fr)
+        minmax(0, 2.3fr);
       align-items: start;
-      gap: 18px;
-      width: min(100%, 900px);
-      max-width: 900px;
-      padding-top: 15px;
-      padding-bottom: 15px;
+      gap: 20px;
+      padding-top: 17px;
+      padding-bottom: 17px;
     }
 
     #shopify-section-{{ section.id }} .zayna-mega-feature {
@@ -828,19 +837,19 @@
 
     #shopify-section-{{ section.id }} .zayna-mega-categories {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: 14px;
+      column-gap: 16px;
       row-gap: 0;
-      margin: 0;
+      margin: 0 -6px;
     }
 
     #shopify-section-{{ section.id }} .zayna-mega-link {
-      min-height: 34px;
-      gap: 6px;
-      padding: 4px 0;
+      min-height: 38px;
+      gap: 7px;
+      padding: 4px 6px;
     }
 
     #shopify-section-{{ section.id }} .zayna-mega-category-title {
-      font-size: 13.5px;
+      font-size: 14px;
       line-height: 1.22;
       white-space: normal;
     }
