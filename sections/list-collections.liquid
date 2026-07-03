@@ -3,7 +3,8 @@
 
   - Twee compacte kolommen op mobiel.
   - Drie compacte kolommen vanaf 560 px, zodat split-screen altijd goed uitlijnt.
-  - Beeldverhouding 5:4: compacter dan vroeger, maar met minder afsnijding.
+  - Vier rustigere kolommen op ruime desktop, zodat het overzicht minder overprikkelend wordt.
+  - Beeldverhouding 5:4: compact, maar met genoeg productbeeld.
   - Bij een oneven aantal wordt de laatste kaart op mobiel/tablet gecentreerd.
   - Geen productaantallen of intro: de kaarten krijgen direct de aandacht.
   - Mobiele touchfeedback onderscheidt een korte tik van een scrollbeweging.
@@ -101,11 +102,11 @@
             endif
 
             assign image_loading = 'lazy'
-            if card_index <= 3
+            if card_index <= 4
               assign image_loading = 'eager'
             endif
 
-            assign image_sizes = '(min-width: 1024px) 31vw, (min-width: 640px) 48vw, 50vw'
+            assign image_sizes = '(min-width: 1180px) 280px, (min-width: 1040px) 23vw, (min-width: 640px) 31vw, 50vw'
           -%}
 
           <li class="zayna-collection-card">
@@ -190,7 +191,7 @@
 
   #ZaynaCollectionsIndex-{{ section.id }}
     .zayna-collections-index__inner {
-    width: min(100%, 1280px);
+    width: min(100%, 1180px);
     margin: 0 auto;
     padding: 0 16px 56px;
     container-name: zh-collections-layout;
@@ -545,25 +546,31 @@
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collections-grid {
-      column-gap: 27px;
-      row-gap: 31px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      column-gap: 22px;
+      row-gap: 28px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card__media {
+      aspect-ratio: 5 / 4;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__content {
-      min-height: 42px;
-      padding: 8px 11px;
+      min-height: 40px;
+      padding: 7px 10px;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__title {
-      font-size: 16px;
+      font-size: 14.8px;
       line-height: 1.16;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__arrow {
-      font-size: 16px;
+      font-size: 15px;
     }
   }
 
@@ -619,19 +626,59 @@
         aspect-ratio: 5 / 4;
       }
     }
+
+    @media (min-width: 1180px) {
+      #ZaynaCollectionsIndex-{{ section.id }}
+        .zayna-collections-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        column-gap: 22px;
+        row-gap: 28px;
+      }
+    }
   }
 
   @media (min-width: 1180px) {
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__content {
-      min-height: 42px;
-      padding: 8px 11px;
+      min-height: 40px;
+      padding: 7px 10px;
     }
 
     #ZaynaCollectionsIndex-{{ section.id }}
       .zayna-collection-card__title {
-      font-size: 16px;
+      font-size: 14.8px;
       line-height: 1.16;
+    }
+  }
+
+  /*
+   * Final desktop override after the hard fallback above:
+   * spacious desktop gets four calmer cards per row, while
+   * split-screen stays at three.
+   */
+  @container zh-collections-layout (min-width: 1040px) {
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collections-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      column-gap: 22px;
+      row-gap: 28px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card__content {
+      min-height: 40px;
+      padding: 7px 10px;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card__title {
+      font-size: 14.8px;
+      line-height: 1.16;
+    }
+
+    #ZaynaCollectionsIndex-{{ section.id }}
+      .zayna-collection-card__arrow {
+      font-size: 15px;
     }
   }
 
