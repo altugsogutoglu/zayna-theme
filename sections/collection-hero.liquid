@@ -1,6 +1,6 @@
 {%- comment -%}
-  Zayna Home — collectieheader, fase 2Q.
-  Compacte collectie-intro met subtiele teruglink naar alle collecties.
+  Zayna Home — collectieheader, fase 2R.
+  Compacte collectie-intro met subtiele teruglink links onder de intro.
 {%- endcomment -%}
 
 {%- liquid
@@ -81,14 +81,14 @@
             {{ intro | escape }}
           </p>
         {%- endif -%}
-      </div>
 
-      <a
-        href="{{ routes.collections_url }}"
-        class="zh-collection-hero__all-link"
-      >
-        Alle collecties
-      </a>
+        <a
+          href="{{ routes.collections_url }}"
+          class="zh-collection-hero__all-link"
+        >
+          Alle collecties
+        </a>
+      </div>
     </div>
   </div>
 </header>
@@ -248,22 +248,13 @@
     }
 
     #ZaynaCollectionHero-{{ section.id }}
-      .zh-collection-hero__layout {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 28px;
-    }
-
-    #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__copy {
       max-width: 780px;
     }
 
     #ZaynaCollectionHero-{{ section.id }}
       .zh-collection-hero__all-link {
-      flex: 0 0 auto;
-      margin-top: 3px;
+      margin-top: 14px;
       font-size: 11.2px;
     }
 
