@@ -61,23 +61,23 @@
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar {
     display: flex;
-    min-height: 42px;
+    min-height: 38px;
     align-items: center;
     justify-content: space-between;
     gap: 14px;
-    margin-bottom: 22px;
-    padding: 9px 0 10px;
-    border-top: 1px solid rgba(42, 37, 32, 0.04);
-    border-bottom: 1px solid rgba(42, 37, 32, 0.055);
+    margin-bottom: 20px;
+    padding: 7px 0 10px;
+    border-top: 0;
+    border-bottom: 1px solid rgba(42, 37, 32, 0.045);
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__count {
     margin: 0;
-    color: rgba(42, 37, 32, 0.50);
+    color: rgba(42, 37, 32, 0.46);
     font-size: 11px;
     line-height: 1;
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
     white-space: nowrap;
   }
 
@@ -92,7 +92,7 @@
     display: flex;
     min-width: 0;
     align-items: center;
-    gap: 22px;
+    gap: 18px;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -101,15 +101,16 @@
     .zh-collection-sort {
     position: relative;
     display: inline-flex;
-    min-height: 30px;
+    min-height: 28px;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     border: 0;
     appearance: none;
     -webkit-appearance: none;
     background: transparent;
-    color: rgba(42, 37, 32, 0.58);
+    color: rgba(42, 37, 32, 0.56);
     -webkit-tap-highlight-color: transparent;
+    box-shadow: none;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -124,20 +125,20 @@
     .zh-collection-sort__button::after {
     position: absolute;
     right: 0;
-    bottom: 2px;
+    bottom: 3px;
     left: 0;
     height: 1px;
     transform: scaleX(0);
     transform-origin: center;
-    background: rgba(143, 90, 57, 0.42);
+    background: rgba(143, 90, 57, 0.30);
     content: '';
     transition: transform 180ms ease;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__control > span:not(.zh-collection-toolbar__badge) {
-    font-size: 11.2px;
-    letter-spacing: 0.01em;
+    font-size: 11.1px;
+    letter-spacing: 0;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -148,16 +149,16 @@
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-toolbar__badge {
     display: inline-flex;
-    min-width: 18px;
-    height: 18px;
+    min-width: auto;
+    height: auto;
     align-items: center;
     justify-content: center;
-    padding: 0 5px;
-    border: 1px solid rgba(166, 106, 63, 0.16);
-    border-radius: 999px;
-    background: rgba(242, 232, 223, 0.52);
-    color: #875235;
-    font-size: 9px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #8f5a39;
+    font-size: 10.2px;
     font-variant-numeric: tabular-nums;
   }
 
@@ -171,9 +172,9 @@
     .zh-collection-sort__label {
     display: inline;
     flex: 0 0 auto;
-    color: rgba(42, 37, 32, 0.44);
-    font-size: 11.2px;
-    letter-spacing: 0.01em;
+    color: rgba(42, 37, 32, 0.36);
+    font-size: 10.8px;
+    letter-spacing: 0;
     line-height: 1;
     text-transform: none;
   }
@@ -192,7 +193,7 @@
     .zh-collection-sort__button {
     position: relative;
     display: inline-flex;
-    min-height: 30px;
+    min-height: 28px;
     min-width: 0;
     align-items: center;
     gap: 5px;
@@ -203,14 +204,15 @@
     color: inherit;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+    box-shadow: none;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-sort__current {
     max-width: min(30vw, 136px);
     overflow: hidden;
-    color: rgba(42, 37, 32, 0.70);
-    font-size: 11.2px;
+    color: rgba(42, 37, 32, 0.68);
+    font-size: 11.1px;
     line-height: 1;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -221,7 +223,7 @@
     display: grid;
     flex: 0 0 auto;
     place-items: center;
-    color: rgba(42, 37, 32, 0.46);
+    color: rgba(42, 37, 32, 0.40);
     transition: transform 160ms ease;
   }
 
@@ -286,8 +288,8 @@
     .zh-collection-sort__button:focus-visible,
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-collection-sort__option:focus-visible {
-    outline: 1px solid rgba(166, 106, 63, 0.58);
-    outline-offset: 4px;
+    outline: 1px solid rgba(166, 106, 63, 0.38);
+    outline-offset: 3px;
   }
 
   #ZaynaCollectionGrid-{{ section.id }}
@@ -316,7 +318,7 @@
 
   #ZaynaCollectionGrid-{{ section.id }}
     .zh-active-filters__clear {
-    color: rgba(42, 37, 32, 0.46);
+    color: rgba(42, 37, 32, 0.40);
     font-size: 10px;
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -351,7 +353,7 @@
     .zh-collection-empty > span {
     display: block;
     margin-top: 8px;
-    color: rgba(42, 37, 32, 0.46);
+    color: rgba(42, 37, 32, 0.40);
     font-size: 13px;
   }
 
@@ -424,7 +426,7 @@
   .zh-price-filter label > span:first-child {
     display: block;
     margin-bottom: 6px;
-    color: rgba(42, 37, 32, 0.46);
+    color: rgba(42, 37, 32, 0.40);
     font-size: 10px;
   }
 
@@ -662,7 +664,7 @@
     }
   }
 
-  @media (max-width: 479px) {
+  @media (max-width: 767px) {
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar {
       gap: 10px;
@@ -671,7 +673,7 @@
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar__actions {
-      gap: 14px;
+      gap: 13px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
@@ -681,7 +683,7 @@
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-sort__current {
-      max-width: min(31vw, 108px);
+      max-width: min(34vw, 132px);
     }
   }
 
@@ -694,10 +696,10 @@
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar {
-      min-height: 44px;
-      margin-bottom: 22px;
-      padding-top: 10px;
-      padding-bottom: 11px;
+      min-height: 40px;
+      margin-bottom: 20px;
+      padding-top: 8px;
+      padding-bottom: 10px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
@@ -746,15 +748,20 @@
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar {
-      min-height: 46px;
-      margin-bottom: 24px;
-      padding-top: 11px;
-      padding-bottom: 12px;
+      min-height: 42px;
+      margin-bottom: 22px;
+      padding-top: 9px;
+      padding-bottom: 11px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
       .zh-collection-toolbar__count {
       font-size: 11.6px;
+    }
+
+    #ZaynaCollectionGrid-{{ section.id }}
+      .zh-collection-toolbar__actions {
+      gap: 22px;
     }
 
     #ZaynaCollectionGrid-{{ section.id }}
