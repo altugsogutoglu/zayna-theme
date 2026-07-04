@@ -183,14 +183,14 @@
     --zh-contact-ink: #2a2520;
     --zh-contact-soft: rgba(42, 37, 32, 0.66);
     --zh-contact-muted: rgba(42, 37, 32, 0.47);
-    --zh-contact-border: rgba(42, 37, 32, 0.088);
-    --zh-contact-border-strong: rgba(42, 37, 32, 0.14);
+    --zh-contact-border: rgba(42, 37, 32, 0.092);
+    --zh-contact-border-strong: rgba(42, 37, 32, 0.15);
     --zh-contact-clay: #9b613d;
-    --zh-contact-button: #6b5346;
-    --zh-contact-button-hover: #7a5b49;
+    --zh-contact-button: #665045;
+    --zh-contact-button-hover: #765746;
     --zh-contact-paper: transparent;
-    --zh-contact-field: rgba(255, 250, 244, 0.82);
-    --zh-contact-field-soft: rgba(255, 249, 242, 0.58);
+    --zh-contact-field: rgba(255, 251, 246, 0.90);
+    --zh-contact-field-soft: rgba(250, 243, 236, 0.68);
 
     background: var(--zh-contact-bg);
     color: var(--zh-contact-ink);
@@ -203,9 +203,9 @@
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact__header {
-    max-width: 50ch;
-    margin: 0 auto 24px;
-    text-align: center;
+    max-width: none;
+    margin: 0 0 22px;
+    text-align: left;
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact__eyebrow {
@@ -235,7 +235,7 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: clamp(1.42rem, 4.35vw, 1.68rem);
+    font-size: clamp(1.40rem, 4.05vw, 1.64rem);
     font-weight: 400;
     letter-spacing: -0.024em;
     line-height: 1.04;
@@ -243,14 +243,14 @@
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact__intro-wrap {
-    max-width: 41ch;
-    margin: 9px auto 0;
+    max-width: 43ch;
+    margin: 8px 0 0;
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact__intro {
     color: var(--zh-contact-soft);
     font-size: 13.15px;
-    line-height: 1.62;
+    line-height: 1.58;
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact__promise {
@@ -325,7 +325,7 @@
   #ZaynaContact-{{ section.id }} .zh-contact-input,
   #ZaynaContact-{{ section.id }} .zh-contact-textarea {
     width: 100%;
-    border: 1px solid rgba(42, 37, 32, 0.082);
+    border: 1px solid rgba(42, 37, 32, 0.092);
     border-radius: 0;
     appearance: none;
     -webkit-appearance: none;
@@ -382,10 +382,10 @@
     position: relative;
     display: flex;
     min-width: 0;
-    min-height: 32px;
+    min-height: 31px;
     align-items: center;
     padding: 0 10px;
-    border: 1px solid rgba(42, 37, 32, 0.072);
+    border: 1px solid rgba(42, 37, 32, 0.078);
     background: var(--zh-contact-field-soft);
     color: rgba(42, 37, 32, 0.58);
     cursor: pointer;
@@ -416,7 +416,7 @@
 
   #ZaynaContact-{{ section.id }} .zh-contact-subject:has(input:checked) {
     border-color: rgba(155, 97, 61, 0.24);
-    background: rgba(246, 238, 230, 0.62);
+    background: rgba(244, 234, 224, 0.70);
     box-shadow: none;
     color: #704a33;
   }
@@ -538,11 +538,11 @@
     }
 
     #ZaynaContact-{{ section.id }} .zh-contact__header {
-      margin-bottom: 26px;
+      margin-bottom: 24px;
     }
 
     #ZaynaContact-{{ section.id }} .zh-contact__title {
-      font-size: clamp(1.68rem, 1.55vw, 1.88rem);
+      font-size: clamp(1.58rem, 1.42vw, 1.78rem);
     }
 
     #ZaynaContact-{{ section.id }} .zh-contact__intro {
