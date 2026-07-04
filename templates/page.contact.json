@@ -1,0 +1,38 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "contact-form",
+      "settings": {
+        "eyebrow": "",
+        "heading": "Contact",
+        "intro": "Heb je een vraag over een product, bestelling of retour? Stuur ons gerust een bericht.",
+        "note_response": "We reageren meestal binnen 24 uur op werkdagen.",
+        "form_heading": "",
+        "form_intro": "",
+        "form_hint": "",
+        "label_name": "Naam",
+        "label_email": "E-mailadres",
+        "label_subject": "Waar gaat je vraag over?",
+        "subjects": "Productvraag, Bestelling, Retour of ruil, Anders",
+        "label_order": "Bestelnummer, indien van toepassing",
+        "order_hint": "Alleen nodig bij bestelling of retour.",
+        "label_message": "Bericht",
+        "submit_label": "Bericht versturen",
+        "success_text": "Bedankt voor je bericht. We reageren zo snel mogelijk.",
+        "error_text": "Er ging iets mis. Controleer je gegevens en probeer het opnieuw."
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
