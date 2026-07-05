@@ -1,0 +1,559 @@
+{%- liquid
+  assign is_about = false
+  assign normalized_title = page.title | downcase
+
+  if page.handle == 'about' or page.handle == 'over-ons' or page.template_suffix == 'about' or page.template_suffix == 'over-ons'
+    assign is_about = true
+  endif
+
+  if normalized_title contains 'over ons'
+    assign is_about = true
+  endif
+
+  assign eyebrow = section.settings.eyebrow
+-%}
+
+{%- if is_about -%}
+  {%- liquid
+    assign about_title = section.settings.about_title
+    if about_title == blank
+      assign about_title = page.title
+    endif
+
+    assign cta_link = section.settings.cta_link
+    if cta_link == blank
+      assign cta_link = '/collections'
+    endif
+
+    assign image_alt = section.settings.image_alt
+    if image_alt == blank and section.settings.about_image.alt != blank
+      assign image_alt = section.settings.about_image.alt
+    endif
+    if image_alt == blank
+      assign image_alt = about_title
+    endif
+  -%}
+
+  <section id="zh-about-{{ section.id }}" class="zh-about" aria-labelledby="zh-about-title-{{ section.id }}">
+    <div class="zh-about__shell">
+      <header class="zh-about__hero">
+        {%- if section.settings.about_eyebrow != blank -%}
+          <p class="zh-about__eyebrow">{{ section.settings.about_eyebrow }}</p>
+        {%- endif -%}
+
+        <h1 id="zh-about-title-{{ section.id }}" class="zh-about__title font-display">{{ about_title }}</h1>
+
+        {%- if section.settings.about_intro != blank -%}
+          <p class="zh-about__lead">{{ section.settings.about_intro }}</p>
+        {%- endif -%}
+      </header>
+
+      <div class="zh-about__body">
+        <div class="zh-about__story">
+          {%- if section.settings.story_title != blank -%}
+            <h2 class="font-display">{{ section.settings.story_title }}</h2>
+          {%- endif -%}
+
+          <div class="zh-about__copy">
+            {%- if section.settings.story_text_1 != blank -%}
+              <p>{{ section.settings.story_text_1 }}</p>
+            {%- endif -%}
+
+            {%- if section.settings.story_text_2 != blank -%}
+              <p>{{ section.settings.story_text_2 }}</p>
+            {%- endif -%}
+          </div>
+
+          <div class="zh-about__closing">
+            {%- if section.settings.closing_text != blank -%}
+              <p>{{ section.settings.closing_text }}</p>
+            {%- endif -%}
+
+            {%- if section.settings.cta_text != blank -%}
+              <a href="{{ cta_link }}" class="zh-about__cta">{{ section.settings.cta_text }}</a>
+            {%- endif -%}
+          </div>
+        </div>
+
+        <div class="zh-about__side">
+          {%- if section.settings.about_image != blank -%}
+            <figure class="zh-about__figure">
+              {{ section.settings.about_image | image_url: width: 1100 | image_tag: alt: image_alt, class: 'zh-about__image', loading: 'lazy', widths: '360, 520, 720, 900, 1100', sizes: '(min-width: 990px) 31rem, 100vw' }}
+
+              {%- if section.settings.image_caption != blank -%}
+                <figcaption>{{ section.settings.image_caption }}</figcaption>
+              {%- endif -%}
+            </figure>
+          {%- endif -%}
+
+          <aside class="zh-about__notes" aria-labelledby="zh-about-notes-title-{{ section.id }}">
+            {%- if section.settings.notes_title != blank -%}
+              <h2 id="zh-about-notes-title-{{ section.id }}">{{ section.settings.notes_title }}</h2>
+            {%- endif -%}
+
+            <ul class="zh-about__list" role="list">
+              {%- if section.settings.note_1_title != blank or section.settings.note_1_text != blank -%}
+                <li>
+                  <span>{{ section.settings.note_1_title }}</span>
+                  <p>{{ section.settings.note_1_text }}</p>
+                </li>
+              {%- endif -%}
+
+              {%- if section.settings.note_2_title != blank or section.settings.note_2_text != blank -%}
+                <li>
+                  <span>{{ section.settings.note_2_title }}</span>
+                  <p>{{ section.settings.note_2_text }}</p>
+                </li>
+              {%- endif -%}
+
+              {%- if section.settings.note_3_title != blank or section.settings.note_3_text != blank -%}
+                <li>
+                  <span>{{ section.settings.note_3_title }}</span>
+                  <p>{{ section.settings.note_3_text }}</p>
+                </li>
+              {%- endif -%}
+
+              {%- if section.settings.note_4_title != blank or section.settings.note_4_text != blank -%}
+                <li>
+                  <span>{{ section.settings.note_4_title }}</span>
+                  <p>{{ section.settings.note_4_text }}</p>
+                </li>
+              {%- endif -%}
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    #zh-about-{{ section.id }} {
+      padding: clamp(2.25rem, 4.8vw, 4.65rem) 0 clamp(3.55rem, 6.6vw, 6.15rem);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__shell {
+      width: min(100%, 72.5rem);
+      margin: 0 auto;
+      padding: 0 clamp(1.18rem, 4vw, 3.7rem);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__hero {
+      max-width: 45rem;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.82rem;
+      margin: 0 0 0.82rem;
+      color: rgba(128, 86, 61, 0.92);
+      font-size: 0.66rem;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: 0.135em;
+      text-transform: uppercase;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__eyebrow::before {
+      content: '';
+      display: block;
+      width: 1.95rem;
+      height: 1px;
+      background: rgba(160, 104, 69, 0.48);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__title {
+      margin: 0;
+      color: #2b231f;
+      font-size: clamp(2.04rem, 5.65vw, 3.92rem);
+      font-weight: 400;
+      line-height: 1.03;
+      letter-spacing: -0.041em;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__lead {
+      max-width: 40.5rem;
+      margin: 1.02rem 0 0;
+      color: rgba(43, 35, 31, 0.72);
+      font-size: clamp(0.98rem, 1.1vw, 1.08rem);
+      line-height: 1.68;
+      letter-spacing: 0.002em;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__body {
+      display: grid;
+      gap: clamp(2.18rem, 4.8vw, 5rem);
+      margin-top: clamp(2.32rem, 4.8vw, 4.05rem);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__story h2 {
+      max-width: 34rem;
+      margin: 0;
+      color: #2b231f;
+      font-size: clamp(1.42rem, 2.35vw, 2.06rem);
+      font-weight: 400;
+      line-height: 1.13;
+      letter-spacing: -0.033em;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__copy {
+      max-width: 38rem;
+      margin-top: 1.1rem;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__copy p,
+    #zh-about-{{ section.id }} .zh-about__closing p {
+      margin: 0;
+      color: rgba(43, 35, 31, 0.69);
+      font-size: 0.95rem;
+      line-height: 1.74;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__copy p + p {
+      margin-top: 0.86rem;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__closing {
+      max-width: 36.5rem;
+      margin-top: clamp(1.72rem, 3.6vw, 2.75rem);
+      padding-top: clamp(1.25rem, 2.8vw, 1.8rem);
+      border-top: 1px solid rgba(126, 94, 72, 0.1);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      min-height: 3.28rem;
+      margin-top: 1.18rem;
+      padding: 0.94rem 1.64rem;
+      border: 1px solid rgba(107, 88, 76, 0.92);
+      border-radius: 0.12rem;
+      background: #705c4f;
+      color: #fffaf5;
+      font-size: 0.9rem;
+      font-weight: 500;
+      line-height: 1.2;
+      text-decoration: none;
+      transition: border-color 180ms ease, background-color 180ms ease, opacity 180ms ease, transform 180ms ease;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__cta:hover {
+      border-color: rgba(93, 74, 64, 0.96);
+      background: #604f44;
+      opacity: 0.98;
+      transform: translateY(-1px);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__cta:focus-visible {
+      outline: 2px solid rgba(126, 94, 72, 0.35);
+      outline-offset: 3px;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__side {
+      display: grid;
+      gap: 1.45rem;
+      align-content: start;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__figure {
+      margin: 0;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__image {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3.55;
+      object-fit: cover;
+      border-radius: 0.18rem;
+      background: rgba(235, 228, 218, 0.58);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__figure figcaption {
+      max-width: 24rem;
+      margin-top: 0.72rem;
+      color: rgba(43, 35, 31, 0.52);
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__notes {
+      padding: 1.2rem 0 0;
+      border-top: 1px solid rgba(126, 94, 72, 0.14);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__notes h2 {
+      margin: 0;
+      color: rgba(128, 86, 61, 0.9);
+      font-size: 0.68rem;
+      font-weight: 500;
+      line-height: 1.3;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list {
+      display: grid;
+      gap: 0;
+      margin: 0.98rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list li {
+      display: grid;
+      gap: 0.34rem;
+      padding: 0.82rem 0;
+      border-top: 1px solid rgba(126, 94, 72, 0.075);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list li:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list li:last-child {
+      padding-bottom: 0;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list span {
+      color: #2b231f;
+      font-size: 0.93rem;
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list p {
+      margin: 0;
+      color: rgba(43, 35, 31, 0.61);
+      font-size: 0.88rem;
+      line-height: 1.58;
+    }
+
+    @media screen and (min-width: 750px) {
+      #zh-about-{{ section.id }} .zh-about__lead {
+        margin-top: 1.1rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__side {
+        gap: 1.62rem;
+      }
+    }
+
+    @media screen and (min-width: 990px) {
+      #zh-about-{{ section.id }} .zh-about__body {
+        grid-template-columns: minmax(0, 0.95fr) minmax(19rem, 0.74fr);
+        align-items: start;
+        gap: clamp(3.35rem, 5.6vw, 5.75rem);
+      }
+
+      #zh-about-{{ section.id }} .zh-about__side {
+        margin-top: 0.1rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__notes {
+        padding-top: 1.28rem;
+      }
+    }
+
+    @media screen and (min-width: 1200px) {
+      #zh-about-{{ section.id }} .zh-about__shell {
+        width: min(100%, 73.5rem);
+      }
+    }
+
+    @media screen and (max-width: 989px) {
+      #zh-about-{{ section.id }} .zh-about__body {
+        max-width: 42rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__side {
+        gap: 1.36rem;
+      }
+    }
+
+    @media screen and (max-width: 749px) {
+      #zh-about-{{ section.id }} {
+        padding-top: 2.08rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__shell {
+        padding-left: 1.18rem;
+        padding-right: 1.18rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__eyebrow {
+        gap: 0.72rem;
+        margin-bottom: 0.76rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__eyebrow::before {
+        width: 1.72rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__body {
+        margin-top: 2.12rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__image {
+        aspect-ratio: 4 / 3.25;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__cta {
+        width: 100%;
+        min-height: 3.22rem;
+      }
+    }
+  </style>
+{%- else -%}
+  <article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-10 py-16">
+    <header class="mb-12">
+      {%- if eyebrow != blank -%}
+        <p class="text-label text-clay mb-3">{{ eyebrow }}</p>
+      {%- endif -%}
+      <h1 class="font-display text-h1">{{ page.title }}</h1>
+    </header>
+
+    <div class="rich-text">{{ page.content }}</div>
+  </article>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Page",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow voor gewone pagina's",
+      "default": "Pagina"
+    },
+    {
+      "type": "text",
+      "id": "about_eyebrow",
+      "label": "Over ons label",
+      "default": "Ons verhaal"
+    },
+    {
+      "type": "text",
+      "id": "about_title",
+      "label": "Over ons titel",
+      "default": "Over ons"
+    },
+    {
+      "type": "textarea",
+      "id": "about_intro",
+      "label": "Over ons intro",
+      "default": "Zayna Home selecteert keuken- en woonproducten voor dagelijks gebruik, met een uitstraling die je graag zichtbaar laat. Rustig in vorm, praktisch in functie en zorgvuldig gekozen voor een verzorgd huis."
+    },
+    {
+      "type": "text",
+      "id": "story_title",
+      "label": "Verhaaltitel",
+      "default": "Mooi wonen begint bij wat je elke dag gebruikt."
+    },
+    {
+      "type": "textarea",
+      "id": "story_text_1",
+      "label": "Verhaaltekst 1",
+      "default": "Een huis hoeft niet vol te staan om verzorgd te voelen. Juist de kleine dingen op het aanrecht, in de kast of op tafel bepalen de rust van je dagelijkse routine."
+    },
+    {
+      "type": "textarea",
+      "id": "story_text_2",
+      "label": "Verhaaltekst 2",
+      "default": "Daarom kiezen we items die eenvoudig combineren met wat je al hebt. Mooi in beeld, zonder de rust te verstoren."
+    },
+    {
+      "type": "image_picker",
+      "id": "about_image",
+      "label": "Rustige sfeerafbeelding"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Alt-tekst afbeelding",
+      "default": "Rustige keuken- en woonproducten van Zayna Home"
+    },
+    {
+      "type": "text",
+      "id": "image_caption",
+      "label": "Bijschrift afbeelding",
+    },
+    {
+      "type": "text",
+      "id": "notes_title",
+      "label": "Lijsttitel",
+      "default": "Onze manier van kiezen"
+    },
+    {
+      "type": "text",
+      "id": "note_1_title",
+      "label": "Punt 1 titel",
+      "default": "Rustig in beeld"
+    },
+    {
+      "type": "textarea",
+      "id": "note_1_text",
+      "label": "Punt 1 tekst",
+      "default": "Zachte vormen, neutrale tinten en materialen die niet snel overheersen."
+    },
+    {
+      "type": "text",
+      "id": "note_2_title",
+      "label": "Punt 2 titel",
+      "default": "Praktisch in gebruik"
+    },
+    {
+      "type": "textarea",
+      "id": "note_2_text",
+      "label": "Punt 2 tekst",
+      "default": "Producten die logisch voelen in de keuken, aan tafel of in een open kast."
+    },
+    {
+      "type": "text",
+      "id": "note_3_title",
+      "label": "Punt 3 titel",
+      "default": "Eerlijke productinformatie"
+    },
+    {
+      "type": "textarea",
+      "id": "note_3_text",
+      "label": "Punt 3 tekst",
+      "default": "Met de details die je nodig hebt om bewust te kiezen."
+    },
+    {
+      "type": "text",
+      "id": "note_4_title",
+      "label": "Punt 4 titel",
+      "default": "Verzorgd verzonden"
+    },
+    {
+      "type": "textarea",
+      "id": "note_4_text",
+      "label": "Punt 4 tekst",
+      "default": "Vanuit Nederland, netjes en beschermend verpakt."
+    },
+    {
+      "type": "textarea",
+      "id": "closing_text",
+      "label": "Afsluitende tekst",
+      "default": "Zo ontstaat stap voor stap een rustige basis voor je keuken, tafel en interieur: warm, verzorgd en eenvoudig te combineren."
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Linktekst",
+      "default": "Bekijk het assortiment"
+    },
+    {
+      "type": "text",
+      "id": "cta_link",
+      "label": "Link URL",
+      "default": "/collections"
+    }
+  ]
+}
+{% endschema %}
