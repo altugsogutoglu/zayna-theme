@@ -1,35 +1,302 @@
 {%- liquid
   assign is_about = false
-  if page.handle == 'about'
+  assign normalized_title = page.title | downcase
+
+  if page.handle == 'about' or page.handle == 'over-ons' or page.template_suffix == 'about' or page.template_suffix == 'over-ons'
     assign is_about = true
   endif
-  assign eyebrow = section.settings.eyebrow
-  if is_about and section.settings.about_eyebrow != blank
-    assign eyebrow = section.settings.about_eyebrow
-  endif
--%}
-<article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-10 py-16">
-  <header class="mb-12">
-    <p class="text-label text-clay mb-3">{{ eyebrow }}</p>
-    <h1 class="font-display text-h1">{{ page.title }}</h1>
-  </header>
 
-  {%- if is_about -%}
-    <div class="text-ink-soft leading-relaxed [&_p]:mb-4 [&_p:last-child]:mb-0">{{ page.content }}</div>
-    <p class="mt-8 font-signature text-3xl text-ink">— {{ section.settings.signature }}</p>
-  {%- else -%}
+  if normalized_title contains 'over ons'
+    assign is_about = true
+  endif
+
+  assign eyebrow = section.settings.eyebrow
+-%}
+
+{%- if is_about -%}
+  {%- liquid
+    assign about_title = section.settings.about_title
+    if about_title == blank
+      assign about_title = page.title
+    endif
+
+    assign cta_link = section.settings.cta_link
+    if cta_link == blank
+      assign cta_link = '/collections'
+    endif
+  -%}
+
+  <section id="zh-about-{{ section.id }}" class="zh-about" aria-labelledby="zh-about-title-{{ section.id }}">
+    <div class="zh-about__shell">
+      <header class="zh-about__hero">
+        <h1 id="zh-about-title-{{ section.id }}" class="zh-about__title font-display">{{ about_title }}</h1>
+
+        {%- if section.settings.about_intro != blank -%}
+          <p class="zh-about__lead">{{ section.settings.about_intro }}</p>
+        {%- endif -%}
+      </header>
+
+      <div class="zh-about__principles" aria-label="Waar Zayna Home voor staat">
+        <article class="zh-about__principle">
+          <p class="zh-about__index">01</p>
+          <h2 class="font-display">{{ section.settings.principle_1_title }}</h2>
+          <p>{{ section.settings.principle_1_text }}</p>
+        </article>
+
+        <article class="zh-about__principle">
+          <p class="zh-about__index">02</p>
+          <h2 class="font-display">{{ section.settings.principle_2_title }}</h2>
+          <p>{{ section.settings.principle_2_text }}</p>
+        </article>
+
+        <article class="zh-about__principle">
+          <p class="zh-about__index">03</p>
+          <h2 class="font-display">{{ section.settings.principle_3_title }}</h2>
+          <p>{{ section.settings.principle_3_text }}</p>
+        </article>
+      </div>
+
+      <footer class="zh-about__closing">
+        {%- if section.settings.closing_text != blank -%}
+          <p>{{ section.settings.closing_text }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.cta_text != blank -%}
+          <a href="{{ cta_link }}" class="zh-about__link">{{ section.settings.cta_text }}</a>
+        {%- endif -%}
+      </footer>
+    </div>
+  </section>
+
+  <style>
+    #zh-about-{{ section.id }} {
+      padding: clamp(3.25rem, 7vw, 6.5rem) 0 clamp(4.25rem, 8vw, 7.25rem);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__shell {
+      width: min(100%, 74rem);
+      margin: 0 auto;
+      padding: 0 clamp(1.25rem, 4vw, 4rem);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__hero {
+      max-width: 44rem;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__title {
+      margin: 0;
+      color: #27211d;
+      font-size: clamp(2.35rem, 7vw, 4.8rem);
+      font-weight: 400;
+      line-height: 0.96;
+      letter-spacing: -0.045em;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__lead {
+      max-width: 41rem;
+      margin: 1.35rem 0 0;
+      color: rgba(39, 33, 29, 0.72);
+      font-size: clamp(1.02rem, 1.35vw, 1.18rem);
+      line-height: 1.78;
+      letter-spacing: 0.002em;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__principles {
+      display: grid;
+      margin-top: clamp(3rem, 6vw, 5.25rem);
+      padding: clamp(2.15rem, 4vw, 3.35rem) 0;
+      border-top: 1px solid rgba(39, 33, 29, 0.11);
+      border-bottom: 1px solid rgba(39, 33, 29, 0.11);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__principle {
+      margin: 0;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__principle + .zh-about__principle {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(39, 33, 29, 0.08);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__index {
+      margin: 0 0 0.8rem;
+      color: rgba(39, 33, 29, 0.42);
+      font-size: 0.68rem;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: 0.16em;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__principle h2 {
+      max-width: 16rem;
+      margin: 0;
+      color: #27211d;
+      font-size: clamp(1.28rem, 2.2vw, 1.65rem);
+      font-weight: 400;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__principle p:not(.zh-about__index) {
+      max-width: 20.5rem;
+      margin: 0.9rem 0 0;
+      color: rgba(39, 33, 29, 0.68);
+      font-size: 0.96rem;
+      line-height: 1.75;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__closing {
+      max-width: 42rem;
+      margin-top: clamp(2.5rem, 5vw, 4.2rem);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__closing p {
+      margin: 0;
+      color: rgba(39, 33, 29, 0.72);
+      font-size: clamp(1rem, 1.25vw, 1.12rem);
+      line-height: 1.78;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__link {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-top: 1.35rem;
+      color: #27211d;
+      font-size: 0.92rem;
+      line-height: 1.4;
+      text-decoration-line: underline;
+      text-decoration-color: rgba(39, 33, 29, 0.32);
+      text-underline-offset: 0.34em;
+      text-decoration-thickness: 1px;
+      transition: text-decoration-color 180ms ease, opacity 180ms ease;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__link:hover {
+      opacity: 0.78;
+      text-decoration-color: rgba(39, 33, 29, 0.62);
+    }
+
+    @media screen and (min-width: 750px) {
+      #zh-about-{{ section.id }} .zh-about__lead {
+        margin-top: 1.55rem;
+      }
+    }
+
+    @media screen and (min-width: 990px) {
+      #zh-about-{{ section.id }} .zh-about__hero {
+        max-width: 49rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__principles {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__principle {
+        padding-right: clamp(1.7rem, 3vw, 3rem);
+      }
+
+      #zh-about-{{ section.id }} .zh-about__principle + .zh-about__principle {
+        margin-top: 0;
+        padding-top: 0;
+        padding-left: clamp(1.7rem, 3vw, 3rem);
+        border-top: 0;
+        border-left: 1px solid rgba(39, 33, 29, 0.09);
+      }
+    }
+  </style>
+{%- else -%}
+  <article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-10 py-16">
+    <header class="mb-12">
+      {%- if eyebrow != blank -%}
+        <p class="text-label text-clay mb-3">{{ eyebrow }}</p>
+      {%- endif -%}
+      <h1 class="font-display text-h1">{{ page.title }}</h1>
+    </header>
+
     <div class="rich-text">{{ page.content }}</div>
-  {%- endif -%}
-</article>
+  </article>
+{%- endif -%}
 
 {% schema %}
 {
   "name": "Page",
   "tag": "section",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Pagina" },
-    { "type": "text", "id": "about_eyebrow", "label": "About-page eyebrow", "default": "Een briefje" },
-    { "type": "text", "id": "signature", "label": "About-page signature", "default": "Zayna" }
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow voor gewone pagina's",
+      "default": "Pagina"
+    },
+    {
+      "type": "text",
+      "id": "about_title",
+      "label": "Over ons titel",
+      "default": "Over ons"
+    },
+    {
+      "type": "textarea",
+      "id": "about_intro",
+      "label": "Over ons intro",
+      "default": "Zayna Home is er voor keuken- en woonproducten die rust brengen in het dagelijks gebruik. Praktisch, zorgvuldig gekozen en mooi genoeg om zichtbaar neer te zetten."
+    },
+    {
+      "type": "text",
+      "id": "principle_1_title",
+      "label": "Principe 1 titel",
+      "default": "Zorgvuldig gekozen"
+    },
+    {
+      "type": "textarea",
+      "id": "principle_1_text",
+      "label": "Principe 1 tekst",
+      "default": "We kiezen producten met zachte vormen, rustige kleuren en een praktische functie. Items die niet schreeuwen, maar je keuken, tafel of interieur verzorgd laten voelen."
+    },
+    {
+      "type": "text",
+      "id": "principle_2_title",
+      "label": "Principe 2 titel",
+      "default": "Mooi in dagelijks gebruik"
+    },
+    {
+      "type": "textarea",
+      "id": "principle_2_text",
+      "label": "Principe 2 tekst",
+      "default": "Een voorraadpot, koffiekopje of olieflessenset moet prettig werken én mooi blijven wanneer het zichtbaar staat."
+    },
+    {
+      "type": "text",
+      "id": "principle_3_title",
+      "label": "Principe 3 titel",
+      "default": "Eerlijk en eenvoudig"
+    },
+    {
+      "type": "textarea",
+      "id": "principle_3_text",
+      "label": "Principe 3 tekst",
+      "default": "Geen overdaad en geen loze claims. Wel heldere productinformatie, rustige verpakkingen en verzending vanuit Nederland."
+    },
+    {
+      "type": "textarea",
+      "id": "closing_text",
+      "label": "Afsluitende tekst",
+      "default": "Zo groeit je huis stap voor stap naar een rustige basis: praktisch ingericht, warm in sfeer en eenvoudig te combineren."
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Linktekst",
+      "default": "Bekijk het assortiment"
+    },
+    {
+      "type": "text",
+      "id": "cta_link",
+      "label": "Link URL",
+      "default": "/collections"
+    }
   ]
 }
 {% endschema %}
