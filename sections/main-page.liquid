@@ -55,7 +55,7 @@
         <div class="zh-about__side">
           {%- if section.settings.about_image != blank -%}
             <figure class="zh-about__figure">
-              {{ section.settings.about_image | image_url: width: 900 | image_tag: alt: image_alt, class: 'zh-about__image', loading: 'lazy', widths: '320, 480, 640, 760, 900', sizes: '(min-width: 990px) 19rem, (min-width: 750px) 16rem, 100vw' }}
+              {{ section.settings.about_image | image_url: width: 900 | image_tag: alt: image_alt, class: 'zh-about__image', loading: 'lazy', widths: '320, 480, 640, 760, 900', sizes: '(min-width: 990px) 18rem, (min-width: 750px) 17rem, 100vw' }}
 
               {%- if section.settings.image_caption != blank -%}
                 <figcaption>{{ section.settings.image_caption }}</figcaption>
@@ -68,19 +68,19 @@
 
             <ul class="zh-about__list" role="list">
               <li>
-                <span>Rustig in beeld</span>
+                <span class="font-display">Rustig in beeld</span>
                 <p>Zachte vormen, neutrale tinten en materialen die niet snel overheersen.</p>
               </li>
               <li>
-                <span>Praktisch in gebruik</span>
+                <span class="font-display">Praktisch in gebruik</span>
                 <p>Producten die logisch voelen in de keuken, aan tafel of in een open kast.</p>
               </li>
               <li>
-                <span>Eerlijke productinformatie</span>
+                <span class="font-display">Eerlijke productinformatie</span>
                 <p>Met de details die je nodig hebt om bewust te kiezen.</p>
               </li>
               <li>
-                <span>Verzorgd verzonden</span>
+                <span class="font-display">Verzorgd verzonden</span>
                 <p>Vanuit Nederland, netjes en beschermend verpakt.</p>
               </li>
             </ul>
@@ -99,20 +99,20 @@
     #zh-about-{{ section.id }} {
       --zh-about-ink: #2b231f;
       --zh-about-soft: rgba(43, 35, 31, 0.68);
-      --zh-about-muted: rgba(43, 35, 31, 0.56);
-      --zh-about-clay: rgba(119, 76, 52, 0.96);
-      --zh-about-line: rgba(126, 94, 72, 0.052);
-      --zh-about-button-bg: #6f5a4d;
-      --zh-about-button-bg-hover: #614f43;
-      --zh-about-button-border: rgba(102, 80, 68, 0.95);
+      --zh-about-muted: rgba(43, 35, 31, 0.55);
+      --zh-about-clay: rgba(123, 78, 50, 0.94);
+      --zh-about-line: rgba(126, 94, 72, 0.055);
+      --zh-about-button-bg: #705b4f;
+      --zh-about-button-bg-hover: #665347;
+      --zh-about-button-border: rgba(105, 82, 69, 0.92);
       --zh-about-button-text: #fffaf5;
-      padding: clamp(2rem, 3.75vw, 3.5rem) 0 clamp(3rem, 5.65vw, 5.2rem);
+      padding: clamp(2rem, 3.9vw, 3.55rem) 0 clamp(3rem, 5.8vw, 5.2rem);
     }
 
     #zh-about-{{ section.id }} .zh-about__shell {
       width: min(100%, 68rem);
       margin: 0 auto;
-      padding: 0 clamp(1.18rem, 4vw, 3.6rem);
+      padding: 0 clamp(1.18rem, 4vw, 3.45rem);
     }
 
     #zh-about-{{ section.id }} .zh-about__hero {
@@ -122,10 +122,10 @@
     #zh-about-{{ section.id }} .zh-about__eyebrow {
       display: inline-flex;
       align-items: center;
-      gap: 0.64rem;
+      gap: 0.62rem;
       margin: 0 0 0.72rem;
       color: var(--zh-about-clay);
-      font-size: 0.64rem;
+      font-size: 0.63rem;
       font-weight: 500;
       line-height: 1.2;
       letter-spacing: 0.07em;
@@ -137,13 +137,13 @@
       display: block;
       width: 1.28rem;
       height: 1px;
-      background: rgba(151, 95, 61, 0.34);
+      background: rgba(151, 95, 61, 0.32);
     }
 
     #zh-about-{{ section.id }} .zh-about__title {
       margin: 0;
       color: var(--zh-about-ink);
-      font-size: clamp(2.02rem, 5.6vw, 3.82rem);
+      font-size: clamp(2.02rem, 5.6vw, 3.7rem);
       font-weight: 400;
       line-height: 1.035;
       letter-spacing: -0.04em;
@@ -160,23 +160,15 @@
 
     #zh-about-{{ section.id }} .zh-about__body {
       display: grid;
-      grid-template-areas:
-        'story'
-        'side'
-        'closing';
-      gap: clamp(1.55rem, 3.4vw, 3.2rem);
+      gap: clamp(1.62rem, 3.8vw, 3.75rem);
       margin-top: clamp(1.82rem, 3.6vw, 3.05rem);
-    }
-
-    #zh-about-{{ section.id }} .zh-about__story {
-      grid-area: story;
     }
 
     #zh-about-{{ section.id }} .zh-about__story h2 {
       max-width: 32rem;
       margin: 0;
       color: var(--zh-about-ink);
-      font-size: clamp(1.36rem, 2.15vw, 1.92rem);
+      font-size: clamp(1.34rem, 2.15vw, 1.86rem);
       font-weight: 400;
       line-height: 1.14;
       letter-spacing: -0.032em;
@@ -199,93 +191,9 @@
       margin-top: 0.78rem;
     }
 
-    #zh-about-{{ section.id }} .zh-about__side {
-      grid-area: side;
-      display: grid;
-      gap: 1.18rem;
-      align-content: start;
-    }
-
-    #zh-about-{{ section.id }} .zh-about__figure {
-      margin: 0;
-    }
-
-    #zh-about-{{ section.id }} .zh-about__image {
-      display: block;
-      width: 100%;
-      aspect-ratio: 4 / 2.35;
-      object-fit: cover;
-      object-position: center;
-      border-radius: 0.12rem;
-      background: rgba(235, 228, 218, 0.58);
-    }
-
-    #zh-about-{{ section.id }} .zh-about__figure figcaption {
-      max-width: 23rem;
-      margin-top: 0.62rem;
-      color: rgba(43, 35, 31, 0.5);
-      font-size: 0.8rem;
-      line-height: 1.55;
-    }
-
-    #zh-about-{{ section.id }} .zh-about__notes {
-      padding-top: 1rem;
-      border-top: 1px solid rgba(126, 94, 72, 0.06);
-    }
-
-    #zh-about-{{ section.id }} .zh-about__notes h2 {
-      margin: 0;
-      color: rgba(124, 80, 54, 0.78);
-      font-size: 0.61rem;
-      font-weight: 500;
-      line-height: 1.3;
-      letter-spacing: 0.064em;
-      text-transform: uppercase;
-    }
-
-    #zh-about-{{ section.id }} .zh-about__list {
-      display: grid;
-      gap: 0;
-      margin: 0.82rem 0 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    #zh-about-{{ section.id }} .zh-about__list li {
-      display: grid;
-      gap: 0.2rem;
-      padding: 0.66rem 0;
-      border-top: 1px solid rgba(126, 94, 72, 0.026);
-    }
-
-    #zh-about-{{ section.id }} .zh-about__list li:first-child {
-      padding-top: 0;
-      border-top: 0;
-    }
-
-    #zh-about-{{ section.id }} .zh-about__list li:last-child {
-      padding-bottom: 0;
-    }
-
-    #zh-about-{{ section.id }} .zh-about__list span {
-      color: rgba(43, 35, 31, 0.72);
-      font-size: 0.91rem;
-      font-weight: 500;
-      line-height: 1.36;
-      letter-spacing: 0.002em;
-    }
-
-    #zh-about-{{ section.id }} .zh-about__list p {
-      margin: 0;
-      color: var(--zh-about-muted);
-      font-size: 0.84rem;
-      line-height: 1.56;
-    }
-
     #zh-about-{{ section.id }} .zh-about__closing {
-      grid-area: closing;
-      max-width: 35.5rem;
-      padding-top: clamp(1.1rem, 2.2vw, 1.45rem);
+      max-width: 35.25rem;
+      padding-top: clamp(1.08rem, 2.4vw, 1.46rem);
       border-top: 1px solid var(--zh-about-line);
     }
 
@@ -294,15 +202,15 @@
       align-items: center;
       justify-content: center;
       width: fit-content;
-      max-width: 18.75rem;
-      min-height: 3rem;
-      margin-top: 1rem;
-      padding: 0.84rem 1.72rem;
+      max-width: 18.25rem;
+      min-height: 2.98rem;
+      margin-top: 1.02rem;
+      padding: 0.82rem 1.72rem;
       border: 1px solid var(--zh-about-button-border);
-      border-radius: 0.06rem;
+      border-radius: 0.04rem;
       background: var(--zh-about-button-bg);
       color: var(--zh-about-button-text);
-      font-size: 0.87rem;
+      font-size: 0.865rem;
       font-weight: 500;
       line-height: 1.2;
       text-decoration: none;
@@ -321,6 +229,78 @@
       outline-offset: 3px;
     }
 
+    #zh-about-{{ section.id }} .zh-about__side {
+      display: grid;
+      gap: 1.08rem;
+      align-content: start;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__figure {
+      margin: 0;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__image {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 2.18;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 0.12rem;
+      background: rgba(235, 228, 218, 0.58);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__figure figcaption {
+      max-width: 23rem;
+      margin-top: 0.58rem;
+      color: rgba(43, 35, 31, 0.5);
+      font-size: 0.78rem;
+      line-height: 1.55;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__notes {
+      padding-top: 0.96rem;
+      border-top: 1px solid rgba(126, 94, 72, 0.058);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__notes h2 {
+      margin: 0;
+      color: rgba(124, 80, 54, 0.8);
+      font-size: 0.61rem;
+      font-weight: 500;
+      line-height: 1.3;
+      letter-spacing: 0.066em;
+      text-transform: uppercase;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list {
+      display: grid;
+      gap: 0.78rem;
+      margin: 0.88rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list li {
+      display: grid;
+      gap: 0.18rem;
+      padding: 0;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list span {
+      color: rgba(43, 35, 31, 0.73);
+      font-size: 0.955rem;
+      font-weight: 400;
+      line-height: 1.28;
+      letter-spacing: -0.012em;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list p {
+      margin: 0;
+      color: var(--zh-about-muted);
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+
     @media screen and (min-width: 750px) {
       #zh-about-{{ section.id }} .zh-about__lead {
         margin-top: 0.96rem;
@@ -330,9 +310,10 @@
     @media screen and (min-width: 990px) {
       #zh-about-{{ section.id }} .zh-about__shell {
         display: grid;
-        grid-template-columns: minmax(0, 0.98fr) minmax(13.75rem, 0.4fr);
-        column-gap: clamp(2.05rem, 3.35vw, 3.4rem);
+        grid-template-columns: minmax(0, 0.98fr) minmax(14.5rem, 0.42fr);
+        column-gap: clamp(2.25rem, 3.55vw, 3.45rem);
         align-items: start;
+        width: min(100%, 64.2rem);
       }
 
       #zh-about-{{ section.id }} .zh-about__hero {
@@ -340,13 +321,13 @@
       }
 
       #zh-about-{{ section.id }} .zh-about__title {
-        font-size: clamp(2.22rem, 2.58vw, 2.78rem);
+        font-size: clamp(2.24rem, 2.64vw, 2.78rem);
         line-height: 1.045;
         letter-spacing: -0.036em;
       }
 
       #zh-about-{{ section.id }} .zh-about__lead {
-        max-width: 36rem;
+        max-width: 36.2rem;
       }
 
       #zh-about-{{ section.id }} .zh-about__body {
@@ -356,47 +337,34 @@
 
       #zh-about-{{ section.id }} .zh-about__story {
         grid-column: 1;
-        grid-row: 2;
-        margin-top: clamp(1.62rem, 2.55vw, 2.32rem);
+        margin-top: clamp(1.62rem, 2.5vw, 2.28rem);
       }
 
       #zh-about-{{ section.id }} .zh-about__side {
         grid-column: 2;
         grid-row: 1 / span 3;
-        width: min(100%, 18.6rem);
+        width: min(100%, 18.2rem);
         justify-self: end;
-        margin-top: 0.08rem;
-        gap: 0.72rem;
-      }
-
-      #zh-about-{{ section.id }} .zh-about__image {
-        aspect-ratio: 4 / 1.98;
-        max-height: 9.2rem;
-      }
-
-      #zh-about-{{ section.id }} .zh-about__notes {
-        padding-top: 0.8rem;
-      }
-
-      #zh-about-{{ section.id }} .zh-about__list {
-        margin-top: 0.74rem;
-      }
-
-      #zh-about-{{ section.id }} .zh-about__list li {
-        padding-top: 0.62rem;
-        padding-bottom: 0.62rem;
+        margin-top: 0.1rem;
+        gap: 0.78rem;
       }
 
       #zh-about-{{ section.id }} .zh-about__closing {
         grid-column: 1;
-        grid-row: 3;
-        margin-top: clamp(1.35rem, 2.35vw, 2rem);
+        margin-top: clamp(1.34rem, 2.45vw, 1.85rem);
       }
-    }
 
-    @media screen and (min-width: 1200px) {
-      #zh-about-{{ section.id }} .zh-about__shell {
-        width: min(100%, 64.2rem);
+      #zh-about-{{ section.id }} .zh-about__image {
+        aspect-ratio: 4 / 1.98;
+        max-height: 9.1rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__notes {
+        padding-top: 0.84rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__list {
+        gap: 0.72rem;
       }
     }
 
@@ -404,57 +372,61 @@
       #zh-about-{{ section.id }} .zh-about__body {
         max-width: 41rem;
       }
+
+      #zh-about-{{ section.id }} .zh-about__closing {
+        margin-top: 0;
+      }
     }
 
     @media screen and (min-width: 750px) and (max-width: 989px) {
       #zh-about-{{ section.id }} .zh-about__body {
-        gap: 1.38rem;
-      }
-
-      #zh-about-{{ section.id }} .zh-about__figure {
-        width: min(100%, 16.2rem);
-        max-width: 16.2rem;
-      }
-
-      #zh-about-{{ section.id }} .zh-about__image {
-        aspect-ratio: 4 / 1.62;
-        max-height: 6.55rem;
+        gap: 1.58rem;
       }
 
       #zh-about-{{ section.id }} .zh-about__side {
-        gap: 1.05rem;
+        gap: 1rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__figure {
+        width: min(100%, 16.35rem);
+        max-width: 16.35rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__image {
+        aspect-ratio: 4 / 1.55;
+        max-height: 6.75rem;
       }
 
       #zh-about-{{ section.id }} .zh-about__notes {
-        max-width: 29.5rem;
+        max-width: 30rem;
       }
 
       #zh-about-{{ section.id }} .zh-about__cta {
         width: auto;
-        min-width: 13.5rem;
-        max-width: 17.5rem;
+        min-width: 13.75rem;
+        max-width: 17rem;
       }
     }
 
     @media screen and (min-width: 560px) and (max-width: 749px) {
       #zh-about-{{ section.id }} .zh-about__body {
-        gap: 1.4rem;
-      }
-
-      #zh-about-{{ section.id }} .zh-about__figure {
-        width: min(100%, 18rem);
-        max-width: 18rem;
-      }
-
-      #zh-about-{{ section.id }} .zh-about__image {
-        aspect-ratio: 4 / 1.78;
-        max-height: 7.5rem;
+        gap: 1.56rem;
       }
 
       #zh-about-{{ section.id }} .zh-about__cta {
         width: auto;
-        min-width: 13.5rem;
-        max-width: 17.5rem;
+        min-width: 13.75rem;
+        max-width: 17rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__figure {
+        width: min(100%, 17.6rem);
+        max-width: 17.6rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__image {
+        aspect-ratio: 4 / 1.72;
+        max-height: 7.7rem;
       }
     }
 
@@ -469,7 +441,7 @@
       }
 
       #zh-about-{{ section.id }} .zh-about__eyebrow {
-        gap: 0.64rem;
+        gap: 0.62rem;
         margin-bottom: 0.72rem;
       }
 
@@ -478,17 +450,18 @@
       }
 
       #zh-about-{{ section.id }} .zh-about__body {
+        gap: 1.56rem;
         margin-top: 1.9rem;
-        gap: 1.48rem;
       }
 
       #zh-about-{{ section.id }} .zh-about__image {
-        aspect-ratio: 4 / 2.45;
+        aspect-ratio: 4 / 2.18;
+        max-height: 10.75rem;
       }
 
       #zh-about-{{ section.id }} .zh-about__cta {
         width: 100%;
-        min-height: 3.12rem;
+        min-height: 3.02rem;
       }
     }
   </style>
