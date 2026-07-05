@@ -194,6 +194,32 @@
   </div>
 </section>
 
+<script>
+  (() => {
+    const root = document.getElementById('ZaynaContact-{{ section.id }}');
+    if (!root || !root.querySelector('.zh-contact-message--success')) return;
+    if (!window.history || !window.history.replaceState) return;
+
+    const url = new URL(window.location.href);
+    let shouldUpdate = false;
+
+    if (url.searchParams.has('contact_posted')) {
+      url.searchParams.delete('contact_posted');
+      shouldUpdate = true;
+    }
+
+    if (url.hash === '#contact_form') {
+      url.hash = '';
+      shouldUpdate = true;
+    }
+
+    if (shouldUpdate) {
+      const cleanUrl = `${url.pathname}${url.search}${url.hash}`;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+  })();
+</script>
+
 {% style %}
   #ZaynaContact-{{ section.id }} {
     --zh-contact-bg: var(--color-bg, #faf5f2);
