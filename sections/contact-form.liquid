@@ -76,7 +76,13 @@
         {%- form 'contact', class: 'zh-contact-form' -%}
           {%- if form.posted_successfully? -%}
             <div class="zh-contact-message zh-contact-message--success" role="status">
-              {{ s.success_text | escape }}
+              <span class="zh-contact-message__label">
+                Bericht ontvangen
+              </span>
+
+              <span class="zh-contact-message__text">
+                {{ s.success_text | escape }}
+              </span>
             </div>
           {%- elsif form.errors -%}
             <div class="zh-contact-message zh-contact-message--error" role="alert">
@@ -542,28 +548,33 @@
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact-message--success {
-    display: inline-flex;
-    width: auto;
+    display: grid;
+    width: fit-content;
     max-width: min(100%, 42ch);
-    align-items: center;
     justify-self: start;
-    gap: 9px;
-    padding: 4px 0;
+    gap: 4px;
+    padding: 0;
     border: 0;
     background: transparent;
     color: rgba(75, 56, 45, 0.78);
-    font-size: 12.55px;
     line-height: 1.48;
   }
 
-  #ZaynaContact-{{ section.id }} .zh-contact-message--success::before {
+  #ZaynaContact-{{ section.id }} .zh-contact-message__label {
     display: block;
-    width: 5px;
-    height: 5px;
-    flex: 0 0 5px;
-    border-radius: 999px;
-    background: rgba(155, 97, 61, 0.42);
-    content: '';
+    color: rgba(155, 97, 61, 0.78);
+    font-size: 9.25px;
+    font-weight: 500;
+    letter-spacing: 0.17em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact-message__text {
+    display: block;
+    color: rgba(75, 56, 45, 0.78);
+    font-size: 12.55px;
+    line-height: 1.48;
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact-message--error {
