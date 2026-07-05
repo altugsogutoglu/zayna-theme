@@ -9,7 +9,35 @@
  */
 {
   "sections": {
-    "main": { "type": "main-page", "settings": {} }
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "eyebrow": "Pagina",
+        "about_eyebrow": "Ons verhaal",
+        "about_title": "Over ons",
+        "about_intro": "Zayna Home selecteert keuken- en woonproducten voor dagelijks gebruik, met een uitstraling die je graag zichtbaar laat. Rustig in vorm, praktisch in functie en zorgvuldig gekozen voor een verzorgd huis.",
+        "story_title": "Mooi wonen begint bij wat je elke dag gebruikt.",
+        "story_text_1": "Een huis hoeft niet vol te staan om verzorgd te voelen. Juist de kleine dingen op het aanrecht, in de kast of op tafel bepalen de rust van je dagelijkse routine.",
+        "story_text_2": "Daarom kiezen we items die eenvoudig combineren met wat je al hebt. Mooi in beeld, zonder de rust te verstoren.",
+        "about_image": "shopify://shop_images/rn-image_picker_lib_temp_a0eaead0-ba04-46ab-92b0-abaf1aee8a58.png",
+        "image_alt": "Rustige keuken- en woonproducten van Zayna Home",
+        "image_caption": "",
+        "notes_title": "Onze manier van kiezen",
+        "note_1_title": "Rustig in beeld",
+        "note_1_text": "Zachte vormen, neutrale tinten en materialen die niet snel overheersen.",
+        "note_2_title": "Praktisch in gebruik",
+        "note_2_text": "Producten die logisch voelen in de keuken, aan tafel of in een open kast.",
+        "note_3_title": "Eerlijke productinformatie",
+        "note_3_text": "Met de details die je nodig hebt om bewust te kiezen.",
+        "note_4_title": "Verzorgd verzonden",
+        "note_4_text": "Vanuit Nederland, netjes en beschermend verpakt.",
+        "closing_text": "Zo ontstaat stap voor stap een rustige basis voor je keuken, tafel en interieur: warm, verzorgd en eenvoudig te combineren.",
+        "cta_text": "Bekijk het assortiment",
+        "cta_link": "/collections"
+      }
+    }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }
