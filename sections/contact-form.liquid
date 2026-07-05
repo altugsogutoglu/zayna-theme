@@ -506,19 +506,25 @@
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact-message {
-    padding: 12px 13px;
+    padding: 11px 13px;
     border: 1px solid transparent;
     background: rgba(255, 253, 251, 0.52);
     color: rgba(42, 37, 32, 0.70);
     font-size: 12.8px;
     line-height: 1.50;
-    white-space: pre-line;
+    white-space: normal;
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact-message--success {
-    border-color: rgba(155, 97, 61, 0.14);
-    background: rgba(250, 243, 236, 0.48);
-    color: rgba(42, 37, 32, 0.72);
+    display: inline-flex;
+    width: auto;
+    max-width: 100%;
+    align-items: center;
+    justify-self: start;
+    padding: 9px 12px;
+    border-color: rgba(155, 97, 61, 0.12);
+    background: rgba(250, 243, 236, 0.40);
+    color: rgba(42, 37, 32, 0.70);
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact-message--error {
@@ -749,7 +755,7 @@
       "type": "textarea",
       "id": "success_text",
       "label": "Success text",
-      "default": "Bedankt, je bericht is ontvangen.\nWe reageren meestal binnen 24 uur op werkdagen."
+      "default": "Bedankt, je bericht is ontvangen."
     },
     {
       "type": "text",
