@@ -96,332 +96,290 @@
       }
 
 
-
-      /* Fase 5J — Zayna Home shipping policy, corrected hierarchy + real breathing room */
+      /* Fase 5I — Zayna Home shipping policy, guaranteed custom render */
       body.zh-shipping-policy {
-        --zh-policy-bg: #faf5f2;
-        --zh-policy-ink: #2a2520;
-        --zh-policy-soft: #5a5149;
-        --zh-policy-muted: #81766d;
-        --zh-policy-clay: #81583f;
-        --zh-policy-clay-soft: rgba(129, 88, 63, 0.18);
-        --zh-policy-line: rgba(42, 37, 32, 0.085);
-        --zh-policy-line-soft: rgba(42, 37, 32, 0.052);
+        --zh-ship-bg: #faf5f2;
+        --zh-ship-ink: #2a2520;
+        --zh-ship-soft: #5a5149;
+        --zh-ship-muted: #81766d;
+        --zh-ship-clay: #81583f;
+        --zh-ship-clay-soft: rgba(129, 88, 63, 0.20);
+        --zh-ship-line: rgba(42, 37, 32, 0.085);
+        --zh-ship-line-soft: rgba(42, 37, 32, 0.052);
       }
 
-      body.zh-shipping-policy .shopify-policy__container {
-        width: min(100%, 930px) !important;
-        max-width: none !important;
-        margin-inline: auto !important;
-        padding: clamp(2.15rem, 3.6vw, 3.2rem) clamp(1.35rem, 5vw, 3.75rem) clamp(5.4rem, 8vw, 7.3rem) !important;
-      }
-
-      body.zh-shipping-policy .shopify-policy__title {
-        display: none !important;
-      }
-
-      body.zh-shipping-policy .shopify-policy__body,
-      body.zh-shipping-policy .shopify-policy__body .rte {
-        max-width: none !important;
-        margin: 0 !important;
-      }
-
-      body.zh-shipping-policy .shopify-policy__body .rte {
-        color: var(--zh-policy-soft) !important;
-        font-size: 1rem !important;
-        line-height: 1.9 !important;
-        overflow-wrap: normal !important;
-        word-break: normal !important;
-        hyphens: none !important;
-      }
-
-      body.zh-shipping-policy .shopify-policy__body .rte > *,
-      body.zh-shipping-policy .shopify-policy__body .rte > * + * {
-        max-width: none !important;
-        margin-top: 0 !important;
-      }
-
-      body.zh-shipping-policy .shopify-policy__body .rte a,
-      body.zh-shipping-policy .zh-policy-content a {
-        color: #72513a !important;
-        text-decoration: underline !important;
-        text-decoration-color: rgba(114, 81, 58, 0.30) !important;
-        text-decoration-thickness: 1px !important;
-        text-underline-offset: 4px !important;
-        transition: color 180ms ease, text-decoration-color 180ms ease;
-      }
-
-      body.zh-shipping-policy .shopify-policy__body .rte a:hover,
-      body.zh-shipping-policy .zh-policy-content a:hover {
-        color: var(--zh-policy-ink) !important;
-        text-decoration-color: rgba(42, 37, 32, 0.42) !important;
-      }
-
-      body.zh-shipping-policy .zh-policy-content,
-      body.zh-shipping-policy .zh-policy-content * {
+      body.zh-shipping-policy .zh-shipping-page,
+      body.zh-shipping-policy .zh-shipping-page * {
         box-sizing: border-box;
       }
 
-      body.zh-shipping-policy .zh-policy-content {
-        width: min(100%, 780px) !important;
-        margin-inline: auto !important;
-        color: var(--zh-policy-soft) !important;
-        text-align: left !important;
-        overflow-wrap: normal !important;
-        word-break: normal !important;
-        hyphens: none !important;
+      body.zh-shipping-policy .zh-shipping-page {
+        background: var(--zh-ship-bg);
+        color: var(--zh-ship-soft);
       }
 
-      body.zh-shipping-policy .zh-policy-header {
-        margin: 0 !important;
-        padding: 0 !important;
+      body.zh-shipping-policy .zh-shipping-page__inner {
+        width: min(100%, 820px);
+        margin-inline: auto;
+        padding: clamp(2.05rem, 4.2vw, 3.65rem) clamp(1.28rem, 5vw, 3.65rem) clamp(5.25rem, 8vw, 7.25rem);
+        text-align: left;
+        overflow-wrap: normal;
+        word-break: normal;
+        hyphens: none;
       }
 
-      body.zh-shipping-policy .zh-policy-eyebrow {
-        display: flex !important;
-        align-items: center !important;
-        gap: 0.68rem !important;
-        margin: 0 0 0.72rem !important;
-        color: var(--zh-policy-clay) !important;
-        font-family: var(--font-sans, system-ui, sans-serif) !important;
-        font-size: 0.57rem !important;
-        font-weight: 500 !important;
-        line-height: 1 !important;
-        letter-spacing: 0.09em !important;
-        text-transform: uppercase !important;
+      body.zh-shipping-policy .zh-shipping-page a {
+        color: #72513a;
+        text-decoration: underline;
+        text-decoration-color: rgba(114, 81, 58, 0.30);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 4px;
+        transition: color 180ms ease, text-decoration-color 180ms ease;
       }
 
-      body.zh-shipping-policy .zh-policy-eyebrow::before {
+      body.zh-shipping-policy .zh-shipping-page a:hover {
+        color: var(--zh-ship-ink);
+        text-decoration-color: rgba(42, 37, 32, 0.42);
+      }
+
+      body.zh-shipping-policy .zh-shipping-header {
+        max-width: 720px;
+      }
+
+      body.zh-shipping-policy .zh-shipping-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.68rem;
+        margin: 0 0 0.72rem;
+        color: var(--zh-ship-clay);
+        font-family: var(--font-sans, system-ui, sans-serif);
+        font-size: 0.58rem;
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: 0.085em;
+        text-transform: uppercase;
+      }
+
+      body.zh-shipping-policy .zh-shipping-eyebrow::before {
         content: "";
         display: inline-block;
         width: 24px;
         height: 1px;
-        background: var(--zh-policy-clay-soft);
+        background: var(--zh-ship-clay-soft);
       }
 
-      body.zh-shipping-policy .zh-policy-header h1,
-      body.zh-shipping-policy .shopify-policy__body .rte .zh-policy-header h1 {
-        margin: 0 !important;
-        color: var(--zh-policy-ink) !important;
-        font-family: var(--font-display, Georgia, serif) !important;
-        font-size: clamp(1.92rem, 2.35vw, 2.24rem) !important;
-        font-weight: 400 !important;
-        line-height: 1.12 !important;
-        letter-spacing: -0.014em !important;
+      body.zh-shipping-policy .zh-shipping-title {
+        margin: 0;
+        color: var(--zh-ship-ink);
+        font-family: var(--font-display, Georgia, serif);
+        font-size: clamp(1.76rem, 2.2vw, 2.08rem);
+        font-weight: 400;
+        line-height: 1.14;
+        letter-spacing: -0.014em;
         text-wrap: balance;
       }
 
-      body.zh-shipping-policy .zh-policy-intro {
-        max-width: 67ch !important;
-        margin: 1.24rem 0 0 !important;
-        color: var(--zh-policy-soft) !important;
-        font-size: 1.015rem !important;
-        line-height: 1.96 !important;
-        letter-spacing: 0.001em !important;
+      body.zh-shipping-policy .zh-shipping-intro {
+        max-width: 68ch;
+        margin: 1.16rem 0 0;
+        color: var(--zh-ship-soft);
+        font-size: 1rem;
+        line-height: 1.92;
+        letter-spacing: 0.001em;
         text-wrap: pretty;
       }
 
-      body.zh-shipping-policy .zh-policy-intro + .zh-policy-intro {
-        margin-top: 0.72rem !important;
+      body.zh-shipping-policy .zh-shipping-summary {
+        max-width: 720px;
+        margin: clamp(2.15rem, 3.4vw, 2.85rem) 0 0;
+        padding: clamp(1.15rem, 2.2vw, 1.42rem) 0;
+        border-top: 1px solid var(--zh-ship-line);
+        border-bottom: 1px solid var(--zh-ship-line);
       }
 
-      body.zh-shipping-policy .zh-policy-note {
-        margin-top: clamp(2.15rem, 3.1vw, 2.75rem) !important;
-        padding: clamp(1.32rem, 2.35vw, 1.72rem) 0 !important;
-        border-top: 1px solid var(--zh-policy-line) !important;
-        border-bottom: 1px solid var(--zh-policy-line) !important;
+      body.zh-shipping-policy .zh-shipping-summary dl {
+        display: grid;
+        gap: 0;
+        margin: 0;
       }
 
-      body.zh-shipping-policy .zh-policy-note-list {
-        display: grid !important;
-        gap: 0 !important;
-        width: min(100%, 710px) !important;
+      body.zh-shipping-policy .zh-shipping-summary__row {
+        display: grid;
+        grid-template-columns: 10.8rem minmax(0, 1fr);
+        gap: clamp(1.25rem, 2.5vw, 2rem);
+        align-items: baseline;
+        padding: 0.9rem 0;
+        border-top: 1px solid var(--zh-ship-line-soft);
       }
 
-      body.zh-shipping-policy .zh-policy-note-list p {
-        display: grid !important;
-        gap: 0.46rem !important;
-        margin: 0 !important;
-        padding: 1.02rem 0 !important;
-        border-top: 1px solid var(--zh-policy-line-soft) !important;
-        color: var(--zh-policy-soft) !important;
+      body.zh-shipping-policy .zh-shipping-summary__row:first-child {
+        padding-top: 0;
+        border-top: 0;
       }
 
-      body.zh-shipping-policy .zh-policy-note-list p:first-child {
-        padding-top: 0 !important;
-        border-top: 0 !important;
+      body.zh-shipping-policy .zh-shipping-summary__row:last-child {
+        padding-bottom: 0;
       }
 
-      body.zh-shipping-policy .zh-policy-note-list p:last-child {
-        padding-bottom: 0 !important;
+      body.zh-shipping-policy .zh-shipping-summary dt {
+        margin: 0;
+        color: #765640;
+        font-family: var(--font-sans, system-ui, sans-serif);
+        font-size: 0.765rem;
+        font-weight: 500;
+        line-height: 1.34;
+        letter-spacing: 0.035em;
       }
 
-      body.zh-shipping-policy .zh-policy-note-list strong {
-        color: #765640 !important;
-        font-family: var(--font-sans, system-ui, sans-serif) !important;
-        font-size: 0.76rem !important;
-        font-weight: 500 !important;
-        line-height: 1.25 !important;
-        letter-spacing: 0.035em !important;
+      body.zh-shipping-policy .zh-shipping-summary dd {
+        margin: 0;
+        color: var(--zh-ship-soft);
+        font-size: 0.965rem;
+        line-height: 1.72;
+        text-wrap: pretty;
       }
 
-      body.zh-shipping-policy .zh-policy-note-list span {
-        color: var(--zh-policy-soft) !important;
-        font-size: 0.97rem !important;
-        line-height: 1.78 !important;
+      body.zh-shipping-policy .zh-shipping-sections {
+        max-width: 720px;
+        margin-top: clamp(2.65rem, 4vw, 3.75rem);
       }
 
-      body.zh-shipping-policy .zh-policy-sections {
-        margin-top: clamp(3.15rem, 4.4vw, 4.15rem) !important;
+      body.zh-shipping-policy .zh-shipping-section {
+        padding: clamp(1.86rem, 3vw, 2.55rem) 0;
+        border-top: 1px solid var(--zh-ship-line-soft);
       }
 
-      body.zh-shipping-policy .zh-policy-section {
-        padding: clamp(2.15rem, 3.35vw, 2.95rem) 0 !important;
-        border-top: 1px solid var(--zh-policy-line-soft) !important;
+      body.zh-shipping-policy .zh-shipping-section:first-child {
+        padding-top: 0;
+        border-top: 0;
       }
 
-      body.zh-shipping-policy .zh-policy-section:first-child {
-        padding-top: 0 !important;
-        border-top: 0 !important;
-      }
-
-      body.zh-shipping-policy .zh-policy-section h2,
-      body.zh-shipping-policy .shopify-policy__body .rte .zh-policy-section h2 {
-        max-width: 64ch !important;
-        margin: 0 0 1.16rem !important;
-        color: var(--zh-policy-ink) !important;
-        font-family: var(--font-display, Georgia, serif) !important;
-        font-size: clamp(1.08rem, 1.08vw, 1.16rem) !important;
-        font-weight: 400 !important;
-        line-height: 1.33 !important;
-        letter-spacing: -0.004em !important;
+      body.zh-shipping-policy .zh-shipping-section h2 {
+        margin: 0 0 0.94rem;
+        color: var(--zh-ship-ink);
+        font-family: var(--font-display, Georgia, serif);
+        font-size: clamp(1.05rem, 1.18vw, 1.18rem);
+        font-weight: 400;
+        line-height: 1.34;
+        letter-spacing: -0.006em;
         text-wrap: balance;
       }
 
-      body.zh-shipping-policy .zh-policy-section p,
-      body.zh-shipping-policy .zh-policy-closing {
-        max-width: 72ch !important;
-        margin: 0 !important;
-        color: var(--zh-policy-soft) !important;
-        font-size: 0.995rem !important;
-        line-height: 2.02 !important;
-        letter-spacing: 0.001em !important;
+      body.zh-shipping-policy .zh-shipping-section p,
+      body.zh-shipping-policy .zh-shipping-closing {
+        max-width: 70ch;
+        margin: 0;
+        color: var(--zh-ship-soft);
+        font-size: 0.985rem;
+        line-height: 1.94;
+        letter-spacing: 0.001em;
         text-wrap: pretty;
       }
 
-      body.zh-shipping-policy .zh-policy-section p + p {
-        margin-top: 1.34rem !important;
+      body.zh-shipping-policy .zh-shipping-section p + p {
+        margin-top: 1.08rem;
       }
 
-      body.zh-shipping-policy .zh-policy-closing {
-        margin-top: 0.85rem !important;
-        padding-top: clamp(2.05rem, 3.1vw, 2.65rem) !important;
-        border-top: 1px solid var(--zh-policy-line) !important;
-      }
-
-      @media (min-width: 960px) {
-        body.zh-shipping-policy .shopify-policy__container {
-          padding-top: clamp(2.45rem, 3.3vw, 3.55rem) !important;
-        }
+      body.zh-shipping-policy .zh-shipping-closing {
+        max-width: 720px;
+        margin-top: 0.45rem;
+        padding-top: clamp(1.85rem, 3vw, 2.35rem);
+        border-top: 1px solid var(--zh-ship-line);
       }
 
       @media (max-width: 959px) {
-        body.zh-shipping-policy .shopify-policy__container {
-          width: min(100%, 820px) !important;
-          padding-top: clamp(1.75rem, 4.3vw, 2.35rem) !important;
-          padding-bottom: clamp(4.8rem, 7.6vw, 6.1rem) !important;
+        body.zh-shipping-policy .zh-shipping-page__inner {
+          width: min(100%, 760px);
+          padding-top: clamp(1.75rem, 4.5vw, 2.45rem);
+          padding-bottom: clamp(4.75rem, 7.8vw, 6.15rem);
         }
 
-        body.zh-shipping-policy .zh-policy-content {
-          width: min(100%, 720px) !important;
+        body.zh-shipping-policy .zh-shipping-title {
+          font-size: clamp(1.62rem, 4.4vw, 1.88rem);
         }
 
-        body.zh-shipping-policy .zh-policy-header h1,
-        body.zh-shipping-policy .shopify-policy__body .rte .zh-policy-header h1 {
-          font-size: clamp(1.76rem, 4.35vw, 1.98rem) !important;
+        body.zh-shipping-policy .zh-shipping-summary__row {
+          grid-template-columns: 9.4rem minmax(0, 1fr);
+          gap: 1.35rem;
         }
       }
 
       @media (max-width: 639px) {
-        body.zh-shipping-policy .shopify-policy__container {
-          padding-top: 1.58rem !important;
-          padding-inline: 1.28rem !important;
-          padding-bottom: 4.95rem !important;
+        body.zh-shipping-policy .zh-shipping-page__inner {
+          padding-top: 1.48rem;
+          padding-inline: 1.22rem;
+          padding-bottom: 4.85rem;
         }
 
-        body.zh-shipping-policy .zh-policy-eyebrow {
-          gap: 0.58rem !important;
-          margin-bottom: 0.62rem !important;
-          font-size: 0.55rem !important;
-          letter-spacing: 0.075em !important;
+        body.zh-shipping-policy .zh-shipping-eyebrow {
+          gap: 0.56rem;
+          margin-bottom: 0.58rem;
+          font-size: 0.55rem;
+          letter-spacing: 0.074em;
         }
 
-        body.zh-shipping-policy .zh-policy-eyebrow::before {
-          width: 20px;
+        body.zh-shipping-policy .zh-shipping-eyebrow::before {
+          width: 19px;
         }
 
-        body.zh-shipping-policy .zh-policy-header h1,
-        body.zh-shipping-policy .shopify-policy__body .rte .zh-policy-header h1 {
-          font-size: clamp(1.62rem, 6.2vw, 1.82rem) !important;
-          line-height: 1.14 !important;
+        body.zh-shipping-policy .zh-shipping-title {
+          font-size: clamp(1.45rem, 5.8vw, 1.64rem);
+          line-height: 1.16;
         }
 
-        body.zh-shipping-policy .zh-policy-intro,
-        body.zh-shipping-policy .zh-policy-section p,
-        body.zh-shipping-policy .zh-policy-closing {
-          font-size: 0.94rem !important;
-          line-height: 1.94 !important;
+        body.zh-shipping-policy .zh-shipping-intro,
+        body.zh-shipping-policy .zh-shipping-section p,
+        body.zh-shipping-policy .zh-shipping-closing {
+          font-size: 0.93rem;
+          line-height: 1.88;
         }
 
-        body.zh-shipping-policy .zh-policy-intro {
-          margin-top: 1.02rem !important;
+        body.zh-shipping-policy .zh-shipping-intro {
+          margin-top: 0.92rem;
         }
 
-        body.zh-shipping-policy .zh-policy-intro + .zh-policy-intro {
-          margin-top: 0.64rem !important;
+        body.zh-shipping-policy .zh-shipping-summary {
+          margin-top: 1.82rem;
+          padding: 1.12rem 0;
         }
 
-        body.zh-shipping-policy .zh-policy-note {
-          margin-top: 1.92rem !important;
-          padding: 1.22rem 0 !important;
+        body.zh-shipping-policy .zh-shipping-summary__row {
+          display: block;
+          padding: 0.82rem 0;
         }
 
-        body.zh-shipping-policy .zh-policy-note-list p {
-          padding: 0.86rem 0 !important;
-          gap: 0.38rem !important;
+        body.zh-shipping-policy .zh-shipping-summary dt {
+          margin-bottom: 0.28rem;
+          font-size: 0.735rem;
+          line-height: 1.28;
         }
 
-        body.zh-shipping-policy .zh-policy-note-list strong {
-          font-size: 0.735rem !important;
+        body.zh-shipping-policy .zh-shipping-summary dd {
+          font-size: 0.91rem;
+          line-height: 1.72;
         }
 
-        body.zh-shipping-policy .zh-policy-note-list span {
-          font-size: 0.915rem !important;
-          line-height: 1.76 !important;
+        body.zh-shipping-policy .zh-shipping-sections {
+          margin-top: 2.25rem;
         }
 
-        body.zh-shipping-policy .zh-policy-sections {
-          margin-top: 2.62rem !important;
+        body.zh-shipping-policy .zh-shipping-section {
+          padding: 1.65rem 0;
         }
 
-        body.zh-shipping-policy .zh-policy-section {
-          padding: 1.92rem 0 !important;
+        body.zh-shipping-policy .zh-shipping-section h2 {
+          margin-bottom: 0.78rem;
+          font-size: 1.03rem;
+          line-height: 1.32;
         }
 
-        body.zh-shipping-policy .zh-policy-section h2,
-        body.zh-shipping-policy .shopify-policy__body .rte .zh-policy-section h2 {
-          margin-bottom: 0.98rem !important;
-          font-size: 1.06rem !important;
-          line-height: 1.34 !important;
-        }
-
-        body.zh-shipping-policy .zh-policy-section p + p {
-          margin-top: 1.18rem !important;
+        body.zh-shipping-policy .zh-shipping-section p + p {
+          margin-top: 0.96rem;
         }
       }
 
 
-{% endstyle %}
+    {% endstyle %}
 
     <script src="{{ 'theme.js' | asset_url | append: '?zh=5' }}" defer></script>
   </head>
@@ -431,7 +389,91 @@
     {% sections 'header-group' %}
 
     <main id="MainContent" role="main">
-      {{ content_for_layout }}
+      {%- if request.path contains '/policies/shipping-policy' -%}
+        <article class="zh-shipping-page" aria-labelledby="zh-shipping-title">
+          <div class="zh-shipping-page__inner">
+            <header class="zh-shipping-header">
+              <p class="zh-shipping-eyebrow">Klantenservice</p>
+              <h1 id="zh-shipping-title" class="zh-shipping-title">Verzending</h1>
+              <p class="zh-shipping-intro">
+                Je bestelling wordt vanuit Nederland verzonden en met zorg verpakt. Hieronder vind je de belangrijkste informatie over levertijd, verzendkosten en schade bij ontvangst.
+              </p>
+            </header>
+
+            <section class="zh-shipping-summary" aria-label="Verzending in het kort">
+              <dl>
+                <div class="zh-shipping-summary__row">
+                  <dt>Levertijd</dt>
+                  <dd>Meestal 1–3 werkdagen.</dd>
+                </div>
+                <div class="zh-shipping-summary__row">
+                  <dt>Gratis verzending</dt>
+                  <dd>In Nederland vanaf €100.</dd>
+                </div>
+                <div class="zh-shipping-summary__row">
+                  <dt>Verzendgebied</dt>
+                  <dd>Nederland, België, Duitsland en Frankrijk.</dd>
+                </div>
+                <div class="zh-shipping-summary__row">
+                  <dt>Track &amp; trace</dt>
+                  <dd>Je ontvangt een code zodra je bestelling is verzonden.</dd>
+                </div>
+              </dl>
+            </section>
+
+            <div class="zh-shipping-sections">
+              <section class="zh-shipping-section">
+                <h2>Verzendkosten</h2>
+                <p>
+                  De verzendkosten worden automatisch berekend tijdens het afrekenen. Je ziet het bedrag altijd voordat je de bestelling definitief plaatst.
+                </p>
+                <p>
+                  Binnen Nederland verzenden we gratis vanaf een bestelbedrag van €100. Voor België, Duitsland en Frankrijk kunnen andere verzendtarieven gelden. Deze worden vooraf zichtbaar gemaakt in de checkout.
+                </p>
+              </section>
+
+              <section class="zh-shipping-section">
+                <h2>Levertijd en bezorging</h2>
+                <p>
+                  We verwerken bestellingen zorgvuldig. De verwachte levertijd is meestal 1–3 werkdagen. Zodra je pakket is verzonden, ontvang je een track &amp; trace-code.
+                </p>
+                <p>
+                  Soms ontstaat vertraging bij de vervoerder. We kijken dan graag met je mee.
+                </p>
+              </section>
+
+              <section class="zh-shipping-section">
+                <h2>Adresgegevens</h2>
+                <p>
+                  Controleer je adresgegevens goed voordat je bestelt. Zo kunnen we je pakket zonder vertraging verzenden.
+                </p>
+                <p>
+                  Komt een pakket retour door een fout adres of doordat het niet op tijd wordt opgehaald, dan kunnen extra verzendkosten in rekening worden gebracht.
+                </p>
+              </section>
+
+              <section class="zh-shipping-section">
+                <h2>Schade of breuk</h2>
+                <p>
+                  Veel producten van Zayna Home zijn breekbaar. We verpakken je bestelling daarom zo zorgvuldig mogelijk.
+                </p>
+                <p>
+                  Is je bestelling beschadigd aangekomen? Mail ons bij voorkeur binnen 48 uur via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>. Voeg duidelijke foto’s toe van de verpakking, het verzendlabel en het beschadigde product.
+                </p>
+                <p>
+                  Bewaar de verpakking totdat we je melding hebben bekeken. Een latere melding wordt niet automatisch afgewezen, maar kan de beoordeling wel lastiger maken.
+                </p>
+              </section>
+            </div>
+
+            <p class="zh-shipping-closing">
+              Twijfel je over je levering of is er iets misgegaan? Mail ons gerust via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>, dan kijken we met je mee.
+            </p>
+          </div>
+        </article>
+      {%- else -%}
+        {{ content_for_layout }}
+      {%- endif -%}
     </main>
 
     {% sections 'footer-group' %}
