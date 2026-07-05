@@ -14,7 +14,7 @@
       "settings": {
         "eyebrow": "",
         "heading": "Contact",
-        "intro": "Heb je een vraag over een product, bestelling of retour? Stuur ons gerust een  e-mail via info@zaynahome.nl of vul het contactformulier in.",
+        "intro": "Heb je een vraag over een product, bestelling of retour?",
         "note_response": "We reageren meestal binnen 24 uur op werkdagen.",
         "form_heading": "",
         "form_intro": "",
@@ -28,7 +28,10 @@
         "label_message": "Bericht",
         "submit_label": "Bericht versturen",
         "success_text": "Bedankt voor je bericht. We reageren zo snel mogelijk.",
-        "error_text": "Er ging iets mis. Controleer je gegevens en probeer het opnieuw."
+        "error_text": "Er ging iets mis. Controleer je gegevens en probeer het opnieuw.",
+        "intro_email_prefix": "Mail ons via",
+        "intro_email": "info@zaynahome.nl",
+        "intro_email_suffix": "of vul het formulier in."
       }
     }
   },

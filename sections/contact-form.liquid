@@ -1,6 +1,9 @@
 {%- liquid
   assign s = section.settings
   assign subjects = s.subjects | split: ','
+  assign intro_email = s.intro_email | default: 'info@zaynahome.nl'
+  assign intro_email_prefix = s.intro_email_prefix | default: 'Mail ons via'
+  assign intro_email_suffix = s.intro_email_suffix | default: 'of vul het formulier in.'
 -%}
 
 <section
@@ -26,9 +29,24 @@
 
       {%- if s.intro != blank or s.note_response != blank -%}
         <div class="zh-contact__intro-wrap">
-          {%- if s.intro != blank -%}
+          {%- if s.intro != blank or intro_email != blank -%}
             <div class="zh-contact__intro">
-              {{ s.intro | newline_to_br }}
+              {%- if s.intro != blank -%}
+                <p>{{ s.intro | escape }}</p>
+              {%- endif -%}
+
+              {%- if intro_email != blank -%}
+                <p>
+                  {{ intro_email_prefix | escape }}
+                  <a
+                    href="mailto:{{ intro_email | escape }}"
+                    class="zh-contact__mail-link"
+                  >
+                    {{- intro_email | escape -}}
+                  </a>
+                  {{ intro_email_suffix | escape }}
+                </p>
+              {%- endif -%}
             </div>
           {%- endif -%}
 
@@ -243,14 +261,31 @@
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact__intro-wrap {
-    max-width: 51ch;
+    max-width: 56ch;
     margin: 8px 0 0;
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact__intro {
+    display: grid;
+    gap: 1px;
     color: var(--zh-contact-soft);
-    font-size: 13.15px;
-    line-height: 1.58;
+    font-size: 13.05px;
+    line-height: 1.52;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact__intro p {
+    margin: 0;
+  }
+
+  #ZaynaContact-{{ section.id }} .zh-contact__mail-link {
+    color: rgba(42, 37, 32, 0.78);
+    text-decoration: underline;
+    text-decoration-color: rgba(155, 97, 61, 0.34);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition:
+      color 180ms ease,
+      text-decoration-color 180ms ease;
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact__promise {
@@ -548,7 +583,7 @@
     }
 
     #ZaynaContact-{{ section.id }} .zh-contact__intro {
-      font-size: 13.35px;
+      font-size: 13.25px;
     }
   }
 
@@ -560,6 +595,11 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
+    #ZaynaContact-{{ section.id }} .zh-contact__mail-link:hover {
+      color: #8f5a39;
+      text-decoration-color: rgba(143, 90, 57, 0.58);
+    }
+
     #ZaynaContact-{{ section.id }} .zh-contact-subject:hover {
       border-color: rgba(155, 97, 61, 0.18);
       background: rgba(246, 238, 230, 0.56);
@@ -603,7 +643,25 @@
       "type": "textarea",
       "id": "intro",
       "label": "Intro",
-      "default": "Heb je een vraag over een product, bestelling of retour? Stuur ons gerust een bericht."
+      "default": "Heb je een vraag over een product, bestelling of retour?"
+    },
+    {
+      "type": "text",
+      "id": "intro_email_prefix",
+      "label": "Intro email prefix",
+      "default": "Mail ons via"
+    },
+    {
+      "type": "text",
+      "id": "intro_email",
+      "label": "Intro email",
+      "default": "info@zaynahome.nl"
+    },
+    {
+      "type": "text",
+      "id": "intro_email_suffix",
+      "label": "Intro email suffix",
+      "default": "of vul het formulier in."
     },
     {
       "type": "text",
