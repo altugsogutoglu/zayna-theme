@@ -27,7 +27,7 @@
         "order_hint": "Alleen nodig bij bestelling of retour.",
         "label_message": "Bericht",
         "submit_label": "Bericht versturen",
-        "success_text": "Bedankt, je bericht is ontvangen.\nWe reageren meestal binnen 24 uur op werkdagen.",
+        "success_text": "Bedankt, je bericht is ontvangen.",
         "error_text": "Er ging iets mis. Controleer je gegevens en probeer het opnieuw.",
         "intro_email_prefix": "Mail ons via",
         "intro_email": "info@zaynahome.nl",
