@@ -96,33 +96,31 @@
       }
 
 
-      /* Fase 5C — Zayna Home shipping policy custom layout */
+      /* Fase 5D — Zayna Home shipping policy, simplified typography-first layout */
       body.zh-shipping-policy {
         --zh-policy-bg: #faf5f2;
         --zh-policy-ink: #2a2520;
-        --zh-policy-soft: #5e554d;
+        --zh-policy-soft: #5c534b;
         --zh-policy-muted: #82766d;
-        --zh-policy-faint: #9a8f86;
-        --zh-policy-line: rgba(42, 37, 32, 0.095);
-        --zh-policy-line-soft: rgba(42, 37, 32, 0.06);
-        --zh-policy-surface: rgba(255, 253, 251, 0.42);
-        --zh-policy-cream: rgba(240, 235, 230, 0.46);
-        --zh-policy-clay: #8b5b3f;
-        --zh-policy-clay-soft: rgba(139, 91, 63, 0.18);
+        --zh-policy-line: rgba(42, 37, 32, 0.075);
+        --zh-policy-line-soft: rgba(42, 37, 32, 0.055);
+        --zh-policy-clay: #875a40;
+        --zh-policy-clay-soft: rgba(135, 90, 64, 0.20);
       }
 
       body.zh-shipping-policy .shopify-policy__container {
-        width: min(100%, 1120px);
+        width: min(100%, 980px);
         max-width: none;
         margin-inline: auto;
-        padding: clamp(2.25rem, 4.2vw, 4rem) clamp(1.125rem, 4.6vw, 3.75rem) clamp(4.75rem, 7vw, 6.5rem);
+        padding: clamp(1.95rem, 3.3vw, 3rem) clamp(1.125rem, 4.4vw, 3.25rem) clamp(4.6rem, 7vw, 6.2rem);
       }
 
       body.zh-shipping-policy .shopify-policy__title {
         display: none;
       }
 
-      body.zh-shipping-policy .shopify-policy__body {
+      body.zh-shipping-policy .shopify-policy__body,
+      body.zh-shipping-policy .shopify-policy__body .rte {
         max-width: none;
         margin: 0;
       }
@@ -130,7 +128,7 @@
       body.zh-shipping-policy .shopify-policy__body .rte {
         color: var(--zh-policy-soft);
         font-size: 1rem;
-        line-height: 1.72;
+        line-height: 1.68;
         overflow-wrap: normal;
         word-break: normal;
         hyphens: none;
@@ -147,7 +145,7 @@
       body.zh-shipping-policy .shopify-policy__body .rte a {
         color: #765139;
         text-decoration: underline;
-        text-decoration-color: rgba(118, 81, 57, 0.27);
+        text-decoration-color: rgba(118, 81, 57, 0.26);
         text-decoration-thickness: 1px;
         text-underline-offset: 4px;
         transition: color 180ms ease, text-decoration-color 180ms ease;
@@ -170,68 +168,74 @@
 
       body.zh-shipping-policy .zh-ship-hero {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(270px, 360px);
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 310px);
         align-items: start;
-        gap: clamp(2.25rem, 5vw, 4.75rem);
-        padding-bottom: clamp(2.05rem, 3.4vw, 3rem);
+        gap: clamp(2rem, 4.5vw, 4rem);
+        padding-bottom: clamp(1.55rem, 2.7vw, 2.2rem);
         border-bottom: 1px solid var(--zh-policy-line-soft);
+      }
+
+      body.zh-shipping-policy .zh-ship-hero-main {
+        max-width: 600px;
       }
 
       body.zh-shipping-policy .zh-ship-eyebrow {
         display: flex;
         align-items: center;
-        gap: 0.82rem;
-        margin: 0 0 0.95rem;
+        gap: 0.72rem;
+        margin: 0 0 0.78rem;
         color: var(--zh-policy-clay);
-        font-size: 0.64rem;
+        font-size: 0.62rem;
         font-weight: 500;
         line-height: 1;
-        letter-spacing: 0.135em;
+        letter-spacing: 0.115em;
         text-transform: uppercase;
       }
 
       body.zh-shipping-policy .zh-ship-eyebrow::before {
         content: "";
         display: inline-block;
-        width: 34px;
+        width: 28px;
         height: 1px;
         background: var(--zh-policy-clay-soft);
       }
 
       body.zh-shipping-policy .zh-ship-title {
-        max-width: 12ch;
+        max-width: 15ch;
         margin: 0;
         color: var(--zh-policy-ink);
         font-family: var(--font-display, Georgia, serif);
-        font-size: clamp(2.25rem, 4.2vw, 3.35rem);
+        font-size: clamp(1.9rem, 2.45vw, 2.25rem);
         font-weight: 400;
-        line-height: 1.04;
-        letter-spacing: -0.025em;
+        line-height: 1.14;
+        letter-spacing: -0.018em;
+        text-wrap: balance;
       }
 
       body.zh-shipping-policy .zh-ship-intro {
-        max-width: 560px;
-        margin: clamp(1rem, 1.8vw, 1.35rem) 0 0;
+        max-width: 58ch;
+        margin: 0.9rem 0 0;
         color: var(--zh-policy-soft);
-        font-size: clamp(1rem, 0.35vw + 0.95rem, 1.12rem);
-        line-height: 1.68;
+        font-size: 0.99rem;
+        line-height: 1.66;
+        text-wrap: pretty;
       }
 
       body.zh-shipping-policy .zh-ship-summary {
         width: 100%;
-        margin-top: 0.22rem;
-        padding: clamp(1.2rem, 2vw, 1.45rem) 0 0;
+        margin: 0.12rem 0 0;
+        padding: 1.05rem 0 0;
         border-top: 1px solid var(--zh-policy-line);
       }
 
       body.zh-shipping-policy .zh-ship-summary h2 {
-        margin: 0 0 0.92rem;
+        margin: 0 0 0.82rem;
         color: #80563d;
         font-family: var(--font-sans, system-ui, sans-serif);
-        font-size: 0.66rem;
+        font-size: 0.63rem;
         font-weight: 500;
         line-height: 1;
-        letter-spacing: 0.14em;
+        letter-spacing: 0.125em;
         text-transform: uppercase;
       }
 
@@ -242,10 +246,8 @@
       }
 
       body.zh-shipping-policy .zh-ship-summary-row {
-        display: grid;
-        grid-template-columns: minmax(95px, 0.42fr) minmax(0, 1fr);
-        gap: 1rem;
-        padding: 0.74rem 0;
+        display: block;
+        padding: 0.68rem 0;
         border-top: 1px solid var(--zh-policy-line-soft);
       }
 
@@ -255,9 +257,9 @@
       }
 
       body.zh-shipping-policy .zh-ship-summary dt {
-        margin: 0;
+        margin: 0 0 0.18rem;
         color: var(--zh-policy-ink);
-        font-size: 0.79rem;
+        font-size: 0.78rem;
         font-weight: 500;
         line-height: 1.35;
       }
@@ -265,19 +267,17 @@
       body.zh-shipping-policy .zh-ship-summary dd {
         margin: 0;
         color: var(--zh-policy-soft);
-        font-size: 0.92rem;
-        line-height: 1.45;
+        font-size: 0.91rem;
+        line-height: 1.48;
       }
 
-      body.zh-shipping-policy .zh-ship-sections {
-        margin-top: clamp(1.7rem, 3vw, 2.65rem);
+      body.zh-shipping-policy .zh-ship-content {
+        width: min(100%, 720px);
+        margin-top: clamp(1.55rem, 2.7vw, 2.25rem);
       }
 
       body.zh-shipping-policy .zh-ship-section {
-        display: grid;
-        grid-template-columns: minmax(170px, 230px) minmax(0, 1fr);
-        gap: clamp(1.6rem, 4.2vw, 3.8rem);
-        padding: clamp(1.55rem, 2.8vw, 2.35rem) 0;
+        padding: clamp(1.35rem, 2.45vw, 1.95rem) 0;
         border-top: 1px solid var(--zh-policy-line-soft);
       }
 
@@ -287,61 +287,67 @@
       }
 
       body.zh-shipping-policy .zh-ship-section h2 {
-        margin: 0;
+        max-width: 26ch;
+        margin: 0 0 0.62rem;
         color: var(--zh-policy-ink);
         font-family: var(--font-display, Georgia, serif);
-        font-size: clamp(1.25rem, 1.4vw, 1.55rem);
+        font-size: clamp(1.18rem, 1.25vw, 1.34rem);
         font-weight: 400;
-        line-height: 1.18;
-        letter-spacing: -0.012em;
+        line-height: 1.22;
+        letter-spacing: -0.01em;
+        text-wrap: balance;
       }
 
       body.zh-shipping-policy .zh-ship-section-body {
-        max-width: 700px;
+        max-width: 68ch;
         color: var(--zh-policy-soft);
       }
 
       body.zh-shipping-policy .zh-ship-section-body > * + * {
-        margin-top: 0.85rem;
+        margin-top: 0.78rem;
       }
 
       body.zh-shipping-policy .zh-ship-section-body p {
         margin: 0;
-        font-size: 0.99rem;
-        line-height: 1.72;
+        color: var(--zh-policy-soft);
+        font-size: 0.97rem;
+        line-height: 1.68;
+        text-wrap: pretty;
       }
 
       body.zh-shipping-policy .zh-ship-note {
-        margin-top: 1.08rem;
-        padding-top: 0.95rem;
+        margin-top: 0.96rem;
+        padding-top: 0.88rem;
         border-top: 1px solid var(--zh-policy-line-soft);
-        color: #6f6259;
-        font-size: 0.95rem;
-        line-height: 1.68;
+        color: #6d625a;
+        font-size: 0.94rem;
+        line-height: 1.64;
       }
 
       body.zh-shipping-policy .zh-ship-steps {
         display: grid;
         gap: 0;
-        margin: 1.05rem 0 0;
+        margin: 0.94rem 0 0;
         padding: 0;
         list-style: none;
         counter-reset: zh-ship-step;
-        border-block: 1px solid var(--zh-policy-line-soft);
+        border-top: 1px solid var(--zh-policy-line-soft);
+        border-bottom: 1px solid var(--zh-policy-line-soft);
       }
 
       body.zh-shipping-policy .zh-ship-steps li {
         display: grid;
-        grid-template-columns: 1.8rem minmax(0, 1fr);
-        gap: 0.78rem;
+        grid-template-columns: 1.55rem minmax(0, 1fr);
+        gap: 0.7rem;
         align-items: start;
         margin: 0;
-        padding: 0.88rem 0;
+        padding: 0.78rem 0;
         border-top: 1px solid var(--zh-policy-line-soft);
         color: var(--zh-policy-soft);
-        font-size: 0.96rem;
+        font-size: 0.94rem;
         line-height: 1.62;
         counter-increment: zh-ship-step;
+        text-wrap: pretty;
       }
 
       body.zh-shipping-policy .zh-ship-steps li:first-child {
@@ -351,175 +357,131 @@
       body.zh-shipping-policy .zh-ship-steps li::before {
         content: counter(zh-ship-step, decimal-leading-zero);
         color: var(--zh-policy-clay);
-        font-size: 0.68rem;
+        font-size: 0.64rem;
         font-weight: 500;
-        letter-spacing: 0.08em;
-        line-height: 1.75;
+        letter-spacing: 0.075em;
+        line-height: 1.9;
       }
 
       body.zh-shipping-policy .zh-ship-help {
-        max-width: 700px;
-        margin: clamp(0.4rem, 1vw, 0.7rem) 0 0 auto;
-        padding-top: clamp(1.05rem, 2vw, 1.4rem);
+        max-width: 68ch;
+        margin: 0.15rem 0 0;
+        padding: clamp(1.15rem, 2vw, 1.45rem) 0 0;
         border-top: 1px solid var(--zh-policy-line-soft);
         color: #665b53;
-        font-size: 0.98rem;
-        line-height: 1.72;
+        font-size: 0.96rem;
+        line-height: 1.68;
+        text-wrap: pretty;
       }
 
-      @media (max-width: 899px) {
+      @media (max-width: 959px) {
         body.zh-shipping-policy .shopify-policy__container {
-          width: min(100%, 780px);
-          padding-top: clamp(2.1rem, 5.8vw, 3.05rem);
-          padding-bottom: clamp(4.4rem, 8vw, 5.7rem);
+          width: min(100%, 760px);
+          padding-top: clamp(1.75rem, 4.6vw, 2.45rem);
+          padding-bottom: clamp(4.2rem, 8vw, 5.55rem);
         }
 
         body.zh-shipping-policy .zh-ship-hero {
           grid-template-columns: 1fr;
-          gap: clamp(1.45rem, 4vw, 2.1rem);
-          padding-bottom: clamp(1.55rem, 4vw, 2.15rem);
+          gap: 1.24rem;
+          padding-bottom: 1.45rem;
+        }
+
+        body.zh-shipping-policy .zh-ship-hero-main,
+        body.zh-shipping-policy .zh-ship-summary,
+        body.zh-shipping-policy .zh-ship-content {
+          max-width: 680px;
         }
 
         body.zh-shipping-policy .zh-ship-title {
-          max-width: 12ch;
-          font-size: clamp(2.05rem, 7.4vw, 2.7rem);
-        }
-
-        body.zh-shipping-policy .zh-ship-intro {
-          max-width: 620px;
-          font-size: 1rem;
-          line-height: 1.66;
-        }
-
-        body.zh-shipping-policy .zh-ship-summary {
-          max-width: 640px;
-          margin-top: 0;
-          padding-top: 1rem;
-        }
-
-        body.zh-shipping-policy .zh-ship-summary-row {
-          grid-template-columns: minmax(110px, 0.36fr) minmax(0, 1fr);
-          padding: 0.68rem 0;
-        }
-
-        body.zh-shipping-policy .zh-ship-section {
-          grid-template-columns: 1fr;
-          gap: 0.75rem;
-          padding: clamp(1.45rem, 4vw, 2rem) 0;
-        }
-
-        body.zh-shipping-policy .zh-ship-section h2 {
-          max-width: 16ch;
-          font-size: clamp(1.22rem, 3.4vw, 1.42rem);
-        }
-
-        body.zh-shipping-policy .zh-ship-section-body {
-          max-width: 650px;
-        }
-
-        body.zh-shipping-policy .zh-ship-help {
-          margin-left: 0;
-        }
-      }
-
-      @media (max-width: 639px) {
-        body.zh-shipping-policy .shopify-policy__container {
-          padding-top: 2rem;
-          padding-inline: 1.15rem;
-        }
-
-        body.zh-shipping-policy .zh-ship-eyebrow {
-          gap: 0.72rem;
-          margin-bottom: 0.82rem;
-          font-size: 0.6rem;
-          letter-spacing: 0.12em;
-        }
-
-        body.zh-shipping-policy .zh-ship-eyebrow::before {
-          width: 28px;
-        }
-
-        body.zh-shipping-policy .zh-ship-title {
-          font-size: clamp(1.98rem, 10.2vw, 2.42rem);
-          line-height: 1.06;
-        }
-
-        body.zh-shipping-policy .zh-ship-intro {
-          margin-top: 0.92rem;
-          font-size: 0.965rem;
-          line-height: 1.65;
+          font-size: clamp(1.8rem, 5.2vw, 2.1rem);
         }
 
         body.zh-shipping-policy .zh-ship-summary {
           padding-top: 0.95rem;
         }
+      }
+
+      @media (max-width: 639px) {
+        body.zh-shipping-policy .shopify-policy__container {
+          padding-top: 1.72rem;
+          padding-inline: 1.15rem;
+        }
+
+        body.zh-shipping-policy .zh-ship-eyebrow {
+          gap: 0.68rem;
+          margin-bottom: 0.72rem;
+          font-size: 0.58rem;
+          letter-spacing: 0.105em;
+        }
+
+        body.zh-shipping-policy .zh-ship-eyebrow::before {
+          width: 25px;
+        }
+
+        body.zh-shipping-policy .zh-ship-title {
+          font-size: clamp(1.72rem, 8.1vw, 1.98rem);
+          line-height: 1.14;
+        }
+
+        body.zh-shipping-policy .zh-ship-intro {
+          margin-top: 0.78rem;
+          font-size: 0.94rem;
+          line-height: 1.62;
+        }
 
         body.zh-shipping-policy .zh-ship-summary h2 {
-          margin-bottom: 0.72rem;
-          font-size: 0.62rem;
-          letter-spacing: 0.13em;
+          margin-bottom: 0.68rem;
+          font-size: 0.6rem;
+          letter-spacing: 0.115em;
         }
 
         body.zh-shipping-policy .zh-ship-summary-row {
-          grid-template-columns: 1fr;
-          gap: 0.16rem;
-          padding: 0.72rem 0;
+          padding: 0.64rem 0;
         }
 
         body.zh-shipping-policy .zh-ship-summary dt {
-          font-size: 0.77rem;
+          font-size: 0.76rem;
         }
 
         body.zh-shipping-policy .zh-ship-summary dd {
-          font-size: 0.91rem;
+          font-size: 0.9rem;
+          line-height: 1.45;
         }
 
-        body.zh-shipping-policy .zh-ship-sections {
-          margin-top: 1.35rem;
+        body.zh-shipping-policy .zh-ship-content {
+          margin-top: 1.25rem;
         }
 
         body.zh-shipping-policy .zh-ship-section {
-          padding: 1.42rem 0;
+          padding: 1.3rem 0;
         }
 
         body.zh-shipping-policy .zh-ship-section h2 {
-          font-size: 1.2rem;
+          max-width: 21ch;
+          margin-bottom: 0.56rem;
+          font-size: 1.13rem;
+          line-height: 1.22;
+        }
+
+        body.zh-shipping-policy .zh-ship-section-body > * + * {
+          margin-top: 0.72rem;
         }
 
         body.zh-shipping-policy .zh-ship-section-body p,
         body.zh-shipping-policy .zh-ship-steps li,
         body.zh-shipping-policy .zh-ship-help {
-          font-size: 0.94rem;
-          line-height: 1.66;
+          font-size: 0.925rem;
+          line-height: 1.62;
         }
 
         body.zh-shipping-policy .zh-ship-steps li {
-          grid-template-columns: 1.55rem minmax(0, 1fr);
-          gap: 0.62rem;
-          padding: 0.8rem 0;
+          grid-template-columns: 1.42rem minmax(0, 1fr);
+          gap: 0.58rem;
+          padding: 0.72rem 0;
         }
       }
 
-      @media (min-width: 900px) and (max-width: 1120px) {
-        body.zh-shipping-policy .shopify-policy__container {
-          width: min(100%, 980px);
-          padding-inline: clamp(1.75rem, 4.2vw, 3rem);
-        }
-
-        body.zh-shipping-policy .zh-ship-hero {
-          grid-template-columns: minmax(0, 1fr) minmax(260px, 330px);
-          gap: clamp(2rem, 4vw, 3.25rem);
-        }
-
-        body.zh-shipping-policy .zh-ship-title {
-          font-size: clamp(2.4rem, 4.3vw, 3rem);
-        }
-
-        body.zh-shipping-policy .zh-ship-section {
-          grid-template-columns: minmax(160px, 205px) minmax(0, 1fr);
-          gap: clamp(1.4rem, 3.2vw, 2.45rem);
-        }
-      }
     {% endstyle %}
 
     <script src="{{ 'theme.js' | asset_url | append: '?zh=5' }}" defer></script>
