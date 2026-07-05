@@ -100,12 +100,13 @@
       body.zh-shipping-policy {
         --zh-ship-bg: #faf5f2;
         --zh-ship-ink: #2a2520;
-        --zh-ship-soft: #5a5149;
+        --zh-ship-soft: #5b5149;
         --zh-ship-muted: #81766d;
-        --zh-ship-clay: #7f563e;
-        --zh-ship-clay-soft: rgba(127, 86, 62, 0.20);
-        --zh-ship-line: rgba(42, 37, 32, 0.082);
-        --zh-ship-line-soft: rgba(42, 37, 32, 0.050);
+        --zh-ship-clay: #7a523c;
+        --zh-ship-clay-soft: rgba(122, 82, 60, 0.18);
+        --zh-ship-line: rgba(42, 37, 32, 0.075);
+        --zh-ship-line-soft: rgba(42, 37, 32, 0.048);
+        --zh-ship-note: rgba(255, 253, 251, 0.30);
       }
 
       body.zh-shipping-policy .zh-shipping-page,
@@ -119,19 +120,26 @@
       }
 
       body.zh-shipping-policy .zh-shipping-page__inner {
-        width: min(100%, 880px);
+        width: min(100%, 900px);
         margin-inline: auto;
-        padding: clamp(2.25rem, 4.6vw, 4.05rem) clamp(1.35rem, 5vw, 4.2rem) clamp(5.4rem, 8vw, 7.4rem);
+        padding: clamp(2.05rem, 4.1vw, 3.65rem) clamp(1.45rem, 5vw, 4.35rem) clamp(5.15rem, 8vw, 7rem);
         text-align: left;
         overflow-wrap: normal;
         word-break: normal;
         hyphens: none;
       }
 
+      body.zh-shipping-policy .zh-shipping-header,
+      body.zh-shipping-policy .zh-shipping-summary,
+      body.zh-shipping-policy .zh-shipping-sections,
+      body.zh-shipping-policy .zh-shipping-closing {
+        max-width: 790px;
+      }
+
       body.zh-shipping-policy .zh-shipping-page a {
         color: #72513a;
         text-decoration: underline;
-        text-decoration-color: rgba(114, 81, 58, 0.30);
+        text-decoration-color: rgba(114, 81, 58, 0.32);
         text-decoration-thickness: 1px;
         text-underline-offset: 4px;
         transition: color 180ms ease, text-decoration-color 180ms ease;
@@ -142,31 +150,28 @@
         text-decoration-color: rgba(42, 37, 32, 0.42);
       }
 
-      body.zh-shipping-policy .zh-shipping-header,
-      body.zh-shipping-policy .zh-shipping-summary,
-      body.zh-shipping-policy .zh-shipping-sections,
-      body.zh-shipping-policy .zh-shipping-closing {
-        max-width: 760px;
+      body.zh-shipping-policy .zh-nowrap {
+        white-space: nowrap;
       }
 
       body.zh-shipping-policy .zh-shipping-eyebrow {
         display: inline-flex;
         align-items: center;
-        gap: 0.62rem;
-        margin: 0 0 0.68rem;
+        gap: 0.58rem;
+        margin: 0 0 0.72rem;
         color: var(--zh-ship-clay);
         font-family: var(--font-sans, system-ui, sans-serif);
-        font-size: 0.57rem;
+        font-size: 0.56rem;
         font-weight: 500;
         line-height: 1;
-        letter-spacing: 0.078em;
+        letter-spacing: 0.07em;
         text-transform: uppercase;
       }
 
       body.zh-shipping-policy .zh-shipping-eyebrow::before {
         content: "";
         display: inline-block;
-        width: 22px;
+        width: 20px;
         height: 1px;
         background: var(--zh-ship-clay-soft);
       }
@@ -175,82 +180,71 @@
         margin: 0;
         color: var(--zh-ship-ink);
         font-family: var(--font-display, Georgia, serif);
-        font-size: clamp(1.78rem, 2.05vw, 2.04rem);
+        font-size: clamp(1.76rem, 1.92vw, 2rem);
         font-weight: 400;
-        line-height: 1.15;
-        letter-spacing: -0.014em;
+        line-height: 1.16;
+        letter-spacing: -0.012em;
         text-wrap: balance;
       }
 
       body.zh-shipping-policy .zh-shipping-intro {
-        max-width: 66ch;
-        margin: 1.06rem 0 0;
+        max-width: 62ch;
+        margin: 1.12rem 0 0;
         color: var(--zh-ship-soft);
         font-size: 1rem;
-        line-height: 1.94;
+        line-height: 1.88;
         letter-spacing: 0.001em;
         text-wrap: pretty;
       }
 
       body.zh-shipping-policy .zh-shipping-intro + .zh-shipping-intro {
-        margin-top: 0.42rem;
+        margin-top: 0.34rem;
       }
 
       body.zh-shipping-policy .zh-shipping-summary {
-        margin: clamp(2.25rem, 3.4vw, 2.95rem) 0 0;
-        padding: clamp(1.18rem, 2.2vw, 1.48rem) 0;
+        margin: clamp(2.15rem, 3.2vw, 2.8rem) 0 0;
+        padding: clamp(1.2rem, 2vw, 1.48rem) 0;
         border-top: 1px solid var(--zh-ship-line);
         border-bottom: 1px solid var(--zh-ship-line);
+        background: linear-gradient(90deg, transparent, var(--zh-ship-note) 38%, transparent);
       }
 
       body.zh-shipping-policy .zh-shipping-summary dl {
         display: grid;
-        gap: 0;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: clamp(2.35rem, 4.2vw, 4rem);
+        row-gap: 1.15rem;
         margin: 0;
       }
 
       body.zh-shipping-policy .zh-shipping-summary__row {
-        display: grid;
-        grid-template-columns: 10.2rem minmax(0, 1fr);
-        gap: clamp(1.4rem, 2.5vw, 2.15rem);
-        align-items: baseline;
-        padding: 0.94rem 0;
-        border-top: 1px solid var(--zh-ship-line-soft);
-      }
-
-      body.zh-shipping-policy .zh-shipping-summary__row:first-child {
-        padding-top: 0;
-        border-top: 0;
-      }
-
-      body.zh-shipping-policy .zh-shipping-summary__row:last-child {
-        padding-bottom: 0;
+        min-width: 0;
       }
 
       body.zh-shipping-policy .zh-shipping-summary dt {
-        margin: 0;
+        margin: 0 0 0.22rem;
         color: #765640;
         font-family: var(--font-sans, system-ui, sans-serif);
-        font-size: 0.755rem;
+        font-size: 0.735rem;
         font-weight: 500;
-        line-height: 1.36;
-        letter-spacing: 0.03em;
+        line-height: 1.35;
+        letter-spacing: 0.025em;
       }
 
       body.zh-shipping-policy .zh-shipping-summary dd {
         margin: 0;
         color: var(--zh-ship-soft);
         font-size: 0.965rem;
-        line-height: 1.76;
+        line-height: 1.66;
         text-wrap: pretty;
       }
 
       body.zh-shipping-policy .zh-shipping-sections {
-        margin-top: clamp(2.85rem, 4vw, 3.9rem);
+        margin-top: clamp(2.85rem, 4vw, 3.65rem);
       }
 
       body.zh-shipping-policy .zh-shipping-section {
-        padding: clamp(2rem, 3vw, 2.7rem) 0;
+        padding: clamp(2.05rem, 3vw, 2.65rem) 0;
         border-top: 1px solid var(--zh-ship-line-soft);
       }
 
@@ -260,135 +254,151 @@
       }
 
       body.zh-shipping-policy .zh-shipping-section h2 {
-        margin: 0 0 1rem;
+        margin: 0 0 1.03rem;
         color: var(--zh-ship-ink);
         font-family: var(--font-display, Georgia, serif);
-        font-size: clamp(1.06rem, 1.16vw, 1.17rem);
+        font-size: clamp(1.05rem, 1.08vw, 1.14rem);
         font-weight: 400;
         line-height: 1.38;
-        letter-spacing: -0.006em;
+        letter-spacing: -0.004em;
         text-wrap: balance;
       }
 
       body.zh-shipping-policy .zh-shipping-section p,
       body.zh-shipping-policy .zh-shipping-closing {
-        max-width: 70ch;
+        max-width: 68ch;
         margin: 0;
         color: var(--zh-ship-soft);
-        font-size: 0.995rem;
-        line-height: 2.02;
+        font-size: 0.99rem;
+        line-height: 1.94;
         letter-spacing: 0.001em;
         text-wrap: pretty;
       }
 
       body.zh-shipping-policy .zh-shipping-section p + p {
-        margin-top: 1.16rem;
+        margin-top: 1.08rem;
       }
 
       body.zh-shipping-policy .zh-shipping-closing {
-        margin-top: 0.55rem;
-        padding-top: clamp(2rem, 3vw, 2.55rem);
+        margin-top: 0.4rem;
+        padding-top: clamp(2.05rem, 3vw, 2.65rem);
         border-top: 1px solid var(--zh-ship-line);
       }
 
       @media (max-width: 959px) {
         body.zh-shipping-policy .zh-shipping-page__inner {
           width: min(100%, 760px);
-          padding-top: clamp(1.85rem, 4.5vw, 2.6rem);
-          padding-bottom: clamp(4.9rem, 7.8vw, 6.25rem);
+          padding-top: clamp(1.82rem, 4.5vw, 2.42rem);
+          padding-bottom: clamp(4.85rem, 7.8vw, 6.1rem);
         }
 
         body.zh-shipping-policy .zh-shipping-title {
-          font-size: clamp(1.62rem, 4.2vw, 1.86rem);
+          font-size: clamp(1.6rem, 4.1vw, 1.82rem);
+        }
+
+        body.zh-shipping-policy .zh-shipping-summary dl {
+          grid-template-columns: 1fr;
+          row-gap: 0;
         }
 
         body.zh-shipping-policy .zh-shipping-summary__row {
-          grid-template-columns: 9.2rem minmax(0, 1fr);
-          gap: 1.35rem;
+          padding: 0.78rem 0;
+          border-top: 1px solid var(--zh-ship-line-soft);
+        }
+
+        body.zh-shipping-policy .zh-shipping-summary__row:first-child {
+          padding-top: 0;
+          border-top: 0;
+        }
+
+        body.zh-shipping-policy .zh-shipping-summary__row:last-child {
+          padding-bottom: 0;
         }
       }
 
       @media (max-width: 639px) {
         body.zh-shipping-policy .zh-shipping-page__inner {
-          padding-top: 1.55rem;
-          padding-inline: 1.25rem;
+          padding-top: 1.5rem;
+          padding-inline: 1.38rem;
           padding-bottom: 5rem;
         }
 
         body.zh-shipping-policy .zh-shipping-eyebrow {
-          gap: 0.54rem;
-          margin-bottom: 0.6rem;
-          font-size: 0.545rem;
-          letter-spacing: 0.07em;
+          gap: 0.52rem;
+          margin-bottom: 0.62rem;
+          font-size: 0.54rem;
+          letter-spacing: 0.065em;
         }
 
         body.zh-shipping-policy .zh-shipping-eyebrow::before {
-          width: 18px;
+          width: 17px;
         }
 
         body.zh-shipping-policy .zh-shipping-title {
-          font-size: clamp(1.46rem, 5.7vw, 1.62rem);
-          line-height: 1.17;
+          font-size: clamp(1.44rem, 5.5vw, 1.58rem);
+          line-height: 1.18;
         }
 
         body.zh-shipping-policy .zh-shipping-intro,
         body.zh-shipping-policy .zh-shipping-section p,
         body.zh-shipping-policy .zh-shipping-closing {
-          font-size: 0.93rem;
-          line-height: 1.96;
+          font-size: 0.92rem;
+          line-height: 1.88;
         }
 
         body.zh-shipping-policy .zh-shipping-intro {
+          max-width: 31.5rem;
           margin-top: 0.96rem;
         }
 
         body.zh-shipping-policy .zh-shipping-intro + .zh-shipping-intro {
-          margin-top: 0.38rem;
+          margin-top: 0.32rem;
         }
 
         body.zh-shipping-policy .zh-shipping-summary {
           margin-top: 1.95rem;
-          padding: 1.18rem 0;
+          padding: 1.12rem 0;
+          background: transparent;
         }
 
         body.zh-shipping-policy .zh-shipping-summary__row {
-          display: block;
-          padding: 0.9rem 0;
+          padding: 0.82rem 0;
         }
 
         body.zh-shipping-policy .zh-shipping-summary dt {
-          margin-bottom: 0.3rem;
-          font-size: 0.725rem;
-          line-height: 1.3;
+          margin-bottom: 0.24rem;
+          font-size: 0.715rem;
+          line-height: 1.32;
         }
 
         body.zh-shipping-policy .zh-shipping-summary dd {
-          font-size: 0.91rem;
-          line-height: 1.78;
+          font-size: 0.9rem;
+          line-height: 1.68;
         }
 
         body.zh-shipping-policy .zh-shipping-sections {
-          margin-top: 2.38rem;
+          margin-top: 2.45rem;
         }
 
         body.zh-shipping-policy .zh-shipping-section {
-          padding: 1.82rem 0;
+          padding: 1.95rem 0;
         }
 
         body.zh-shipping-policy .zh-shipping-section h2 {
-          margin-bottom: 0.84rem;
-          font-size: 1.02rem;
+          margin-bottom: 0.9rem;
+          font-size: 1.01rem;
           line-height: 1.36;
         }
 
         body.zh-shipping-policy .zh-shipping-section p + p {
-          margin-top: 1.04rem;
+          margin-top: 1.02rem;
         }
 
         body.zh-shipping-policy .zh-shipping-closing {
           padding-top: 2rem;
         }
       }
+
 
 
     {% endstyle %}
@@ -408,10 +418,10 @@
               <p class="zh-shipping-eyebrow">Klantenservice</p>
               <h1 id="zh-shipping-title" class="zh-shipping-title">Verzending</h1>
               <p class="zh-shipping-intro">
-                We verzenden je bestelling vanuit Nederland en verpakken deze met zorg.
+                We verzenden vanuit Nederland en verpakken je bestelling met zorg.
               </p>
               <p class="zh-shipping-intro">
-                Hieronder lees je wat je kunt verwachten over levertijd, verzendkosten en schade bij ontvangst.
+                Hier lees je meer over levering, kosten en schade bij ontvangst.
               </p>
             </header>
 
@@ -419,11 +429,11 @@
               <dl>
                 <div class="zh-shipping-summary__row">
                   <dt>Levertijd</dt>
-                  <dd>Meestal 1–3 werkdagen.</dd>
+                  <dd>Meestal <span class="zh-nowrap">1–3 werkdagen</span>.</dd>
                 </div>
                 <div class="zh-shipping-summary__row">
                   <dt>Gratis verzending</dt>
-                  <dd>In Nederland vanaf €100.</dd>
+                  <dd>Binnen Nederland vanaf <span class="zh-nowrap">€100</span>.</dd>
                 </div>
                 <div class="zh-shipping-summary__row">
                   <dt>Verzendgebied</dt>
@@ -431,7 +441,7 @@
                 </div>
                 <div class="zh-shipping-summary__row">
                   <dt>Track &amp; trace</dt>
-                  <dd>Je ontvangt een code zodra je bestelling is verzonden.</dd>
+                  <dd>Je ontvangt een code na verzending.</dd>
                 </div>
               </dl>
             </section>
@@ -440,49 +450,49 @@
               <section class="zh-shipping-section">
                 <h2>Verzendkosten</h2>
                 <p>
-                  De verzendkosten worden automatisch berekend tijdens het afrekenen. Je ziet het bedrag altijd voordat je de bestelling definitief plaatst.
+                  De verzendkosten zie je tijdens het afrekenen. Je ziet het bedrag altijd voordat je bestelt.
                 </p>
                 <p>
-                  Binnen Nederland verzenden we gratis vanaf een bestelbedrag van €100. Voor België, Duitsland en Frankrijk kunnen andere verzendtarieven gelden. Deze worden vooraf zichtbaar gemaakt in de checkout.
+                  Binnen Nederland verzenden we gratis vanaf <span class="zh-nowrap">€100</span>. Voor België, Duitsland en Frankrijk kunnen andere tarieven gelden.
                 </p>
               </section>
 
               <section class="zh-shipping-section">
                 <h2>Levertijd en bezorging</h2>
                 <p>
-                  We verwerken bestellingen zorgvuldig. De verwachte levertijd is meestal 1–3 werkdagen. Zodra je pakket is verzonden, ontvang je een track &amp; trace-code.
+                  We verwerken je bestelling zorgvuldig. De levertijd is meestal <span class="zh-nowrap">1–3 werkdagen</span>.
                 </p>
                 <p>
-                  Soms ontstaat vertraging bij de vervoerder. We kijken dan graag met je mee.
+                  Is je pakket verzonden? Dan ontvang je een <span class="zh-nowrap">track &amp; trace-code</span>. Soms heeft de vervoerder vertraging. We kijken dan graag met je mee.
                 </p>
               </section>
 
               <section class="zh-shipping-section">
                 <h2>Adresgegevens</h2>
                 <p>
-                  Controleer je adresgegevens goed voordat je bestelt. Zo kunnen we je pakket zonder vertraging verzenden.
+                  Controleer je adres goed voordat je bestelt. Zo voorkom je vertraging.
                 </p>
                 <p>
-                  Komt een pakket retour door een fout adres of doordat het niet op tijd wordt opgehaald, dan kunnen extra verzendkosten in rekening worden gebracht.
+                  Komt een pakket retour door een fout adres of doordat het niet is opgehaald? Dan kunnen extra verzendkosten ontstaan.
                 </p>
               </section>
 
               <section class="zh-shipping-section">
                 <h2>Schade of breuk</h2>
                 <p>
-                  Veel producten van Zayna Home zijn breekbaar. We verpakken je bestelling daarom zo zorgvuldig mogelijk.
+                  Veel producten van <span class="zh-nowrap">Zayna Home</span> zijn breekbaar. Daarom verpakken we je bestelling extra zorgvuldig.
                 </p>
                 <p>
-                  Is je bestelling beschadigd aangekomen? Mail ons bij voorkeur binnen 48 uur via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>. Voeg duidelijke foto’s toe van de verpakking, het verzendlabel en het beschadigde product.
+                  Is er iets beschadigd aangekomen? Mail ons bij voorkeur binnen 48 uur via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>. Stuur duidelijke foto’s mee van de verpakking, het label en het product.
                 </p>
                 <p>
-                  Bewaar de verpakking totdat we je melding hebben bekeken. Een latere melding wordt niet automatisch afgewezen, maar kan de beoordeling wel lastiger maken.
+                  Bewaar de verpakking tot we je melding hebben bekeken. Meld je het later? Dan kijken we nog steeds mee, maar de beoordeling kan lastiger zijn.
                 </p>
               </section>
             </div>
 
             <p class="zh-shipping-closing">
-              Twijfel je over je levering of is er iets misgegaan? Mail ons gerust via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>, dan kijken we met je mee.
+              Twijfel je over je levering? Mail ons gerust via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>. We kijken graag met je mee.
             </p>
           </div>
         </article>
