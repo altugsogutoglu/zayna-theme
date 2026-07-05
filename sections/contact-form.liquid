@@ -542,15 +542,17 @@
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact-message--success {
-    display: inline-flex;
-    width: auto;
-    max-width: 100%;
-    align-items: center;
+    display: block;
+    width: fit-content;
+    max-width: min(100%, 42ch);
     justify-self: start;
-    padding: 9px 12px;
-    border-color: rgba(155, 97, 61, 0.12);
-    background: rgba(250, 243, 236, 0.40);
-    color: rgba(42, 37, 32, 0.70);
+    padding: 1px 0 1px 12px;
+    border: 0;
+    border-left: 1px solid rgba(155, 97, 61, 0.34);
+    background: transparent;
+    color: rgba(75, 56, 45, 0.78);
+    font-size: 12.55px;
+    line-height: 1.48;
   }
 
   #ZaynaContact-{{ section.id }} .zh-contact-message--error {
