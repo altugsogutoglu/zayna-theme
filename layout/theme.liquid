@@ -490,12 +490,392 @@
       }
 
 
+      /* Fase 6A — Zayna Home refund policy, custom return page render */
+      body.zh-refund-policy {
+        --zh-refund-bg: #faf5f2;
+        --zh-refund-ink: #2a2520;
+        --zh-refund-soft: #51483f;
+        --zh-refund-muted: #776b62;
+        --zh-refund-clay: #74503d;
+        --zh-refund-clay-soft: rgba(120, 82, 61, 0.18);
+        --zh-refund-line: rgba(42, 37, 32, 0.045);
+        --zh-refund-line-soft: rgba(42, 37, 32, 0.028);
+      }
+
+      body.zh-refund-policy .zh-refund-page,
+      body.zh-refund-policy .zh-refund-page * {
+        box-sizing: border-box;
+      }
+
+      body.zh-refund-policy .zh-refund-page {
+        background: var(--zh-refund-bg);
+        color: var(--zh-refund-soft);
+      }
+
+      body.zh-refund-policy .zh-refund-page__inner {
+        width: min(100%, 884px);
+        margin-inline: auto;
+        padding: clamp(2.08rem, 3.45vw, 3.22rem) clamp(1.5rem, 4.5vw, 3.8rem) clamp(5.15rem, 7.2vw, 6.45rem);
+        text-align: left;
+        overflow-wrap: normal;
+        word-break: normal;
+        hyphens: none;
+      }
+
+      body.zh-refund-policy .zh-refund-header,
+      body.zh-refund-policy .zh-refund-summary,
+      body.zh-refund-policy .zh-refund-sections,
+      body.zh-refund-policy .zh-refund-closing {
+        max-width: 694px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      body.zh-refund-policy .zh-refund-page a {
+        color: #72513a;
+        text-decoration: underline;
+        text-decoration-color: rgba(114, 81, 58, 0.32);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 4px;
+        transition: color 180ms ease, text-decoration-color 180ms ease;
+      }
+
+      body.zh-refund-policy .zh-refund-page a:hover {
+        color: var(--zh-refund-ink);
+        text-decoration-color: rgba(42, 37, 32, 0.42);
+      }
+
+      body.zh-refund-policy .zh-nowrap {
+        white-space: nowrap;
+      }
+
+      body.zh-refund-policy .zh-refund-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin: 0 0 0.68rem;
+        color: var(--zh-refund-clay);
+        font-family: var(--font-sans, system-ui, sans-serif);
+        font-size: 0.56rem;
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+
+      body.zh-refund-policy .zh-refund-eyebrow::before {
+        content: "";
+        display: inline-block;
+        width: 20px;
+        height: 1px;
+        background: var(--zh-refund-clay-soft);
+      }
+
+      body.zh-refund-policy .zh-refund-title {
+        margin: 0;
+        color: var(--zh-refund-ink);
+        font-family: var(--font-display, Georgia, serif);
+        font-size: clamp(1.72rem, 1.72vw, 1.92rem);
+        font-weight: 400;
+        line-height: 1.18;
+        letter-spacing: -0.012em;
+        text-wrap: balance;
+      }
+
+      body.zh-refund-policy .zh-refund-intro {
+        max-width: 56ch;
+        margin: 1.04rem 0 0;
+        color: var(--zh-refund-soft);
+        font-size: 1.018rem;
+        line-height: 1.84;
+        letter-spacing: 0.001em;
+        text-wrap: normal;
+      }
+
+      body.zh-refund-policy .zh-refund-intro + .zh-refund-intro {
+        margin-top: 0.42rem;
+      }
+
+      body.zh-refund-policy .zh-refund-summary {
+        max-width: 668px;
+        margin: clamp(1.68rem, 2.2vw, 1.98rem) auto 0;
+        padding: clamp(1.0rem, 1.5vw, 1.16rem) 0 clamp(1.02rem, 1.56vw, 1.18rem);
+        border-top: 1px solid var(--zh-refund-line);
+        border-bottom: 1px solid var(--zh-refund-line);
+        background: linear-gradient(90deg, transparent, rgba(255, 253, 251, 0.14) 48%, transparent);
+      }
+
+      body.zh-refund-policy .zh-refund-summary__heading {
+        margin: 0 0 0.88rem;
+        color: #765640;
+        font-family: var(--font-sans, system-ui, sans-serif);
+        font-size: 0.585rem;
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: 0.018em;
+        text-transform: uppercase;
+      }
+
+      body.zh-refund-policy .zh-refund-summary dl {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: clamp(1.65rem, 2.7vw, 2.45rem);
+        row-gap: 0.94rem;
+        margin: 0;
+      }
+
+      body.zh-refund-policy .zh-refund-summary__row {
+        min-width: 0;
+      }
+
+      body.zh-refund-policy .zh-refund-summary dt {
+        margin: 0 0 0.2rem;
+        color: #6f4f3c;
+        font-family: var(--font-sans, system-ui, sans-serif);
+        font-size: 0.72rem;
+        font-weight: 500;
+        line-height: 1.34;
+        letter-spacing: 0;
+      }
+
+      body.zh-refund-policy .zh-refund-summary dd {
+        margin: 0;
+        color: var(--zh-refund-soft);
+        font-size: 0.965rem;
+        line-height: 1.62;
+        text-wrap: normal;
+      }
+
+      body.zh-refund-policy .zh-refund-sections {
+        margin: clamp(1.92rem, 2.62vw, 2.28rem) auto 0;
+      }
+
+      body.zh-refund-policy .zh-refund-section {
+        margin: 0;
+        padding: 0;
+      }
+
+      body.zh-refund-policy .zh-refund-section + .zh-refund-section {
+        margin-top: clamp(1.42rem, 1.92vw, 1.68rem);
+        padding-top: clamp(1.34rem, 1.78vw, 1.58rem);
+        border-top: 1px solid var(--zh-refund-line-soft);
+      }
+
+      body.zh-refund-policy .zh-refund-section h2 {
+        margin: 0 0 0.66rem;
+        color: var(--zh-refund-ink);
+        font-family: var(--font-display, Georgia, serif);
+        font-size: clamp(1.01rem, 0.98vw, 1.095rem);
+        font-weight: 400;
+        line-height: 1.38;
+        letter-spacing: -0.004em;
+        text-wrap: balance;
+      }
+
+      body.zh-refund-policy .zh-refund-section p,
+      body.zh-refund-policy .zh-refund-closing {
+        max-width: 62ch;
+        margin: 0;
+        color: var(--zh-refund-soft);
+        font-size: 1.034rem;
+        line-height: 1.82;
+        letter-spacing: 0.001em;
+        text-wrap: normal;
+      }
+
+      body.zh-refund-policy .zh-refund-section p + p {
+        margin-top: 0.8rem;
+      }
+
+      body.zh-refund-policy .zh-refund-care-actions,
+      body.zh-refund-policy .zh-refund-received-actions {
+        display: grid;
+        gap: 0.68rem;
+        max-width: 60ch;
+        margin-top: 0.78rem;
+        padding: 0.04rem 0 0.04rem;
+      }
+
+      body.zh-refund-policy .zh-refund-action {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.18rem;
+        padding: 0.03rem 0;
+      }
+
+      body.zh-refund-policy .zh-refund-action strong {
+        display: block;
+        color: #47392f;
+        font-family: var(--font-display, Georgia, serif);
+        font-size: 1.0rem;
+        font-weight: 400;
+        line-height: 1.28;
+        letter-spacing: -0.003em;
+      }
+
+      body.zh-refund-policy .zh-refund-action span {
+        display: block;
+        max-width: 58ch;
+        color: var(--zh-refund-soft);
+        font-size: 1.0rem;
+        line-height: 1.66;
+      }
+
+      body.zh-refund-policy .zh-refund-action a {
+        white-space: nowrap;
+      }
+
+      body.zh-refund-policy .zh-refund-note {
+        margin-top: 0.88rem !important;
+      }
+
+      body.zh-refund-policy .zh-refund-closing {
+        margin: clamp(1.72rem, 2.28vw, 2.0rem) 0 0;
+        padding-top: clamp(1.02rem, 1.42vw, 1.2rem);
+        border-top: 1px solid var(--zh-refund-line-soft);
+      }
+
+      @media (max-width: 959px) {
+        body.zh-refund-policy .zh-refund-page__inner {
+          width: min(100%, 700px);
+          padding-top: clamp(1.78rem, 4.2vw, 2.24rem);
+          padding-bottom: clamp(4.85rem, 7.8vw, 6.1rem);
+        }
+
+        body.zh-refund-policy .zh-refund-title {
+          font-size: clamp(1.54rem, 3.8vw, 1.72rem);
+        }
+
+        body.zh-refund-policy .zh-refund-summary dl {
+          grid-template-columns: 1fr;
+          row-gap: 1.08rem;
+        }
+      }
+
+      @media (max-width: 639px) {
+        body.zh-refund-policy .zh-refund-page__inner {
+          padding-top: 1.38rem;
+          padding-inline: 1.28rem;
+          padding-bottom: 5.05rem;
+        }
+
+        body.zh-refund-policy .zh-refund-eyebrow {
+          gap: 0.5rem;
+          margin-bottom: 0.62rem;
+          font-size: 0.535rem;
+          letter-spacing: 0.062em;
+        }
+
+        body.zh-refund-policy .zh-refund-eyebrow::before {
+          width: 16px;
+        }
+
+        body.zh-refund-policy .zh-refund-title {
+          font-size: clamp(1.4rem, 5.15vw, 1.52rem);
+          line-height: 1.18;
+        }
+
+        body.zh-refund-policy .zh-refund-intro,
+        body.zh-refund-policy .zh-refund-section p,
+        body.zh-refund-policy .zh-refund-closing {
+          font-size: 1.005rem;
+          line-height: 1.78;
+        }
+
+        body.zh-refund-policy .zh-refund-intro {
+          max-width: none;
+          margin-top: 0.95rem;
+        }
+
+        body.zh-refund-policy .zh-refund-intro + .zh-refund-intro {
+          margin-top: 0.36rem;
+        }
+
+        body.zh-refund-policy .zh-refund-summary {
+          margin-top: 1.42rem;
+          padding: 0.94rem 0 1.0rem;
+          background: transparent;
+        }
+
+        body.zh-refund-policy .zh-refund-summary__heading {
+          margin-bottom: 0.88rem;
+          font-size: 0.57rem;
+          letter-spacing: 0.018em;
+        }
+
+        body.zh-refund-policy .zh-refund-summary dl {
+          row-gap: 0.94rem;
+        }
+
+        body.zh-refund-policy .zh-refund-summary dt {
+          margin-bottom: 0.18rem;
+          font-size: 0.705rem;
+          line-height: 1.3;
+        }
+
+        body.zh-refund-policy .zh-refund-summary dd {
+          font-size: 0.952rem;
+          line-height: 1.6;
+        }
+
+        body.zh-refund-policy .zh-refund-sections {
+          margin-top: 1.72rem;
+        }
+
+        body.zh-refund-policy .zh-refund-section + .zh-refund-section {
+          margin-top: 1.32rem;
+          padding-top: 1.26rem;
+        }
+
+        body.zh-refund-policy .zh-refund-section h2 {
+          margin-bottom: 0.68rem;
+          font-size: 1rem;
+          line-height: 1.36;
+        }
+
+        body.zh-refund-policy .zh-refund-section p + p {
+          margin-top: 0.8rem;
+        }
+
+        body.zh-refund-policy .zh-refund-care-actions,
+        body.zh-refund-policy .zh-refund-received-actions {
+          margin-top: 0.86rem;
+        }
+
+        body.zh-refund-policy .zh-refund-action {
+          gap: 0.16rem;
+          padding: 0.02rem 0;
+        }
+
+        body.zh-refund-policy .zh-refund-action strong {
+          font-size: 0.972rem;
+          line-height: 1.28;
+        }
+
+        body.zh-refund-policy .zh-refund-action span {
+          font-size: 0.982rem;
+          line-height: 1.62;
+        }
+
+        body.zh-refund-policy .zh-refund-note {
+          margin-top: 0.84rem !important;
+        }
+
+        body.zh-refund-policy .zh-refund-closing {
+          margin-top: 1.58rem;
+          margin-left: 0;
+          margin-right: 0;
+          padding-top: 1.06rem;
+        }
+      }
+
+
 
     {% endstyle %}
 
     <script src="{{ 'theme.js' | asset_url | append: '?zh=5' }}" defer></script>
   </head>
-  <body class="min-h-dvh font-sans text-ink antialiased{% if request.path contains '/policies/shipping-policy' %} zh-shipping-policy{% endif %}">
+  <body class="min-h-dvh font-sans text-ink antialiased{% if request.path contains '/policies/shipping-policy' %} zh-shipping-policy{% endif %}{% if request.path contains '/policies/refund-policy' %} zh-refund-policy{% endif %}">
     <a class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-surface focus:px-4 focus:py-2 focus:text-ink focus:shadow" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
 
     {% sections 'header-group' %}
@@ -605,6 +985,151 @@
 
               <p class="zh-shipping-closing">
                 Twijfel je over je levering? Mail ons gerust via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>.
+              </p>
+            </div>
+          </div>
+        </article>
+      {%- elsif request.path contains '/policies/refund-policy' -%}
+        <article class="zh-refund-page" aria-labelledby="zh-refund-title">
+          <div class="zh-refund-page__inner">
+            <header class="zh-refund-header">
+              <p class="zh-refund-eyebrow">Klantenservice</p>
+              <h1 id="zh-refund-title" class="zh-refund-title">Retourneren</h1>
+              <p class="zh-refund-intro">
+                Niet helemaal tevreden met je bestelling? Je kunt je bestelling binnen 14 dagen na ontvangst aanmelden voor retour.
+              </p>
+              <p class="zh-refund-intro">
+                Hier lees je hoe retourneren werkt en waar je op kunt letten bij breekbare producten.
+              </p>
+            </header>
+
+            <section class="zh-refund-summary" aria-label="Retourneren in het kort">
+              <p class="zh-refund-summary__heading">In het kort</p>
+              <dl>
+                <div class="zh-refund-summary__row">
+                  <dt>Aanmelden</dt>
+                  <dd>Binnen 14 dagen na ontvangst.</dd>
+                </div>
+                <div class="zh-refund-summary__row">
+                  <dt>Terugsturen</dt>
+                  <dd>Binnen 14 dagen na je retourmelding.</dd>
+                </div>
+                <div class="zh-refund-summary__row">
+                  <dt>Retourkosten</dt>
+                  <dd>Voor eigen rekening, tenzij anders afgesproken.</dd>
+                </div>
+                <div class="zh-refund-summary__row">
+                  <dt>Aanmelden via</dt>
+                  <dd><a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>.</dd>
+                </div>
+                <div class="zh-refund-summary__row">
+                  <dt>Breekbaar product</dt>
+                  <dd>Verpak glaswerk en andere breekbare producten zorgvuldig.</dd>
+                </div>
+              </dl>
+            </section>
+
+            <div class="zh-refund-sections">
+              <section class="zh-refund-section">
+                <h2>Retour aanmelden</h2>
+                <p>
+                  Mail je retourmelding naar <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>. Vermeld daarbij je ordernummer en welke producten je wilt retourneren.
+                </p>
+                <p>
+                  Na je melding ontvang je van ons het retouradres en de verdere instructies. Je mag ook het modelformulier voor herroeping gebruiken; dat is niet verplicht.
+                </p>
+                <p>
+                  De kosten voor de retourzending zijn voor eigen rekening, tenzij we iets anders afspreken of de wet iets anders bepaalt. We adviseren om je retour met track &amp; trace te versturen en het verzendbewijs te bewaren totdat je retour is verwerkt.
+                </p>
+              </section>
+
+              <section class="zh-refund-section">
+                <h2>Staat van het product</h2>
+                <p>
+                  Je mag het product bekijken en beoordelen zoals je dat in een fysieke winkel zou doen.
+                </p>
+                <p>
+                  Stuur het product compleet, schoon, onbeschadigd en indien mogelijk in de originele verpakking terug.
+                </p>
+                <p>
+                  Is een product gebruikt, beschadigd, incompleet of verder behandeld dan nodig was om het te beoordelen? Dan kan dit invloed hebben op het bedrag dat wordt terugbetaald.
+                </p>
+              </section>
+
+              <section class="zh-refund-section zh-refund-section--care">
+                <h2>Glas en breekbare producten</h2>
+                <p>
+                  Veel producten van <span class="zh-nowrap">Zayna Home</span> zijn breekbaar. Daarom vragen we je om glaswerk en andere breekbare producten zorgvuldig te verpakken.
+                </p>
+
+                <div class="zh-refund-care-actions" aria-label="Breekbare producten retourneren">
+                  <div class="zh-refund-action">
+                    <strong>Gebruik bescherming</strong>
+                    <span>Gebruik bij voorkeur de originele doos en het originele beschermingsmateriaal.</span>
+                  </div>
+                  <div class="zh-refund-action">
+                    <strong>Verpak apart</strong>
+                    <span>Verpak breekbare producten afzonderlijk en zorg dat ze niet kunnen schuiven.</span>
+                  </div>
+                  <div class="zh-refund-action">
+                    <strong>Vul goed op</strong>
+                    <span>Gebruik voldoende opvulmateriaal rondom het product, ook aan de boven-, onder- en zijkanten.</span>
+                  </div>
+                  <div class="zh-refund-action">
+                    <strong>Bewaar bewijs</strong>
+                    <span>Bewaar het verzendbewijs en maak bij voorkeur foto’s van de verpakking voordat je het pakket afgeeft.</span>
+                  </div>
+                </div>
+
+                <p class="zh-refund-note">
+                  Komt een retour beschadigd bij ons aan en blijkt dat het product onvoldoende is verpakt, dan kan dit invloed hebben op het bedrag dat wordt terugbetaald.
+                </p>
+              </section>
+
+              <section class="zh-refund-section">
+                <h2>Terugbetaling</h2>
+                <p>
+                  Na je herroepingsmelding betalen we het verschuldigde bedrag zo snel mogelijk terug via de oorspronkelijke betaalmethode.
+                </p>
+                <p>
+                  We betalen uiterlijk binnen 14 dagen na je herroepingsmelding terug. We mogen wachten met terugbetalen totdat we het product hebben ontvangen of totdat je hebt aangetoond dat het product is teruggezonden.
+                </p>
+                <p>
+                  Retourneer je de volledige bestelling? Dan betalen we ook de betaalde standaard heenzendkosten terug, voor zover wettelijk verplicht. Extra kosten voor een duurdere verzendmethode worden niet terugbetaald.
+                </p>
+                <p>
+                  Bij een gedeeltelijke retour worden de oorspronkelijke heenzendkosten niet terugbetaald, voor zover wettelijk toegestaan. Eventuele waardevermindering wordt verrekend met het terug te betalen bedrag.
+                </p>
+              </section>
+
+              <section class="zh-refund-section zh-refund-section--received">
+                <h2>Beschadigd ontvangen?</h2>
+                <p>
+                  Is een product beschadigd, gebroken of incompleet bij je aangekomen? Meld dit dan niet als gewone retour, maar als schademelding. Zo kunnen we de situatie goed beoordelen.
+                </p>
+
+                <div class="zh-refund-received-actions" aria-label="Wat te doen bij schade na ontvangst">
+                  <div class="zh-refund-action">
+                    <strong>Controleer je bestelling</strong>
+                    <span>Doe dit bij voorkeur direct na ontvangst.</span>
+                  </div>
+                  <div class="zh-refund-action">
+                    <strong>Mail ons</strong>
+                    <span>Bij voorkeur binnen 48 uur via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>.</span>
+                  </div>
+                  <div class="zh-refund-action">
+                    <strong>Stuur foto’s mee</strong>
+                    <span>Van de buitenverpakking, het verzendlabel, het beschermingsmateriaal en het beschadigde product.</span>
+                  </div>
+                </div>
+
+                <p class="zh-refund-note">
+                  We bekijken je melding zorgvuldig en bieden binnen de wettelijke grenzen een passende oplossing, zoals een vervangend product of een gedeeltelijke terugbetaling.
+                </p>
+              </section>
+
+              <p class="zh-refund-closing">
+                Twijfel je over je retour? Mail ons gerust via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>.
               </p>
             </div>
           </div>
