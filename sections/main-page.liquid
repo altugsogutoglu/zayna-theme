@@ -1,0 +1,1115 @@
+{%- liquid
+  assign is_about = false
+  assign is_return_request = false
+  assign normalized_title = page.title | downcase
+
+  if page.handle == 'about' or page.handle == 'over-ons' or page.template_suffix == 'about' or page.template_suffix == 'over-ons'
+    assign is_about = true
+  endif
+
+  if normalized_title contains 'over ons'
+    assign is_about = true
+  endif
+
+  if page.handle == 'retour-aanmelden' or page.template_suffix == 'retour-aanmelden' or normalized_title contains 'retour aanmelden'
+    assign is_return_request = true
+  endif
+
+  assign eyebrow = section.settings.eyebrow
+-%}
+
+{%- if is_about -%}
+  {%- liquid
+    assign about_title = page.title
+    if about_title == blank
+      assign about_title = 'Over ons'
+    endif
+
+    assign cta_link = section.settings.cta_link
+    if cta_link == blank
+      assign cta_link = '/collections'
+    endif
+
+    assign image_alt = section.settings.image_alt
+    if image_alt == blank and section.settings.about_image.alt != blank
+      assign image_alt = section.settings.about_image.alt
+    endif
+    if image_alt == blank
+      assign image_alt = 'Rustige keuken- en woonproducten van Zayna Home'
+    endif
+  -%}
+
+  <section id="zh-about-{{ section.id }}" class="zh-about" aria-labelledby="zh-about-title-{{ section.id }}">
+    <div class="zh-about__shell">
+      <header class="zh-about__hero">
+        <p class="zh-about__eyebrow">Ons verhaal</p>
+        <h1 id="zh-about-title-{{ section.id }}" class="zh-about__title font-display">{{ about_title }}</h1>
+        <p class="zh-about__lead">Bij Zayna Home kiezen we keuken- en woonproducten voor dagelijks gebruik, met een uitstraling die je graag zichtbaar laat. Rustig in vorm, praktisch in functie en zorgvuldig gekozen voor een verzorgd huis.</p>
+      </header>
+
+      <div class="zh-about__body">
+        <div class="zh-about__story">
+          <h2 class="font-display">Mooi wonen begint bij wat je elke dag gebruikt.</h2>
+
+          <div class="zh-about__copy">
+            <p>Een huis hoeft niet vol te staan om verzorgd te voelen. Juist de kleine dingen op het aanrecht, in de kast of op tafel bepalen de rust van je dagelijkse routine.</p>
+            <p>Daarom kiezen we items die eenvoudig combineren met wat je al hebt. Mooi in beeld, zonder de rust te verstoren.</p>
+          </div>
+        </div>
+
+        <div class="zh-about__side">
+          {%- if section.settings.about_image != blank -%}
+            <figure class="zh-about__figure">
+              {{ section.settings.about_image | image_url: width: 900 | image_tag: alt: image_alt, class: 'zh-about__image', loading: 'lazy', widths: '320, 480, 640, 760, 900', sizes: '(min-width: 990px) 18rem, (min-width: 750px) 17rem, 100vw' }}
+
+              {%- if section.settings.image_caption != blank -%}
+                <figcaption>{{ section.settings.image_caption }}</figcaption>
+              {%- endif -%}
+            </figure>
+          {%- endif -%}
+
+          <aside class="zh-about__notes" aria-labelledby="zh-about-notes-title-{{ section.id }}">
+            <h2 id="zh-about-notes-title-{{ section.id }}">Onze manier van kiezen</h2>
+
+            <ul class="zh-about__list" role="list">
+              <li>
+                <span class="font-display">Rustig in beeld</span>
+                <p>Zachte vormen, neutrale tinten en materialen die niet snel overheersen.</p>
+              </li>
+              <li>
+                <span class="font-display">Praktisch in gebruik</span>
+                <p>Producten die logisch voelen in de keuken, aan tafel of in een open kast.</p>
+              </li>
+              <li>
+                <span class="font-display">Eerlijke productinformatie</span>
+                <p>Met de details die je nodig hebt om bewust te kiezen.</p>
+              </li>
+              <li>
+                <span class="font-display">Verzorgd verzonden</span>
+                <p>Vanuit Nederland, netjes en beschermend verpakt.</p>
+              </li>
+            </ul>
+          </aside>
+        </div>
+
+        <div class="zh-about__closing">
+          <p>Zo ontstaat stap voor stap een rustige basis voor je keuken, tafel en interieur: warm, verzorgd en eenvoudig te combineren.</p>
+          <a href="{{ cta_link }}" class="zh-about__cta">Bekijk het assortiment</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    #zh-about-{{ section.id }} {
+      --zh-about-ink: #2b231f;
+      --zh-about-soft: rgba(43, 35, 31, 0.68);
+      --zh-about-muted: rgba(43, 35, 31, 0.55);
+      --zh-about-clay: rgba(123, 78, 50, 0.94);
+      --zh-about-line: rgba(126, 94, 72, 0.055);
+      --zh-about-button-bg: #705b4f;
+      --zh-about-button-bg-hover: #665347;
+      --zh-about-button-border: rgba(105, 82, 69, 0.92);
+      --zh-about-button-text: #fffaf5;
+      padding: clamp(2rem, 3.9vw, 3.55rem) 0 clamp(3rem, 5.8vw, 5.2rem);
+      word-break: normal;
+      overflow-wrap: normal;
+      hyphens: none;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__title,
+    #zh-about-{{ section.id }} .zh-about__lead,
+    #zh-about-{{ section.id }} .zh-about__story h2,
+    #zh-about-{{ section.id }} .zh-about__copy,
+    #zh-about-{{ section.id }} .zh-about__notes,
+    #zh-about-{{ section.id }} .zh-about__closing {
+      word-break: normal;
+      overflow-wrap: normal;
+      hyphens: none;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__shell {
+      width: min(100%, 68rem);
+      margin: 0 auto;
+      padding: 0 clamp(1.18rem, 4vw, 3.45rem);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__hero {
+      max-width: 43rem;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.62rem;
+      margin: 0 0 0.72rem;
+      color: var(--zh-about-clay);
+      font-size: 0.63rem;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__eyebrow::before {
+      content: '';
+      display: block;
+      width: 1.28rem;
+      height: 1px;
+      background: rgba(151, 95, 61, 0.32);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__title {
+      margin: 0;
+      color: var(--zh-about-ink);
+      font-size: clamp(2.02rem, 5.6vw, 3.7rem);
+      font-weight: 400;
+      line-height: 1.035;
+      letter-spacing: -0.04em;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__lead {
+      max-width: 39rem;
+      margin: 0.9rem 0 0;
+      color: rgba(43, 35, 31, 0.7);
+      font-size: clamp(0.96rem, 1.08vw, 1.05rem);
+      line-height: 1.66;
+      letter-spacing: 0.002em;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__body {
+      display: grid;
+      gap: clamp(1.62rem, 3.8vw, 3.75rem);
+      margin-top: clamp(1.82rem, 3.6vw, 3.05rem);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__story h2 {
+      max-width: 32rem;
+      margin: 0;
+      color: var(--zh-about-ink);
+      font-size: clamp(1.34rem, 2.15vw, 1.86rem);
+      font-weight: 400;
+      line-height: 1.14;
+      letter-spacing: -0.032em;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__copy {
+      max-width: 36.5rem;
+      margin-top: 1rem;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__copy p,
+    #zh-about-{{ section.id }} .zh-about__closing p {
+      margin: 0;
+      color: var(--zh-about-soft);
+      font-size: 0.94rem;
+      line-height: 1.72;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__copy p + p {
+      margin-top: 0.78rem;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__closing {
+      max-width: 35.25rem;
+      padding-top: clamp(1.08rem, 2.4vw, 1.46rem);
+      border-top: 1px solid var(--zh-about-line);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      max-width: 18.25rem;
+      min-height: 2.86rem;
+      margin-top: 1rem;
+      padding: 0.76rem 1.58rem;
+      border: 1px solid var(--zh-about-button-border);
+      border-radius: 0.04rem;
+      background: var(--zh-about-button-bg);
+      color: var(--zh-about-button-text);
+      font-size: 0.852rem;
+      font-weight: 500;
+      line-height: 1.2;
+      text-decoration: none;
+      transition: border-color 180ms ease, background-color 180ms ease, opacity 180ms ease, transform 180ms ease;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__cta:hover {
+      border-color: rgba(93, 74, 64, 0.96);
+      background: var(--zh-about-button-bg-hover);
+      opacity: 0.98;
+      transform: translateY(-1px);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__cta:focus-visible {
+      outline: 2px solid rgba(126, 94, 72, 0.35);
+      outline-offset: 3px;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__side {
+      display: grid;
+      gap: 1.08rem;
+      align-content: start;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__figure {
+      margin: 0;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__image {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 2.02;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 0.12rem;
+      background: rgba(235, 228, 218, 0.58);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__figure figcaption {
+      max-width: 23rem;
+      margin-top: 0.58rem;
+      color: rgba(43, 35, 31, 0.5);
+      font-size: 0.78rem;
+      line-height: 1.55;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__notes {
+      padding-top: 0.96rem;
+      border-top: 1px solid rgba(126, 94, 72, 0.058);
+    }
+
+    #zh-about-{{ section.id }} .zh-about__notes h2 {
+      margin: 0;
+      color: rgba(124, 80, 54, 0.74);
+      font-size: 0.6rem;
+      font-weight: 500;
+      line-height: 1.3;
+      letter-spacing: 0.052em;
+      text-transform: uppercase;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list {
+      display: grid;
+      gap: 0.84rem;
+      margin: 0.86rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list li {
+      display: grid;
+      gap: 0.13rem;
+      padding: 0;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list span {
+      color: rgba(43, 35, 31, 0.68);
+      font-size: 0.93rem;
+      font-weight: 400;
+      line-height: 1.28;
+      letter-spacing: -0.012em;
+    }
+
+    #zh-about-{{ section.id }} .zh-about__list p {
+      margin: 0;
+      color: rgba(43, 35, 31, 0.52);
+      font-size: 0.84rem;
+      line-height: 1.58;
+    }
+
+    @media screen and (min-width: 750px) {
+      #zh-about-{{ section.id }} .zh-about__lead {
+        margin-top: 0.96rem;
+      }
+    }
+
+    @media screen and (min-width: 990px) {
+      #zh-about-{{ section.id }} .zh-about__shell {
+        display: grid;
+        grid-template-columns: minmax(0, 0.98fr) minmax(14.5rem, 0.42fr);
+        column-gap: clamp(2.25rem, 3.55vw, 3.45rem);
+        align-items: start;
+        width: min(100%, 64.2rem);
+      }
+
+      #zh-about-{{ section.id }} .zh-about__hero {
+        grid-column: 1;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__title {
+        font-size: clamp(2.24rem, 2.64vw, 2.78rem);
+        line-height: 1.045;
+        letter-spacing: -0.036em;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__lead {
+        max-width: 36.2rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__body {
+        display: contents;
+        margin-top: 0;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__story {
+        grid-column: 1;
+        margin-top: clamp(1.62rem, 2.5vw, 2.28rem);
+      }
+
+      #zh-about-{{ section.id }} .zh-about__side {
+        grid-column: 2;
+        grid-row: 1 / span 3;
+        width: min(100%, 18.2rem);
+        justify-self: end;
+        margin-top: 0.1rem;
+        gap: 0.78rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__closing {
+        grid-column: 1;
+        margin-top: clamp(1.34rem, 2.45vw, 1.85rem);
+      }
+
+      #zh-about-{{ section.id }} .zh-about__image {
+        aspect-ratio: 4 / 1.98;
+        max-height: 9.1rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__notes {
+        padding-top: 0.84rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__list {
+        gap: 0.72rem;
+      }
+    }
+
+    @media screen and (max-width: 989px) {
+      #zh-about-{{ section.id }} .zh-about__body {
+        max-width: 41rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__closing {
+        margin-top: 0;
+      }
+    }
+
+    @media screen and (min-width: 750px) and (max-width: 989px) {
+      #zh-about-{{ section.id }} .zh-about__body {
+        gap: 1.58rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__side {
+        gap: 1rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__figure {
+        width: min(100%, 15.45rem);
+        max-width: 15.45rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__image {
+        aspect-ratio: 4 / 1.42;
+        max-height: 6.15rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__notes {
+        max-width: 30rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__cta {
+        width: auto;
+        min-width: 13.75rem;
+        max-width: 17rem;
+      }
+    }
+
+    @media screen and (min-width: 560px) and (max-width: 749px) {
+      #zh-about-{{ section.id }} .zh-about__body {
+        gap: 1.56rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__cta {
+        width: auto;
+        min-width: 13.75rem;
+        max-width: 17rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__figure {
+        width: min(100%, 16.65rem);
+        max-width: 16.65rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__image {
+        aspect-ratio: 4 / 1.52;
+        max-height: 6.95rem;
+      }
+    }
+
+    @media screen and (max-width: 559px) {
+      #zh-about-{{ section.id }} {
+        padding-top: 2.05rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__shell {
+        padding-left: 1.18rem;
+        padding-right: 1.18rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__eyebrow {
+        gap: 0.62rem;
+        margin-bottom: 0.72rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__eyebrow::before {
+        width: 1.28rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__body {
+        gap: 1.56rem;
+        margin-top: 1.9rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__figure {
+        width: min(100%, 20.85rem);
+        max-width: 20.85rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__image {
+        aspect-ratio: 4 / 1.96;
+        max-height: 9.95rem;
+      }
+
+      #zh-about-{{ section.id }} .zh-about__cta {
+        width: auto;
+        min-width: 13.65rem;
+        max-width: 100%;
+        min-height: 2.86rem;
+      }
+    }
+  </style>
+{%- elsif is_return_request -%}
+  <section id="ZaynaReturn-{{ section.id }}" class="zh-return" aria-labelledby="ZaynaReturnTitle-{{ section.id }}">
+    <div class="zh-return__inner">
+      <header class="zh-return__header">
+        <p class="zh-return__eyebrow">
+          <span aria-hidden="true"></span>
+          Klantenservice
+        </p>
+
+        <h1 id="ZaynaReturnTitle-{{ section.id }}" class="zh-return__title">
+          Retour aanmelden
+        </h1>
+
+        <div class="zh-return__intro-wrap">
+          <div class="zh-return__intro">
+            <p>Wil je een bestelling retourneren of herroepen?</p>
+            <p>Vul je gegevens in. We bekijken je aanmelding en sturen je daarna het retouradres en de verdere instructies.</p>
+          </div>
+
+          <p class="zh-return__promise">
+            Gaat het om schade of breuk bij ontvangst? Meld dit dan hieronder als schademelding en stuur foto’s mee via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>.
+          </p>
+        </div>
+      </header>
+
+      <div class="zh-return__content">
+        {%- form 'contact', class: 'zh-return-form' -%}
+          <input type="hidden" name="contact[Onderwerp]" value="Retour aanmelden">
+
+          {%- if form.posted_successfully? -%}
+            <div class="zh-return-message zh-return-message--success" role="status">
+              <span class="zh-return-message__label">
+                Aanmelding ontvangen
+              </span>
+              <span class="zh-return-message__text">
+                Bedankt, je retouraanmelding is ontvangen. We bekijken je bericht en sturen je de verdere instructies.
+              </span>
+            </div>
+          {%- elsif form.errors -%}
+            <div class="zh-return-message zh-return-message--error" role="alert">
+              Er ging iets mis. Controleer je gegevens en probeer het opnieuw.
+            </div>
+          {%- endif -%}
+
+          <div class="zh-return-form__row zh-return-form__row--split">
+            <div class="zh-return-field">
+              <label for="ReturnName-{{ section.id }}" class="zh-return-label">Naam</label>
+              <input
+                id="ReturnName-{{ section.id }}"
+                type="text"
+                name="contact[name]"
+                required
+                autocomplete="name"
+                value="{% if form.name %}{{ form.name | escape }}{% endif %}"
+                class="zh-return-input"
+              >
+            </div>
+
+            <div class="zh-return-field">
+              <label for="ReturnEmail-{{ section.id }}" class="zh-return-label">E-mailadres</label>
+              <input
+                id="ReturnEmail-{{ section.id }}"
+                type="email"
+                name="contact[email]"
+                required
+                autocomplete="email"
+                value="{% if form.email %}{{ form.email | escape }}{% endif %}"
+                class="zh-return-input"
+              >
+            </div>
+          </div>
+
+          <div class="zh-return-field">
+            <label for="ReturnOrder-{{ section.id }}" class="zh-return-label">Bestelnummer</label>
+            <input
+              id="ReturnOrder-{{ section.id }}"
+              type="text"
+              name="contact[Bestelnummer]"
+              required
+              autocomplete="off"
+              class="zh-return-input"
+            >
+          </div>
+
+          <fieldset class="zh-return-choices">
+            <legend class="zh-return-label">Wat wil je aanmelden?</legend>
+            <div class="zh-return-choices__list">
+              <label class="zh-return-choice">
+                <input type="radio" name="contact[Type aanmelding]" value="Retour of herroeping" required>
+                <span class="zh-return-choice__text">Retour of herroeping</span>
+              </label>
+              <label class="zh-return-choice">
+                <input type="radio" name="contact[Type aanmelding]" value="Schade of breuk bij ontvangst" required>
+                <span class="zh-return-choice__text">Schade of breuk bij ontvangst</span>
+              </label>
+              <label class="zh-return-choice">
+                <input type="radio" name="contact[Type aanmelding]" value="Vraag over een retour" required>
+                <span class="zh-return-choice__text">Vraag over een retour</span>
+              </label>
+              <label class="zh-return-choice">
+                <input type="radio" name="contact[Type aanmelding]" value="Anders" required>
+                <span class="zh-return-choice__text">Anders</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="zh-return-field">
+            <label for="ReturnProducts-{{ section.id }}" class="zh-return-label">Welke producten wil je retourneren of melden?</label>
+            <textarea
+              id="ReturnProducts-{{ section.id }}"
+              name="contact[Producten retour of melding]"
+              rows="3"
+              required
+              class="zh-return-textarea zh-return-textarea--small"
+            ></textarea>
+          </div>
+
+          <fieldset class="zh-return-choices">
+            <legend class="zh-return-label">Staat van het product</legend>
+            <div class="zh-return-choices__list">
+              <label class="zh-return-choice">
+                <input type="radio" name="contact[Staat van het product]" value="Compleet en onbeschadigd" required>
+                <span class="zh-return-choice__text">Compleet en onbeschadigd</span>
+              </label>
+              <label class="zh-return-choice">
+                <input type="radio" name="contact[Staat van het product]" value="Verpakking geopend, product compleet" required>
+                <span class="zh-return-choice__text">Verpakking geopend, product compleet</span>
+              </label>
+              <label class="zh-return-choice">
+                <input type="radio" name="contact[Staat van het product]" value="Er is schade of er ontbreekt iets" required>
+                <span class="zh-return-choice__text">Er is schade of er ontbreekt iets</span>
+              </label>
+              <label class="zh-return-choice">
+                <input type="radio" name="contact[Staat van het product]" value="Ik weet het niet" required>
+                <span class="zh-return-choice__text">Ik weet het niet</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="zh-return-field">
+            <label for="ReturnMessage-{{ section.id }}" class="zh-return-label">Toelichting, indien nodig</label>
+            <textarea
+              id="ReturnMessage-{{ section.id }}"
+              name="contact[body]"
+              rows="5"
+              class="zh-return-textarea"
+            >{% if form.body %}{{ form.body | escape }}{% endif %}</textarea>
+            <p class="zh-return-help">
+              Bij schade of breuk kun je hier kort omschrijven wat er is gebeurd. Foto’s kun je daarna meesturen via e-mail.
+            </p>
+          </div>
+
+          <div class="zh-return-form__footer">
+            <button type="submit" class="zh-return-submit">Retour aanmelden</button>
+            <p class="zh-return-form__note">
+              We reageren meestal binnen 24 uur op werkdagen.
+            </p>
+          </div>
+        {%- endform -%}
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (() => {
+      const root = document.getElementById('ZaynaReturn-{{ section.id }}');
+      if (!root || !root.querySelector('.zh-return-message--success')) return;
+      if (!window.history || !window.history.replaceState) return;
+
+      const url = new URL(window.location.href);
+      let shouldUpdate = false;
+
+      if (url.searchParams.has('contact_posted')) {
+        url.searchParams.delete('contact_posted');
+        shouldUpdate = true;
+      }
+
+      if (url.hash === '#contact_form') {
+        url.hash = '';
+        shouldUpdate = true;
+      }
+
+      if (shouldUpdate) {
+        const cleanUrl = `${url.pathname}${url.search}${url.hash}`;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    })();
+  </script>
+
+  <style>
+    #ZaynaReturn-{{ section.id }} {
+      --zh-return-bg: var(--color-bg, #faf5f2);
+      --zh-return-ink: #2a2520;
+      --zh-return-soft: rgba(42, 37, 32, 0.66);
+      --zh-return-muted: rgba(42, 37, 32, 0.47);
+      --zh-return-border: rgba(42, 37, 32, 0.092);
+      --zh-return-clay: #9b613d;
+      --zh-return-button: #665045;
+      --zh-return-button-hover: #765746;
+      --zh-return-field: rgba(255, 251, 246, 0.90);
+      --zh-return-field-soft: rgba(250, 243, 236, 0.68);
+
+      background: var(--zh-return-bg);
+      color: var(--zh-return-ink);
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return__inner {
+      width: min(100%, 640px);
+      margin: 0 auto;
+      padding: 28px 16px 124px;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return__header {
+      margin: 0 0 22px;
+      text-align: left;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return__eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 9px;
+      color: var(--zh-return-clay);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return__eyebrow > span {
+      width: 22px;
+      height: 1px;
+      background: rgba(155, 97, 61, 0.45);
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return__title {
+      margin: 0;
+      color: var(--zh-return-ink);
+      font-family: var(--font-display, var(--font-heading-family, Georgia, serif));
+      font-size: clamp(1.40rem, 4.05vw, 1.64rem);
+      font-weight: 400;
+      letter-spacing: -0.024em;
+      line-height: 1.04;
+      text-wrap: balance;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return__intro-wrap {
+      max-width: 58ch;
+      margin: 8px 0 0;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return__intro {
+      display: grid;
+      gap: 1px;
+      color: var(--zh-return-soft);
+      font-size: 13.05px;
+      line-height: 1.52;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return__intro p,
+    #ZaynaReturn-{{ section.id }} .zh-return__promise {
+      margin: 0;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return__promise {
+      margin-top: 6px;
+      color: rgba(42, 37, 32, 0.48);
+      font-size: 12.05px;
+      line-height: 1.48;
+    }
+
+    #ZaynaReturn-{{ section.id }} a {
+      color: rgba(42, 37, 32, 0.78);
+      text-decoration: underline;
+      text-decoration-color: rgba(155, 97, 61, 0.34);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      transition: color 180ms ease, text-decoration-color 180ms ease;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-form {
+      display: grid;
+      gap: 13px;
+      padding: 0;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-form__row {
+      display: grid;
+      gap: 12px;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-field {
+      min-width: 0;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-label {
+      display: block;
+      margin: 0 0 6px;
+      color: rgba(42, 37, 32, 0.58);
+      font-size: 11.55px;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      line-height: 1.24;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-input,
+    #ZaynaReturn-{{ section.id }} .zh-return-textarea {
+      width: 100%;
+      border: 1px solid var(--zh-return-border);
+      border-radius: 0;
+      appearance: none;
+      -webkit-appearance: none;
+      background: var(--zh-return-field);
+      color: var(--zh-return-ink);
+      font-size: 13.35px;
+      line-height: 1.44;
+      outline: 0;
+      transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-input {
+      min-height: 39px;
+      padding: 8px 11px;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-textarea {
+      min-height: 110px;
+      resize: vertical;
+      padding: 11px 12px;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-textarea--small {
+      min-height: 84px;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-input:focus,
+    #ZaynaReturn-{{ section.id }} .zh-return-textarea:focus {
+      border-color: rgba(155, 97, 61, 0.30);
+      background: rgba(255, 253, 251, 0.94);
+      box-shadow: 0 0 0 1px rgba(155, 97, 61, 0.045);
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-help {
+      margin: 6px 0 0;
+      color: rgba(42, 37, 32, 0.43);
+      font-size: 11.25px;
+      line-height: 1.45;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-choices {
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-choices__list {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 7px;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-choice {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      min-height: 32px;
+      align-items: center;
+      padding: 7px 10px;
+      border: 1px solid rgba(42, 37, 32, 0.078);
+      background: var(--zh-return-field-soft);
+      color: rgba(42, 37, 32, 0.58);
+      cursor: pointer;
+      transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-choice input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-choice__text {
+      min-width: 0;
+      overflow: visible;
+      font-size: 12px;
+      line-height: 1.25;
+      text-overflow: clip;
+      white-space: normal;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-choice:has(input:checked) {
+      border-color: rgba(155, 97, 61, 0.24);
+      background: rgba(244, 234, 224, 0.70);
+      color: #704a33;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-choice:has(input:focus-visible) {
+      outline: 2px solid rgba(166, 106, 63, 0.42);
+      outline-offset: 2px;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-form__footer {
+      display: grid;
+      gap: 9px;
+      align-items: center;
+      justify-items: stretch;
+      padding-top: 2px;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-submit {
+      display: inline-flex;
+      min-height: 40px;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      padding: 0 22px;
+      border: 1px solid rgba(106, 81, 68, 0.82);
+      border-radius: 0;
+      background: var(--zh-return-button);
+      color: #fffdfb;
+      font-size: 12.15px;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      line-height: 1;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-form__note {
+      max-width: 52ch;
+      margin: 0;
+      color: rgba(42, 37, 32, 0.44);
+      font-size: 11.45px;
+      line-height: 1.48;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-message {
+      padding: 11px 13px;
+      border: 1px solid transparent;
+      background: rgba(255, 253, 251, 0.52);
+      color: rgba(42, 37, 32, 0.70);
+      font-size: 12.8px;
+      line-height: 1.50;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-message--success {
+      display: grid;
+      width: fit-content;
+      max-width: min(100%, 46ch);
+      justify-self: start;
+      gap: 4px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: rgba(75, 56, 45, 0.78);
+      line-height: 1.48;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-message__label {
+      display: block;
+      color: rgba(155, 97, 61, 0.78);
+      font-size: 9.25px;
+      font-weight: 500;
+      letter-spacing: 0.17em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-message__text {
+      display: block;
+      color: rgba(75, 56, 45, 0.78);
+      font-size: 12.55px;
+      line-height: 1.48;
+    }
+
+    #ZaynaReturn-{{ section.id }} .zh-return-message--error {
+      border-color: rgba(139, 76, 66, 0.20);
+      background: rgba(139, 76, 66, 0.035);
+      color: #8b4c42;
+    }
+
+    @media (min-width: 640px) {
+      #ZaynaReturn-{{ section.id }} .zh-return-choices__list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      #ZaynaReturn-{{ section.id }} .zh-return__inner {
+        padding-right: 24px;
+        padding-bottom: 130px;
+        padding-left: 24px;
+      }
+
+      #ZaynaReturn-{{ section.id }} .zh-return-form {
+        gap: 14px;
+      }
+
+      #ZaynaReturn-{{ section.id }} .zh-return-form__row--split {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #ZaynaReturn-{{ section.id }} .zh-return-submit {
+        width: auto;
+        min-width: 194px;
+        justify-self: start;
+      }
+
+      #ZaynaReturn-{{ section.id }} .zh-return-form__footer {
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 14px;
+      }
+    }
+
+    @media (min-width: 900px) {
+      #ZaynaReturn-{{ section.id }} .zh-return__inner {
+        padding-top: 34px;
+        padding-bottom: 150px;
+      }
+
+      #ZaynaReturn-{{ section.id }} .zh-return__header {
+        margin-bottom: 24px;
+      }
+
+      #ZaynaReturn-{{ section.id }} .zh-return__title {
+        font-size: clamp(1.58rem, 1.42vw, 1.78rem);
+      }
+
+      #ZaynaReturn-{{ section.id }} .zh-return__intro {
+        font-size: 13.25px;
+      }
+    }
+
+    @media (min-width: 1180px) {
+      #ZaynaReturn-{{ section.id }} .zh-return__inner {
+        padding-right: 40px;
+        padding-left: 40px;
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      #ZaynaReturn-{{ section.id }} a:hover {
+        color: #8f5a39;
+        text-decoration-color: rgba(143, 90, 57, 0.58);
+      }
+
+      #ZaynaReturn-{{ section.id }} .zh-return-choice:hover {
+        border-color: rgba(155, 97, 61, 0.18);
+        background: rgba(246, 238, 230, 0.56);
+        color: #704a33;
+      }
+
+      #ZaynaReturn-{{ section.id }} .zh-return-submit:hover {
+        border-color: var(--zh-return-button-hover);
+        background: var(--zh-return-button-hover);
+      }
+    }
+
+    @supports not selector(:has(*)) {
+      #ZaynaReturn-{{ section.id }} .zh-return-choice input:checked + .zh-return-choice__text {
+        color: #704a33;
+        text-decoration: underline;
+        text-decoration-color: rgba(155, 97, 61, 0.32);
+        text-underline-offset: 4px;
+      }
+    }
+  </style>
+
+{%- else -%}
+  <article class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-10 py-16">
+    <header class="mb-12">
+      {%- if eyebrow != blank -%}
+        <p class="text-label text-clay mb-3">{{ eyebrow }}</p>
+      {%- endif -%}
+      <h1 class="font-display text-h1">{{ page.title }}</h1>
+    </header>
+
+    <div class="rich-text">{{ page.content }}</div>
+  </article>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Page",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow voor gewone pagina's",
+      "default": "Pagina"
+    },
+    {
+      "type": "image_picker",
+      "id": "about_image",
+      "label": "Rustige sfeerafbeelding"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Alt-tekst afbeelding",
+      "default": "Rustige keuken- en woonproducten van Zayna Home"
+    },
+    {
+      "type": "text",
+      "id": "image_caption",
+      "label": "Bijschrift afbeelding"
+    },
+    {
+      "type": "text",
+      "id": "cta_link",
+      "label": "Link URL",
+      "default": "/collections"
+    }
+  ]
+}
+{% endschema %}
