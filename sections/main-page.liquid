@@ -507,11 +507,11 @@
         <div class="zh-return__intro-wrap">
           <div class="zh-return__intro">
             <p>Wil je een bestelling retourneren of herroepen?</p>
-            <p>Vul je gegevens in. We bekijken je aanmelding en sturen je daarna het retouradres en de verdere instructies.</p>
+            <p>Vul je gegevens in. We sturen je daarna het retouradres en de verdere instructies.</p>
           </div>
 
           <p class="zh-return__promise">
-            Gaat het om schade of breuk bij ontvangst? Meld dit dan hieronder als schademelding en stuur foto’s mee via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>.
+            Gaat het om schade of breuk bij ontvangst? Kies hieronder <span class="zh-return-nowrap">Schade of breuk bij ontvangst</span> en stuur foto’s mee via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>.
           </p>
         </div>
       </header>
@@ -639,7 +639,7 @@
               class="zh-return-textarea"
             >{% if form.body %}{{ form.body | escape }}{% endif %}</textarea>
             <p class="zh-return-help">
-              Bij schade of breuk kun je hier kort omschrijven wat er is gebeurd. Foto’s kun je daarna meesturen via e-mail.
+              Bij schade of breuk kun je hier kort omschrijven wat er is gebeurd. Foto’s kun je daarna mailen naar <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>.
             </p>
           </div>
 
@@ -686,12 +686,12 @@
       --zh-return-ink: #2a2520;
       --zh-return-soft: rgba(42, 37, 32, 0.66);
       --zh-return-muted: rgba(42, 37, 32, 0.47);
-      --zh-return-border: rgba(42, 37, 32, 0.092);
+      --zh-return-border: rgba(42, 37, 32, 0.112);
       --zh-return-clay: #9b613d;
       --zh-return-button: #665045;
       --zh-return-button-hover: #765746;
       --zh-return-field: rgba(255, 251, 246, 0.90);
-      --zh-return-field-soft: rgba(250, 243, 236, 0.68);
+      --zh-return-field-soft: rgba(250, 243, 236, 0.72);
 
       background: var(--zh-return-bg);
       color: var(--zh-return-ink);
@@ -700,7 +700,7 @@
     #ZaynaReturn-{{ section.id }} .zh-return__inner {
       width: min(100%, 640px);
       margin: 0 auto;
-      padding: 28px 16px 86px;
+      padding: 28px 16px 70px;
     }
 
     #ZaynaReturn-{{ section.id }} .zh-return__header {
@@ -739,7 +739,7 @@
     }
 
     #ZaynaReturn-{{ section.id }} .zh-return__intro-wrap {
-      max-width: 58ch;
+      max-width: 55ch;
       margin: 8px 0 0;
     }
 
@@ -763,6 +763,10 @@
       line-height: 1.48;
     }
 
+    #ZaynaReturn-{{ section.id }} .zh-return-nowrap {
+      white-space: nowrap;
+    }
+
     #ZaynaReturn-{{ section.id }} a {
       color: rgba(42, 37, 32, 0.78);
       text-decoration: underline;
@@ -774,7 +778,7 @@
 
     #ZaynaReturn-{{ section.id }} .zh-return-form {
       display: grid;
-      gap: 12px;
+      gap: 11px;
       padding: 0;
     }
 
@@ -818,13 +822,13 @@
     }
 
     #ZaynaReturn-{{ section.id }} .zh-return-textarea {
-      min-height: 98px;
+      min-height: 92px;
       resize: vertical;
       padding: 11px 12px;
     }
 
     #ZaynaReturn-{{ section.id }} .zh-return-textarea--small {
-      min-height: 74px;
+      min-height: 68px;
     }
 
     #ZaynaReturn-{{ section.id }} .zh-return-input:focus,
@@ -851,17 +855,17 @@
     #ZaynaReturn-{{ section.id }} .zh-return-choices__list {
       display: grid;
       grid-template-columns: minmax(0, 1fr);
-      gap: 7px;
+      gap: 6px;
     }
 
     #ZaynaReturn-{{ section.id }} .zh-return-choice {
       position: relative;
       display: flex;
       min-width: 0;
-      min-height: 32px;
+      min-height: 31px;
       align-items: center;
-      padding: 7px 10px;
-      border: 1px solid rgba(42, 37, 32, 0.078);
+      padding: 6px 10px;
+      border: 1px solid rgba(42, 37, 32, 0.096);
       background: var(--zh-return-field-soft);
       color: rgba(42, 37, 32, 0.58);
       cursor: pointer;
@@ -986,12 +990,12 @@
 
       #ZaynaReturn-{{ section.id }} .zh-return__inner {
         padding-right: 24px;
-        padding-bottom: 96px;
+        padding-bottom: 76px;
         padding-left: 24px;
       }
 
       #ZaynaReturn-{{ section.id }} .zh-return-form {
-        gap: 12px;
+        gap: 11px;
       }
 
       #ZaynaReturn-{{ section.id }} .zh-return-form__row--split {
@@ -1013,7 +1017,7 @@
     @media (min-width: 900px) {
       #ZaynaReturn-{{ section.id }} .zh-return__inner {
         padding-top: 34px;
-        padding-bottom: 108px;
+        padding-bottom: 78px;
       }
 
       #ZaynaReturn-{{ section.id }} .zh-return__header {
