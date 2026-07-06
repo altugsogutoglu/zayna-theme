@@ -96,7 +96,7 @@
       }
 
 
-      /* Fase 5P — Zayna Home shipping policy, final alignment + closing + summary polish */
+      /* Fase 5Q — Zayna Home shipping policy, closing alignment correction */
       body.zh-shipping-policy {
         --zh-ship-bg: #faf5f2;
         --zh-ship-ink: #2a2520;
@@ -295,7 +295,7 @@
       }
 
       body.zh-shipping-policy .zh-shipping-closing {
-        margin: clamp(1.88rem, 2.54vw, 2.2rem) auto 0;
+        margin: clamp(1.88rem, 2.54vw, 2.2rem) 0 0;
         padding-top: clamp(1.14rem, 1.62vw, 1.38rem);
         border-top: 1px solid var(--zh-ship-line-soft);
       }
@@ -412,6 +412,8 @@
 
         body.zh-shipping-policy .zh-shipping-closing {
           margin-top: 1.72rem;
+          margin-left: 0;
+          margin-right: 0;
           padding-top: 1.22rem;
         }
       }
@@ -522,11 +524,11 @@
                   Meld je het later? Dan kijken we nog steeds mee. De beoordeling kan dan wel lastiger zijn.
                 </p>
               </section>
-            </div>
 
-            <p class="zh-shipping-closing">
-              Twijfel je over je levering? Mail ons gerust via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>.
-            </p>
+              <p class="zh-shipping-closing">
+                Twijfel je over je levering? Mail ons gerust via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>.
+              </p>
+            </div>
           </div>
         </article>
       {%- else -%}
