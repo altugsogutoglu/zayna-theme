@@ -96,7 +96,7 @@
       }
 
 
-      /* Fase 5Q — Zayna Home shipping policy, closing alignment correction */
+      /* Fase 5R — Zayna Home shipping policy, damage section + rhythm refinement */
       body.zh-shipping-policy {
         --zh-ship-bg: #faf5f2;
         --zh-ship-ink: #2a2520;
@@ -194,7 +194,7 @@
         margin: 1.04rem 0 0;
         color: var(--zh-ship-soft);
         font-size: 1.012rem;
-        line-height: 1.96;
+        line-height: 1.88;
         letter-spacing: 0.001em;
         text-wrap: normal;
       }
@@ -285,13 +285,13 @@
         margin: 0;
         color: var(--zh-ship-soft);
         font-size: 1.018rem;
-        line-height: 2.02;
+        line-height: 1.88;
         letter-spacing: 0.001em;
         text-wrap: normal;
       }
 
       body.zh-shipping-policy .zh-shipping-section p + p {
-        margin-top: 1.2rem;
+        margin-top: 0.92rem;
       }
 
       body.zh-shipping-policy .zh-shipping-closing {
@@ -300,8 +300,51 @@
         border-top: 1px solid var(--zh-ship-line-soft);
       }
 
+
+
+      body.zh-shipping-policy .zh-shipping-damage-actions {
+        display: grid;
+        gap: 0;
+        margin-top: 1.05rem;
+        border-top: 1px solid var(--zh-ship-line-soft);
+        border-bottom: 1px solid var(--zh-ship-line-soft);
+      }
+
+      body.zh-shipping-policy .zh-shipping-action {
+        display: grid;
+        grid-template-columns: minmax(8.5rem, 0.34fr) minmax(0, 1fr);
+        gap: clamp(1rem, 2vw, 1.5rem);
+        padding: 0.78rem 0;
+      }
+
+      body.zh-shipping-policy .zh-shipping-action + .zh-shipping-action {
+        border-top: 1px solid var(--zh-ship-line-soft);
+      }
+
+      body.zh-shipping-policy .zh-shipping-action strong {
+        color: #765944;
+        font-family: var(--font-sans, system-ui, sans-serif);
+        font-size: 0.74rem;
+        font-weight: 500;
+        line-height: 1.45;
+      }
+
+      body.zh-shipping-policy .zh-shipping-action span {
+        color: var(--zh-ship-soft);
+        font-size: 0.982rem;
+        line-height: 1.72;
+      }
+
+      body.zh-shipping-policy .zh-shipping-action a {
+        white-space: nowrap;
+      }
+
+      body.zh-shipping-policy .zh-shipping-damage-note {
+        margin-top: 1.0rem !important;
+      }
+
       body.zh-shipping-policy .zh-shipping-section--damage p + p {
-        margin-top: 1.34rem;
+        margin-top: 0.9rem;
       }
 
       @media (max-width: 959px) {
@@ -348,7 +391,7 @@
         body.zh-shipping-policy .zh-shipping-section p,
         body.zh-shipping-policy .zh-shipping-closing {
           font-size: 0.982rem;
-          line-height: 2.0;
+          line-height: 1.88;
         }
 
         body.zh-shipping-policy .zh-shipping-intro {
@@ -403,12 +446,37 @@
         }
 
         body.zh-shipping-policy .zh-shipping-section p + p {
-          margin-top: 1.18rem;
+          margin-top: 0.92rem;
         }
 
         body.zh-shipping-policy .zh-shipping-section--damage p + p {
-          margin-top: 1.34rem;
+          margin-top: 0.9rem;
         }
+
+        body.zh-shipping-policy .zh-shipping-damage-actions {
+          margin-top: 0.98rem;
+        }
+
+        body.zh-shipping-policy .zh-shipping-action {
+          grid-template-columns: 1fr;
+          gap: 0.12rem;
+          padding: 0.82rem 0;
+        }
+
+        body.zh-shipping-policy .zh-shipping-action strong {
+          font-size: 0.72rem;
+          line-height: 1.35;
+        }
+
+        body.zh-shipping-policy .zh-shipping-action span {
+          font-size: 0.95rem;
+          line-height: 1.68;
+        }
+
+        body.zh-shipping-policy .zh-shipping-damage-note {
+          margin-top: 0.95rem !important;
+        }
+
 
         body.zh-shipping-policy .zh-shipping-closing {
           margin-top: 1.72rem;
@@ -511,16 +579,23 @@
                 <p>
                   Veel producten van <span class="zh-nowrap">Zayna Home</span> zijn breekbaar. Daarom verpakken we je bestelling zorgvuldig.
                 </p>
-                <p>
-                  Is er iets beschadigd? Mail ons bij voorkeur binnen 48 uur via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>.
-                </p>
-                <p>
-                  Stuur duidelijke foto’s mee van de verpakking, het verzendlabel en het product.
-                </p>
-                <p>
-                  Bewaar de verpakking tot we je melding hebben bekeken.
-                </p>
-                <p>
+
+                <div class="zh-shipping-damage-actions" aria-label="Wat te doen bij schade">
+                  <div class="zh-shipping-action">
+                    <strong>Mail ons</strong>
+                    <span>Bij voorkeur binnen 48 uur via <a href="mailto:info@zaynahome.nl">info@zaynahome.nl</a>.</span>
+                  </div>
+                  <div class="zh-shipping-action">
+                    <strong>Stuur foto’s mee</strong>
+                    <span>Van de verpakking, het verzendlabel en het product.</span>
+                  </div>
+                  <div class="zh-shipping-action">
+                    <strong>Bewaar de verpakking</strong>
+                    <span>Tot we je melding hebben bekeken.</span>
+                  </div>
+                </div>
+
+                <p class="zh-shipping-damage-note">
                   Meld je het later? Dan kijken we nog steeds mee. De beoordeling kan dan wel lastiger zijn.
                 </p>
               </section>
