@@ -31,7 +31,7 @@
     "freshly-listed": {
       "type": "freshly-listed",
       "settings": {
-        "collection": "",
+        "collection": "homepage-selectie",
         "product_limit": 6,
         "eyebrow": "Net binnen",
         "heading": "Nieuw in de shop",
@@ -90,6 +90,7 @@
         "placeholder_v2": "jouw@email.nl",
         "submit_label_v2": "Inschrijven",
         "success_v2": "Bedankt voor je inschrijving. Vanaf nu ontvang je af en toe nieuws van Zayna Home.",
+        "error_v2": "Vul een geldig e-mailadres in.",
         "disclaimer_v2": "Door je in te schrijven ontvang je e-mails van Zayna Home. Je kunt je op elk moment uitschrijven.",
         "privacy_url": ""
       }
