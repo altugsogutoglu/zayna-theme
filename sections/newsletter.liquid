@@ -42,6 +42,7 @@
   if success_message == blank or success_message == old_success or success_message == old_success_v2 or success_message == old_success_v3
     assign success_message = 'Je bent aangemeld voor rustige inspiratie van Zayna Home.'
   endif
+  assign success_message_html = success_message | escape | replace: 'Zayna Home', '<span class="zayna-newsletter__nowrap">Zayna Home</span>'
 
   assign disclaimer = s.disclaimer_v2
   if disclaimer == blank or disclaimer == old_disclaimer or disclaimer == old_disclaimer_v2
@@ -103,7 +104,7 @@
             </p>
 
             <p class="zayna-newsletter__success-text">
-              {{ success_message | escape }}
+              {{ success_message_html }}
             </p>
 
             <p class="zayna-newsletter__success-note">
@@ -678,16 +679,16 @@
     max-width: 520px;
     min-height: 232px;
     align-items: start;
-    padding: 8px 0 0;
+    padding: 2px 0 0;
     outline: none;
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success-inner {
     display: grid;
-    gap: 8px;
+    gap: 7px;
     width: 100%;
     max-width: 46ch;
-    padding: 16px 0 18px 16px;
+    padding: 12px 0 14px 14px;
     border-left: 1px solid rgba(210, 152, 109, 0.42);
   }
 
@@ -714,10 +715,14 @@
   #ZaynaNewsletter-{{ section.id }}
     .zayna-newsletter__success-note {
     max-width: 38ch;
-    margin: 4px 0 0;
+    margin: 2px 0 0;
     color: rgba(255, 250, 245, 0.62);
     font-size: 12.6px;
     line-height: 1.58;
+  }
+
+  #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__nowrap {
+    white-space: nowrap;
   }
 
   #ZaynaNewsletter-{{ section.id }}
@@ -810,12 +815,12 @@
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
-      padding-top: 2px;
+      padding-top: 0;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success-inner {
-      padding-top: 14px;
-      padding-bottom: 18px;
+      padding-top: 10px;
+      padding-bottom: 14px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__controls {
@@ -877,12 +882,12 @@
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
-      padding-top: 2px;
+      padding-top: 0;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success-inner {
-      padding-top: 14px;
-      padding-bottom: 18px;
+      padding-top: 10px;
+      padding-bottom: 14px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__controls {
