@@ -104,6 +104,10 @@
           <p class="zayna-newsletter__success-text">
             {{ success_message | escape }}
           </p>
+
+          <p class="zayna-newsletter__success-note">
+            Rustig en af en toe in je inbox.
+          </p>
         </div>
       {%- else -%}
         <div class="zayna-newsletter__field-group">
@@ -239,17 +243,6 @@
       cleanupNewsletterUrl();
 
       try {
-        const savedScrollY = window.sessionStorage?.getItem(
-          'zhNewsletterScrollY'
-        );
-        const parsedScrollY = Number(savedScrollY);
-
-        if (Number.isFinite(parsedScrollY)) {
-          window.requestAnimationFrame(() => {
-            window.scrollTo({ top: parsedScrollY, behavior: 'auto' });
-          });
-        }
-
         window.sessionStorage?.removeItem('zhNewsletterScrollY');
         window.sessionStorage?.removeItem('zhNewsletterReturnTo');
       } catch (error) {
@@ -305,6 +298,15 @@
       }
     });
 
+    emailInput.addEventListener(
+      'invalid',
+      (event) => {
+        stopSubmit(event);
+        showError();
+      },
+      true
+    );
+
     const handleNewsletterAttempt = (event) => {
       if (!isEmailValid()) {
         stopSubmit(event);
@@ -329,15 +331,6 @@
         if (!handleNewsletterAttempt(event)) return;
 
         clearError();
-
-        try {
-          window.sessionStorage?.setItem(
-            'zhNewsletterScrollY',
-            String(window.scrollY || 0)
-          );
-        } catch (error) {
-          // Do nothing when storage is unavailable.
-        }
 
         submitButton.disabled = true;
         submitButton.setAttribute('aria-busy', 'true');
@@ -450,13 +443,13 @@
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
     width: 100%;
     max-width: 620px;
-    min-height: 154px;
+    min-height: 186px;
     align-self: center;
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__field-group {
     width: 100%;
-    min-height: 154px;
+    min-height: 186px;
     padding-top: 2px;
   }
 
@@ -617,9 +610,9 @@
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
     display: grid;
     max-width: 520px;
-    min-height: 154px;
+    min-height: 186px;
     align-content: start;
-    gap: 5px;
+    gap: 6px;
     padding: 2px 0 2px;
     outline: none;
   }
@@ -641,6 +634,15 @@
     margin: 0;
     color: var(--zayna-newsletter-soft);
     font-size: 13px;
+    line-height: 1.55;
+  }
+
+  #ZaynaNewsletter-{{ section.id }}
+    .zayna-newsletter__success-note {
+    max-width: 40ch;
+    margin: 4px 0 0;
+    color: rgba(255, 250, 245, 0.56);
+    font-size: 12px;
     line-height: 1.55;
   }
 
@@ -724,13 +726,13 @@
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
       max-width: 720px;
-      min-height: 136px;
+      min-height: 168px;
       justify-self: start;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__field-group,
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
-      min-height: 136px;
+      min-height: 168px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__controls {
@@ -782,13 +784,13 @@
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
       max-width: 560px;
-      min-height: 136px;
+      min-height: 168px;
       justify-self: end;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__field-group,
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
-      min-height: 136px;
+      min-height: 168px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__controls {
