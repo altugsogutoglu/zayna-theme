@@ -13,6 +13,7 @@
   assign return_request_url = s.return_request_url | default: '/pages/retour-aanmelden'
   assign terms_url = s.terms_url | default: '/policies/terms-of-service'
   assign privacy_url = s.privacy_url | default: '/policies/privacy-policy'
+  assign contact_page_url = s.contact_page_url | default: '/pages/contact'
 
   assign footer_service_links = linklists[s.service_menu].links
 
@@ -268,6 +269,15 @@
 
         <div class="zayna-footer__content">
           <ul class="zayna-footer__links">
+            <li>
+              <a
+                href="{{ contact_page_url }}"
+                class="zayna-footer__link"
+              >
+                <span>Contactformulier</span>
+              </a>
+            </li>
+
             {%- if s.contact_email_label != blank -%}
               <li>
                 <a
@@ -1069,6 +1079,12 @@
       "id": "privacy_url",
       "label": "Link Privacybeleid",
       "default": "/policies/privacy-policy"
+    },
+    {
+      "type": "text",
+      "id": "contact_page_url",
+      "label": "Link Contactformulier",
+      "default": "/pages/contact"
     },
     {
       "type": "text",
