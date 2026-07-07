@@ -16,6 +16,7 @@
   endif
   assign old_body = 'Blijf op de hoogte van nieuwe collecties, rustige woon- en keukeninspiratie en af en toe nieuws van Zayna Home.'
   assign old_body_v2 = 'Ontvang af en toe nieuwe collecties, rustige keuken- en wooninspiratie en updates van Zayna Home.'
+  assign old_body_v3 = 'Af en toe nieuwe collecties, wooninspiratie en updates van Zayna Home.'
   assign old_placeholder = 'jouw@email.nl'
   assign old_success = 'Bedankt voor je inschrijving. Vanaf nu ontvang je af en toe nieuws van Zayna Home.'
   assign old_success_v2 = 'Bedankt voor je inschrijving. Je ontvangt af en toe inspiratie en updates van Zayna Home.'
@@ -23,8 +24,8 @@
   assign old_disclaimer_v2 = 'Je ontvangt e-mails van Zayna Home en kunt je op elk moment uitschrijven.'
 
   assign body = s.body_v2
-  if body == blank or body == old_body or body == old_body_v2
-    assign body = 'Af en toe nieuwe collecties, wooninspiratie en updates van Zayna Home.'
+  if body == blank or body == old_body or body == old_body_v2 or body == old_body_v3
+    assign body = 'Nieuwe collecties, wooninspiratie en updates van Zayna Home. Rustig en af en toe.'
   endif
 
   assign field_label = s.field_label_v2 | default: 'E-mailadres'
@@ -46,7 +47,7 @@
     assign disclaimer = 'Je ontvangt af en toe e-mails van Zayna Home en kunt je op elk moment uitschrijven.'
   endif
 
-  assign error_message = s.error_v2 | default: 'Vul een geldig e-mailadres in om je in te schrijven.'
+  assign error_message = s.error_v2 | default: 'Vul een geldig e-mailadres in.'
   assign privacy_url = s.privacy_url | default: shop.privacy_policy.url
 -%}
 
@@ -237,19 +238,11 @@
     if (successMessage) {
       cleanupNewsletterUrl();
 
-      window.requestAnimationFrame(() => {
-        const shouldReturn = window.sessionStorage?.getItem('zhNewsletterReturnTo') === '{{ section.id }}';
-
-        if (shouldReturn) {
-          window.sessionStorage.removeItem('zhNewsletterReturnTo');
-
-          const targetTop = section.getBoundingClientRect().top + window.scrollY - 16;
-
-          if (Math.abs(window.scrollY - targetTop) > 8) {
-            window.scrollTo({ top: Math.max(targetTop, 0), behavior: 'auto' });
-          }
-        }
-      });
+      try {
+        window.sessionStorage?.removeItem('zhNewsletterReturnTo');
+      } catch (error) {
+        // Do nothing when storage is unavailable.
+      }
     }
 
     if (!form || !emailInput || !submitButton || !submitLabel) return;
@@ -284,17 +277,10 @@
       if (!emailInput.validity.valid) {
         event.preventDefault();
         showError();
-        emailInput.focus({ preventScroll: true });
         return;
       }
 
       clearError();
-
-      try {
-        window.sessionStorage?.setItem('zhNewsletterReturnTo', '{{ section.id }}');
-      } catch (error) {
-        // Do nothing when storage is unavailable.
-      }
 
       submitButton.disabled = true;
       submitButton.setAttribute('aria-busy', 'true');
@@ -305,7 +291,8 @@
 
 {% style %}
   #ZaynaNewsletter-{{ section.id }} {
-    --zayna-newsletter-bg: #342a22;
+    --zayna-newsletter-bg: #332820;
+    --zayna-newsletter-bg-soft: #3a2f27;
     --zayna-newsletter-surface: #fffaf5;
     --zayna-newsletter-soft: rgba(255, 250, 245, 0.72);
     --zayna-newsletter-muted: rgba(255, 250, 245, 0.58);
@@ -319,7 +306,7 @@
     isolation: isolate;
     overflow: hidden;
     padding: 34px 0 26px;
-    background: var(--zayna-newsletter-bg);
+    background: linear-gradient(135deg, var(--zayna-newsletter-bg-soft) 0%, var(--zayna-newsletter-bg) 72%);
     color: var(--zayna-newsletter-surface);
   }
 
@@ -330,12 +317,12 @@
     background:
       radial-gradient(
         55% 80% at 88% 5%,
-        rgba(185, 120, 72, 0.12),
+        rgba(193, 132, 90, 0.105),
         transparent 68%
       ),
       radial-gradient(
         70% 90% at 5% 100%,
-        rgba(150, 138, 123, 0.07),
+        rgba(150, 138, 123, 0.055),
         transparent 72%
       );
     pointer-events: none;
@@ -404,12 +391,15 @@
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
     width: 100%;
     max-width: 620px;
-    min-height: 136px;
+    min-height: 154px;
     align-self: center;
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__field-group {
     width: 100%;
+    min-height: 154px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 250, 245, 0.14);
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__label {
@@ -526,7 +516,7 @@
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__disclaimer {
     max-width: 46ch;
-    margin: 14px 0 0;
+    margin: 8px 0 0;
     color: rgba(255, 250, 245, 0.64);
     font-size: 12px;
     line-height: 1.55;
@@ -551,23 +541,26 @@
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__errors {
-    margin-top: 10px;
-    color: #e8b3a4;
+    min-height: 18px;
+    margin-top: 8px;
+    color: #e9b2a2;
     font-size: 12px;
     line-height: 1.5;
+    visibility: visible;
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__errors.is-hidden {
-    display: none;
+    visibility: hidden;
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
     display: grid;
     max-width: 520px;
+    min-height: 154px;
+    align-content: start;
     gap: 5px;
-    min-height: 108px;
-    padding: 16px 0 2px;
-    border-top: 1px solid var(--zayna-newsletter-border);
+    padding: 18px 0 2px;
+    border-top: 1px solid rgba(255, 250, 245, 0.16);
     outline: none;
   }
 
@@ -671,8 +664,13 @@
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
       max-width: 720px;
-      min-height: 118px;
+      min-height: 136px;
       justify-self: start;
+    }
+
+    #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__field-group,
+    #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
+      min-height: 136px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__controls {
@@ -724,8 +722,13 @@
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
       max-width: 560px;
-      min-height: 118px;
+      min-height: 136px;
       justify-self: end;
+    }
+
+    #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__field-group,
+    #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
+      min-height: 136px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__controls {
@@ -793,7 +796,7 @@
       "type": "textarea",
       "id": "body_v2",
       "label": "Tekst",
-      "default": "Af en toe nieuwe collecties, wooninspiratie en updates van Zayna Home."
+      "default": "Nieuwe collecties, wooninspiratie en updates van Zayna Home. Rustig en af en toe."
     },
     {
       "type": "text",
@@ -823,7 +826,7 @@
       "type": "text",
       "id": "error_v2",
       "label": "Foutmelding e-mailadres",
-      "default": "Vul een geldig e-mailadres in om je in te schrijven."
+      "default": "Vul een geldig e-mailadres in."
     },
     {
       "type": "textarea",
