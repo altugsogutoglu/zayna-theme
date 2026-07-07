@@ -8,17 +8,17 @@
   assign legal_heading = 'Juridisch'
   assign contact_heading = 'Contact'
 
-  assign track_order_url = s.track_order_url | default: '/pages/track-order'
   assign shipping_url = s.shipping_url | default: '/policies/shipping-policy'
   assign returns_url = s.returns_url | default: '/policies/refund-policy'
+  assign return_request_url = s.return_request_url | default: '/pages/retour-aanmelden'
   assign terms_url = s.terms_url | default: '/policies/terms-of-service'
   assign privacy_url = s.privacy_url | default: '/policies/privacy-policy'
 
   assign footer_service_links = linklists[s.service_menu].links
 
-  assign has_track_order = false
   assign has_shipping = false
   assign has_returns = false
+  assign has_return_request = false
 
   assign footer_logo_width = s.logo_width | default: 150
   assign footer_logo_style = 'max-width:' | append: footer_logo_width | append: 'px;'
@@ -97,6 +97,7 @@
 
                 assign skip_footer_link = false
                 assign footer_link_label = link.title
+                assign is_return_request_link = false
 
                 if footer_link_title contains 'zoek' or footer_link_url contains '/search'
                   assign skip_footer_link = true
@@ -115,8 +116,13 @@
                 endif
 
                 if footer_link_title contains 'track' or footer_link_title contains 'bestelling volgen' or footer_link_url contains 'track-order'
-                  assign has_track_order = true
-                  assign footer_link_label = 'Bestelling volgen'
+                  assign skip_footer_link = true
+                endif
+
+                if footer_link_title contains 'retour aanmelden' or footer_link_url contains 'retour-aanmelden'
+                  assign has_return_request = true
+                  assign is_return_request_link = true
+                  assign footer_link_label = 'Retour aanmelden'
                 endif
 
                 if footer_link_title contains 'verzend' or footer_link_url contains 'shipping-policy'
@@ -124,9 +130,11 @@
                   assign footer_link_label = 'Verzending'
                 endif
 
-                if footer_link_title contains 'retour' or footer_link_url contains 'refund-policy'
-                  assign has_returns = true
-                  assign footer_link_label = 'Retourneren'
+                if is_return_request_link == false
+                  if footer_link_title contains 'retour' or footer_link_url contains 'refund-policy'
+                    assign has_returns = true
+                    assign footer_link_label = 'Retourneren'
+                  endif
                 endif
               -%}
 
@@ -146,17 +154,6 @@
               {%- endunless -%}
             {%- endfor -%}
 
-            {%- unless has_track_order -%}
-              <li>
-                <a
-                  href="{{ track_order_url }}"
-                  class="zayna-footer__link"
-                >
-                  <span>Bestelling volgen</span>
-                </a>
-              </li>
-            {%- endunless -%}
-
             {%- unless has_shipping -%}
               <li>
                 <a
@@ -175,6 +172,17 @@
                   class="zayna-footer__link"
                 >
                   <span>Retourneren</span>
+                </a>
+              </li>
+            {%- endunless -%}
+
+            {%- unless has_return_request -%}
+              <li>
+                <a
+                  href="{{ return_request_url }}"
+                  class="zayna-footer__link"
+                >
+                  <span>Retour aanmelden</span>
                 </a>
               </li>
             {%- endunless -%}
@@ -1034,12 +1042,6 @@
     },
     {
       "type": "text",
-      "id": "track_order_url",
-      "label": "Link Bestelling volgen",
-      "default": "/pages/track-order"
-    },
-    {
-      "type": "text",
       "id": "shipping_url",
       "label": "Link Verzending",
       "default": "/policies/shipping-policy"
@@ -1049,6 +1051,12 @@
       "id": "returns_url",
       "label": "Link Retourneren",
       "default": "/policies/refund-policy"
+    },
+    {
+      "type": "text",
+      "id": "return_request_url",
+      "label": "Link Retour aanmelden",
+      "default": "/pages/retour-aanmelden"
     },
     {
       "type": "text",
