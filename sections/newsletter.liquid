@@ -10,12 +10,36 @@
 
   assign eyebrow = s.eyebrow_v2 | default: 'Nieuwsbrief'
   assign heading = s.heading_v2 | default: 'Ontvang rustige inspiratie voor thuis.'
-  assign body = s.body_v2 | default: 'Blijf op de hoogte van nieuwe collecties, rustige woon- en keukeninspiratie en af en toe nieuws van Zayna Home.'
+  assign old_body = 'Blijf op de hoogte van nieuwe collecties, rustige woon- en keukeninspiratie en af en toe nieuws van Zayna Home.'
+  assign old_placeholder = 'jouw@email.nl'
+  assign old_success = 'Bedankt voor je inschrijving. Vanaf nu ontvang je af en toe nieuws van Zayna Home.'
+  assign old_disclaimer = 'Door je in te schrijven ontvang je e-mails van Zayna Home. Je kunt je op elk moment uitschrijven.'
+
+  assign body = s.body_v2
+  if body == blank or body == old_body
+    assign body = 'Ontvang af en toe nieuwe collecties, rustige keuken- en wooninspiratie en updates van Zayna Home.'
+  endif
+
   assign field_label = s.field_label_v2 | default: 'E-mailadres'
-  assign placeholder = s.placeholder_v2 | default: 'jouw@email.nl'
+
+  assign placeholder = s.placeholder_v2
+  if placeholder == blank or placeholder == old_placeholder
+    assign placeholder = 'naam@email.nl'
+  endif
+
   assign submit_label = s.submit_label_v2 | default: 'Inschrijven'
-  assign success_message = s.success_v2 | default: 'Bedankt voor je inschrijving. Vanaf nu ontvang je af en toe nieuws van Zayna Home.'
-  assign disclaimer = s.disclaimer_v2 | default: 'Door je in te schrijven ontvang je e-mails van Zayna Home. Je kunt je op elk moment uitschrijven.'
+
+  assign success_message = s.success_v2
+  if success_message == blank or success_message == old_success
+    assign success_message = 'Bedankt voor je inschrijving. Je ontvangt af en toe inspiratie en updates van Zayna Home.'
+  endif
+
+  assign disclaimer = s.disclaimer_v2
+  if disclaimer == blank or disclaimer == old_disclaimer
+    assign disclaimer = 'Je ontvangt e-mails van Zayna Home en kunt je op elk moment uitschrijven.'
+  endif
+
+  assign error_message = s.error_v2 | default: 'Vul een geldig e-mailadres in om je in te schrijven.'
   assign privacy_url = s.privacy_url | default: shop.privacy_policy.url
 -%}
 
@@ -65,22 +89,13 @@
           tabindex="-1"
           data-newsletter-success
         >
-          <span
-            class="zayna-newsletter__success-icon"
-            aria-hidden="true"
-          >
-            ✓
-          </span>
+          <p class="zayna-newsletter__success-label">
+            Inschrijving ontvangen
+          </p>
 
-          <div>
-            <p class="zayna-newsletter__success-title">
-              Inschrijving ontvangen
-            </p>
-
-            <p class="zayna-newsletter__success-text">
-              {{ success_message | escape }}
-            </p>
-          </div>
+          <p class="zayna-newsletter__success-text">
+            {{ success_message | escape }}
+          </p>
         </div>
       {%- else -%}
         <div class="zayna-newsletter__field-group">
@@ -104,7 +119,7 @@
                 inputmode="email"
                 autocapitalize="none"
                 spellcheck="false"
-                aria-describedby="{{ newsletter_help_id }}{% if form.errors %} {{ newsletter_error_id }}{% endif %}"
+                aria-describedby="{{ newsletter_help_id }} {{ newsletter_error_id }}"
                 {% if form.errors %}
                   aria-invalid="true"
                 {% endif %}
@@ -135,15 +150,16 @@
             </button>
           </div>
 
-          {%- if form.errors -%}
-            <div
-              id="{{ newsletter_error_id }}"
-              class="zayna-newsletter__errors"
-              role="alert"
-            >
-              {{ form.errors | default_errors }}
-            </div>
-          {%- endif -%}
+          <div
+            id="{{ newsletter_error_id }}"
+            class="zayna-newsletter__errors{% unless form.errors %} is-hidden{% endunless %}"
+            role="alert"
+            data-newsletter-error
+          >
+            {%- if form.errors -%}
+              {{ error_message | escape }}
+            {%- endif -%}
+          </div>
 
           <p
             id="{{ newsletter_help_id }}"
@@ -172,6 +188,8 @@
     if (!section) return;
 
     const form = section.querySelector('.zayna-newsletter__form');
+    const emailInput = section.querySelector('.zayna-newsletter__input');
+    const errorMessage = section.querySelector('[data-newsletter-error]');
     const submitButton = section.querySelector(
       '[data-newsletter-submit]'
     );
@@ -192,15 +210,43 @@
       });
     }
 
-    if (!form || !submitButton || !submitLabel) return;
+    if (!form || !emailInput || !submitButton || !submitLabel) return;
+
+    const customErrorText = {{ error_message | json }};
+
+    const showError = () => {
+      emailInput.setAttribute('aria-invalid', 'true');
+
+      if (errorMessage) {
+        errorMessage.textContent = customErrorText;
+        errorMessage.classList.remove('is-hidden');
+      }
+    };
+
+    const clearError = () => {
+      emailInput.removeAttribute('aria-invalid');
+
+      if (errorMessage) {
+        errorMessage.textContent = '';
+        errorMessage.classList.add('is-hidden');
+      }
+    };
+
+    emailInput.addEventListener('input', () => {
+      if (emailInput.value.trim() === '' || emailInput.validity.valid) {
+        clearError();
+      }
+    });
 
     form.addEventListener('submit', (event) => {
-      if (!form.checkValidity()) {
+      if (!emailInput.validity.valid) {
         event.preventDefault();
-        form.reportValidity();
+        showError();
+        emailInput.focus({ preventScroll: true });
         return;
       }
 
+      clearError();
       submitButton.disabled = true;
       submitButton.setAttribute('aria-busy', 'true');
       submitLabel.textContent = 'Even geduld';
@@ -210,20 +256,20 @@
 
 {% style %}
   #ZaynaNewsletter-{{ section.id }} {
-    --zayna-newsletter-bg: #27231f;
+    --zayna-newsletter-bg: #302720;
     --zayna-newsletter-surface: #fffaf5;
     --zayna-newsletter-soft: rgba(255, 250, 245, 0.72);
     --zayna-newsletter-muted: rgba(255, 250, 245, 0.58);
     --zayna-newsletter-border: rgba(255, 250, 245, 0.3);
     --zayna-newsletter-accent: #b97848;
-    --zayna-newsletter-button: #f1e8df;
-    --zayna-newsletter-button-hover: #e7dbd0;
+    --zayna-newsletter-button: #efe3d7;
+    --zayna-newsletter-button-hover: #e6d6c8;
     --zayna-newsletter-ink: #29241f;
 
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    padding: 32px 0 24px;
+    padding: 34px 0 26px;
     background: var(--zayna-newsletter-bg);
     color: var(--zayna-newsletter-surface);
   }
@@ -251,7 +297,7 @@
     width: min(100%, 1180px);
     margin: 0 auto;
     padding: 0 20px;
-    gap: 12px;
+    gap: 14px;
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__intro,
@@ -298,8 +344,8 @@
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__body {
-    max-width: 43ch;
-    margin: 17px 0 0;
+    max-width: 42ch;
+    margin: 15px 0 0;
     color: var(--zayna-newsletter-soft);
     font-size: 14px;
     line-height: 1.65;
@@ -431,7 +477,7 @@
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__disclaimer {
     max-width: 46ch;
     margin: 14px 0 0;
-    color: rgba(255, 250, 245, 0.68);
+    color: rgba(255, 250, 245, 0.64);
     font-size: 12px;
     line-height: 1.55;
     text-wrap: pretty;
@@ -455,66 +501,40 @@
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__errors {
-    margin-top: 12px;
-    color: #f1b2a2;
+    margin-top: 10px;
+    color: #efb4a5;
     font-size: 12px;
     line-height: 1.5;
   }
 
-  #ZaynaNewsletter-{{ section.id }}
-    .zayna-newsletter__errors
-    ul {
-    margin: 0;
-    padding-left: 18px;
-  }
-
-  #ZaynaNewsletter-{{ section.id }}
-    .zayna-newsletter__errors
-    a {
-    color: inherit;
-    text-underline-offset: 3px;
+  #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__errors.is-hidden {
+    display: none;
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
-    display: flex;
+    display: grid;
     max-width: 520px;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 19px 0 3px;
+    gap: 6px;
+    padding: 18px 0 3px;
     border-top: 1px solid var(--zayna-newsletter-border);
     outline: none;
   }
 
   #ZaynaNewsletter-{{ section.id }}
-    .zayna-newsletter__success-icon {
-    display: grid;
-    width: 29px;
-    height: 29px;
-    flex: 0 0 29px;
-    place-items: center;
-    border: 1px solid rgba(210, 152, 109, 0.72);
-    border-radius: 50%;
-    color: #d2986d;
-    font-size: 13px;
-  }
-
-  #ZaynaNewsletter-{{ section.id }}
-    .zayna-newsletter__success-title {
+    .zayna-newsletter__success-label {
     margin: 0;
-    color: var(--zayna-newsletter-surface);
-    font-family:
-      var(
-        --font-display,
-        var(--font-heading-family, Georgia, serif)
-      );
-    font-size: 19px;
+    color: #d2986d;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
     line-height: 1.3;
+    text-transform: uppercase;
   }
 
   #ZaynaNewsletter-{{ section.id }}
     .zayna-newsletter__success-text {
     max-width: 44ch;
-    margin: 5px 0 0;
+    margin: 0;
     color: var(--zayna-newsletter-soft);
     font-size: 13px;
     line-height: 1.55;
@@ -720,7 +740,7 @@
       "type": "textarea",
       "id": "body_v2",
       "label": "Tekst",
-      "default": "Blijf op de hoogte van nieuwe collecties, rustige woon- en keukeninspiratie en af en toe nieuws van Zayna Home."
+      "default": "Ontvang af en toe nieuwe collecties, rustige keuken- en wooninspiratie en updates van Zayna Home."
     },
     {
       "type": "text",
@@ -732,7 +752,7 @@
       "type": "text",
       "id": "placeholder_v2",
       "label": "Placeholder",
-      "default": "jouw@email.nl"
+      "default": "naam@email.nl"
     },
     {
       "type": "text",
@@ -744,13 +764,19 @@
       "type": "textarea",
       "id": "success_v2",
       "label": "Succesmelding",
-      "default": "Bedankt voor je inschrijving. Vanaf nu ontvang je af en toe nieuws van Zayna Home."
+      "default": "Bedankt voor je inschrijving. Je ontvangt af en toe inspiratie en updates van Zayna Home."
+    },
+    {
+      "type": "text",
+      "id": "error_v2",
+      "label": "Foutmelding e-mailadres",
+      "default": "Vul een geldig e-mailadres in om je in te schrijven."
     },
     {
       "type": "textarea",
       "id": "disclaimer_v2",
       "label": "Privacytekst",
-      "default": "Door je in te schrijven ontvang je e-mails van Zayna Home. Je kunt je op elk moment uitschrijven."
+      "default": "Je ontvangt e-mails van Zayna Home en kunt je op elk moment uitschrijven."
     },
     {
       "type": "url",
