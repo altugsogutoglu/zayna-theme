@@ -94,20 +94,21 @@
           id="{{ newsletter_status_id }}"
           class="zayna-newsletter__success"
           role="status"
-          tabindex="-1"
           data-newsletter-success
         >
-          <p class="zayna-newsletter__success-label">
-            Inschrijving ontvangen
-          </p>
+          <div class="zayna-newsletter__success-inner">
+            <p class="zayna-newsletter__success-label">
+              Inschrijving ontvangen
+            </p>
 
-          <p class="zayna-newsletter__success-text">
-            {{ success_message | escape }}
-          </p>
+            <p class="zayna-newsletter__success-text">
+              {{ success_message | escape }}
+            </p>
 
-          <p class="zayna-newsletter__success-note">
-            Rustig en af en toe in je inbox.
-          </p>
+            <p class="zayna-newsletter__success-note">
+              Rustig en af en toe in je inbox.
+            </p>
+          </div>
         </div>
       {%- else -%}
         <div class="zayna-newsletter__field-group">
@@ -212,6 +213,8 @@
       '[data-newsletter-success]'
     );
 
+    const storageKey = 'zhNewsletterSubmitted-{{ section.id }}';
+
     const cleanupNewsletterUrl = () => {
       if (!window.history || !window.history.replaceState) return;
 
@@ -239,12 +242,50 @@
       }
     };
 
+    const anchorNewsletterAfterSuccess = () => {
+      const reduceMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches;
+      const desiredTop = window.innerWidth < 760 ? 18 : 26;
+
+      const placeSection = () => {
+        const rect = section.getBoundingClientRect();
+        const currentTop = rect.top;
+
+        if (Math.abs(currentTop - desiredTop) < 6) return;
+
+        const targetTop = Math.max(
+          0,
+          window.scrollY + currentTop - desiredTop
+        );
+
+        window.scrollTo({
+          top: targetTop,
+          behavior: reduceMotion ? 'auto' : 'auto'
+        });
+      };
+
+      window.requestAnimationFrame(() => {
+        placeSection();
+        window.requestAnimationFrame(placeSection);
+      });
+    };
+
     if (successMessage) {
+      const url = new URL(window.location.href);
+      const cameFromNewsletter =
+        url.searchParams.has('customer_posted') ||
+        url.hash === '#contact_form' ||
+        url.hash === '#newsletter';
+
       cleanupNewsletterUrl();
 
+      if (cameFromNewsletter) {
+        anchorNewsletterAfterSuccess();
+      }
+
       try {
-        window.sessionStorage?.removeItem('zhNewsletterScrollY');
-        window.sessionStorage?.removeItem('zhNewsletterReturnTo');
+        window.sessionStorage?.removeItem(storageKey);
       } catch (error) {
         // Do nothing when storage is unavailable.
       }
@@ -257,13 +298,14 @@
 
     const customErrorText = {{ error_message | json }};
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    let allowNativeSubmit = false;
 
     const isEmailValid = () => {
       const value = emailInput.value.trim();
       return value !== '' && emailPattern.test(value);
     };
 
-    const stopSubmit = (event) => {
+    const stopEvent = (event) => {
       event.preventDefault();
       event.stopPropagation();
 
@@ -290,6 +332,20 @@
       }
     };
 
+    const setSubmitting = () => {
+      clearError();
+
+      try {
+        window.sessionStorage?.setItem(storageKey, 'true');
+      } catch (error) {
+        // Do nothing when storage is unavailable.
+      }
+
+      submitButton.disabled = true;
+      submitButton.setAttribute('aria-busy', 'true');
+      submitLabel.textContent = 'Even geduld';
+    };
+
     clearError();
 
     emailInput.addEventListener('input', () => {
@@ -301,26 +357,33 @@
     emailInput.addEventListener(
       'invalid',
       (event) => {
-        stopSubmit(event);
+        stopEvent(event);
         showError();
       },
       true
     );
 
-    const handleNewsletterAttempt = (event) => {
-      if (!isEmailValid()) {
-        stopSubmit(event);
-        showError();
-        return false;
-      }
-
-      return true;
-    };
-
     submitButton.addEventListener(
       'click',
       (event) => {
-        handleNewsletterAttempt(event);
+        if (allowNativeSubmit) return;
+
+        stopEvent(event);
+
+        if (!isEmailValid()) {
+          showError();
+          return;
+        }
+
+        allowNativeSubmit = true;
+
+        if (typeof form.requestSubmit === 'function') {
+          form.requestSubmit(submitButton);
+        } else {
+          form.dispatchEvent(
+            new Event('submit', { bubbles: true, cancelable: true })
+          );
+        }
       },
       true
     );
@@ -328,13 +391,14 @@
     form.addEventListener(
       'submit',
       (event) => {
-        if (!handleNewsletterAttempt(event)) return;
+        if (!isEmailValid()) {
+          allowNativeSubmit = false;
+          stopEvent(event);
+          showError();
+          return;
+        }
 
-        clearError();
-
-        submitButton.disabled = true;
-        submitButton.setAttribute('aria-busy', 'true');
-        submitLabel.textContent = 'Even geduld';
+        setSubmitting();
       },
       true
     );
@@ -443,13 +507,13 @@
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
     width: 100%;
     max-width: 620px;
-    min-height: 186px;
+    min-height: 214px;
     align-self: center;
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__field-group {
     width: 100%;
-    min-height: 186px;
+    min-height: 214px;
     padding-top: 2px;
   }
 
@@ -609,12 +673,20 @@
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
     display: grid;
+    width: 100%;
     max-width: 520px;
-    min-height: 186px;
-    align-content: start;
-    gap: 6px;
-    padding: 2px 0 2px;
+    min-height: 214px;
+    align-items: center;
+    padding: 0;
     outline: none;
+  }
+
+  #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success-inner {
+    display: grid;
+    gap: 7px;
+    width: 100%;
+    max-width: 43ch;
+    padding: 18px 0 20px;
   }
 
   #ZaynaNewsletter-{{ section.id }}
@@ -630,20 +702,20 @@
 
   #ZaynaNewsletter-{{ section.id }}
     .zayna-newsletter__success-text {
-    max-width: 44ch;
+    max-width: 42ch;
     margin: 0;
-    color: var(--zayna-newsletter-soft);
-    font-size: 13px;
-    line-height: 1.55;
+    color: rgba(255, 250, 245, 0.80);
+    font-size: 14px;
+    line-height: 1.58;
   }
 
   #ZaynaNewsletter-{{ section.id }}
     .zayna-newsletter__success-note {
-    max-width: 40ch;
-    margin: 4px 0 0;
-    color: rgba(255, 250, 245, 0.56);
-    font-size: 12px;
-    line-height: 1.55;
+    max-width: 38ch;
+    margin: 3px 0 0;
+    color: rgba(255, 250, 245, 0.60);
+    font-size: 12.5px;
+    line-height: 1.58;
   }
 
   #ZaynaNewsletter-{{ section.id }}
@@ -726,13 +798,18 @@
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
       max-width: 720px;
-      min-height: 168px;
+      min-height: 180px;
       justify-self: start;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__field-group,
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
-      min-height: 168px;
+      min-height: 180px;
+    }
+
+    #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success-inner {
+      padding-top: 12px;
+      padding-bottom: 18px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__controls {
@@ -784,13 +861,18 @@
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
       max-width: 560px;
-      min-height: 168px;
+      min-height: 180px;
       justify-self: end;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__field-group,
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
-      min-height: 168px;
+      min-height: 180px;
+    }
+
+    #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success-inner {
+      padding-top: 12px;
+      padding-bottom: 18px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__controls {
