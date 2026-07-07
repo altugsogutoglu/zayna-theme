@@ -33,8 +33,8 @@
       "settings": {
         "collection": "homepage-selectie",
         "product_limit": 6,
-        "eyebrow": "Net binnen",
-        "heading": "Nieuw in de shop",
+        "eyebrow": "Zorgvuldig gekozen",
+        "heading": "Voor een rustige keuken.",
         "link_label": "Alles bekijken",
         "link_url": "/collections/all"
       }
