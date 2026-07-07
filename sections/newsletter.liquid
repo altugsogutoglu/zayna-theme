@@ -239,6 +239,18 @@
       cleanupNewsletterUrl();
 
       try {
+        const savedScrollY = window.sessionStorage?.getItem(
+          'zhNewsletterScrollY'
+        );
+        const parsedScrollY = Number(savedScrollY);
+
+        if (Number.isFinite(parsedScrollY)) {
+          window.requestAnimationFrame(() => {
+            window.scrollTo({ top: parsedScrollY, behavior: 'auto' });
+          });
+        }
+
+        window.sessionStorage?.removeItem('zhNewsletterScrollY');
         window.sessionStorage?.removeItem('zhNewsletterReturnTo');
       } catch (error) {
         // Do nothing when storage is unavailable.
@@ -247,7 +259,25 @@
 
     if (!form || !emailInput || !submitButton || !submitLabel) return;
 
+    form.setAttribute('novalidate', 'novalidate');
+    emailInput.setAttribute('novalidate', 'novalidate');
+
     const customErrorText = {{ error_message | json }};
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    const isEmailValid = () => {
+      const value = emailInput.value.trim();
+      return value !== '' && emailPattern.test(value);
+    };
+
+    const stopSubmit = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (typeof event.stopImmediatePropagation === 'function') {
+        event.stopImmediatePropagation();
+      }
+    };
 
     const showError = () => {
       emailInput.setAttribute('aria-invalid', 'true');
@@ -262,30 +292,59 @@
       emailInput.removeAttribute('aria-invalid');
 
       if (errorMessage) {
-        errorMessage.textContent = '';
+        errorMessage.textContent = customErrorText;
         errorMessage.classList.add('is-hidden');
       }
     };
 
+    clearError();
+
     emailInput.addEventListener('input', () => {
-      if (emailInput.value.trim() === '' || emailInput.validity.valid) {
+      if (emailInput.value.trim() === '' || isEmailValid()) {
         clearError();
       }
     });
 
-    form.addEventListener('submit', (event) => {
-      if (!emailInput.validity.valid) {
-        event.preventDefault();
+    const handleNewsletterAttempt = (event) => {
+      if (!isEmailValid()) {
+        stopSubmit(event);
         showError();
-        return;
+        return false;
       }
 
-      clearError();
+      return true;
+    };
 
-      submitButton.disabled = true;
-      submitButton.setAttribute('aria-busy', 'true');
-      submitLabel.textContent = 'Even geduld';
-    });
+    submitButton.addEventListener(
+      'click',
+      (event) => {
+        handleNewsletterAttempt(event);
+      },
+      true
+    );
+
+    form.addEventListener(
+      'submit',
+      (event) => {
+        if (!handleNewsletterAttempt(event)) return;
+
+        clearError();
+
+        try {
+          window.sessionStorage?.setItem(
+            'zhNewsletterScrollY',
+            String(window.scrollY || 0)
+          );
+        } catch (error) {
+          // Do nothing when storage is unavailable.
+        }
+
+        submitButton.disabled = true;
+        submitButton.setAttribute('aria-busy', 'true');
+        submitLabel.textContent = 'Even geduld';
+      },
+      true
+    );
   })();
 </script>
 
@@ -398,8 +457,7 @@
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__field-group {
     width: 100%;
     min-height: 154px;
-    padding-top: 14px;
-    border-top: 1px solid rgba(255, 250, 245, 0.14);
+    padding-top: 2px;
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__label {
@@ -542,14 +600,17 @@
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__errors {
     min-height: 18px;
-    margin-top: 8px;
-    color: #e9b2a2;
+    margin-top: 7px;
+    color: #e8b7aa;
     font-size: 12px;
     line-height: 1.5;
+    opacity: 1;
     visibility: visible;
+    transition: opacity 160ms ease;
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__errors.is-hidden {
+    opacity: 0;
     visibility: hidden;
   }
 
@@ -559,8 +620,7 @@
     min-height: 154px;
     align-content: start;
     gap: 5px;
-    padding: 18px 0 2px;
-    border-top: 1px solid rgba(255, 250, 245, 0.16);
+    padding: 2px 0 2px;
     outline: none;
   }
 
