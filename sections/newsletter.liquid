@@ -37,9 +37,10 @@
 
   assign submit_label = s.submit_label_v2 | default: 'Inschrijven'
 
+  assign old_success_v3 = 'Bedankt, je inschrijving is ontvangen.'
   assign success_message = s.success_v2
-  if success_message == blank or success_message == old_success or success_message == old_success_v2
-    assign success_message = 'Bedankt, je inschrijving is ontvangen.'
+  if success_message == blank or success_message == old_success or success_message == old_success_v2 or success_message == old_success_v3
+    assign success_message = 'Je bent aangemeld voor rustige inspiratie van Zayna Home.'
   endif
 
   assign disclaimer = s.disclaimer_v2
@@ -106,7 +107,7 @@
             </p>
 
             <p class="zayna-newsletter__success-note">
-              Rustig en af en toe in je inbox.
+              Af en toe in je inbox, zonder overdaad.
             </p>
           </div>
         </div>
@@ -242,8 +243,35 @@
       }
     };
 
+    const getStickyHeaderOffset = () => {
+      const possibleHeaders = [
+        document.querySelector('sticky-header'),
+        document.querySelector('.shopify-section-header-sticky'),
+        document.querySelector('#shopify-section-header'),
+        document.querySelector('header')
+      ].filter(Boolean);
+
+      let headerHeight = 0;
+
+      possibleHeaders.forEach((header) => {
+        const style = window.getComputedStyle(header);
+        const rect = header.getBoundingClientRect();
+        const isStickyLike =
+          style.position === 'fixed' ||
+          style.position === 'sticky' ||
+          rect.top <= 4;
+
+        if (isStickyLike && rect.height > headerHeight) {
+          headerHeight = rect.height;
+        }
+      });
+
+      return Math.min(Math.max(headerHeight, 0), 112);
+    };
+
     const placeNewsletterInView = () => {
-      const offset = window.innerWidth < 760 ? 14 : 24;
+      const breathingRoom = window.innerWidth < 760 ? 18 : 26;
+      const offset = getStickyHeaderOffset() + breathingRoom;
       const rect = section.getBoundingClientRect();
       const targetTop = Math.max(0, window.scrollY + rect.top - offset);
 
@@ -270,18 +298,8 @@
     };
 
     if (successMessage) {
-      const url = new URL(window.location.href);
-      const cameFromNewsletter =
-        url.searchParams.has('customer_posted') ||
-        url.searchParams.has('contact_posted') ||
-        url.hash === '#contact_form' ||
-        url.hash === '#newsletter';
-
       cleanNewsletterUrl();
-
-      if (cameFromNewsletter) {
-        stabiliseSuccessPosition();
-      }
+      stabiliseSuccessPosition();
 
       try {
         window.sessionStorage?.removeItem(storageKey);
@@ -659,17 +677,18 @@
     width: 100%;
     max-width: 520px;
     min-height: 232px;
-    align-items: center;
-    padding: 0;
+    align-items: start;
+    padding: 8px 0 0;
     outline: none;
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success-inner {
     display: grid;
-    gap: 7px;
+    gap: 8px;
     width: 100%;
-    max-width: 43ch;
-    padding: 22px 0 24px;
+    max-width: 46ch;
+    padding: 16px 0 18px 16px;
+    border-left: 1px solid rgba(210, 152, 109, 0.42);
   }
 
   #ZaynaNewsletter-{{ section.id }}
@@ -687,7 +706,7 @@
     .zayna-newsletter__success-text {
     max-width: 42ch;
     margin: 0;
-    color: rgba(255, 250, 245, 0.80);
+    color: rgba(255, 250, 245, 0.82);
     font-size: 14px;
     line-height: 1.58;
   }
@@ -695,9 +714,9 @@
   #ZaynaNewsletter-{{ section.id }}
     .zayna-newsletter__success-note {
     max-width: 38ch;
-    margin: 3px 0 0;
-    color: rgba(255, 250, 245, 0.60);
-    font-size: 12.5px;
+    margin: 4px 0 0;
+    color: rgba(255, 250, 245, 0.62);
+    font-size: 12.6px;
     line-height: 1.58;
   }
 
@@ -790,9 +809,13 @@
       min-height: 188px;
     }
 
+    #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
+      padding-top: 2px;
+    }
+
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success-inner {
       padding-top: 14px;
-      padding-bottom: 20px;
+      padding-bottom: 18px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__controls {
@@ -853,9 +876,13 @@
       min-height: 188px;
     }
 
+    #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
+      padding-top: 2px;
+    }
+
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success-inner {
       padding-top: 14px;
-      padding-bottom: 20px;
+      padding-bottom: 18px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__controls {
@@ -947,7 +974,7 @@
       "type": "textarea",
       "id": "success_v2",
       "label": "Succesmelding",
-      "default": "Bedankt, je inschrijving is ontvangen."
+      "default": "Je bent aangemeld voor rustige inspiratie van Zayna Home."
     },
     {
       "type": "text",
