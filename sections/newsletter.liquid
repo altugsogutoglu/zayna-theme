@@ -215,7 +215,7 @@
 
     const storageKey = 'zhNewsletterSubmitted-{{ section.id }}';
 
-    const cleanupNewsletterUrl = () => {
+    const cleanNewsletterUrl = () => {
       if (!window.history || !window.history.replaceState) return;
 
       const url = new URL(window.location.href);
@@ -242,32 +242,30 @@
       }
     };
 
-    const anchorNewsletterAfterSuccess = () => {
-      const reduceMotion = window.matchMedia(
-        '(prefers-reduced-motion: reduce)'
-      ).matches;
-      const desiredTop = window.innerWidth < 760 ? 18 : 26;
+    const placeNewsletterInView = () => {
+      const offset = window.innerWidth < 760 ? 14 : 24;
+      const rect = section.getBoundingClientRect();
+      const targetTop = Math.max(0, window.scrollY + rect.top - offset);
 
-      const placeSection = () => {
-        const rect = section.getBoundingClientRect();
-        const currentTop = rect.top;
+      window.scrollTo({
+        top: targetTop,
+        behavior: 'auto'
+      });
+    };
 
-        if (Math.abs(currentTop - desiredTop) < 6) return;
+    const stabiliseSuccessPosition = () => {
+      if (!successMessage) return;
 
-        const targetTop = Math.max(
-          0,
-          window.scrollY + currentTop - desiredTop
-        );
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = 'manual';
+      }
 
-        window.scrollTo({
-          top: targetTop,
-          behavior: reduceMotion ? 'auto' : 'auto'
-        });
-      };
+      const timings = [0, 80, 220, 520, 900];
 
-      window.requestAnimationFrame(() => {
-        placeSection();
-        window.requestAnimationFrame(placeSection);
+      timings.forEach((delay) => {
+        window.setTimeout(() => {
+          window.requestAnimationFrame(placeNewsletterInView);
+        }, delay);
       });
     };
 
@@ -275,13 +273,14 @@
       const url = new URL(window.location.href);
       const cameFromNewsletter =
         url.searchParams.has('customer_posted') ||
+        url.searchParams.has('contact_posted') ||
         url.hash === '#contact_form' ||
         url.hash === '#newsletter';
 
-      cleanupNewsletterUrl();
+      cleanNewsletterUrl();
 
       if (cameFromNewsletter) {
-        anchorNewsletterAfterSuccess();
+        stabiliseSuccessPosition();
       }
 
       try {
@@ -298,7 +297,6 @@
 
     const customErrorText = {{ error_message | json }};
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    let allowNativeSubmit = false;
 
     const isEmailValid = () => {
       const value = emailInput.value.trim();
@@ -332,7 +330,7 @@
       }
     };
 
-    const setSubmitting = () => {
+    const markSubmitting = () => {
       clearError();
 
       try {
@@ -366,23 +364,9 @@
     submitButton.addEventListener(
       'click',
       (event) => {
-        if (allowNativeSubmit) return;
-
-        stopEvent(event);
-
         if (!isEmailValid()) {
+          stopEvent(event);
           showError();
-          return;
-        }
-
-        allowNativeSubmit = true;
-
-        if (typeof form.requestSubmit === 'function') {
-          form.requestSubmit(submitButton);
-        } else {
-          form.dispatchEvent(
-            new Event('submit', { bubbles: true, cancelable: true })
-          );
         }
       },
       true
@@ -392,13 +376,12 @@
       'submit',
       (event) => {
         if (!isEmailValid()) {
-          allowNativeSubmit = false;
           stopEvent(event);
           showError();
           return;
         }
 
-        setSubmitting();
+        markSubmitting();
       },
       true
     );
@@ -507,13 +490,13 @@
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
     width: 100%;
     max-width: 620px;
-    min-height: 214px;
+    min-height: 232px;
     align-self: center;
   }
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__field-group {
     width: 100%;
-    min-height: 214px;
+    min-height: 232px;
     padding-top: 2px;
   }
 
@@ -675,7 +658,7 @@
     display: grid;
     width: 100%;
     max-width: 520px;
-    min-height: 214px;
+    min-height: 232px;
     align-items: center;
     padding: 0;
     outline: none;
@@ -686,7 +669,7 @@
     gap: 7px;
     width: 100%;
     max-width: 43ch;
-    padding: 18px 0 20px;
+    padding: 22px 0 24px;
   }
 
   #ZaynaNewsletter-{{ section.id }}
@@ -798,18 +781,18 @@
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
       max-width: 720px;
-      min-height: 180px;
+      min-height: 188px;
       justify-self: start;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__field-group,
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
-      min-height: 180px;
+      min-height: 188px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success-inner {
-      padding-top: 12px;
-      padding-bottom: 18px;
+      padding-top: 14px;
+      padding-bottom: 20px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__controls {
@@ -861,18 +844,18 @@
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
       max-width: 560px;
-      min-height: 180px;
+      min-height: 188px;
       justify-self: end;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__field-group,
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
-      min-height: 180px;
+      min-height: 188px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success-inner {
-      padding-top: 12px;
-      padding-bottom: 18px;
+      padding-top: 14px;
+      padding-bottom: 20px;
     }
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__controls {
