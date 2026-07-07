@@ -9,15 +9,22 @@
   assign newsletter_status_id = 'ZaynaNewsletterStatus-' | append: section.id
 
   assign eyebrow = s.eyebrow_v2 | default: 'Nieuwsbrief'
-  assign heading = s.heading_v2 | default: 'Ontvang rustige inspiratie voor thuis.'
+  assign old_heading = 'Ontvang rustige inspiratie voor thuis.'
+  assign heading = s.heading_v2
+  if heading == blank or heading == old_heading
+    assign heading = 'Rustige inspiratie voor thuis.'
+  endif
   assign old_body = 'Blijf op de hoogte van nieuwe collecties, rustige woon- en keukeninspiratie en af en toe nieuws van Zayna Home.'
+  assign old_body_v2 = 'Ontvang af en toe nieuwe collecties, rustige keuken- en wooninspiratie en updates van Zayna Home.'
   assign old_placeholder = 'jouw@email.nl'
   assign old_success = 'Bedankt voor je inschrijving. Vanaf nu ontvang je af en toe nieuws van Zayna Home.'
+  assign old_success_v2 = 'Bedankt voor je inschrijving. Je ontvangt af en toe inspiratie en updates van Zayna Home.'
   assign old_disclaimer = 'Door je in te schrijven ontvang je e-mails van Zayna Home. Je kunt je op elk moment uitschrijven.'
+  assign old_disclaimer_v2 = 'Je ontvangt e-mails van Zayna Home en kunt je op elk moment uitschrijven.'
 
   assign body = s.body_v2
-  if body == blank or body == old_body
-    assign body = 'Ontvang af en toe nieuwe collecties, rustige keuken- en wooninspiratie en updates van Zayna Home.'
+  if body == blank or body == old_body or body == old_body_v2
+    assign body = 'Af en toe nieuwe collecties, wooninspiratie en updates van Zayna Home.'
   endif
 
   assign field_label = s.field_label_v2 | default: 'E-mailadres'
@@ -30,13 +37,13 @@
   assign submit_label = s.submit_label_v2 | default: 'Inschrijven'
 
   assign success_message = s.success_v2
-  if success_message == blank or success_message == old_success
-    assign success_message = 'Bedankt voor je inschrijving. Je ontvangt af en toe inspiratie en updates van Zayna Home.'
+  if success_message == blank or success_message == old_success or success_message == old_success_v2
+    assign success_message = 'Bedankt, je inschrijving is ontvangen.'
   endif
 
   assign disclaimer = s.disclaimer_v2
-  if disclaimer == blank or disclaimer == old_disclaimer
-    assign disclaimer = 'Je ontvangt e-mails van Zayna Home en kunt je op elk moment uitschrijven.'
+  if disclaimer == blank or disclaimer == old_disclaimer or disclaimer == old_disclaimer_v2
+    assign disclaimer = 'Je ontvangt af en toe e-mails van Zayna Home en kunt je op elk moment uitschrijven.'
   endif
 
   assign error_message = s.error_v2 | default: 'Vul een geldig e-mailadres in om je in te schrijven.'
@@ -200,12 +207,47 @@
       '[data-newsletter-success]'
     );
 
+    const cleanupNewsletterUrl = () => {
+      if (!window.history || !window.history.replaceState) return;
+
+      const url = new URL(window.location.href);
+      let shouldUpdate = false;
+
+      if (url.searchParams.has('customer_posted')) {
+        url.searchParams.delete('customer_posted');
+        shouldUpdate = true;
+      }
+
+      if (url.searchParams.has('contact_posted')) {
+        url.searchParams.delete('contact_posted');
+        shouldUpdate = true;
+      }
+
+      if (url.hash === '#contact_form' || url.hash === '#newsletter') {
+        url.hash = '';
+        shouldUpdate = true;
+      }
+
+      if (shouldUpdate) {
+        const cleanUrl = `${url.pathname}${url.search}${url.hash}`;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    };
+
     if (successMessage) {
+      cleanupNewsletterUrl();
+
       window.requestAnimationFrame(() => {
-        try {
-          successMessage.focus({ preventScroll: true });
-        } catch (error) {
-          successMessage.focus();
+        const shouldReturn = window.sessionStorage?.getItem('zhNewsletterReturnTo') === '{{ section.id }}';
+
+        if (shouldReturn) {
+          window.sessionStorage.removeItem('zhNewsletterReturnTo');
+
+          const targetTop = section.getBoundingClientRect().top + window.scrollY - 16;
+
+          if (Math.abs(window.scrollY - targetTop) > 8) {
+            window.scrollTo({ top: Math.max(targetTop, 0), behavior: 'auto' });
+          }
         }
       });
     }
@@ -247,6 +289,13 @@
       }
 
       clearError();
+
+      try {
+        window.sessionStorage?.setItem('zhNewsletterReturnTo', '{{ section.id }}');
+      } catch (error) {
+        // Do nothing when storage is unavailable.
+      }
+
       submitButton.disabled = true;
       submitButton.setAttribute('aria-busy', 'true');
       submitLabel.textContent = 'Even geduld';
@@ -256,12 +305,12 @@
 
 {% style %}
   #ZaynaNewsletter-{{ section.id }} {
-    --zayna-newsletter-bg: #302720;
+    --zayna-newsletter-bg: #342a22;
     --zayna-newsletter-surface: #fffaf5;
     --zayna-newsletter-soft: rgba(255, 250, 245, 0.72);
     --zayna-newsletter-muted: rgba(255, 250, 245, 0.58);
     --zayna-newsletter-border: rgba(255, 250, 245, 0.3);
-    --zayna-newsletter-accent: #b97848;
+    --zayna-newsletter-accent: #c1845a;
     --zayna-newsletter-button: #efe3d7;
     --zayna-newsletter-button-hover: #e6d6c8;
     --zayna-newsletter-ink: #29241f;
@@ -355,6 +404,7 @@
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
     width: 100%;
     max-width: 620px;
+    min-height: 136px;
     align-self: center;
   }
 
@@ -386,8 +436,8 @@
     display: block;
     box-sizing: border-box;
     width: 100%;
-    height: 52px;
-    padding: 7px 2px 9px;
+    height: 50px;
+    padding: 7px 2px 8px;
     border: 0;
     border-radius: 0;
     outline: none;
@@ -439,7 +489,7 @@
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__submit {
     display: inline-flex;
     width: 100%;
-    min-height: 50px;
+    min-height: 48px;
     align-items: center;
     justify-content: center;
     gap: 11px;
@@ -502,7 +552,7 @@
 
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__errors {
     margin-top: 10px;
-    color: #efb4a5;
+    color: #e8b3a4;
     font-size: 12px;
     line-height: 1.5;
   }
@@ -514,8 +564,9 @@
   #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__success {
     display: grid;
     max-width: 520px;
-    gap: 6px;
-    padding: 18px 0 3px;
+    gap: 5px;
+    min-height: 108px;
+    padding: 16px 0 2px;
     border-top: 1px solid var(--zayna-newsletter-border);
     outline: none;
   }
@@ -620,6 +671,7 @@
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
       max-width: 720px;
+      min-height: 118px;
       justify-self: start;
     }
 
@@ -672,6 +724,7 @@
 
     #ZaynaNewsletter-{{ section.id }} .zayna-newsletter__form {
       max-width: 560px;
+      min-height: 118px;
       justify-self: end;
     }
 
@@ -734,13 +787,13 @@
       "type": "text",
       "id": "heading_v2",
       "label": "Titel",
-      "default": "Ontvang rustige inspiratie voor thuis."
+      "default": "Rustige inspiratie voor thuis."
     },
     {
       "type": "textarea",
       "id": "body_v2",
       "label": "Tekst",
-      "default": "Ontvang af en toe nieuwe collecties, rustige keuken- en wooninspiratie en updates van Zayna Home."
+      "default": "Af en toe nieuwe collecties, wooninspiratie en updates van Zayna Home."
     },
     {
       "type": "text",
@@ -764,7 +817,7 @@
       "type": "textarea",
       "id": "success_v2",
       "label": "Succesmelding",
-      "default": "Bedankt voor je inschrijving. Je ontvangt af en toe inspiratie en updates van Zayna Home."
+      "default": "Bedankt, je inschrijving is ontvangen."
     },
     {
       "type": "text",
@@ -776,7 +829,7 @@
       "type": "textarea",
       "id": "disclaimer_v2",
       "label": "Privacytekst",
-      "default": "Je ontvangt e-mails van Zayna Home en kunt je op elk moment uitschrijven."
+      "default": "Je ontvangt af en toe e-mails van Zayna Home en kunt je op elk moment uitschrijven."
     },
     {
       "type": "url",
