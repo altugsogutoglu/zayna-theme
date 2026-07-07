@@ -56,7 +56,7 @@
           <div
             class="zayna-freshly-listed__item{% if forloop.index > mobile_product_limit %} zayna-freshly-listed__item--desktop-only{% endif %}"
           >
-            {% render 'product-card', product: product, loading: 'lazy' %}
+            {% render 'product-card', product: product, loading: 'lazy', card_context: 'freshly-listed' %}
           </div>
         {%- endfor -%}
       </div>
@@ -78,7 +78,7 @@
   #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__inner {
     width: min(100%, 1280px);
     margin: 0 auto;
-    padding: 46px 20px 20px;
+    padding: 48px 20px 26px;
   }
 
   #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__header {
@@ -86,7 +86,7 @@
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: end;
     gap: 18px;
-    margin-bottom: 25px;
+    margin-bottom: 26px;
   }
 
   #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__heading-group {
@@ -110,7 +110,7 @@
         --font-display,
         var(--font-heading-family, Georgia, serif)
       );
-    font-size: clamp(32px, 8.5vw, 35px);
+    font-size: clamp(31px, 8.2vw, 35px);
     font-weight: 400;
     line-height: 1.05;
     letter-spacing: -0.025em;
@@ -141,7 +141,7 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 14px;
-    row-gap: 28px;
+    row-gap: 32px;
   }
 
   #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__item {
@@ -169,7 +169,7 @@
 
   @media (max-width: 389px) {
     #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__inner {
-      padding: 42px 18px 18px;
+      padding: 44px 18px 24px;
     }
 
     #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__header {
@@ -188,18 +188,18 @@
 
     #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__grid {
       column-gap: 12px;
-      row-gap: 26px;
+      row-gap: 30px;
     }
   }
 
   @media (min-width: 750px) {
     #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__inner {
-      padding: 60px 32px 20px;
+      padding: 62px 32px 28px;
     }
 
     #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__header {
       gap: 28px;
-      margin-bottom: 30px;
+      margin-bottom: 32px;
     }
 
     #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__eyebrow {
@@ -219,8 +219,8 @@
 
     #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      column-gap: 24px;
-      row-gap: 38px;
+      column-gap: 22px;
+      row-gap: 40px;
     }
   }
 
@@ -231,7 +231,7 @@
     }
 
     #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__inner {
-      padding: 62px 40px 18px;
+      padding: 64px 40px 30px;
     }
 
     #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__header {
@@ -243,7 +243,28 @@
     }
 
     #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__grid {
-      column-gap: 30px;
+      column-gap: 28px;
+    }
+  }
+
+
+  @media (hover: hover) and (pointer: fine) and (min-width: 560px) and (max-width: 749px) {
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__inner {
+      padding-top: 50px;
+      padding-bottom: 26px;
+    }
+
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__header {
+      margin-bottom: 27px;
+    }
+
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__title {
+      font-size: clamp(32px, 5.4vw, 36px);
+    }
+
+    #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__grid {
+      column-gap: 16px;
+      row-gap: 34px;
     }
   }
 
