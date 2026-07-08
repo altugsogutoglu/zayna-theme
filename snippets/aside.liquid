@@ -124,6 +124,8 @@
   }
 
   .zayna-aside-header {
+    position: relative;
+    z-index: 2;
     display: flex;
     height: var(--header-height);
     flex: 0 0 auto;
@@ -136,7 +138,7 @@
   }
 
   [data-aside="mobile"] .zayna-aside-header {
-    height: 74px;
+    height: 72px;
   }
 
   .zayna-aside-actions {
@@ -198,6 +200,8 @@
   }
 
   .zayna-aside-scroll {
+    position: relative;
+    z-index: 1;
     min-width: 0;
     min-height: 0;
     flex: 1 1 auto;
@@ -205,6 +209,8 @@
     overflow-y: auto;
     overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
+    scroll-padding-top: 14px;
+    background: #fbf7f2;
     touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
   }
@@ -239,7 +245,7 @@
 
   [data-aside="mobile"] .zayna-aside-logo__image {
     max-width: 154px !important;
-    max-height: 34px !important;
+    max-height: 33px !important;
   }
 
   .zayna-aside-logo__fallback {
@@ -326,14 +332,14 @@
 
   @media (max-width: 389px) {
     [data-aside="mobile"] .zayna-aside-header {
-      height: 70px;
+      height: 68px;
       padding-right: 20px;
       padding-left: 20px;
     }
 
     [data-aside="mobile"] .zayna-aside-logo__image {
       max-width: 146px !important;
-      max-height: 32px !important;
+      max-height: 31px !important;
     }
   }
 
