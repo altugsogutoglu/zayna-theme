@@ -119,6 +119,8 @@
     --zayna-hero-text: #675c53;
     --zayna-hero-accent: #a66a3f;
     --zayna-hero-border: #e7ddd2;
+    --zayna-hero-button: #3a3029;
+    --zayna-hero-button-hover: #76513d;
 
     position: relative;
     isolation: isolate;
@@ -207,17 +209,18 @@
 
   #ZaynaHero-{{ section.id }} .zayna-home-hero__primary {
     display: inline-flex;
-    min-height: 50px;
+    min-height: 48px;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    padding: 14px 22px;
-    border: 1px solid var(--zayna-hero-ink);
-    background: var(--zayna-hero-ink);
+    gap: 11px;
+    padding: 13px 21px;
+    border: 1px solid var(--zayna-hero-button);
+    background: var(--zayna-hero-button);
     color: #fffaf5;
-    font-size: 10.5px;
+    font-size: 10.2px;
     line-height: 1;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.135em;
+    box-shadow: 0 15px 34px -28px rgba(43, 38, 34, 0.52);
     transition:
       background-color 180ms ease,
       border-color 180ms ease,
@@ -264,8 +267,8 @@
 
   @media (hover: hover) and (pointer: fine) {
     #ZaynaHero-{{ section.id }} .zayna-home-hero__primary:hover {
-      border-color: var(--zayna-hero-accent);
-      background: var(--zayna-hero-accent);
+      border-color: var(--zayna-hero-button-hover);
+      background: var(--zayna-hero-button-hover);
       transform: translateY(-1px);
     }
 
@@ -517,9 +520,9 @@
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__primary {
-      width: 100%;
-      min-height: 50px;
-      padding: 14px 18px;
+      width: min(100%, 318px);
+      min-height: 47px;
+      padding: 13px 18px;
     }
 
     #ZaynaHero-{{ section.id }} .zayna-home-hero__secondary {
