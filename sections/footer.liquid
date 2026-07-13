@@ -315,7 +315,19 @@
           Betaalmethoden
         </p>
 
-        {% render 'payment-icons' %}
+        <ul class="list list-payment" role="list">
+          <li class="list-payment__item">
+            {{ 'ideal' | payment_type_svg_tag: class: 'icon icon--full-color' }}
+          </li>
+
+          {%- for type in shop.enabled_payment_types -%}
+            {%- unless type == 'ideal' -%}
+              <li class="list-payment__item">
+                {{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}
+              </li>
+            {%- endunless -%}
+          {%- endfor -%}
+        </ul>
       </div>
 
       <dl class="zayna-footer__business">
