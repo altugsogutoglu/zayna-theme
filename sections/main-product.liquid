@@ -1716,6 +1716,7 @@
     <script type="application/json" data-product-json>
       {
         "selected_variant_id": {{ cv.id | json }},
+        "has_only_default_variant": {{ product.has_only_default_variant | json }},
         "labels": {
           "add": {{ lbl_add | json }},
           "sold": {{ lbl_sold | json }},
