@@ -85,6 +85,31 @@
         outline-offset: 3px;
       }
 
+      /* Zayna Home — consistente muiscursor op klikbare onderdelen */
+      @media (hover: hover) and (pointer: fine) {
+        a[href],
+        button:not(:disabled),
+        summary,
+        label[for],
+        select:not(:disabled),
+        input[type="button"]:not(:disabled),
+        input[type="submit"]:not(:disabled),
+        input[type="checkbox"]:not(:disabled),
+        input[type="radio"]:not(:disabled),
+        [role="button"]:not([aria-disabled="true"]),
+        [data-aside-open],
+        [data-aside-close] {
+          cursor: pointer;
+        }
+
+        button:disabled,
+        input:disabled,
+        select:disabled,
+        [aria-disabled="true"] {
+          cursor: not-allowed;
+        }
+      }
+
       :where([inert]) {
         pointer-events: none;
       }
