@@ -536,8 +536,14 @@
               ? 0
               : (startIndex / maximumStart) * maximumTravel;
 
+          const thumbTranslate =
+            thumbWidth <= 0
+              ? 0
+              : (thumbLeft / thumbWidth) * 100;
+
           progressThumb.style.width = `${thumbWidth}%`;
-          progressThumb.style.left = `${thumbLeft}%`;
+          progressThumb.style.transform =
+            `translate3d(${thumbTranslate}%, 0, 0)`;
         };
 
         const updateLiveRegion = () => {
@@ -1055,9 +1061,10 @@
     width: 10%;
     height: 1px;
     background: var(--zayna-curated-accent);
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
     transition:
-      left 340ms ease,
-      width 340ms ease,
+      transform 340ms ease,
       height 180ms ease,
       top 180ms ease;
   }
