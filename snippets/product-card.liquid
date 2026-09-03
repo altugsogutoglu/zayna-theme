@@ -76,8 +76,9 @@
             | image_url: width: 800, format: 'webp'
             | image_tag:
               loading: loading,
+              decoding: 'async',
               sizes: '(min-width: 1024px) 25vw, 50vw',
-              widths: '300, 400, 600, 800',
+              widths: '240, 280, 320, 360, 400, 480, 560, 640, 720, 800',
               alt: primary_alt,
               class: 'zh-product-card__image zh-product-card__primary'
           }}
@@ -88,8 +89,10 @@
               | image_url: width: 800, format: 'webp'
               | image_tag:
                 loading: 'lazy',
+                fetchpriority: 'low',
+                decoding: 'async',
                 sizes: '(min-width: 1024px) 25vw, 50vw',
-                widths: '300, 400, 600, 800',
+                widths: '240, 280, 320, 360, 400, 480, 560, 640, 720, 800',
                 alt: '',
                 class: 'zh-product-card__image zh-product-card__secondary'
             }}
