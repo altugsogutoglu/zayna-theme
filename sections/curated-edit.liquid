@@ -91,12 +91,7 @@
             assign focal_point = collection_item.featured_image.presentation.focal_point | default: 'center'
           -%}
 
-          <li
-            class="zayna-curated-edit__slide"
-            role="group"
-            aria-roledescription="slide"
-            aria-label="{{ collection_item.title | escape }}"
-          >
+          <li class="zayna-curated-edit__slide">
             <a
               href="{{ collection_item.url }}"
               class="zayna-curated-edit__card"
