@@ -111,6 +111,7 @@
       }
 
 
+      {%- if request.path contains '/policies/shipping-policy' -%}
       /* Fase 5U — Zayna Home shipping policy, typography comfort and final tone polish */
       body.zh-shipping-policy {
         --zh-ship-bg: #faf5f2;
@@ -505,6 +506,9 @@
       }
 
 
+      {%- endif -%}
+
+      {%- if request.path contains '/policies/refund-policy' -%}
       /* Fase 7B — Zayna Home refund policy, line-break and fragile-products polish */
       body.zh-refund-policy {
         --zh-refund-bg: #faf5f2;
@@ -989,6 +993,8 @@
       }
 
 
+
+      {%- endif -%}
 
     {% endstyle %}
 
