@@ -859,7 +859,7 @@
 
   #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__media {
     position: relative;
-    aspect-ratio: 5 / 4;
+    aspect-ratio: 1 / 1;
     overflow: hidden;
     background: #f1e8df;
   }
@@ -875,7 +875,6 @@
     user-select: none;
     -webkit-user-select: none;
     -webkit-user-drag: none;
-    transition: transform 700ms ease;
   }
 
   #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__placeholder {
@@ -1114,15 +1113,6 @@
     #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link:hover {
       border-color: var(--zayna-curated-accent);
       color: var(--zayna-curated-accent);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__image,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__image {
-      transform: scale(1.02);
     }
 
     #ZaynaCuratedEdit-{{ section.id }}
