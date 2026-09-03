@@ -106,8 +106,10 @@
                     | image_url: width: 1200
                     | image_tag:
                       loading: 'lazy',
+                      fetchpriority: 'low',
+                      decoding: 'async',
                       sizes: '(min-width: 1200px) 23vw, (min-width: 900px) 31vw, (min-width: 600px) 47vw, 86vw',
-                      widths: '400, 600, 800, 1000, 1200',
+                      widths: '320, 360, 400, 480, 560, 640, 720, 800, 900, 1000, 1200',
                       alt: collection_item.title,
                       draggable: false,
                       class: 'zayna-curated-edit__image'
