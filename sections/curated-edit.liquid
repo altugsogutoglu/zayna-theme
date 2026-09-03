@@ -8,6 +8,653 @@
 -%}
 
 {%- if edits.size > 0 -%}
+{% style %}
+  #ZaynaCuratedEdit-{{ section.id }} {
+    --zayna-curated-bg: #faf5f2;
+    --zayna-curated-ink: #2a2520;
+    --zayna-curated-soft: #6f665e;
+    --zayna-curated-accent: #a66a3f;
+    --zayna-curated-border: #e7ddd2;
+
+    overflow: hidden;
+    padding: 26px 0 28px;
+    background: var(--zayna-curated-bg);
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 18px;
+    width: min(100%, 1280px);
+    margin: 0 auto 25px;
+    padding: 0 20px;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__heading-group {
+    min-width: 0;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 8px;
+    color: var(--zayna-curated-accent);
+    font-size: 9px;
+    line-height: 1.4;
+    letter-spacing: 0.21em;
+    text-transform: uppercase;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__eyebrow > span {
+    display: block;
+    width: 26px;
+    height: 1px;
+    flex: 0 0 26px;
+    background: rgba(166, 106, 63, 0.62);
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
+    max-width: 17ch;
+    margin: 0;
+    color: var(--zayna-curated-ink);
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: clamp(30px, 8vw, 35px);
+    font-weight: 400;
+    line-height: 1.06;
+    letter-spacing: -0.027em;
+    text-wrap: balance;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__controls {
+    display: none;
+    align-items: center;
+    border-bottom: 1px solid var(--zayna-curated-border);
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__control {
+    position: relative;
+    display: grid;
+    width: 42px;
+    height: 44px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--zayna-curated-ink);
+    font: inherit;
+    cursor: pointer;
+    transition:
+      opacity 180ms ease,
+      color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }}
+    .zayna-curated-edit__control:first-child {
+    border-right: 1px solid var(--zayna-curated-border);
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }}
+    .zayna-curated-edit__control:disabled {
+    opacity: 0.24;
+    cursor: default;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+    padding: 0 0 3px;
+    border-bottom: 1px solid var(--zayna-curated-border);
+    color: var(--zayna-curated-soft);
+    font-size: 8.5px;
+    line-height: 1.3;
+    letter-spacing: 0.15em;
+    text-align: right;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition:
+      border-color 180ms ease,
+      color 180ms ease;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
+    overflow: hidden;
+    padding: 0 20px;
+    cursor: grab;
+    touch-action: pan-y pinch-zoom;
+    overscroll-behavior-x: contain;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }}
+    .zayna-curated-edit__viewport:focus {
+    outline: none;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport:active {
+    cursor: grabbing;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
+    display: flex;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    will-change: transform;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__slide {
+    min-width: 0;
+    flex: 0 0 86%;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: #f1e8df;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--zayna-focal-point, center);
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    padding: 28px;
+    text-align: center;
+    background:
+      radial-gradient(
+        70% 80% at 30% 20%,
+        rgba(181, 101, 29, 0.1),
+        transparent 65%
+      ),
+      linear-gradient(180deg, #f4ece5, #ede4dc);
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__number {
+    margin-bottom: 11px;
+    color: var(--zayna-curated-soft);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__placeholder-title {
+    color: rgba(42, 37, 32, 0.72);
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 23px;
+    font-style: italic;
+    line-height: 1.15;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__placeholder-line {
+    width: 38px;
+    height: 1px;
+    margin-top: 15px;
+    background: rgba(111, 102, 94, 0.5);
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__overlay {
+    position: absolute;
+    inset: auto 0 0;
+    height: 30%;
+    background: linear-gradient(
+      to top,
+      rgba(42, 37, 32, 0.42),
+      rgba(42, 37, 32, 0.06),
+      transparent
+    );
+    opacity: 0;
+    transition: opacity 350ms ease;
+    pointer-events: none;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__view-label {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    left: 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #fffaf6;
+    font-size: 8.5px;
+    line-height: 1.2;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity 350ms ease,
+      transform 350ms ease;
+    pointer-events: none;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__view-label > span {
+    display: block;
+    width: 22px;
+    height: 1px;
+    background: rgba(255, 250, 246, 0.75);
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__content {
+    display: flex;
+    min-height: 28px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 12px;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title {
+    display: -webkit-box;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: var(--zayna-curated-ink);
+    font-family:
+      var(
+        --font-display,
+        var(--font-heading-family, Georgia, serif)
+      );
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    transition: color 250ms ease;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-arrow {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    color: var(--zayna-curated-soft);
+    font-size: 15px;
+    transition:
+      color 250ms ease,
+      transform 250ms ease;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
+    position: relative;
+    z-index: 5;
+    display: block;
+    box-sizing: border-box;
+    width: min(100%, 1280px);
+    height: 1px;
+    min-height: 0;
+    margin: 15px auto 0;
+    padding: 0 20px;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /*
+    De zichtbare voortgangslijn blijft 1px hoog. Dit transparante
+    pseudo-element vergroot alleen het klik- en tikgebied tot 44px,
+    zonder extra lege ruimte aan de pagina toe te voegen.
+  */
+  #ZaynaCuratedEdit-{{ section.id }}
+    .zayna-curated-edit__progress::before {
+    content: "";
+    position: absolute;
+    top: -21px;
+    right: 0;
+    bottom: -22px;
+    left: 0;
+    display: block;
+    cursor: pointer;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }}
+    .zayna-curated-edit__progress-track {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: var(--zayna-curated-border);
+    pointer-events: none;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }}
+    .zayna-curated-edit__progress-thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 10%;
+    height: 1px;
+    background: var(--zayna-curated-accent);
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+    transition:
+      transform 340ms ease,
+      height 180ms ease,
+      top 180ms ease;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }}
+    .zayna-curated-edit__progress:focus-visible {
+    outline: none;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }}
+    .zayna-curated-edit__progress:focus-visible
+    .zayna-curated-edit__progress-thumb {
+    top: -0.5px;
+    height: 2px;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card:focus-visible,
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__control:focus-visible,
+  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link:focus-visible {
+    outline: 2px solid var(--zayna-curated-accent);
+    outline-offset: 4px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__controls {
+      display: flex;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }}
+      .zayna-curated-edit__control:not(:disabled):hover {
+      color: var(--zayna-curated-accent);
+      background: rgba(166, 106, 63, 0.035);
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link:hover {
+      border-color: var(--zayna-curated-accent);
+      color: var(--zayna-curated-accent);
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }}
+      .zayna-curated-edit__card:hover
+      .zayna-curated-edit__overlay,
+    #ZaynaCuratedEdit-{{ section.id }}
+      .zayna-curated-edit__card:hover
+      .zayna-curated-edit__view-label,
+    #ZaynaCuratedEdit-{{ section.id }}
+      .zayna-curated-edit__card:focus-visible
+      .zayna-curated-edit__overlay,
+    #ZaynaCuratedEdit-{{ section.id }}
+      .zayna-curated-edit__card:focus-visible
+      .zayna-curated-edit__view-label {
+      opacity: 1;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }}
+      .zayna-curated-edit__card:hover
+      .zayna-curated-edit__view-label,
+    #ZaynaCuratedEdit-{{ section.id }}
+      .zayna-curated-edit__card:focus-visible
+      .zayna-curated-edit__view-label {
+      transform: translateY(0);
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }}
+      .zayna-curated-edit__card:hover
+      .zayna-curated-edit__card-title,
+    #ZaynaCuratedEdit-{{ section.id }}
+      .zayna-curated-edit__card:hover
+      .zayna-curated-edit__card-arrow,
+    #ZaynaCuratedEdit-{{ section.id }}
+      .zayna-curated-edit__card:focus-visible
+      .zayna-curated-edit__card-title,
+    #ZaynaCuratedEdit-{{ section.id }}
+      .zayna-curated-edit__card:focus-visible
+      .zayna-curated-edit__card-arrow {
+      color: var(--zayna-curated-accent);
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }}
+      .zayna-curated-edit__card:hover
+      .zayna-curated-edit__card-arrow,
+    #ZaynaCuratedEdit-{{ section.id }}
+      .zayna-curated-edit__card:focus-visible
+      .zayna-curated-edit__card-arrow {
+      transform: translateX(3px);
+    }
+  }
+
+  @media (max-width: 389px) {
+    #ZaynaCuratedEdit-{{ section.id }} {
+      padding-top: 26px;
+      padding-bottom: 24px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header {
+      gap: 12px;
+      padding-right: 18px;
+      padding-left: 18px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
+      font-size: 29px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link {
+      font-size: 8px;
+      letter-spacing: 0.13em;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
+      padding-right: 18px;
+      padding-left: 18px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
+      padding-right: 18px;
+      padding-left: 18px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
+      gap: 12px;
+    }
+  }
+
+  @media (min-width: 600px) {
+    #ZaynaCuratedEdit-{{ section.id }} {
+      padding-top: 28px;
+      padding-bottom: 38px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header,
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
+      padding-right: 32px;
+      padding-left: 32px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
+      padding-right: 32px;
+      padding-left: 32px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header {
+      margin-bottom: 28px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
+      gap: 20px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__slide {
+      flex-basis: calc((100% - 20px) / 2);
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__media {
+      aspect-ratio: 1 / 1;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
+      font-size: clamp(35px, 4vw, 40px);
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link {
+      font-size: 9.5px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title {
+      font-size: 19px;
+    }
+  }
+
+  @media (min-width: 900px) {
+    #ZaynaCuratedEdit-{{ section.id }} {
+      padding-top: 32px;
+      padding-bottom: 44px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header,
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
+      padding-right: 36px;
+      padding-left: 36px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
+      width: min(100%, 1280px);
+      margin: 0 auto;
+      padding-right: 36px;
+      padding-left: 36px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
+      gap: 24px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__slide {
+      flex-basis: calc((100% - 48px) / 3);
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
+      font-size: 36px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title {
+      font-size: 19px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    #ZaynaCuratedEdit-{{ section.id }} {
+      padding-top: 34px;
+      padding-bottom: 46px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header,
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
+      padding-right: 40px;
+      padding-left: 40px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
+      padding-right: 40px;
+      padding-left: 40px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header {
+      align-items: center;
+      margin-bottom: 29px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
+      gap: 24px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__slide {
+      flex-basis: calc((100% - 72px) / 4);
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
+      max-width: none;
+      font-size: 38px;
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+      white-space: nowrap;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__content {
+      margin-top: 11px;
+    }
+
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title {
+      font-size: 19px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__image,
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__overlay,
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__view-label,
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title,
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-arrow,
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__control,
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link,
+    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress-thumb {
+      transition: none;
+    }
+  }
+{% endstyle %}
   <section
     id="ZaynaCuratedEdit-{{ section.id }}"
     class="zayna-curated-edit"
@@ -695,653 +1342,7 @@
   </script>
 {%- endif -%}
 
-{% style %}
-  #ZaynaCuratedEdit-{{ section.id }} {
-    --zayna-curated-bg: #faf5f2;
-    --zayna-curated-ink: #2a2520;
-    --zayna-curated-soft: #6f665e;
-    --zayna-curated-accent: #a66a3f;
-    --zayna-curated-border: #e7ddd2;
 
-    overflow: hidden;
-    padding: 26px 0 28px;
-    background: var(--zayna-curated-bg);
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-    gap: 18px;
-    width: min(100%, 1280px);
-    margin: 0 auto 25px;
-    padding: 0 20px;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__heading-group {
-    min-width: 0;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0 0 8px;
-    color: var(--zayna-curated-accent);
-    font-size: 9px;
-    line-height: 1.4;
-    letter-spacing: 0.21em;
-    text-transform: uppercase;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__eyebrow > span {
-    display: block;
-    width: 26px;
-    height: 1px;
-    flex: 0 0 26px;
-    background: rgba(166, 106, 63, 0.62);
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
-    max-width: 17ch;
-    margin: 0;
-    color: var(--zayna-curated-ink);
-    font-family:
-      var(
-        --font-display,
-        var(--font-heading-family, Georgia, serif)
-      );
-    font-size: clamp(30px, 8vw, 35px);
-    font-weight: 400;
-    line-height: 1.06;
-    letter-spacing: -0.027em;
-    text-wrap: balance;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__actions {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__controls {
-    display: none;
-    align-items: center;
-    border-bottom: 1px solid var(--zayna-curated-border);
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__control {
-    position: relative;
-    display: grid;
-    width: 42px;
-    height: 44px;
-    place-items: center;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--zayna-curated-ink);
-    font: inherit;
-    cursor: pointer;
-    transition:
-      opacity 180ms ease,
-      color 180ms ease,
-      background-color 180ms ease;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__control:first-child {
-    border-right: 1px solid var(--zayna-curated-border);
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__control:disabled {
-    opacity: 0.24;
-    cursor: default;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link {
-    display: inline-flex;
-    min-height: 44px;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 7px;
-    padding: 0 0 3px;
-    border-bottom: 1px solid var(--zayna-curated-border);
-    color: var(--zayna-curated-soft);
-    font-size: 8.5px;
-    line-height: 1.3;
-    letter-spacing: 0.15em;
-    text-align: right;
-    text-decoration: none;
-    text-transform: uppercase;
-    white-space: nowrap;
-    transition:
-      border-color 180ms ease,
-      color 180ms ease;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
-    overflow: hidden;
-    padding: 0 20px;
-    cursor: grab;
-    touch-action: pan-y pinch-zoom;
-    overscroll-behavior-x: contain;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__viewport:focus {
-    outline: none;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport:active {
-    cursor: grabbing;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
-    display: flex;
-    gap: 14px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    will-change: transform;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__slide {
-    min-width: 0;
-    flex: 0 0 86%;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card {
-    display: block;
-    color: inherit;
-    text-decoration: none;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__media {
-    position: relative;
-    aspect-ratio: 1 / 1;
-    overflow: hidden;
-    background: #f1e8df;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__image {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: var(--zayna-focal-point, center);
-    pointer-events: none;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__placeholder {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-content: center;
-    justify-items: center;
-    padding: 28px;
-    text-align: center;
-    background:
-      radial-gradient(
-        70% 80% at 30% 20%,
-        rgba(181, 101, 29, 0.1),
-        transparent 65%
-      ),
-      linear-gradient(180deg, #f4ece5, #ede4dc);
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__number {
-    margin-bottom: 11px;
-    color: var(--zayna-curated-soft);
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__placeholder-title {
-    color: rgba(42, 37, 32, 0.72);
-    font-family:
-      var(
-        --font-display,
-        var(--font-heading-family, Georgia, serif)
-      );
-    font-size: 23px;
-    font-style: italic;
-    line-height: 1.15;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__placeholder-line {
-    width: 38px;
-    height: 1px;
-    margin-top: 15px;
-    background: rgba(111, 102, 94, 0.5);
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__overlay {
-    position: absolute;
-    inset: auto 0 0;
-    height: 30%;
-    background: linear-gradient(
-      to top,
-      rgba(42, 37, 32, 0.42),
-      rgba(42, 37, 32, 0.06),
-      transparent
-    );
-    opacity: 0;
-    transition: opacity 350ms ease;
-    pointer-events: none;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__view-label {
-    position: absolute;
-    right: 14px;
-    bottom: 14px;
-    left: 14px;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    color: #fffaf6;
-    font-size: 8.5px;
-    line-height: 1.2;
-    letter-spacing: 0.17em;
-    text-transform: uppercase;
-    opacity: 0;
-    transform: translateY(4px);
-    transition:
-      opacity 350ms ease,
-      transform 350ms ease;
-    pointer-events: none;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__view-label > span {
-    display: block;
-    width: 22px;
-    height: 1px;
-    background: rgba(255, 250, 246, 0.75);
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__content {
-    display: flex;
-    min-height: 28px;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    margin-top: 12px;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title {
-    display: -webkit-box;
-    min-width: 0;
-    margin: 0;
-    overflow: hidden;
-    color: var(--zayna-curated-ink);
-    font-family:
-      var(
-        --font-display,
-        var(--font-heading-family, Georgia, serif)
-      );
-    font-size: 20px;
-    font-weight: 400;
-    line-height: 1.15;
-    letter-spacing: -0.015em;
-    transition: color 250ms ease;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-arrow {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    color: var(--zayna-curated-soft);
-    font-size: 15px;
-    transition:
-      color 250ms ease,
-      transform 250ms ease;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
-    position: relative;
-    z-index: 5;
-    display: block;
-    box-sizing: border-box;
-    width: min(100%, 1280px);
-    height: 1px;
-    min-height: 0;
-    margin: 15px auto 0;
-    padding: 0 20px;
-    overflow: visible;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  /*
-    De zichtbare voortgangslijn blijft 1px hoog. Dit transparante
-    pseudo-element vergroot alleen het klik- en tikgebied tot 44px,
-    zonder extra lege ruimte aan de pagina toe te voegen.
-  */
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__progress::before {
-    content: "";
-    position: absolute;
-    top: -21px;
-    right: 0;
-    bottom: -22px;
-    left: 0;
-    display: block;
-    cursor: pointer;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__progress-track {
-    position: relative;
-    z-index: 1;
-    display: block;
-    width: 100%;
-    height: 1px;
-    background: var(--zayna-curated-border);
-    pointer-events: none;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__progress-thumb {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: block;
-    width: 10%;
-    height: 1px;
-    background: var(--zayna-curated-accent);
-    transform: translate3d(0, 0, 0);
-    will-change: transform;
-    transition:
-      transform 340ms ease,
-      height 180ms ease,
-      top 180ms ease;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__progress:focus-visible {
-    outline: none;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }}
-    .zayna-curated-edit__progress:focus-visible
-    .zayna-curated-edit__progress-thumb {
-    top: -0.5px;
-    height: 2px;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__sr-only {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0, 0, 0, 0) !important;
-    white-space: nowrap !important;
-    border: 0 !important;
-  }
-
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card:focus-visible,
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__control:focus-visible,
-  #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link:focus-visible {
-    outline: 2px solid var(--zayna-curated-accent);
-    outline-offset: 4px;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__controls {
-      display: flex;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__control:not(:disabled):hover {
-      color: var(--zayna-curated-accent);
-      background: rgba(166, 106, 63, 0.035);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link:hover {
-      border-color: var(--zayna-curated-accent);
-      color: var(--zayna-curated-accent);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__overlay,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__view-label,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__overlay,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__view-label {
-      opacity: 1;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__view-label,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__view-label {
-      transform: translateY(0);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__card-title,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__card-arrow,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__card-title,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__card-arrow {
-      color: var(--zayna-curated-accent);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:hover
-      .zayna-curated-edit__card-arrow,
-    #ZaynaCuratedEdit-{{ section.id }}
-      .zayna-curated-edit__card:focus-visible
-      .zayna-curated-edit__card-arrow {
-      transform: translateX(3px);
-    }
-  }
-
-  @media (max-width: 389px) {
-    #ZaynaCuratedEdit-{{ section.id }} {
-      padding-top: 26px;
-      padding-bottom: 24px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header {
-      gap: 12px;
-      padding-right: 18px;
-      padding-left: 18px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
-      font-size: 29px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link {
-      font-size: 8px;
-      letter-spacing: 0.13em;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
-      padding-right: 18px;
-      padding-left: 18px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
-      padding-right: 18px;
-      padding-left: 18px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
-      gap: 12px;
-    }
-  }
-
-  @media (min-width: 600px) {
-    #ZaynaCuratedEdit-{{ section.id }} {
-      padding-top: 28px;
-      padding-bottom: 38px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
-      padding-right: 32px;
-      padding-left: 32px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
-      padding-right: 32px;
-      padding-left: 32px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header {
-      margin-bottom: 28px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
-      gap: 20px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__slide {
-      flex-basis: calc((100% - 20px) / 2);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__media {
-      aspect-ratio: 1 / 1;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
-      font-size: clamp(35px, 4vw, 40px);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link {
-      font-size: 9.5px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title {
-      font-size: 19px;
-    }
-  }
-
-  @media (min-width: 900px) {
-    #ZaynaCuratedEdit-{{ section.id }} {
-      padding-top: 32px;
-      padding-bottom: 44px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
-      padding-right: 36px;
-      padding-left: 36px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
-      width: min(100%, 1280px);
-      margin: 0 auto;
-      padding-right: 36px;
-      padding-left: 36px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
-      gap: 24px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__slide {
-      flex-basis: calc((100% - 48px) / 3);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
-      font-size: 36px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title {
-      font-size: 19px;
-    }
-  }
-
-  @media (min-width: 1200px) {
-    #ZaynaCuratedEdit-{{ section.id }} {
-      padding-top: 34px;
-      padding-bottom: 46px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress {
-      padding-right: 40px;
-      padding-left: 40px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__viewport {
-      padding-right: 40px;
-      padding-left: 40px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__header {
-      align-items: center;
-      margin-bottom: 29px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__track {
-      gap: 24px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__slide {
-      flex-basis: calc((100% - 72px) / 4);
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__title {
-      max-width: none;
-      font-size: 38px;
-      line-height: 1.05;
-      letter-spacing: -0.025em;
-      white-space: nowrap;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__content {
-      margin-top: 11px;
-    }
-
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title {
-      font-size: 19px;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__image,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__overlay,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__view-label,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-title,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__card-arrow,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__control,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__all-link,
-    #ZaynaCuratedEdit-{{ section.id }} .zayna-curated-edit__progress-thumb {
-      transition: none;
-    }
-  }
-{% endstyle %}
 
 {% schema %}
 {
