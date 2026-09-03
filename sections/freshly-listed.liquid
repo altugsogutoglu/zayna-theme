@@ -11,59 +11,6 @@
   endif
 -%}
 
-{%- if products.size > 0 -%}
-  <section
-    id="ZaynaFreshlyListed-{{ section.id }}"
-    class="zayna-freshly-listed"
-    {% if section.settings.heading != blank %}
-      aria-labelledby="{{ section_heading_id }}"
-    {% else %}
-      aria-label="{{ section.settings.eyebrow | default: 'Nieuw binnen' | escape }}"
-    {% endif %}
-  >
-    <div class="zayna-freshly-listed__inner">
-      <header class="zayna-freshly-listed__header">
-        <div class="zayna-freshly-listed__heading-group">
-          {%- if section.settings.eyebrow != blank -%}
-            <p class="zayna-freshly-listed__eyebrow">
-              {{ section.settings.eyebrow | escape }}
-            </p>
-          {%- endif -%}
-
-          {%- if section.settings.heading != blank -%}
-            <h2
-              id="{{ section_heading_id }}"
-              class="zayna-freshly-listed__title"
-            >
-              {{ section.settings.heading | escape }}
-            </h2>
-          {%- endif -%}
-        </div>
-
-        {%- if section.settings.link_label != blank -%}
-          <a
-            href="{{ section.settings.link_url | default: routes.all_products_collection_url }}"
-            class="zayna-freshly-listed__link"
-          >
-            <span>{{ section.settings.link_label | escape }}</span>
-            <span aria-hidden="true">→</span>
-          </a>
-        {%- endif -%}
-      </header>
-
-      <div class="zayna-freshly-listed__grid">
-        {%- for product in products limit: desktop_product_limit -%}
-          <div
-            class="zayna-freshly-listed__item{% if forloop.index > mobile_product_limit %} zayna-freshly-listed__item--desktop-only{% endif %}"
-          >
-            {% render 'product-card', product: product, loading: 'lazy', card_context: 'freshly-listed' %}
-          </div>
-        {%- endfor -%}
-      </div>
-    </div>
-  </section>
-{%- endif -%}
-
 {% style %}
   #ZaynaFreshlyListed-{{ section.id }} {
     --zayna-fresh-bg: #faf5f2;
@@ -247,7 +194,6 @@
     }
   }
 
-
   @media (hover: hover) and (pointer: fine) and (min-width: 560px) and (max-width: 749px) {
     #ZaynaFreshlyListed-{{ section.id }} .zayna-freshly-listed__inner {
       padding-top: 50px;
@@ -274,6 +220,61 @@
     }
   }
 {% endstyle %}
+
+{%- if products.size > 0 -%}
+  <section
+    id="ZaynaFreshlyListed-{{ section.id }}"
+    class="zayna-freshly-listed"
+    {% if section.settings.heading != blank %}
+      aria-labelledby="{{ section_heading_id }}"
+    {% else %}
+      aria-label="{{ section.settings.eyebrow | default: 'Nieuw binnen' | escape }}"
+    {% endif %}
+  >
+    <div class="zayna-freshly-listed__inner">
+      <header class="zayna-freshly-listed__header">
+        <div class="zayna-freshly-listed__heading-group">
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="zayna-freshly-listed__eyebrow">
+              {{ section.settings.eyebrow | escape }}
+            </p>
+          {%- endif -%}
+
+          {%- if section.settings.heading != blank -%}
+            <h2
+              id="{{ section_heading_id }}"
+              class="zayna-freshly-listed__title"
+            >
+              {{ section.settings.heading | escape }}
+            </h2>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.link_label != blank -%}
+          <a
+            href="{{ section.settings.link_url | default: routes.all_products_collection_url }}"
+            class="zayna-freshly-listed__link"
+          >
+            <span>{{ section.settings.link_label | escape }}</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        {%- endif -%}
+      </header>
+
+      <div class="zayna-freshly-listed__grid">
+        {%- for product in products limit: desktop_product_limit -%}
+          <div
+            class="zayna-freshly-listed__item{% if forloop.index > mobile_product_limit %} zayna-freshly-listed__item--desktop-only{% endif %}"
+          >
+            {% render 'product-card', product: product, loading: 'lazy', card_context: 'freshly-listed' %}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+
 
 {% schema %}
 {
