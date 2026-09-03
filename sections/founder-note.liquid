@@ -12,82 +12,6 @@
   assign image_style = 'object-position: ' | append: image_focal_point | append: ';'
 -%}
 
-<section
-  id="ZaynaFounderNote-{{ section.id }}"
-  class="zayna-founder-note"
-  aria-labelledby="ZaynaFounderHeading-{{ section.id }}"
->
-  <div class="zayna-founder-note__inner">
-    <div class="zayna-founder-note__media">
-      {%- if s.image != blank -%}
-        {{
-          s.image
-          | image_url: width: 1600
-          | image_tag:
-            loading: 'lazy',
-            sizes: '(min-width: 1180px) 500px, (min-width: 560px) 42vw, 100vw',
-            widths: '480, 720, 960, 1200, 1600',
-            alt: image_alt,
-            class: 'zayna-founder-note__image',
-            style: image_style
-        }}
-      {%- else -%}
-        <div
-          class="zayna-founder-note__placeholder"
-          aria-hidden="true"
-        >
-          <span>Zayna Home</span>
-        </div>
-      {%- endif -%}
-    </div>
-
-    <div class="zayna-founder-note__content">
-      <p class="zayna-founder-note__eyebrow">
-        <span aria-hidden="true"></span>
-        {{ story_eyebrow | escape }}
-      </p>
-
-      <h2
-        id="ZaynaFounderHeading-{{ section.id }}"
-        class="zayna-founder-note__heading"
-      >
-        {{ story_heading | escape }}
-      </h2>
-
-      <div class="zayna-founder-note__body">
-        {%- if s.story_body_final != blank -%}
-          {{ s.story_body_final }}
-        {%- else -%}
-          <p>
-            Zayna Home is ontstaan uit liefde voor een huis dat rustig en
-            verzorgd aanvoelt. We kiezen producten die mooi ogen, prettig zijn
-            in gebruik en vanzelf hun plek vinden.
-          </p>
-
-          <p>
-            Geen overdaad, maar een zorgvuldig gekozen collectie waarin
-            eenvoud, functie en aandacht voor detail samenkomen.
-          </p>
-        {%- endif -%}
-      </div>
-
-      {%- if story_link_label != blank -%}
-        <a
-          href="{{ story_link_url }}"
-          class="zayna-founder-note__link"
-        >
-          <span>{{ story_link_label | escape }}</span>
-          <span aria-hidden="true">→</span>
-        </a>
-      {%- endif -%}
-
-      <p class="zayna-founder-note__closing">
-        {{ welcome_line | escape }}
-      </p>
-    </div>
-  </div>
-</section>
-
 {% style %}
   #ZaynaFounderNote-{{ section.id }} {
     --zayna-founder-bg: #f7f1ec;
@@ -461,6 +385,84 @@
     }
   }
 {% endstyle %}
+
+<section
+  id="ZaynaFounderNote-{{ section.id }}"
+  class="zayna-founder-note"
+  aria-labelledby="ZaynaFounderHeading-{{ section.id }}"
+>
+  <div class="zayna-founder-note__inner">
+    <div class="zayna-founder-note__media">
+      {%- if s.image != blank -%}
+        {{
+          s.image
+          | image_url: width: 1600
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 1180px) 500px, (min-width: 560px) 42vw, 100vw',
+            widths: '480, 720, 960, 1200, 1600',
+            alt: image_alt,
+            class: 'zayna-founder-note__image',
+            style: image_style
+        }}
+      {%- else -%}
+        <div
+          class="zayna-founder-note__placeholder"
+          aria-hidden="true"
+        >
+          <span>Zayna Home</span>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="zayna-founder-note__content">
+      <p class="zayna-founder-note__eyebrow">
+        <span aria-hidden="true"></span>
+        {{ story_eyebrow | escape }}
+      </p>
+
+      <h2
+        id="ZaynaFounderHeading-{{ section.id }}"
+        class="zayna-founder-note__heading"
+      >
+        {{ story_heading | escape }}
+      </h2>
+
+      <div class="zayna-founder-note__body">
+        {%- if s.story_body_final != blank -%}
+          {{ s.story_body_final }}
+        {%- else -%}
+          <p>
+            Zayna Home is ontstaan uit liefde voor een huis dat rustig en
+            verzorgd aanvoelt. We kiezen producten die mooi ogen, prettig zijn
+            in gebruik en vanzelf hun plek vinden.
+          </p>
+
+          <p>
+            Geen overdaad, maar een zorgvuldig gekozen collectie waarin
+            eenvoud, functie en aandacht voor detail samenkomen.
+          </p>
+        {%- endif -%}
+      </div>
+
+      {%- if story_link_label != blank -%}
+        <a
+          href="{{ story_link_url }}"
+          class="zayna-founder-note__link"
+        >
+          <span>{{ story_link_label | escape }}</span>
+          <span aria-hidden="true">→</span>
+        </a>
+      {%- endif -%}
+
+      <p class="zayna-founder-note__closing">
+        {{ welcome_line | escape }}
+      </p>
+    </div>
+  </div>
+</section>
+
+
 
 {% schema %}
 {
