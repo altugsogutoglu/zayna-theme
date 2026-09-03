@@ -20,104 +20,6 @@
   endif
 -%}
 
-<section
-  id="ZaynaHero-{{ section.id }}"
-  class="zayna-home-hero{% if desktop_image == blank %} zayna-home-hero--no-image{% endif %}"
-  {% if s.headline != blank %}
-    aria-labelledby="{{ heading_id }}"
-  {% endif %}
->
-  {%- if desktop_image != blank -%}
-    <picture class="zayna-home-hero__picture">
-      {%- if mobile_image != blank -%}
-        <source
-          media="(max-width: 749px)"
-          srcset="
-            {{ mobile_image | image_url: width: 480 }} 480w,
-            {{ mobile_image | image_url: width: 750 }} 750w,
-            {{ mobile_image | image_url: width: 1000 }} 1000w,
-            {{ mobile_image | image_url: width: 1200 }} 1200w
-          "
-          sizes="100vw"
-        >
-      {%- endif -%}
-
-      {{
-        desktop_image
-        | image_url: width: 2200
-        | image_tag:
-          loading: image_loading,
-          fetchpriority: image_fetchpriority,
-          preload: image_preload,
-          decoding: 'async',
-          sizes: '(min-width: 1100px) 70vw, (min-width: 750px) 68vw, 100vw',
-          widths: '480, 750, 1000, 1200, 1500, 1800, 2200',
-          alt: hero_alt,
-          class: 'zayna-home-hero__image'
-      }}
-    </picture>
-  {%- endif -%}
-
-  <div class="zayna-home-hero__content-wrap">
-    <div class="zayna-home-hero__content">
-      {%- if s.eyebrow != blank -%}
-        <p class="zayna-home-hero__eyebrow">
-          <span aria-hidden="true"></span>
-          {{ s.eyebrow | escape }}
-        </p>
-      {%- endif -%}
-
-      {%- if s.headline != blank -%}
-        {%- if request.page_type == 'index' -%}
-          <h1
-            id="{{ heading_id }}"
-            class="zayna-home-hero__title"
-          >
-            {{ s.headline | escape }}
-          </h1>
-        {%- else -%}
-          <h2
-            id="{{ heading_id }}"
-            class="zayna-home-hero__title"
-          >
-            {{ s.headline | escape }}
-          </h2>
-        {%- endif -%}
-      {%- endif -%}
-
-      {%- if s.subhead != blank -%}
-        <p class="zayna-home-hero__subhead">
-          {{ s.subhead | escape }}
-        </p>
-      {%- endif -%}
-
-      {%- if s.cta_label != blank or s.secondary_cta_label != blank -%}
-        <div class="zayna-home-hero__actions">
-          {%- if s.cta_label != blank -%}
-            <a
-              class="zayna-home-hero__primary"
-              href="{{ primary_url }}"
-            >
-              <span>{{ s.cta_label | escape }}</span>
-              <span aria-hidden="true">→</span>
-            </a>
-          {%- endif -%}
-
-          {%- if s.secondary_cta_label != blank and s.secondary_cta_url != blank -%}
-            <a
-              class="zayna-home-hero__secondary"
-              href="{{ s.secondary_cta_url }}"
-            >
-              {{ s.secondary_cta_label | escape }}
-            </a>
-          {%- endif -%}
-        </div>
-      {%- endif -%}
-    </div>
-  </div>
-
-</section>
-
 {% style %}
   #ZaynaHero-{{ section.id }} {
     --zayna-hero-bg: #f8f3ed;
@@ -580,6 +482,106 @@
     }
   }
 {% endstyle %}
+
+<section
+  id="ZaynaHero-{{ section.id }}"
+  class="zayna-home-hero{% if desktop_image == blank %} zayna-home-hero--no-image{% endif %}"
+  {% if s.headline != blank %}
+    aria-labelledby="{{ heading_id }}"
+  {% endif %}
+>
+  {%- if desktop_image != blank -%}
+    <picture class="zayna-home-hero__picture">
+      {%- if mobile_image != blank -%}
+        <source
+          media="(max-width: 749px)"
+          srcset="
+            {{ mobile_image | image_url: width: 480 }} 480w,
+            {{ mobile_image | image_url: width: 750 }} 750w,
+            {{ mobile_image | image_url: width: 1000 }} 1000w,
+            {{ mobile_image | image_url: width: 1200 }} 1200w
+          "
+          sizes="100vw"
+        >
+      {%- endif -%}
+
+      {{
+        desktop_image
+        | image_url: width: 2200
+        | image_tag:
+          loading: image_loading,
+          fetchpriority: image_fetchpriority,
+          preload: image_preload,
+          decoding: 'async',
+          sizes: '(min-width: 1100px) 70vw, (min-width: 750px) 68vw, 100vw',
+          widths: '480, 750, 1000, 1200, 1500, 1800, 2200',
+          alt: hero_alt,
+          class: 'zayna-home-hero__image'
+      }}
+    </picture>
+  {%- endif -%}
+
+  <div class="zayna-home-hero__content-wrap">
+    <div class="zayna-home-hero__content">
+      {%- if s.eyebrow != blank -%}
+        <p class="zayna-home-hero__eyebrow">
+          <span aria-hidden="true"></span>
+          {{ s.eyebrow | escape }}
+        </p>
+      {%- endif -%}
+
+      {%- if s.headline != blank -%}
+        {%- if request.page_type == 'index' -%}
+          <h1
+            id="{{ heading_id }}"
+            class="zayna-home-hero__title"
+          >
+            {{ s.headline | escape }}
+          </h1>
+        {%- else -%}
+          <h2
+            id="{{ heading_id }}"
+            class="zayna-home-hero__title"
+          >
+            {{ s.headline | escape }}
+          </h2>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if s.subhead != blank -%}
+        <p class="zayna-home-hero__subhead">
+          {{ s.subhead | escape }}
+        </p>
+      {%- endif -%}
+
+      {%- if s.cta_label != blank or s.secondary_cta_label != blank -%}
+        <div class="zayna-home-hero__actions">
+          {%- if s.cta_label != blank -%}
+            <a
+              class="zayna-home-hero__primary"
+              href="{{ primary_url }}"
+            >
+              <span>{{ s.cta_label | escape }}</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          {%- endif -%}
+
+          {%- if s.secondary_cta_label != blank and s.secondary_cta_url != blank -%}
+            <a
+              class="zayna-home-hero__secondary"
+              href="{{ s.secondary_cta_url }}"
+            >
+              {{ s.secondary_cta_label | escape }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+</section>
+
+
 
 {% schema %}
 {
