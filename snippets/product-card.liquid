@@ -58,6 +58,12 @@
   if product.available and product.has_only_default_variant and quick_variant != blank and quick_variant.available
     assign can_quick_add = true
   endif
+
+  assign product_card_image_sizes = '(min-width: 1024px) 25vw, 50vw'
+
+  if card_context == 'freshly-listed'
+    assign product_card_image_sizes = '(min-width: 1280px) 279px, (min-width: 1100px) calc(25vw - 41px), (min-width: 750px) calc(25vw - 33px), (max-width: 389px) calc(50vw - 24px), calc(50vw - 27px)'
+  endif
 -%}
 
 <style>
@@ -613,7 +619,7 @@
             | image_tag:
               loading: loading,
               decoding: 'async',
-              sizes: '(min-width: 1024px) 25vw, 50vw',
+              sizes: product_card_image_sizes,
               widths: '240, 280, 320, 360, 400, 480, 560, 640, 720, 800',
               alt: primary_alt,
               class: 'zh-product-card__image zh-product-card__primary'
@@ -627,7 +633,7 @@
                 loading: 'lazy',
                 fetchpriority: 'low',
                 decoding: 'async',
-                sizes: '(min-width: 1024px) 25vw, 50vw',
+                sizes: product_card_image_sizes,
                 widths: '240, 280, 320, 360, 400, 480, 560, 640, 720, 800',
                 alt: '',
                 class: 'zh-product-card__image zh-product-card__secondary'
