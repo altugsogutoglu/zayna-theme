@@ -60,146 +60,6 @@
   endif
 -%}
 
-<article
-  class="zh-product-card{% if card_context == 'collection' %} zh-product-card--collection{% endif %}{% if card_context == 'freshly-listed' %} zh-product-card--fresh{% endif %}{% if is_sold %} zh-product-card--sold{% endif %}"
->
-  <div class="zh-product-card__media-wrap">
-    <a
-      href="{{ product.url }}"
-      class="zh-product-card__media-link"
-      aria-label="Bekijk {{ product.title | escape }}"
-    >
-      <div class="zh-product-card__media zh-frame">
-        {%- if primary -%}
-          {{
-            primary
-            | image_url: width: 800, format: 'webp'
-            | image_tag:
-              loading: loading,
-              decoding: 'async',
-              sizes: '(min-width: 1024px) 25vw, 50vw',
-              widths: '240, 280, 320, 360, 400, 480, 560, 640, 720, 800',
-              alt: primary_alt,
-              class: 'zh-product-card__image zh-product-card__primary'
-          }}
-
-          {%- if secondary -%}
-            {{
-              secondary
-              | image_url: width: 800, format: 'webp'
-              | image_tag:
-                loading: 'lazy',
-                fetchpriority: 'low',
-                decoding: 'async',
-                sizes: '(min-width: 1024px) 25vw, 50vw',
-                widths: '240, 280, 320, 360, 400, 480, 560, 640, 720, 800',
-                alt: '',
-                class: 'zh-product-card__image zh-product-card__secondary'
-            }}
-          {%- endif -%}
-        {%- else -%}
-          <div class="zh-product-card__placeholder">
-            <span aria-hidden="true"></span>
-            <strong>Afbeelding volgt</strong>
-            <small>{{ product.title }}</small>
-          </div>
-        {%- endif -%}
-
-        <div class="zh-product-card__badges">
-          {%- if is_sold -%}
-            <span class="zh-product-card__sold-badge">
-              Uitverkocht
-            </span>
-          {%- elsif status_badge != blank -%}
-            <span class="zh-product-card__status-badge">
-              <span
-                class="zh-product-card__status-dot"
-                aria-hidden="true"
-              ></span>
-              {{ status_badge }}
-            </span>
-          {%- endif -%}
-
-          {%- if cond_label != blank -%}
-            <span class="zh-product-card__condition-badge">
-              {{ cond_label }}
-            </span>
-          {%- endif -%}
-        </div>
-      </div>
-    </a>
-  </div>
-
-  <div class="zh-product-card__quick-action">
-    {%- if is_sold -%}
-      <a
-        href="{{ product.url }}"
-        class="zh-product-card__quick-button zh-product-card__quick-button--sold"
-        aria-label="Bekijk {{ product.title | escape }}"
-      >
-        <span>Uitverkocht</span>
-        <span aria-hidden="true">—</span>
-      </a>
-    {%- elsif can_quick_add -%}
-      <form
-        method="post"
-        action="{{ routes.cart_add_url }}"
-        data-cart-add-form
-        data-quick-add
-        data-cart-add-behavior="silent"
-        data-product-title="{{ product.title | escape }}"
-        class="zh-product-card__quick-form"
-      >
-        <input type="hidden" name="id" value="{{ quick_variant.id }}">
-        <input type="hidden" name="quantity" value="1">
-
-        <button
-          type="submit"
-          class="zh-product-card__quick-button"
-          data-cart-add-button
-          aria-label="Voeg {{ product.title | escape }} toe aan je winkelmand"
-        >
-          <span data-cart-add-label>Toevoegen</span>
-          <span data-cart-add-icon aria-hidden="true">+</span>
-        </button>
-      </form>
-    {%- else -%}
-      <a
-        href="{{ product.url }}"
-        class="zh-product-card__quick-button"
-        aria-label="Kies opties voor {{ product.title | escape }}"
-      >
-        <span>Kies opties</span>
-        <span aria-hidden="true">→</span>
-      </a>
-    {%- endif -%}
-  </div>
-
-  <a
-    href="{{ product.url }}"
-    class="zh-product-card__details-link"
-  >
-    <div class="zh-product-card__content">
-      <h3 class="zh-product-card__title">
-        {{ product.title }}
-      </h3>
-
-      <div class="zh-product-card__price">
-        {%- if product.price and product.price > 0 -%}
-          <span>{{ product.price | money }}</span>
-        {%- else -%}
-          <span class="zh-product-card__price-request">
-            Prijs op aanvraag
-          </span>
-        {%- endif -%}
-      </div>
-    </div>
-
-  </a>
-
-  <span class="sr-only" aria-live="polite" data-cart-add-status></span>
-</article>
-
 <style>
   .zh-product-card {
     position: relative;
@@ -735,6 +595,148 @@
     }
   }
 </style>
+
+<article
+  class="zh-product-card{% if card_context == 'collection' %} zh-product-card--collection{% endif %}{% if card_context == 'freshly-listed' %} zh-product-card--fresh{% endif %}{% if is_sold %} zh-product-card--sold{% endif %}"
+>
+  <div class="zh-product-card__media-wrap">
+    <a
+      href="{{ product.url }}"
+      class="zh-product-card__media-link"
+      aria-label="Bekijk {{ product.title | escape }}"
+    >
+      <div class="zh-product-card__media zh-frame">
+        {%- if primary -%}
+          {{
+            primary
+            | image_url: width: 800, format: 'webp'
+            | image_tag:
+              loading: loading,
+              decoding: 'async',
+              sizes: '(min-width: 1024px) 25vw, 50vw',
+              widths: '240, 280, 320, 360, 400, 480, 560, 640, 720, 800',
+              alt: primary_alt,
+              class: 'zh-product-card__image zh-product-card__primary'
+          }}
+
+          {%- if secondary -%}
+            {{
+              secondary
+              | image_url: width: 800, format: 'webp'
+              | image_tag:
+                loading: 'lazy',
+                fetchpriority: 'low',
+                decoding: 'async',
+                sizes: '(min-width: 1024px) 25vw, 50vw',
+                widths: '240, 280, 320, 360, 400, 480, 560, 640, 720, 800',
+                alt: '',
+                class: 'zh-product-card__image zh-product-card__secondary'
+            }}
+          {%- endif -%}
+        {%- else -%}
+          <div class="zh-product-card__placeholder">
+            <span aria-hidden="true"></span>
+            <strong>Afbeelding volgt</strong>
+            <small>{{ product.title }}</small>
+          </div>
+        {%- endif -%}
+
+        <div class="zh-product-card__badges">
+          {%- if is_sold -%}
+            <span class="zh-product-card__sold-badge">
+              Uitverkocht
+            </span>
+          {%- elsif status_badge != blank -%}
+            <span class="zh-product-card__status-badge">
+              <span
+                class="zh-product-card__status-dot"
+                aria-hidden="true"
+              ></span>
+              {{ status_badge }}
+            </span>
+          {%- endif -%}
+
+          {%- if cond_label != blank -%}
+            <span class="zh-product-card__condition-badge">
+              {{ cond_label }}
+            </span>
+          {%- endif -%}
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <div class="zh-product-card__quick-action">
+    {%- if is_sold -%}
+      <a
+        href="{{ product.url }}"
+        class="zh-product-card__quick-button zh-product-card__quick-button--sold"
+        aria-label="Bekijk {{ product.title | escape }}"
+      >
+        <span>Uitverkocht</span>
+        <span aria-hidden="true">—</span>
+      </a>
+    {%- elsif can_quick_add -%}
+      <form
+        method="post"
+        action="{{ routes.cart_add_url }}"
+        data-cart-add-form
+        data-quick-add
+        data-cart-add-behavior="silent"
+        data-product-title="{{ product.title | escape }}"
+        class="zh-product-card__quick-form"
+      >
+        <input type="hidden" name="id" value="{{ quick_variant.id }}">
+        <input type="hidden" name="quantity" value="1">
+
+        <button
+          type="submit"
+          class="zh-product-card__quick-button"
+          data-cart-add-button
+          aria-label="Voeg {{ product.title | escape }} toe aan je winkelmand"
+        >
+          <span data-cart-add-label>Toevoegen</span>
+          <span data-cart-add-icon aria-hidden="true">+</span>
+        </button>
+      </form>
+    {%- else -%}
+      <a
+        href="{{ product.url }}"
+        class="zh-product-card__quick-button"
+        aria-label="Kies opties voor {{ product.title | escape }}"
+      >
+        <span>Kies opties</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    {%- endif -%}
+  </div>
+
+  <a
+    href="{{ product.url }}"
+    class="zh-product-card__details-link"
+  >
+    <div class="zh-product-card__content">
+      <h3 class="zh-product-card__title">
+        {{ product.title }}
+      </h3>
+
+      <div class="zh-product-card__price">
+        {%- if product.price and product.price > 0 -%}
+          <span>{{ product.price | money }}</span>
+        {%- else -%}
+          <span class="zh-product-card__price-request">
+            Prijs op aanvraag
+          </span>
+        {%- endif -%}
+      </div>
+    </div>
+
+  </a>
+
+  <span class="sr-only" aria-live="polite" data-cart-add-status></span>
+</article>
+
+
 
 <script>
   (() => {
