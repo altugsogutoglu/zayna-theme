@@ -5,6 +5,154 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#FAF5F2">
 
+    {%- comment -%}
+      Zayna Home — preserve exact scroll position on a manual browser refresh.
+      This runs only for navigation type "reload" and does not affect normal
+      visits, links, PageSpeed's first navigation, or mobile scrolling.
+    {%- endcomment -%}
+    <style>
+      html.zh-refresh-restoring,
+      html.zh-refresh-restoring body {
+        background: #faf5f2;
+      }
+
+      html.zh-refresh-restoring body {
+        visibility: hidden;
+      }
+    </style>
+
+    <script>
+      (() => {
+        const storageKey =
+          'zh-scroll-position:' +
+          window.location.pathname +
+          window.location.search;
+
+        const getNavigationType = () => {
+          const entries =
+            typeof performance.getEntriesByType === 'function'
+              ? performance.getEntriesByType('navigation')
+              : [];
+
+          if (entries.length > 0) {
+            return entries[0].type;
+          }
+
+          if (
+            performance.navigation &&
+            performance.navigation.type === 1
+          ) {
+            return 'reload';
+          }
+
+          return 'navigate';
+        };
+
+        const saveScrollPosition = () => {
+          try {
+            sessionStorage.setItem(
+              storageKey,
+              String(
+                window.scrollY ||
+                document.documentElement.scrollTop ||
+                0
+              )
+            );
+          } catch (error) {
+            // Storage can be unavailable in strict privacy modes.
+          }
+        };
+
+        let savedY = 0;
+
+        try {
+          savedY = Number(
+            sessionStorage.getItem(storageKey) || 0
+          );
+        } catch (error) {
+          savedY = 0;
+        }
+
+        const shouldRestore =
+          getNavigationType() === 'reload' &&
+          Number.isFinite(savedY) &&
+          savedY > 0;
+
+        if (shouldRestore) {
+          document.documentElement.classList.add(
+            'zh-refresh-restoring'
+          );
+
+          if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+          }
+
+          const restoreScrollPosition = () => {
+            const maximumY = Math.max(
+              0,
+              document.documentElement.scrollHeight -
+                window.innerHeight
+            );
+
+            const targetY = Math.min(savedY, maximumY);
+
+            window.scrollTo(0, targetY);
+
+            requestAnimationFrame(() => {
+              window.scrollTo(0, targetY);
+
+              requestAnimationFrame(() => {
+                document.documentElement.classList.remove(
+                  'zh-refresh-restoring'
+                );
+
+                if ('scrollRestoration' in history) {
+                  history.scrollRestoration = 'auto';
+                }
+              });
+            });
+          };
+
+          if (document.readyState === 'loading') {
+            document.addEventListener(
+              'DOMContentLoaded',
+              restoreScrollPosition,
+              { once: true }
+            );
+          } else {
+            restoreScrollPosition();
+          }
+        }
+
+        let scrollSaveFrame = null;
+
+        window.addEventListener(
+          'scroll',
+          () => {
+            if (scrollSaveFrame !== null) return;
+
+            scrollSaveFrame = requestAnimationFrame(() => {
+              saveScrollPosition();
+              scrollSaveFrame = null;
+            });
+          },
+          { passive: true }
+        );
+
+        window.addEventListener(
+          'pagehide',
+          saveScrollPosition,
+          { capture: true }
+        );
+
+        window.addEventListener(
+          'beforeunload',
+          saveScrollPosition,
+          { capture: true }
+        );
+      })();
+    </script>
+
     <link rel="icon" type="image/svg+xml" href="{{ 'favicon.svg' | asset_url }}">
 
     <title>
