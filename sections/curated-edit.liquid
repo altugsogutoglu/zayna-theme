@@ -254,7 +254,7 @@
           dragFree: false,
           slidesToScroll: 1,
           skipSnaps: false,
-          containScroll: 'trimSnaps',
+          containScroll: 'keepSnaps',
           watchDrag: true
         });
 
@@ -263,7 +263,6 @@
         let pointerMoved = false;
         let suppressNextClick = false;
         let resizeTimer = null;
-        let isNormalising = false;
         let sectionIsVisible = false;
         let wheelAccumulator = 0;
         let wheelResetTimer = null;
@@ -272,26 +271,33 @@
         const getVisibleCount = () =>
           Math.min(getVisibleCardCount(), slides.length);
 
-        const getMaximumStart = () =>
-          Math.max(0, slides.length - getVisibleCount());
+        const getMaximumSnapIndex = () =>
+          Math.max(0, embla.scrollSnapList().length - 1);
 
         const getStartIndex = () =>
           Math.min(
             Math.max(0, embla.selectedScrollSnap()),
-            getMaximumStart()
+            getMaximumSnapIndex()
           );
 
         const scrollToIndex = (index, jump = false) => {
           const targetIndex = Math.min(
             Math.max(0, index),
-            getMaximumStart()
+            getMaximumSnapIndex()
           );
 
           embla.scrollTo(targetIndex, jump);
         };
 
         const scrollBy = (difference) => {
-          scrollToIndex(getStartIndex() + difference);
+          if (difference < 0) {
+            embla.scrollPrev();
+            return;
+          }
+
+          if (difference > 0) {
+            embla.scrollNext();
+          }
         };
 
         const isEditableTarget = (target) => {
@@ -332,7 +338,7 @@
 
           if (event.key === 'End') {
             event.preventDefault();
-            scrollToIndex(getMaximumStart());
+            scrollToIndex(getMaximumSnapIndex());
           }
         };
 
@@ -495,11 +501,8 @@
         });
 
         const updateNavigation = () => {
-          const startIndex = getStartIndex();
-          const maximumStart = getMaximumStart();
-
           if (previousButton) {
-            const disabled = startIndex <= 0;
+            const disabled = !embla.canScrollPrev();
             previousButton.disabled = disabled;
             previousButton.setAttribute(
               'aria-disabled',
@@ -508,7 +511,7 @@
           }
 
           if (nextButton) {
-            const disabled = startIndex >= maximumStart;
+            const disabled = !embla.canScrollNext();
             nextButton.disabled = disabled;
             nextButton.setAttribute(
               'aria-disabled',
@@ -522,7 +525,7 @@
 
           const totalSlides = slides.length;
           const visibleCount = getVisibleCount();
-          const maximumStart = getMaximumStart();
+          const maximumStart = getMaximumSnapIndex();
           const startIndex = getStartIndex();
 
           const thumbWidth =
@@ -565,24 +568,6 @@
           updateLiveRegion();
         };
 
-        const normaliseEndPosition = () => {
-          const selectedIndex = embla.selectedScrollSnap();
-          const maximumStart = getMaximumStart();
-
-          if (selectedIndex > maximumStart && !isNormalising) {
-            isNormalising = true;
-            embla.scrollTo(maximumStart);
-
-            window.setTimeout(() => {
-              isNormalising = false;
-            }, 350);
-
-            return true;
-          }
-
-          return false;
-        };
-
         previousButton?.addEventListener('click', () => {
           scrollBy(-1);
         });
@@ -602,7 +587,7 @@
             (clientX - rectangle.left) / rectangle.width;
           const ratio = Math.min(Math.max(rawRatio, 0), 1);
           const targetIndex = Math.round(
-            ratio * getMaximumStart()
+            ratio * getMaximumSnapIndex()
           );
 
           scrollToIndex(targetIndex);
@@ -626,31 +611,20 @@
           ) {
             event.preventDefault();
             scrollToIndex(
-              Math.round(getMaximumStart() / 2)
+              Math.round(getMaximumSnapIndex() / 2)
             );
           }
         });
 
         embla.on('select', updateInterface);
-
-        embla.on('settle', () => {
-          if (!normaliseEndPosition()) {
-            updateInterface();
-          }
-        });
-
-        embla.on('reInit', () => {
-          scrollToIndex(getStartIndex(), true);
-          updateInterface();
-        });
+        embla.on('settle', updateInterface);
+        embla.on('reInit', updateInterface);
 
         window.addEventListener('resize', () => {
           window.clearTimeout(resizeTimer);
 
           resizeTimer = window.setTimeout(() => {
             embla.reInit();
-            scrollToIndex(getStartIndex(), true);
-            updateInterface();
           }, 140);
         });
 
