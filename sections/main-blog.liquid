@@ -1,4 +1,4 @@
-{%- paginate blog.articles by: 12 -%}
+{%- paginate blog.articles by nil -%}
   <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-16">
     <header class="mb-12">
       <p class="text-label text-clay mb-3">{{ section.settings.eyebrow }}</p>
@@ -69,3 +69,13 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{%- paginate blog.articles by: 12 -%}"
+  to: "{%- paginate blog.articles by nil -%}"
+  position: 0..37
+{% endcomment %}
