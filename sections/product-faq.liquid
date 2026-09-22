@@ -1,40 +1,36 @@
 {%- liquid
-  assign faqs = product.metafields.custom.faqs.value
+  assign faqs = product.metafields.custom.goed_om_te_weten.value
   assign visible_faq_count = 0
-  assign suppress_product_faq = false
+  assign seen_faq_questions = ''
   assign faq_heading = section.settings.heading | strip
+
   if faq_heading == blank or faq_heading == 'Veelgestelde vragen'
     assign faq_heading = 'Goed om te weten'
   endif
 
-  if product.handle == 'voorraadpot-600ml-borosilicaatglas' or product.handle == 'digitale-weeglepel-500g-0-1g' or product.handle == 'set-van-12-vierkante-kruidenpotten-120-ml-incl-labels-trechter-borosilicaat-glas' or product.handle == 'theepotset-dua-450-ml-1300-ml-borosilicaat-glas-met-rvs-filter' or product.handle == 'glazen-drinkglas-300-ml-hoog-borosilicaatglas' or product.handle == 'vierkante-wandhaak-zwart'
-    assign suppress_product_faq = true
-  endif
-
-  assign faq_filter_terms = 'materiaal|waarvan is|inhoud|hoeveel ml|hoeveel liter|afmeting|afmetingen|hoe groot|vaatwasser|magnetron|vriezer|warme en koude|warme dranken|koude dranken|hoeveel stuks|wat wordt meegeleverd|wat zit erbij|meegeleverd|onderhoud|schoonmaken|schoonmaak|reinigen|handwas|afwassen|nauwkeurig|nauwkeurigheid|weeggewicht|maximaal gewicht|maximaal wegen|batterij|knoopcel|tarra|hold|waarvoor|geschikt voor|bevestigen|bevestiging|ophangen|plakken|draagvermogen|luchtdicht|hoe werkt|functies|filter|deksel' | split: '|'
-
-  if suppress_product_faq == false and faqs != blank
-    for faq in faqs
-      assign faq_question = faq.question | downcase | strip
+  if faqs != blank
+    for faq in faqs limit: 4
+      assign faq_question = faq.vraag.value | strip
+      assign faq_answer = faq.antwoord.value | strip
       assign skip_faq = false
 
-      if faq.question == blank or faq.answer == blank
+      if faq_question == blank or faq_answer == blank
         assign skip_faq = true
       endif
 
       unless skip_faq
-        for filter_term in faq_filter_terms
-          if faq_question contains filter_term
-            assign skip_faq = true
-            break
-          endif
-        endfor
+        assign faq_question_key = faq_question | strip_html | downcase | strip | replace: '  ', ' ' | replace: '  ', ' ' | replace: '  ', ' '
+        assign faq_question_token = faq_question_key | prepend: '||' | append: '||'
+
+        if seen_faq_questions contains faq_question_token
+          assign skip_faq = true
+        else
+          assign seen_faq_questions = seen_faq_questions | append: faq_question_token
+        endif
       endunless
 
       unless skip_faq
-        if visible_faq_count < 3
-          assign visible_faq_count = visible_faq_count | plus: 1
-        endif
+        assign visible_faq_count = visible_faq_count | plus: 1
       endunless
     endfor
   endif
@@ -185,90 +181,49 @@
 
         <div class="zh-product-faq__list">
           {%- assign rendered_faq_count = 0 -%}
-          {%- for faq in faqs -%}
+          {%- assign rendered_faq_questions = '' -%}
+
+          {%- for faq in faqs limit: 4 -%}
             {%- liquid
-              assign faq_question = faq.question | downcase | strip
+              assign faq_question = faq.vraag.value | strip
+              assign faq_answer = faq.antwoord.value | strip
               assign skip_faq = false
 
-              if faq.question == blank or faq.answer == blank
+              if faq_question == blank or faq_answer == blank
                 assign skip_faq = true
               endif
 
               unless skip_faq
-                for filter_term in faq_filter_terms
-                  if faq_question contains filter_term
-                    assign skip_faq = true
-                    break
-                  endif
-                endfor
+                assign faq_question_key = faq_question | strip_html | downcase | strip | replace: '  ', ' ' | replace: '  ', ' ' | replace: '  ', ' '
+                assign faq_question_token = faq_question_key | prepend: '||' | append: '||'
+
+                if rendered_faq_questions contains faq_question_token
+                  assign skip_faq = true
+                else
+                  assign rendered_faq_questions = rendered_faq_questions | append: faq_question_token
+                endif
               endunless
             -%}
 
             {%- unless skip_faq -%}
-              {%- if rendered_faq_count < 3 -%}
-                <details class="zh-product-faq__item">
-                  <summary class="font-display">
-                    <span>{{ faq.question }}</span>
-                    {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product-faq__icon' %}
-                  </summary>
+              <details class="zh-product-faq__item">
+                <summary class="font-display">
+                  <span>{{ faq_question }}</span>
+                  {% render 'icon', name: 'chevron-down', size: 17, class: 'zh-product-faq__icon' %}
+                </summary>
 
-                  <div class="zh-product-faq__answer">
-                    <p>{{ faq.answer }}</p>
-                  </div>
-                </details>
+                <div class="zh-product-faq__answer">
+                  <p>{{ faq_answer }}</p>
+                </div>
+              </details>
 
-                {%- assign rendered_faq_count = rendered_faq_count | plus: 1 -%}
-              {%- endif -%}
+              {%- assign rendered_faq_count = rendered_faq_count | plus: 1 -%}
             {%- endunless -%}
           {%- endfor -%}
         </div>
       </div>
     </div>
   </section>
-
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {%- assign emitted_faqs = 0 -%}
-        {%- for faq in faqs -%}
-          {%- liquid
-            assign faq_question = faq.question | downcase | strip
-            assign skip_faq = false
-
-            if faq.question == blank or faq.answer == blank
-              assign skip_faq = true
-            endif
-
-            unless skip_faq
-              for filter_term in faq_filter_terms
-                if faq_question contains filter_term
-                  assign skip_faq = true
-                  break
-                endif
-              endfor
-            endunless
-          -%}
-
-          {%- unless skip_faq -%}
-            {%- if emitted_faqs < 3 -%}
-              {%- if emitted_faqs > 0 -%},{%- endif -%}
-              {
-                "@type": "Question",
-                "name": {{ faq.question | strip_html | json }},
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": {{ faq.answer | strip_html | json }}
-                }
-              }
-              {%- assign emitted_faqs = emitted_faqs | plus: 1 -%}
-            {%- endif -%}
-          {%- endunless -%}
-        {%- endfor -%}
-      ]
-    }
-  </script>
 {%- endif -%}
 
 {% schema %}
@@ -282,3 +237,4 @@
   "presets": [{ "name": "Product FAQ" }]
 }
 {% endschema %}
+
